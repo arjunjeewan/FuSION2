@@ -1,6 +1,6 @@
 # 0004 · Functional scope
 
-- **Status:** Accepted
+- **Status:** Accepted. Its two open scope questions were settled by decisions [0013](0013-suggest-thresholds-in-scope.md) and [0014](0014-stage8-gui-scope.md).
 - **Date:** 2026-10-27
 - **Asked in:** prompt log entry 002, Q4
 
@@ -35,6 +35,7 @@ Option 3. FuSION 2.0 ports only what the current FuSION 1 build runs. Code insid
 - The live command list above comes from a scan of FuSION 1's `main.cc` and is provisional. The phase 1 spec confirms it command by command.
 - Correction found before the first commit: the survey's scan skipped only `#if 0` regions. A rescan that also strips `//` and `/* */` comments shows:
   - `get_assg_z3` is commented out and marked dead (main.cc:5935), so it is not live;
+  - `rmap` is commented out (main.cc:1401), so it is not live;
   - `add` (plaintext edge file to KEGG-format XML, main.cc:5841) is live but was missing from the survey.
 
   Corrected live set: add, rgx, mff, wgx, upfx, sz, fb_rch, cudf, pathz3, psp, pex and gsea, plus the script commands let, start, exec, exit and help.
