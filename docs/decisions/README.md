@@ -20,3 +20,9 @@ One file per decision, numbered in the order the decisions were made. Each recor
 | [0014](0014-stage8-gui-scope.md) | Stage 8 covers frontend/ and frontend1/, not GUIForExecutable.java | Accepted | 2026-10-27 |
 | [0015](0015-github-initial-commit-merge.md) | Merge GitHub's initial LICENSE commit into main | Accepted | 2026-11-09 |
 | [0016](0016-resume-subagents-in-pairs.md) | Resume the Phase 1 subagents two at a time, in stage order | Accepted | 2026-11-09 |
+| [0017](0017-batch-file-compatibility.md) | FuSION 1 batch files keep working, except where FuSION 1 was buggy | Accepted (applies: 0018 keeps the batch language) | 2026-11-09 |
+| [0018](0018-batch-interface.md) | Interface: the batch language with named arguments and sweeps | Accepted | 2026-11-09 |
+| [0019](0019-partial-runs.md) | Partial runs: stop after or start from any step, resume a solve, solve part of the frontier | Accepted | 2026-11-09 |
+| [0020](0020-plug-and-play-inputs.md) | Network and per-gene inputs must be plug and play; mechanism in Phase 2 | Accepted | 2026-11-09 |
+| [0021](0021-required-and-optional-inputs.md) | Inputs checked up front; missing required or named-but-unreadable inputs stop the run; frontend validates too | Accepted | 2026-11-09 |
+| [0022](0022-graph-display.md) | Graph display is a 2.0 feature; its design is worked out with the user | Accepted, design pending | 2026-11-09 |

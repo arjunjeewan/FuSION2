@@ -410,3 +410,374 @@ Sent word for word to each Phase 1 subagent when it is resumed ([decision 0016](
 ```text
 Your earlier run stopped before you finished, because of a usage limit or the end of the session. Nothing in FuSION 1 has changed since you started, and your stage file has not been written yet. Carry on from where you stopped and finish the task exactly as your original prompt describes: write only your own stage file, then reply in at most 300 words.
 ```
+
+## 018 · Poll · 2026-11-09 14:38
+
+Asked after Claude verified the stage 1 draft, `docs/spec/01-batch-language.md`, against FuSION 1 and corrected two counts in S1.19. These framing questions came before the stage 1 item questions.
+
+**Q1 (Batch lang).** Should FuSION 2.0 keep FuSION 1's batch language (fusion -b <file>, with let, $ variables, exec and one command per line) as an interface? Most stage 1 items describe that language, so this decides how to read them.
+
+- Keep it (Recommended): 2.0 runs batch files the way FuSION 1 does, with the stage 1 fixes. Your 81 existing batch files stay usable, and Phase 3 can run the same batch through both versions and compare. How the Spring Boot frontend drives the backend remains a Phase 2 decision.
+- Replace it in Phase 2: Phase 2 designs a new job format, such as a structured job file. Stage 1's language items are then recorded as 'drop, replaced in Phase 2', and existing batch files need converting.
+
+**Answer (free text):** lay down the alternatives to the current batch language, are there any more efficient or better alternatives in any way?
+
+No decision; the alternatives are laid out with the next poll.
+
+**Q2 (Compat).** If the batch language stays, must FuSION 1's existing batch files run unchanged in 2.0?
+
+- Yes, except FuSION 1 bugs (Recommended): A batch file that worked in FuSION 1 gives the same result in 2.0. Fixes may change behaviour only where FuSION 1 went wrong, as with $PLOT_FILE_WO_GENE.
+- No, a clean break: 2.0's language can change its syntax freely (for example ${NAME} variables), and old batch files are converted once.
+
+**Answer:** Yes, except FuSION 1 bugs (Recommended) → [decision 0017](../decisions/0017-batch-file-compatibility.md)
+
+## 019 · Poll · 2026-11-09 14:45
+
+Asked after Claude laid out four alternatives in chat: (1) the fixed batch language, (2) the batch language with named arguments, (3) a declarative job file with a converter (recommended), and (4) embedded Lua scripting. Python bindings and separate subcommands driven by a workflow manager were also discussed and not offered. Claude also reported that no interface choice changes run time noticeably, that 76 of the 81 batch files run one pipeline, that about 3,000 `exec` lines carry the shell glue, and that a `pathz3` line takes 28 to 33 positional arguments.
+
+**Q1 (Interface).** Which interface should FuSION 2.0 have in place of FuSION 1's batch language? (Options 1 to 4 above.)
+
+- Job file + converter (Recommended): One JSON or TOML file per experiment or sweep, checked against a schema before anything runs; the backend does the file plumbing. A converter carries FuSION 1 batch files over. JSON versus TOML and the schema are Phase 2 decisions.
+- Fixed batch language: FuSION 1's language with the stage 1 fixes. All 81 files run as they are (decision 0017).
+- Named-argument batch: The same line format plus name=value arguments. Old positional files still run.
+- Embedded Lua scripting: FuSION functions called from Lua scripts, with loops and conditionals. Existing files are rewritten.
+
+**Answer (free text):** the pipeline order should be very flexible, some users may not need entire solve or want to complete a partial solve, the current batch framework allows for that. readability from 2nd option is definitely an improvement. the backend in fusion just takes 2 types of inputs and what those 2 inputs encode, be it whichever pathway source, or lfc from any other data modality other than microarray should be simply plug and play.
+
+No decision yet; Claude's reading of this answer was put back to the user in the next poll.
+
+## 020 · Poll · 2026-11-09 14:52
+
+Asked right after entry 019, to confirm Claude's reading of its free-text answer.
+
+**Q1 (Interface).** So the interface is option 2: the batch language stays one command per line, so any subset of steps can run in any order, and arguments can be named (pathz3 graph=$G bound=10 …), while FuSION 1's positional lines still run (decision 0017). Is that right?
+
+- Yes, option 2 (Recommended): Named-argument batch language, with positional lines still accepted. Stage 1's items stay in play, plus a new item for named arguments.
+- Option 2, plus sweeps: The same, plus a simple parameter list so one file can run a bound or FSC sweep instead of cloned files.
+
+**Answer:** Option 2, plus sweeps → [decision 0018](../decisions/0018-batch-interface.md)
+
+**Q2 (Partial run, several allowed).** Which kinds of partial run must 2.0 support? Pick all that apply. The stage 5 spec will report what FuSION 1's pathz3 supports today.
+
+- Stop after any step: Run only part of the pipeline, such as merge and corridor without a solve, keeping each step's output on disk.
+- Start from a saved step: Begin a run from saved results, such as a merged graph or a corridor, without redoing the earlier steps.
+- Resume a stopped solve: Continue an interrupted pathz3 from the Pareto points it already found, instead of starting again.
+- Solve part of the frontier: Solve only chosen Pareto points, or only the with-FSC or without-FSC case.
+
+**Answer:** Solve part of the frontier, Resume a stopped solve, Start from a saved step, Stop after any step (all four) → [decision 0019](../decisions/0019-partial-runs.md)
+
+**Q3 (Inputs).** Should I record the two plug-and-play inputs (a network from any pathway source, and per-gene values from any data modality) as a requirement that the stage 2 and stage 3 reviews check against, with the mechanism decided in Phase 2?
+
+- Requirement now (Recommended): Stage 2 and 3 items flag anything tied to KEGG or to microarrays. Phase 2 chooses how new sources and modalities plug in.
+- Decide the mechanism now: Choose now between built-in readers for each source and one plain exchange format with converters.
+
+**Answer:** Requirement now (Recommended) → [decision 0020](../decisions/0020-plug-and-play-inputs.md)
+
+## 021 · Poll · 2026-11-09 14:58
+
+The first stage 1 item poll (S1.01 to S1.04 of `docs/spec/01-batch-language.md`).
+
+**Q1 (S1.01).** S1.01 · Loading the batch file. FuSION reads the whole -b file before running it. A missing, unreadable or empty file, or no file name at all, runs into undefined behaviour (a reproduction segfaulted). The draft proposes keeping the load but stopping with a message and a non-zero exit status in those cases.
+
+- Fix as proposed (Recommended): Read the whole file first. A missing, unreadable or empty file, or a missing file name, stops the run with a message and a non-zero status.
+- Fix, empty file is a no-op: The same, except an empty batch file exits 0 without doing anything.
+- Keep FuSION 1 behaviour: Port it exactly, undefined behaviour included.
+
+**Answer (free text):** not all files are mandatory for solve, so missing/unreadable/empty file should stop the solve only if the solve is impossible. the mode of solve should be predetermined based on inputs. for example any solve should have both lfc and pathway files defined, but if coexp csv is not provided, the solve can still take place, similarly for all the additional edge, list of edges, exceptions etc.
+
+S1.01 stays pending. Claude separated the batch file itself (S1.01) from the rule for data inputs and asked again in entry 022.
+
+**Q2 (S1.02).** S1.02 · Usage text. fusion -h prints usage and the command list, then exits 0. No arguments, or an unknown first argument, prints the same and exits 255. Everything goes to stdout.
+
+- Keep (Recommended): The same messages and exit statuses.
+- Keep, errors on stderr: The same, but usage printed after a bad invocation goes to stderr.
+
+**Answer (free text):** explain both alternatives
+
+S1.02 stays pending. Claude explained stdout and stderr in chat and asked again in entry 022.
+
+**Q3 (S1.03).** S1.03 · Interactive prompt (sysbio>) and -d. The prompt reads one command at a time from stdin, with its own argument prompts and no $ variables, let or comments. It can't be reached without undefined behaviour, and no real run uses it. -d only prints a notice. The draft proposes dropping both.
+
+- Drop (Recommended): No interactive prompt in 2.0, and -d becomes an unknown option. The Spring Boot frontend covers interactive use.
+- Keep, rebuilt: A working prompt that reads lines and runs each exactly like a batch line, with the same $, let and comments, sharing the batch parser.
+
+**Answer:** Drop (Recommended), written into S1.03
+
+**Q4 (S1.04).** S1.04 · End of file without exit. A batch with no exit at the end reads past the end of the command list, which is undefined behaviour. All 81 real files end with exit. The draft proposes treating the end of the file as exit.
+
+- Fix as proposed (Recommended): The end of the file ends the run exactly as exit would.
+- Require exit: A batch that ends without exit is reported as an error, with a non-zero status.
+
+**Answer:** Fix as proposed (Recommended), written into S1.04
+
+## 022 · Poll · 2026-11-09 15:04
+
+Asked after Claude explained in chat that S1.01 covers only the batch file, that the free-text answer in entry 021 sets a separate rule for data inputs, and how stdout and stderr differ for S1.02.
+
+**Q1 (Inputs rule).** Inputs rule, from your S1.01 answer. Required inputs for a requested step (any solve needs an LFC file and a network) are checked before anything runs, and a missing one stops the run. An optional input that isn't given just turns its feature off, and one that is given but empty counts as an empty list. What happens when an optional file is named but missing or unreadable?
+
+- Stop before running (Recommended): A named optional file that can't be read stops the run before it starts, so a typo in a coexpression CSV path can't cost a 50-hour run without coexpression constraints. Leaving the file out still just turns the feature off.
+- Warn and carry on: Your rule as stated: the run goes ahead without that feature and logs a warning, because the solve is still possible.
+
+**Answer (free text):** stop before running yes. but ideally there should be robust frontend validation for these cases as well. → [decision 0021](../decisions/0021-required-and-optional-inputs.md)
+
+**Q2 (S1.01).** S1.01, the batch file itself (not the data inputs). Without the -b file nothing can run, so by your rule it stops. What about an empty batch file?
+
+- Stop, as proposed (Recommended): A missing, unreadable or empty batch file, or a missing file name, stops with a message and a non-zero status.
+- Empty file is a no-op: The same, except an empty batch file exits 0 without doing anything.
+
+**Answer:** Stop, as proposed (Recommended), written into S1.01
+
+**Q3 (S1.02).** S1.02, now that both are explained: where should usage go after a bad invocation?
+
+- Errors on stderr (Recommended): Usage after a bad invocation goes to stderr. fusion -h still prints to stdout and exits 0. This follows the Unix convention and lets the frontend tell errors from output.
+- Keep, all on stdout: As in FuSION 1, everything goes to stdout.
+
+**Answer:** Errors on stderr (Recommended), written into S1.02
+
+## 023 · Poll · 2026-11-09 15:06
+
+The second stage 1 item poll.
+
+**Q1 (S1.05).** S1.05 · Splitting lines into tokens. Only the space character separates tokens, so tabs and a trailing \r stay inside them. Every line allocates a list of a million tokens (about 3.4 s per real batch), and commands can't tell a missing argument from an empty one. There's no quoting. The draft proposes that runs of spaces or tabs, and a trailing \r, all separate tokens, that the list fits the line, and that commands get the real token count. Still no quoting.
+
+- Fix as proposed (Recommended): Spaces, tabs and a trailing \r separate tokens, the token list fits the line, and a missing argument can be told from an empty one. No quoting, as now.
+- Fix, and add quoting: The same, plus double-quoted tokens that may contain spaces, such as a path with a space in it. exec lines, which carry shell quotes, would bypass this (see S1.14).
+- Keep FuSION 1 behaviour: Spaces only, with a million-token list per line.
+
+**Answer:** Fix, and add quoting, written into S1.05
+
+**Q2 (S1.06).** S1.06 · Comments and blank lines. A line whose first token starts with ;; is a comment, and blank lines are skipped; neither is echoed. A ;; later in a line is an ordinary token, and # is not special.
+
+- Keep (Recommended): The same rules.
+- Keep, plus # comments: Also treat a line whose first token starts with # as a comment.
+
+**Answer:** Keep (Recommended), written into S1.06
+
+**Q3 (S1.07).** S1.07 · $ variable expansion. At each $, FuSION inserts the first defined name, in sorted order, that matches, so a shorter name beats a longer one. In 12 real batches, $PLOT_FILE_WO_GENE therefore became the value of $PLOT_FILE followed by _WO_GENE, and the plots were misnamed. A $ that matches no name passes through unchanged, so shell $(date) and awk's $1 still work. The draft proposes matching the longest defined name and keeping everything else.
+
+- Fix as proposed (Recommended): The longest matching name wins. Names still need no delimiter, each value is inserted once and not rescanned, and an unmatched $ passes through.
+- Fix, and warn on unknown names: The same, plus a warning for a $NAME that matches nothing, except on exec lines, where $ usually belongs to the shell. This addition is mine.
+- Keep FuSION 1 behaviour: The first name in sorted order, as now.
+
+**Answer:** Fix, and warn on unknown names, written into S1.07
+
+**Q4 (S1.07 cmd).** S1.07, second part · The command name. FuSION picks the command from the first token before expanding it, so a line that starts with a variable never runs, although the echo shows the expanded name. No real file starts a line with a variable. The draft proposes nothing here; this question is my addition.
+
+- Expand, then dispatch (Recommended): Every token, the command name included, is expanded before dispatch, so the echo always shows what runs.
+- No variable as command: A $ in the command position is an error.
+- Keep FuSION 1 behaviour: Dispatch on the unexpanded name.
+
+**Answer:** Expand, then dispatch (Recommended), written into S1.07
+
+## 024 · Subagent prompt · Phase 1 resume message to stages 3 and 4 · 2026-11-09 15:06
+
+The stage 1 and stage 2 subagents had both finished, so the stage 3 and stage 4 subagents were resumed ([decision 0016](../decisions/0016-resume-subagents-in-pairs.md)) with the text of entry 017, word for word.
+
+## 025 · Poll · 2026-11-09 15:10
+
+The third stage 1 item poll.
+
+**Q1 (S1.08).** S1.08 · let <key> <value>. The key is expanded before FuSION checks it, so redefining $X fails with a misleading 'doesn't start with $' message; that's how the $PLOT_FILE_WO_GENE definition was lost. The first definition wins, the value is expanded when let runs, a missing value is empty, and extra tokens are silently dropped. The draft proposes taking the key literally and reporting a redefinition as an error that names the key.
+
+- Fix as proposed (Recommended): The key is taken literally. A redefinition is reported as an error naming the key, and the first value stays. The value is expanded when let runs, and a missing value is empty. Extra tokens after the value are an error too; that part is my addition.
+- Fix, later definitions win: The key is taken literally, but a redefinition replaces the value instead of being an error.
+- Keep FuSION 1 behaviour: The key is expanded first, as now.
+
+**Answer:** Fix as proposed (Recommended), written into S1.08
+
+**Q2 (S1.09).** S1.09 · #LASTGRAPHNUM. A let value of exactly #LASTGRAPHNUM becomes the id of the most recently created graph, fixed when the let runs. The real batch uses it to run fb_rch on the merged graph. Before start, FuSION reports an error but still stores the literal text #LASTGRAPHNUM. The draft proposes reporting the error and leaving the variable undefined.
+
+- Fix as proposed (Recommended): Report the error and leave the variable undefined. Otherwise #LASTGRAPHNUM still captures the latest graph's id at the moment the let runs.
+- Keep FuSION 1 behaviour: Store the literal text, as now.
+
+**Answer:** Fix as proposed (Recommended), written into S1.09
+
+**Q3 (S1.10).** S1.10 · Command echo. Before running, each line is printed to stdout in expanded form, followed by a line of 31 dashes, and flushed so it appears before the command's own output. FuSION 1's GUI builds its progress display by parsing these lines, so the format works as an interface.
+
+- Keep (Recommended): The same format. How the Spring Boot frontend tracks progress is decided in Phase 2.
+- Drop: No echo. The frontend gets progress from a channel that Phase 2 designs.
+
+**Answer:** Keep (Recommended), written into S1.10
+
+**Q4 (S1.11).** S1.11 · Dispatch and unknown commands. Command names match exactly and case-sensitively, with short aliases such as rgx, mff and sz. An unknown name prints 'Did you enter one of the following valid commands?' and the full command list, and the run carries on. What a failure does to the run is S1.28.
+
+- Keep (Recommended): Exact matching, with the same names and aliases.
+- Keep, suggest nearest name: The same, but an unknown name prints the closest valid command instead of the whole list.
+
+**Answer:** Keep (Recommended), written into S1.11
+
+## 026 · Poll · 2026-11-09 15:14
+
+The fourth stage 1 item poll.
+
+**Q1 (S1.12).** S1.12 · help and the command list. The list advertises fwd_bkwd_rch, which doesn't run. It leaves out upfx and create_up_down_file, which do, and it calls rgx's y/n tool-written flag a merge flag. The draft proposes building the list and the dispatcher from one table, so they always agree.
+
+- Fix as proposed (Recommended): One command table drives dispatch, help and the argument names. Named arguments (decision 0018) need that table anyway.
+- Keep FuSION 1 behaviour: The hand-written list, mismatches included.
+
+**Answer:** Fix as proposed (Recommended), written into S1.12
+
+**Q2 (S1.13).** S1.13 · exit. Ends the run and ignores any arguments. FuSION 1 then returns 0 whatever failed earlier; the status after a failure is S1.28. The two logger lines printed at exit come from an unused component (S1.24).
+
+- Keep (Recommended): exit ends the run, and its status reflects failures, as S1.28 decides.
+- Keep, reject arguments: The same, but exit with arguments is an error.
+
+**Answer:** Keep (Recommended), written into S1.13
+
+**Q3 (S1.14).** S1.14 · exec <shell command>. FuSION joins the rest of the line with single spaces, runs it with /bin/sh, and throws the status away. So a failing mkdir or cat is ignored, and doubled spaces inside shell quotes collapse, as in the 'pathz3 wo  FSC' timing labels. The draft proposes keeping the shell pass-through and reporting a non-zero status with the batch line number.
+
+- Fix both (Recommended): Report a non-zero status on stderr with the batch line number, and pass the rest of the line to the shell exactly as written after $ expansion, which fits the quoting you chose in S1.05. The second part is my addition.
+- Fix the status only: The draft's proposal: report a non-zero status, but the line is still rejoined with single spaces.
+- Keep FuSION 1 behaviour: The status is discarded and spaces collapse.
+
+**Answer:** Fix both (Recommended), written into S1.14
+
+**Q4 (S1.15).** S1.15 · start <inter_db_map> <exception_file> <symbol_map> <pathway_name_map>. Creates the graph manager and loads four files; a file that won't open gives only a message and an empty map. Eight commands crash if run before start, while cudf, gsea, pex and add work without it. The draft proposes keeping the four-file load and its output, and failing with a clear message when a command that needs start runs before it.
+
+- Fix as proposed (Recommended): Keep the four-file load and its output. A command that needs start fails clearly if it runs first. Under decision 0021, a named start file that can't be read stops the run before it starts.
+- Keep FuSION 1 behaviour: Those eight commands crash before start, and an unreadable file gives an empty map.
+
+**Answer:** Fix as proposed (Recommended), written into S1.15
+
+## 027 · Poll · 2026-11-09 15:18
+
+The fifth stage 1 item poll.
+
+**Q1 (S1.16).** S1.16 · Inter-database id map (start, file 1). Read as two columns, id → representative id, with later lines winning. All 17 copies in the repo are empty, so the intended content can't be checked, and mff reads the same file again with a different meaning, as a symmetric synonym list. How merging uses it is stage 2's.
+
+- Keep (Recommended): Port the two-column reader. Stage 2's review decides how merging uses the map and whether mff's second reading stays. A cross-database id map is also a natural place for other pathway sources to plug in (decision 0020).
+- Decide with stage 2: Leave this item pending until stage 2's merge items are settled.
+
+**Answer:** Keep (Recommended), written into S1.16
+
+**Q2 (S1.17).** S1.17 · Merge-exception file (start, file 2). The first token of each line joins the set of ids that are never merged. All 81 batch files build this file the same way: a shell cat of cudf's up and down lists, the source and target files, and hsa_ids_not_to_be_merged.txt.
+
+- Keep (Recommended): Port the first-token-per-line reader. Batches keep building the file as they do now.
+- Keep, add genes in memory: Also have 2.0 add cudf's up and down genes and the source and target to the set itself, as every real batch does by hand, so the cat line becomes unnecessary. Old batches still work (decision 0017), but merging then has to know the source and target.
+
+**Answer:** Keep, add genes in memory, written into S1.17
+
+**Q3 (S1.18).** S1.18 · Gene-symbol map (start, file 3). Two columns, id → display name, keeping only the first word of the name. A missing name falls back to the id. No real name contains whitespace.
+
+- Same rule as S1.19 (Recommended): Read the name the way S1.19 decides for pathway names, so both maps share one reader. On the real file the result is identical. The draft proposed keeping it as it is.
+- Keep: Port it as it is, keeping the first word of the name.
+
+**Answer:** Same rule as S1.19 (Recommended), written into S1.18
+
+**Q4 (S1.19).** S1.19 · Pathway-name map (start, file 4). Two columns, id → name, but the name is cut at its first whitespace, so 23 Reactome-style names lose their tail: 'Nectin/Necl<TAB>trans_heterodimerization' is stored as 'Nectin/Necl'. A missing name falls back to the id. The draft proposes taking the name as the rest of the line after the first tab.
+
+- Fix as proposed (Recommended): The name is the rest of the line after the first tab. Later lines win, and a missing name falls back to the id. My additions: a further tab becomes an underscore, the file's convention for spaces, so tab-separated outputs don't break, and blank lines are skipped (today they add an empty key).
+- Keep FuSION 1 behaviour: Names are cut at the first whitespace.
+
+**Answer:** Fix as proposed (Recommended), written into S1.19
+
+## 028 · Poll · 2026-11-09 15:22
+
+The sixth stage 1 item poll.
+
+**Q1 (S1.20).** S1.20 · Finding bundled helper scripts. pex and gsea each locate the binary's directory and run python3 <dir>/supporting_files/<script>.py. Linux resolves symlinks (/proc/self/exe) and macOS doesn't (_NSGetExecutablePath), and plot_po.sh is called through an absolute path written into the batch files. The draft proposes finding the install directory once at startup, resolving symlinks the same way on both systems, and using it for every bundled helper.
+
+- Fix as proposed (Recommended): One install directory, found once and in the same way on Linux and macOS, serves every bundled file. Whether any Python helpers remain is a Phase 2 question, since the backend is meant to be all C++.
+- Keep FuSION 1 behaviour: Each command finds its helper itself, differently on Linux and macOS.
+
+**Answer:** Fix as proposed (Recommended), written into S1.20
+
+**Q2 (S1.21).** S1.21 · supporting_files/config.txt. Nothing reads it. It holds settings (MODULENAME=test3, CYCLES=15, …) for the hardware-verification tool FuSION's code came from.
+
+- Drop (Recommended): Leave it out of 2.0.
+- Keep: Carry the file over unchanged.
+
+**Answer:** Drop (Recommended), written into S1.21
+
+**Q3 (S1.22).** S1.22 · node_type.txt, edge_type.txt, edge_subtype.txt and path.txt. Each maps a name to a number (phosphorylation => 1, …). No live code reads them; only the unused old GraphManager would, and through wrong paths. The subtype names that matter are hard-coded, and stages 2 and 5 specify them.
+
+- Drop (Recommended): Leave them out. The vocabulary that matters is specified in stages 2 and 5.
+- Keep as reference data: Carry them over as a record of KEGG's vocabulary.
+
+**Answer:** Drop (Recommended), written into S1.22
+
+**Q4 (S1.23).** S1.23 · supporting_files/color_files/: 22 colour palettes, colour maps and id lists. Only the disabled graph-display commands read them.
+
+- Drop (Recommended): Leave them out of 2.0.
+- Keep: Carry them over for a future graph display.
+
+**Answer (free text):** the graph display feature is actually crucial once implemented efficiently and seamlessly. need to ideate on the right way to develop this. the color files themselves are replaceable so no need to retain them. → S1.23 drop, and [decision 0022](../decisions/0022-graph-display.md)
+
+## 029 · Poll · 2026-11-09 15:27
+
+The seventh stage 1 item poll.
+
+**Q1 (S1.24).** S1.24 · Startup objects nothing uses. Before the first command, FuSION builds an expression manager, a DAG manager, a configuration object and a Z3 context. The expression manager parses a rules file from a path fixed at build time, so FuSION won't start if the source tree moves, and its lexer prints the 450 spaces at the top of every log.
+
+- Drop (Recommended): None of them in 2.0.
+- Keep: Port them as they are.
+
+**Answer:** Drop (Recommended), written into S1.24
+
+**Q2 (S1.25).** S1.25 · Debug log mylog.txt. A fixed-name log opened in the launch directory before main runs. sz and the debug traces write to it, batch files move it into the run directory with exec mv, and two runs started in one directory overwrite each other's log. upfx renames it, but crashes if used before start. The draft proposes one debug log per run with a per-run name, renamable before start.
+
+- mylog.txt in run dir (Recommended): My suggestion: if each run gets its own output directory (S1.26), the log keeps its name inside it and nothing needs renaming. This depends on S1.26.
+- Per-run name (the draft's): One debug log per run with a per-run name, which can be set before start.
+- Keep FuSION 1 behaviour: mylog.txt in the launch directory.
+
+**Answer:** Per-run name (the draft's), written into S1.25
+
+**Q3 (S1.26).** S1.26 · Outputs land in the launch directory. FuSION never changes directory, so fixed-name outputs (mylog.txt, PO.dat, limits_timefile.txt, the SMT dumps, the fb_rch files, edges_merged_filename) are written wherever it was started, and batch files move them afterwards with exec mv (8 lines in the real batch). Two runs started in one directory overwrite each other. The draft proposes one output directory per run for every fixed-name output, with each stage keeping its file names.
+
+- Fix as proposed (Recommended): One output directory per run holds every fixed-name output. It is also where partial runs (decision 0019) find saved steps. Phase 2 designs how a batch names that directory.
+- Keep FuSION 1 behaviour: The launch directory, with exec mv afterwards.
+
+**Answer:** Fix as proposed (Recommended), written into S1.26
+
+**Q4 (S1.27).** S1.27 · Console number format. Every number printed to the console shows exactly two decimals, so a value below 0.005 shows as 0.00. Output files keep C++'s default of six significant digits unless a command sets its own.
+
+- Keep (Recommended): Two decimals on the console, as now.
+- Fix, full precision: Print numbers on the console with enough digits to be exact.
+
+**Answer:** Fix, full precision, written into S1.27
+
+## 030 · Poll · 2026-11-09 15:33
+
+The eighth stage 1 item poll.
+
+**Q1 (S1.28).** S1.28 · Failures and exit status. Most failures print a message, on stdout or stderr inconsistently, and the run carries on. A few call exit(1). A blank numeric argument aborts the run with status 134 and no line number. Otherwise the status is always 0, and the GUI ignores it. The draft proposes catching errors per command, reporting each with its batch line number, and exiting non-zero if anything failed.
+
+- Fix as proposed (Recommended): Each command's errors are caught and reported on stderr with the batch line number, and the exit status is non-zero if anything failed.
+- Keep FuSION 1 behaviour: Mixed messages, crashes on bad numbers, and status 0.
+
+**Answer:** Fix as proposed (Recommended), written into S1.28
+
+**Q2 (S1.28 stop).** S1.28, second part · After a command fails, does the batch stop or carry on? FuSION 1 carries on, and the draft leaves this open. A failing exec counts as a failure (S1.14).
+
+- Stop at first failure (Recommended): Later steps usually need earlier ones, so carrying on can waste hours on bad input. The run exits non-zero at once, and partial runs (decision 0019) let you restart from the last good step.
+- Carry on, fail at the end: Run every line, then exit non-zero if any failed.
+
+**Answer:** Stop at first failure (Recommended), written into S1.28
+
+**Q3 (S1.29).** S1.29 · Compile-time flags. Ten flags are fixed in the Makefile (DISCARD_INDIRECT_EDGES, DEBUG_FLAG and others); two do nothing, and no run output records them. The build also has no -O, so FuSION's own code runs unoptimised (the build is a Phase 2 matter). The draft proposes that each owning stage documents its flag's fixed value as ordinary behaviour, and that the two flags with no effect are dropped.
+
+- Fix as proposed (Recommended): Each flag's behaviour is specified, as fixed behaviour, in the stage that owns it, and the two that do nothing go.
+- Make them run-time options: Each flag becomes a setting a batch can change, recorded in the run's output.
+
+**Answer (free text):** some flags are relevant to the front end user, some flags are meant for debug. both should be treated differently. the 2 flags that do nothing can go (tell me which ones they are)
+
+S1.29 stays pending. Claude named the two flags in chat, after checking every compiled file and the `DSManagers` build: `COMPUTE_MINCUT_EDGES_FLAG`, whose only test is inside `#if 0`, and `QE`, which no file compiled with it tests, while the `DSManagers` code that does test it is built without it (`DSManagers/Makefile.include:28-30`). Claude also gave a provisional split of the other eight and asked about their treatment in entry 031.
+
+**Q4 (Graph view).** When should we work out how to build the graph display (decision 0022)?
+
+- After stages 6 and 8 (Recommended): Those stages specify today's psp and pex plots and the GUI, so the work starts from what exists, and it then feeds Phase 2.
+- Now: Before the stage 2 review starts.
+
+**Answer:** After stages 6 and 8 (Recommended) → [decision 0022](../decisions/0022-graph-display.md)
+
+## 031 · Poll · 2026-11-09 15:37
+
+Asked after Claude named the two flags that do nothing (entry 030, Q3) and gave a provisional split of the other eight: debug (`DEBUG_FLAG`, `ASSERT_FLAG`), and likely to change results (`DISCARD_INDIRECT_EDGES`, `DUMMY_EDGE_FLAG`, `DUP_CHECK_FLAG_SET`, `OPT_GAP_HEUR_FLAG`, and the two mincut flags, whose reachability stages 4 and 5 must show).
+
+**Q1 (S1.29).** S1.29 · QE and COMPUTE_MINCUT_EDGES_FLAG go. How should the two kinds of remaining flag be treated? Each flag's kind, user-facing or debug, is confirmed in the stage that owns it (2, 4 or 5).
+
+- Run-time + debug switch (Recommended): A flag that changes results becomes a setting a batch or the frontend can change, and its value is recorded in each run's output. Debug flags (debug-log traces, assertions) sit behind one debug option that the frontend doesn't show.
+- Run-time + build-time debug: Flags that change results become run-time settings, as above, but debug flags stay compile-time, for developers only.
+
+**Answer:** Run-time + debug switch (Recommended), written into S1.29. All 29 stage 1 items are now decided.
