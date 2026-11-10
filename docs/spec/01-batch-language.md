@@ -2,7 +2,7 @@
 
 ## Scope
 
-This stage covers how the `fusion` binary starts and reads its commands. That means the command line (`-b <file>`, `-h`, `-d`), the `sysbio>` prompt, how a batch line is split into tokens, `;;` comments, `let` variables and `$` expansion, the command echo, dispatch and unknown commands, and the script commands `start`, `exec`, `exit` and `help`/`h`. It also covers the four files `start` loads, the objects and global defaults `main` sets up before the first command (`Linux/src/main.cc:1046-1146` and the `GraphManagerNew` constructor at `Linux/src/GraphManagerNew.cc:7988-8180`), how the binary finds its bundled scripts (one of the two places where `macOS/src/main.cc` differs), and the non-script files in `Linux/supporting_files/`. Stage 2 takes over at the first pipeline command. This stage describes how `add`, `rgx`, `mff`, `wgx`, `upfx` and `sz` are dispatched; what they do is stage 2's, and so is how merging uses the maps `start` loads. Stages 3, 6 and 7 own the commands and helper scripts that this stage only dispatches or locates (`cudf`, `psp`, `pex`, `gsea`, `plot_po.sh`). Stage 8 owns the GUI, which writes the batch files and reads the echo described here. In quoted file lines, `<TAB>` stands for a tab character. "The real batch" means `runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr025/egfr_cxcl8_fsc_jun_b10_nr8_er8_gsea_fdr025.batch` (273 lines), and its console log is `run_console.log` in the same directory. "The 81 batch files" means the 78 `*.batch` files under `runs/` and `macOS/model_example/` plus the three GUI scripts `Linux/output_script.txt`, `Linux/script.txt` and `Linux/advtempscript.txt`.
+This stage covers how the `fusion` binary starts and reads its commands. That means the command line (`-b <file>`, `-h`, `-d`), the `sysbio>` prompt, how a batch line is split into tokens, `;;` comments, `let` variables and `$` expansion, the command echo, dispatch and unknown commands, and the script commands `start`, `exec`, `exit` and `help`/`h`. It also covers the four files `start` loads, the objects and global defaults `main` sets up before the first command (`Linux/src/main.cc:1046-1146` and the `GraphManagerNew` constructor at `Linux/src/GraphManagerNew.cc:7988-8181`), how the binary finds its bundled scripts (one of the two places where `macOS/src/main.cc` differs), and the non-script files in `Linux/supporting_files/`. Stage 2 takes over at the first pipeline command. This stage describes how `add`, `rgx`, `mff`, `wgx`, `upfx` and `sz` are dispatched; what they do is stage 2's, and so is how merging uses the maps `start` loads. Stages 3, 6 and 7 own the commands and helper scripts that this stage only dispatches or locates (`cudf`, `psp`, `pex`, `gsea`, `plot_po.sh`). Stage 8 owns the GUI, which writes the batch files and reads the echo described here. In quoted file lines, `<TAB>` stands for a tab character. "The real batch" means `runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr025/egfr_cxcl8_fsc_jun_b10_nr8_er8_gsea_fdr025.batch` (273 lines), and its console log is `run_console.log` in the same directory. "The 81 batch files" means the 78 `*.batch` files under `runs/` and `macOS/model_example/` plus the three GUI scripts `Linux/output_script.txt`, `Linux/script.txt` and `Linux/advtempscript.txt`.
 
 ## Items
 
@@ -30,7 +30,7 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
 
 ### S1.03 · Interactive prompt (`sysbio> `) and `-d`
 
-- **FuSION 1:** `Linux/src/main.cc:1083-1089` (`-d`), `1118` and `1183-1187` (the prompt); the `if (!b_mode)` branch in every command block, e.g. `main.cc:1345-1360` (rgx), `5663-5677` (psp), `5701-5714` (pex), `5776-5785` (gsea); `Linux/src/GraphManagerNew.cc:7994-8158` (prompts inside `start`)
+- **FuSION 1:** `Linux/src/main.cc:1083-1089` (`-d`), `1118` and `1183-1187` (the prompt); the `if (!b_mode)` branch in every command block, e.g. `main.cc:1345-1360` (rgx), `5664-5678` (psp), `5702-5715` (pex), `5777-5786` (gsea); `Linux/src/GraphManagerNew.cc:7994-8158` (prompts inside `start`)
 - **What it does:** With batch mode off, each loop iteration prints `sysbio> ` and reads one whitespace-delimited word with `cin >> command`. The command then reads its own arguments from `cin`, mostly with prompts of its own, such as `Tool-written: (y/n): ` and `Split node threshold: ` for rgx. In this mode:
   - there is no `$` expansion and no `;;` comment;
   - `let` is an unknown command, because its handler sits inside the batch-only branch (`main.cc:1249`);
@@ -57,11 +57,11 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
 
 ### S1.05 · Splitting lines into tokens
 
-- **FuSION 1:** `Linux/src/main.cc:1151-1181`. Commands read `token_cmd[k]` directly, e.g. `main.cc:1348`, `1363-1364`, `5680-5685`. `main.cc:4534-4554` and `5723-5724` test `token_cmd.size()`.
+- **FuSION 1:** `Linux/src/main.cc:1151-1181`. Commands read `token_cmd[k]` directly, e.g. `main.cc:1348`, `1363-1364`, `5681-5686`. `main.cc:4534-4554` and `5724-5725` test `token_cmd.size()`.
 - **What it does:** Each line is split with `strtok(line, " ")`, so the space character is the only delimiter. Runs of spaces collapse, and leading and trailing spaces are dropped. There is no quoting and no escaping, so a token can never contain a space. Tabs and `\r` are ordinary characters and stay inside tokens. The tokens go into a `vector<string> token_cmd(1000000)` that is allocated fresh for every line. `token_cnt` counts the real tokens, and every other slot is an empty string, so a command that reads an argument the line did not supply gets `""`. A real case of a tab staying inside a token is `Linux/output_script.txt:306`, `let $PO_SEARCH_MODE_WITHOUT_FSC 0<TAB>`, which defines the value as `0` followed by a tab.
 - **Problems:**
   - Avoidable cost. One million strings are built and freed for every line, blank and comment lines included, because the vector is allocated at `main.cc:1156`, before the blank and comment checks. A micro-benchmark of that one statement, built at -O0 like FuSION (its Makefile passes no `-O` flag), took 12.5 ms and 32 MB per line. That is about 3.4 s for the 273-line real batch. The longest line in all 81 batch files has 81 tokens.
-  - `token_cmd.size()` is always 1,000,000, so no command can tell a missing argument from an empty one. pex's `if (token_cmd.size() > 13)` (`main.cc:5723`) and pathz3's `cmd_index < (int)token_cmd.size()` (`main.cc:4534-4554`) are always true, and no command checks `token_cnt`. An example of the consequence: if an `mff` line's list of map files lacks its `-1` terminator, the loop at `main.cc:2386-2399` walks the empty slots. It calls `read_naming_map("")` and appends an empty map about a million times, then reads past the end of the vector.
+  - `token_cmd.size()` is always 1,000,000, so no command can tell a missing argument from an empty one. pex's `if (token_cmd.size() > 13)` (`main.cc:5724`) and pathz3's `cmd_index < (int)token_cmd.size()` (`main.cc:4534-4554`) are always true, and no command checks `token_cnt`. An example of the consequence: if an `mff` line's list of map files lacks its `-1` terminator, the loop at `main.cc:2386-2399` walks the empty slots. It calls `read_naming_map("")` and appends an empty map about a million times, then reads past the end of the vector.
   - Tabs and `\r` are not delimiters. In a batch file with CRLF line endings every last token would end in `\r`, so `exit\r` would not be recognized and the run would fall off the end of the file (S1.04). None of the 81 batch files contains `\r`; three of them (the GUI scripts) contain the trailing tab quoted above.
   - `strtok` writes into the `std::string` buffer through a `const_cast` of `c_str()` (`main.cc:1154-1155`). That is undefined behaviour in principle, although it works with libstdc++.
 - **Proposed call:** fix. Treat any run of spaces and tabs, plus a trailing `\r`, as one delimiter. Size the token list to the line, and give each command the real token count so that a missing argument can be told from an empty one. Keep the rule that there is no quoting.
@@ -110,7 +110,7 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
 
 ### S1.09 · `#LASTGRAPHNUM`
 
-- **FuSION 1:** `Linux/src/main.cc:1263-1273`; `Linux/src/GraphManagerNew.cc:48` (static `graph_id_count = 0`), with the increments at e.g. `GraphManagerNew.cc:8405` and `8451` and the decrements at `9737` and `10101`
+- **FuSION 1:** `Linux/src/main.cc:1263-1273`; `Linux/src/GraphManagerNew.cc:48` (static `graph_id_count = 0`), with the increments at e.g. `GraphManagerNew.cc:8416` and `8462` and the decrements at `9748` and `10112`
 - **What it does:** If a `let` value is exactly `#LASTGRAPHNUM`, it is replaced by `graph_id_count`. This is a static counter that starts at 0 and is incremented before each new graph takes its id, so the first graph is 1. It is decremented again when a merge is abandoned. The result is the id of the most recently created graph, captured when the `let` runs. Real use: line 185, `let $MERGED_GRAPH_NUM #LASTGRAPHNUM`, comes after `rgx`, so that phase 2 restarts `fb_rch` from the merged graph: `fb_rch 84 hsa1956 -1 hsa3576 -1 -1 10 0` (`run_console.log:305`). A related convention belongs to stages 2, 4 and 5: graph id `0` given to `sz`, `fb_rch` or `pathz3` means "the latest graph" (`main.cc:1594-1595`, `2119-2120`, `4388-4389`). `#LASTGRAPHNUM` is the only `#` directive, and it is recognized nowhere but as a `let` value.
 - **Problems:** Before `start`, when `graph_man == NULL`, stderr gets `Graph Manager not created yet.  Ignoring LASTGRAPHNUM directive.`, but the literal text `#LASTGRAPHNUM` is still stored as the value. It is then substituted wherever the variable is used.
 - **Proposed call:** fix. When there is no graph manager, report the error and leave the variable undefined instead of storing the literal text. Keep the snapshot semantics.
@@ -133,7 +133,7 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
 
 ### S1.11 · Command dispatch and unknown commands
 
-- **FuSION 1:** `Linux/src/main.cc:1305-5841` (the if/else chain), `main.cc:7938-7943` (the fallback)
+- **FuSION 1:** `Linux/src/main.cc:1305-5842` (the if/else chain), `main.cc:7939-7944` (the fallback)
 - **What it does:** The unexpanded first token is compared, exactly and case-sensitively, against a chain of names in this order: `start`, `exec`, `unique_prefix`|`upfx`, `read_graph_xml`|`rgx`, `size`|`sz`, `fb_rch`, `merge_from_file`|`mff`, `write_graph_xml`|`wgx`, `create_up_down_file`|`cudf`, `get_path_with_z3`|`pathz3`, `plot_solution_paths`|`psp`, `plot_explanation`|`pex`, `gsea_select_pathways`|`gsea`, `help`|`h`, `exit`, `add`. `let` is handled before the chain, in batch mode only. Any other name prints `Did you enter one of the following valid commands?` and the full listing (S1.12), and the run carries on with the next line. Command names inside `#if 0` regions are out of scope.
 - **Problems:** An unknown command, including a typo, neither stops the run nor changes the exit status (S1.28). The listing advertises `fwd_bkwd_rch`, which the chain does not accept (S1.12).
 - **Proposed call:** keep. Exact matching on the first token, with the aliases above. The alias mismatch is S1.12 and the failure policy is S1.28.
@@ -141,7 +141,7 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
 
 ### S1.12 · `help` / `h` and the command listing
 
-- **FuSION 1:** `Linux/src/main.cc:5831-5834`, `main.cc:889-911` (`display_commands`)
+- **FuSION 1:** `Linux/src/main.cc:5832-5835`, `main.cc:889-911` (`display_commands`)
 - **What it does:** `help` or `h` prints a blank line, `Commands available in this (debloated) build: ` and another blank line. It then prints one line per command, with argument placeholders separated by tabs (e.g. `start <TAB><inter_db_map> <TAB><exception_merge_file> <TAB><hsa_to_symbol_map> <TAB><hsa_path_to_name_map>`), and ends with `exit`. The same listing follows the usage text (S1.02) and every unknown command (S1.11).
 - **Problems:**
   - `fwd_bkwd_rch (or fb_rch)` (`main.cc:904`) advertises a name the dispatcher rejects, since only `fb_rch` is accepted (`main.cc:2109`).
@@ -152,7 +152,7 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
 
 ### S1.13 · `exit`
 
-- **FuSION 1:** `Linux/src/main.cc:5836-5839`, `main.cc:7946`; `Linux/DSManagers/LogManager/LogManager.cc:16-23` (the destructor of the static logger)
+- **FuSION 1:** `Linux/src/main.cc:5837-5840`, `main.cc:7947`; `Linux/DSManagers/LogManager/LogManager.cc:16-23` (the destructor of the static logger)
 - **What it does:** `exit` ends the loop, ignoring any arguments. FuSION closes the debug log (S1.25) and returns 0 from `main`. On the way out, the static logger's destructor prints `Number of Log entries made totally:0`, a blank line, ` LogManager Object is deleted ` and blank lines; this is the real tail of `run_console.log`. The graph manager is never deleted, which is harmless at exit.
 - **Problems:** The exit status is 0 whatever failed earlier (S1.28). The two logger lines are noise from a component nothing uses (S1.24).
 - **Proposed call:** keep. End the run with status 0 when nothing failed; the status after a failure is S1.28.
@@ -171,7 +171,7 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
 
 ### S1.15 · `start <inter_db_map> <exception_file> <symbol_map> <pathway_name_map>`
 
-- **FuSION 1:** `Linux/src/main.cc:1305-1317`; `Linux/src/GraphManagerNew.cc:7967-7986` (`tokenize_cmd`), `GraphManagerNew.cc:7988-8180` (the constructor)
+- **FuSION 1:** `Linux/src/main.cc:1305-1317`; `Linux/src/GraphManagerNew.cc:7967-7986` (`tokenize_cmd`), `GraphManagerNew.cc:7988-8181` (the constructor)
 - **What it does:** `start` creates the graph manager that every graph command needs. The handler passes `[arg1, arg2 + " -1", arg3, arg4]` to the `GraphManagerNew` constructor, which:
   1. reads arg1 into `all_id_map` (S1.16);
   2. splits `arg2 + " -1"` on spaces, prints the tokens between two lines of 28 dashes, and reads each token up to `-1` as an exception file (S1.17). arg2 is one token, so batch mode takes exactly one exception file; an arg2 of `-1`, or an empty arg2, means none;
@@ -181,7 +181,7 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
 
   A file that cannot be opened produces only a message and an empty map. The message goes to stderr for files 1, 3 and 4, but to stdout for the exception file (`GraphManagerNew.cc:8104`). Real output, `run_console.log:16-22`: the echo, then `----------------------------`, `/home/…/run/exception_file.txt -1 `, `----------------------------`, `6334` and `2349`.
 - **Problems:**
-  - No command checks that `start` has run. Eight commands use `graph_man` without a NULL check, at their first use: upfx (`main.cc:1338`), rgx (`1378`), sz (`1595`), fb_rch (`2120`), mff (`2389`), wgx (`2594`), pathz3 (`4389`) and psp (`5687`). Before `start` they crash. cudf, gsea, pex, add, exec, let, help and exit work without it, and the real batch runs `cudf` (line 145) before `start` (line 160).
+  - No command checks that `start` has run. Eight commands use `graph_man` without a NULL check, at their first use: upfx (`main.cc:1338`), rgx (`1378`), sz (`1595`), fb_rch (`2120`), mff (`2389`), wgx (`2594`), pathz3 (`4389`) and psp (`5688`). Before `start` they crash. cudf, gsea, pex, add, exec, let, help and exit work without it, and the real batch runs `cudf` (line 145) before `start` (line 160).
   - Calling `start` twice leaks the first manager and starts with fresh maps, but the static graph counter is not reset (S1.09).
   - The ` -1` sentinel is a leftover from the interactive prompt for several files; batch mode cannot pass two exception files.
   - The two sizes are printed without labels.
@@ -190,12 +190,12 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
 
 ### S1.16 · Inter-database id map (`start` argument 1)
 
-- **FuSION 1:** `Linux/src/GraphManagerNew.cc:8006-8022` (the reader), `8691-8722` (`get_rep_id_for_id`, `get_all_ids_for_rep_id`); `GraphManagerNew.cc:8296-8330` (`read_naming_map`, mff's second reading of the same file)
+- **FuSION 1:** `Linux/src/GraphManagerNew.cc:8006-8022` (the reader), `8702-8733` (`get_rep_id_for_id`, `get_all_ids_for_rep_id`); `GraphManagerNew.cc:8307-8341` (`read_naming_map`, mff's second reading of the same file)
 - **What it does:** For each line, `>> id >> repid` reads the first two whitespace-separated tokens and sets `all_id_map[id] = repid`. A later line with the same id wins, extra tokens are ignored, and a blank line adds the entry `""` → `""`. The map's size is not printed. Stage 2 uses the map when merging nodes.
 - **Problems:**
   - No real example exists. All 17 copies of `inter_db_mapping_file` in the repo are 0 bytes, including the one in every EGFR run's `inputs/`, so the intended contents cannot be checked against data.
   - The batch passes the same file to `mff` (line 171: `mff $GSEA_KGML_LIST xml $NODE_SPLIT_THRESHOLD n $INTER_DB_MAP_FILE -1`). mff parses it again with `read_naming_map`, as a symmetric synonym map that can hold several values per id (it inserts both `nmap[a] ∋ b` and `nmap[b] ∋ a`). So one file is parsed twice, with two different meanings. Stage 2 owns mff's side.
-  - `get_all_ids_for_rep_id` scans the whole map on every call (`GraphManagerNew.cc:8710-8722`). Its callers belong to stage 2.
+  - `get_all_ids_for_rep_id` scans the whole map on every call (`GraphManagerNew.cc:8721-8733`). Its callers belong to stage 2.
 - **Proposed call:** keep. Port the two-column reader as it is; stage 2 decides how merging uses the map and whether mff's second reading stays.
 - **Decision:** keep (prompt log entry 027)
 
@@ -209,16 +209,16 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
 
 ### S1.18 · Gene-symbol (display-name) map (`start` argument 3)
 
-- **FuSION 1:** `Linux/src/GraphManagerNew.cc:8112-8144`; lookups at `GraphManagerNew.cc:8724-8742` and `8757-8775`, and at `Linux/src/XMLParser.cc:1004`, `1052` and `1258`
-- **What it does:** For each line, `>> hsa_id >> name` sets `kegg_hsa_id_to_display_name_map[hsa_id] = name`, later lines winning, and the map's size is printed. The real `inputs/hsa_to_gene_symbol_map.txt` has 6334 lines such as `hsa7791<TAB>ZYX`, with 6334 distinct ids, and is printed as `6334`. Lookups through `get_display_names_from_rep_id` fall back to the id itself when the name is missing or empty (`GraphManagerNew.cc:8766-8770`).
-- **Problems:** Only the first whitespace-delimited word of a name is kept; no name in the real file contains whitespace. Other lookups use `operator[]`, which inserts `""` for an unknown id. The comment at `GraphManagerNew.cc:8760-8765` connects this to a segfault when one session reads two graphs; stage 2 owns that.
+- **FuSION 1:** `Linux/src/GraphManagerNew.cc:8112-8144`; lookups at `GraphManagerNew.cc:8735-8753` and `8768-8786`, and at `Linux/src/XMLParser.cc:1004`, `1052` and `1258`
+- **What it does:** For each line, `>> hsa_id >> name` sets `kegg_hsa_id_to_display_name_map[hsa_id] = name`, later lines winning, and the map's size is printed. The real `inputs/hsa_to_gene_symbol_map.txt` has 6334 lines such as `hsa7791<TAB>ZYX`, with 6334 distinct ids, and is printed as `6334`. Lookups through `get_display_names_from_rep_id` fall back to the id itself when the name is missing or empty (`GraphManagerNew.cc:8777-8781`).
+- **Problems:** Only the first whitespace-delimited word of a name is kept; no name in the real file contains whitespace. Other lookups use `operator[]`, which inserts `""` for an unknown id. The comment at `GraphManagerNew.cc:8771-8776` connects this to a segfault when one session reads two graphs; stage 2 owns that.
 - **Proposed call:** keep. Port the two-column reader, the first-word name and the fallback to the id.
 - **Decision:** read names by the same rule as S1.19, so both maps share one reader; the fallback to the id stays (prompt log entry 027)
 
 ### S1.19 · Pathway-name map (`start` argument 4)
 
-- **FuSION 1:** `Linux/src/GraphManagerNew.cc:8146-8175`; lookup in `get_pathway_names_from_path_id`, `GraphManagerNew.cc:8777-8788`
-- **What it does:** For each line, `>> path_id >> path_name` sets `pathway_name_map[path_id] = path_name`, later lines winning, and the map's size is printed. Line 1 of the real `inputs/hsa_path_to_path_name_map.txt` is `path:hsa01100<TAB>Metabolic_pathways`; names use `_` in place of spaces. An id with no entry falls back to the id itself. The names go into stage 2's merged-edge listings and other outputs (e.g. `GraphManagerNew.cc:10809-10829`).
+- **FuSION 1:** `Linux/src/GraphManagerNew.cc:8146-8175`; lookup in `get_pathway_names_from_path_id`, `GraphManagerNew.cc:8788-8799`
+- **What it does:** For each line, `>> path_id >> path_name` sets `pathway_name_map[path_id] = path_name`, later lines winning, and the map's size is printed. Line 1 of the real `inputs/hsa_path_to_path_name_map.txt` is `path:hsa01100<TAB>Metabolic_pathways`; names use `_` in place of spaces. An id with no entry falls back to the id itself. The names go into stage 2's merged-edge listings and other outputs (e.g. `GraphManagerNew.cc:10820-10840`).
 - **Problems:**
   - A name is cut at its first whitespace. 23 of the 2822 lines contain a second tab inside the name. For example, line 490, `pathway_420597<TAB>Nectin/Necl<TAB>trans_heterodimerization`, is stored as `Nectin/Necl`. All 23 have Reactome-style `pathway_…` ids; none of the 479 `path:hsa…` rows is affected.
   - The 2822 lines give only 2349 keys. 121 keys repeat, all with identical values. The last two lines, one holding only a tab and one empty, both add the key `""`.
@@ -228,7 +228,7 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
 
 ### S1.20 · Finding the bundled helper scripts (Linux and macOS differ)
 
-- **FuSION 1:** Linux `Linux/src/main.cc:5727-5739` (pex) and `5795-5807` (gsea); macOS `macOS/src/main.cc:31`, `5755-5766` and `5822-5833`; `Linux/include/macros.h:30`
+- **FuSION 1:** Linux `Linux/src/main.cc:5728-5740` (pex) and `5796-5808` (gsea); macOS `macOS/src/main.cc:31`, `5756-5767` and `5823-5834`; `Linux/include/macros.h:30`
 - **What it does:** pex and gsea each work out `exe_dir`, the directory of the running binary, and then run `python3 "<exe_dir>/supporting_files/<script>.py" …` through `system()`.
   - **Linux:** `readlink("/proc/self/exe", buf, 4095)`, then NUL-terminate. `exe_dir` is everything before the last `/`. `/proc/self/exe` gives the real path with symlinks resolved.
   - **macOS:** `_NSGetExecutablePath(buf, &size) == 0` (with `#include <mach-o/dyld.h>`), then the same split. This returns the path the binary was started by, which may be a symlink or a relative path (for `./fusion`, `exe_dir` becomes `.`). Symlinks are not resolved. So if `fusion` is a symlink in another directory, macOS looks for `supporting_files/` next to the link, while Linux looks next to the real binary.
@@ -301,7 +301,7 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
 
 ### S1.25 · Debug log `mylog.txt`
 
-- **FuSION 1:** `Linux/src/main.cc:42-51`, `1331-1340` (upfx), `1611-1613` and `1635-1641` (sz, under `DEBUG_FLAG`), `7946`; 75 `debug_log <<` statements outside comments and `#if 0` regions in `Linux/src/GraphManagerNew.cc` (e.g. the BFS and mincut traces at `2516-2678` and `11975-12441`)
+- **FuSION 1:** `Linux/src/main.cc:42-51`, `1331-1340` (upfx), `1611-1613` and `1635-1641` (sz, under `DEBUG_FLAG`), `7947`; 75 `debug_log <<` statements outside comments and `#if 0` regions in `Linux/src/GraphManagerNew.cc` (e.g. the BFS and mincut traces at `2516-2678` and `11986-12452`)
 - **What it does:** A global `ofstream debug_log("mylog.txt")` is opened in the launch directory during static initialization, before `main` runs, truncating any existing file. `sz` and the debug traces write to it when the build defines `DEBUG_FLAG` (S1.29). `upfx <prefix>` closes it and opens `<prefix>_mylog.txt`; upfx's other effect is stage 2's. `exit` closes it. Real content (`run/mylog.txt`, 472 bytes) begins `Number of nodes: 1156 (972 genes, 96 complexes, 88 compounds, 0 others)`, then `Number of edges: 2529`. At the end, batch files move it with `exec mv mylog.txt $WRITE_DIR/mylog.txt` (line 271).
 - **Problems:**
   - Because the name is fixed and the file lives in the launch directory, two runs started there overwrite each other's log. The sweep launcher starts each job in its own directory for this reason (see the `run_sweep.sh` header). Stray empty logs sit in the repo: `FuSION/mylog.txt` and `Linux/mylog.txt`, both 0 bytes.
@@ -330,7 +330,7 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
 
 ### S1.28 · Failure handling and exit status
 
-- **FuSION 1:** `Linux/src/main.cc:1148-7944` (there is no `try` around dispatch); `main.cc:4392-4395`, plus 27 `exit(1)` calls outside comments and `#if 0` regions in `Linux/src/GraphManagerNew.cc` (e.g. `4094`, `4116`, `4249`); number parsing that can throw, throughout the live command blocks (e.g. `main.cc:1364`, `2360`)
+- **FuSION 1:** `Linux/src/main.cc:1148-7945` (there is no `try` around dispatch); `main.cc:4392-4395`, plus 27 `exit(1)` calls outside comments and `#if 0` regions in `Linux/src/GraphManagerNew.cc` (e.g. `4094`, `4116`, `4249`); number parsing that can throw, throughout the live command blocks (e.g. `main.cc:1364`, `2360`)
 - **What it does:** Most failures print a message, inconsistently on stdout or stderr, and the batch carries on with the next line. Examples are unknown commands (S1.11), unreadable `start` files (S1.15) and failing `exec` lines (S1.14). Some errors call `exit(1)` at once, such as pathz3's `No such graph` (`main.cc:4392-4395`). The live command blocks parse numbers with `stoi`, `stof` or `stoul` 24 times, and only the 4 optional pathz3 arguments are inside a `try`/`catch` (`main.cc:4534-4554`). An empty or non-numeric value for a numeric argument, which an empty-valued variable produces (S1.07), throws `std::invalid_argument`. Nothing catches it, so `std::terminate` aborts the run with status 134. Otherwise the status is 0: all four sweep runs ended with `exit=0` (`sweep_status.log`). The GUI ignores the status and always reports "Execution Completed" (`Linux/frontend/src/IdEntryPanel.java:575-583`).
 - **Problems:**
   - The exit status cannot tell a run that partly failed from a clean one. `RUNNING.md:40-42` documents one such silent exit-0 failure.
