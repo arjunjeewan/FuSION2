@@ -1,6 +1,6 @@
 # 0017 · Compatibility with FuSION 1 batch files
 
-- **Status:** Accepted. It applies because [decision 0018](0018-batch-interface.md) keeps the batch language.
+- **Status:** Accepted. It applies because [decision 0018](0018-batch-interface.md) keeps the batch language. Amended by [decision 0023](0023-results-may-change-where-improved.md): results may also change where 2.0 improves on FuSION 1.
 - **Date:** 2026-11-09
 - **Asked in:** prompt log entry 018, Q2
 

@@ -1,6 +1,6 @@
 # 0016 · Resuming the Phase 1 subagents
 
-- **Status:** Accepted
+- **Status:** Accepted. For stages 5 to 8, replaced by [decision 0025](0025-fresh-subagents-stages-5-to-8.md).
 - **Date:** 2026-11-09
 - **Asked in:** prompt log entry 016, Q2
 

@@ -781,3 +781,324 @@ Asked after Claude named the two flags that do nothing (entry 030, Q3) and gave 
 - Run-time + build-time debug: Flags that change results become run-time settings, as above, but debug flags stay compile-time, for developers only.
 
 **Answer:** Run-time + debug switch (Recommended), written into S1.29. All 29 stage 1 items are now decided.
+
+## 032 · Poll · 2026-11-09 15:41
+
+Asked after stage 1 was fully decided. Claude proposed two local commits by concern, (1) "Set up Phase 1 and correct decision 0004" (decisions 0007 to 0016, the 0004 fix, their index rows, log entries 004 to 017) and (2) "Review spec stage 1: batch language" (the stage 1 spec, decisions 0017 to 0022, their index rows, log entries 018 to 031), with the unreviewed stage 2 draft left out.
+
+**Q1 (Commit).** May I commit the reviewed work locally, as described above? The unreviewed stage 2 draft stays out either way.
+
+- Two commits (Recommended): 'Set up Phase 1 and correct decision 0004', then 'Review spec stage 1: batch language', each ending with a Co-Authored-By: Claude line. The shared log and index are split at the stage 1 boundary.
+- One commit: Everything reviewed in a single commit, 'Phase 1 setup and spec stage 1 review'.
+- Show me the diff first: I print the full diff of the tracked files and list the new files, then ask again.
+
+**Answer:** Two commits (Recommended). This entry itself is left for the next commit.
+
+## 033 · Poll · 2026-11-10 04:18
+
+The first stage 2 item poll (`docs/spec/02-graph-input-and-merge.md`). Before polling, Claude checked 98 of the draft's code citations against FuSION 1 and recomputed its headline counts, then corrected three slips: the RAS-trap relation is the 81st in file order, not the 80th (S2.03); a citation should read `GraphManagerNew.cc:8736`, not `8735` (S2.15); and S2.10 now cites `XMLParser.cc:1476-1478`, where an edge is marked undirected.
+
+**Q1 (S2.01).** S2.01 · Graph store and ids. Every graph gets an integer id from one counter, and 0 means the latest graph. Node and edge ids are session-wide, so the same gene has a different node id in every graph. Nothing is ever freed: the 163-pathway build keeps 162 intermediate copies. Genesis records are written but never read. The draft proposes keeping integer graph ids and 0 for the latest, freeing merge intermediates and dropping genesis records.
+
+- Fix as proposed (Recommended): Integer graph ids and 0 for the latest stay. Merge intermediates are freed, and genesis records go.
+- Keep FuSION 1 behaviour: Keep every intermediate graph and the genesis records.
+
+**Answer:** Fix as proposed (Recommended), written into S2.01
+
+**Q2 (S2.02).** S2.02 · Node record. A node holds a session-wide id, its key (rep_id), its member ids, its KGML type, a complex's components, display names, in- and out-edge lists, and three fields no stage-2 code fills (description, compartment, pathways). Each graph keeps insert-only maps from key to node and from id to key. The draft found no problems beyond accessors that copy whole lists.
+
+- Keep (Recommended): Port the record as described. Accessors that don't copy are an implementation detail. The unfilled compartment field may serve a future location check.
+- Keep only filled fields: Leave out description, compartment and pathways, which nothing in stage 2 fills.
+
+**Answer:** Keep (Recommended), written into S2.02
+
+**Q3 (S2.03).** S2.03 · Looking up an id. An id resolves to the first node that registered it. In the old master, HRAS resolves to the node labelled RRAS2, which is the RAS trap. In raw merges every id sits in exactly one node, but that node can be a whole family (HRAS → a 6-gene node, EGF → a 52-gene node), and nothing says so. The draft proposes keeping the lookup but reporting the node's members whenever an id belongs to several nodes or to a node with other members.
+
+- Fix as proposed (Recommended): Keep the lookup, and report the members whenever an id lands in a node with other genes or in several nodes.
+- Fix, refuse ambiguous ids: Also stop the run when a source, target, FSC or constraint id belongs to several nodes, so the user must choose.
+- Keep FuSION 1 behaviour: First claim wins, silently.
+
+**Answer:** Fix as proposed (Recommended), written into S2.03
+
+**Q4 (S2.04).** S2.04 · Edge record. An edge holds its id, its endpoints, its KGML type, an ordered subtype list (possibly including dummy_u_to_d), its pathways and an experiment score. Two edges are the same when source, target, type and the exact ordered subtype list match. The constructor leaves seven fields uninitialised; stage 2 never reads them, and open question 7 asks whether stages 4 and 5 do.
+
+- Keep (Recommended): Port the fields and the exact ordered-list identity, with every member initialised. Whether the never-read fields stay is settled with stages 4 and 5.
+- Keep, unordered subtypes: The same, but two edges match when their subtype sets are equal, whatever the order.
+
+**Answer:** Keep (Recommended), written into S2.04
+
+## 034 · Poll · 2026-11-10 04:22
+
+The second stage 2 item poll.
+
+**Q1 (S2.05).** S2.05 · rgx <file> <y|n> <thres>. Reads one graph. y means the file was written by wgx (S2.12); the threshold is S2.07's. A missing, unreadable or malformed file, or a missing threshold, throws an uncaught exception and aborts the whole run. This reader is KGML-only, which decision 0020 flags: other pathway sources plug in through the Phase 2 mechanism.
+
+- Fix as proposed (Recommended): Keep the arguments and console lines. A bad file or argument is a command error, not a crash, and under decision 0021 the file is checked before the run starts.
+- Keep FuSION 1 behaviour: Uncaught exceptions abort the run.
+
+**Answer:** Fix as proposed (Recommended), written into S2.05
+
+**Q2 (S2.06).** S2.06 · What is read from a KGML file. Entries (id, name with colons removed, type, group components) and relations (entries, type, subtypes, experiment_score) are read; nodes are made only for entries a relation reaches. Coordinates, links and reactions are ignored. Dangling references, repeated entry ids, cyclic groups or empty groups crash or go silently wrong, though no current file has any.
+
+- Fix as proposed (Recommended): Accept the same subset of KGML, and reject a file with dangling references, repeated ids or cyclic groups, with a message. Under decision 0020 this becomes one input reader among others.
+- Keep FuSION 1 behaviour: Crash or go wrong silently on such files.
+
+**Answer:** Fix as proposed (Recommended), written into S2.06
+
+**Q3 (S2.07).** S2.07 · Entry → node keys and the split threshold. Ids in the exception set get their own nodes; the rest of a box collapse into one node keyed by its lexically smallest id when the box has more than thres ids. Every batch uses thres = 1. The key has no biological meaning, and node identity depends on this run's differentially expressed genes. The draft proposes keeping the rule, with 1 as the default, and leaving family merging to roadmap objective 2.
+
+- Keep (Recommended): Port the exception-first, collapse-above-threshold rule, with thres defaulting to 1. How families should merge is revisited under roadmap objective 2.
+- Keep, drop the threshold: Always collapse, as thres = 1 does. Old batches still pass 1 and run (decision 0017); any other value is rejected.
+
+**Answer:** Keep (Recommended), written into S2.07
+
+**Q4 (S2.08).** S2.08 · Bug: genes vanish. When a later multi-gene box collapses to a key that already names a node in the same pathway, its other genes are registered but never added to that node, so they disappear from the merge. Eleven ids vanish from the 42-pathway merge, including RUNX1, TSHB, SERPINF2 and seven glutamate-receptor subunits; Claude reproduced the list. The draft proposes adding every id of a box to the node the box resolves to.
+
+- Fix as proposed (Recommended): Every id in a box joins the node the box resolves to, so no gene is lost.
+- Keep FuSION 1 behaviour: Those genes keep vanishing.
+
+**Answer:** Fix as proposed (Recommended), written into S2.08
+
+## 035 · Poll · 2026-11-10 04:26
+
+The third stage 2 item poll.
+
+**Q1 (S2.09).** S2.09 · Complexes (KGML groups). A group becomes one complex node per combination of its components' nodes, keyed c_s_…_c_e and labelled [A+B]. After a raw read each complex gets two PPrel edges per component (component → complex and back), both tagged component and dummy_u_to_d, and both copy the pathway list of the graph's first edge, which crashes when a file has groups but no edges. Tool-written reads add no component edges. The draft proposes keeping complexes and their two-way component edges, but giving component edges the file's own pathway id.
+
+- Fix as proposed (Recommended): Keep complexes and their two-way component edges, labelled with the file's own pathway. What dummy_u_to_d means when both directions carry it is settled with stage 5 (open question 5).
+- Keep FuSION 1 behaviour: Copy the first edge's pathways, crash included.
+
+**Answer:** Fix as proposed (Recommended), written into S2.09
+
+**Q2 (S2.10).** S2.10 · From a relation to edges. Subtypes are normalised (indirect effect → indirect, binding/association → association, …). One edge is made per pair of the two entries' nodes. A duplicate with the same endpoints, type and subtype list is skipped, and its experiment score is lost. Association, dissociation and mapping edges get a reverse edge, with exactly one direction tagged dummy_u_to_d by key order. A relation whose two entries share a key makes a self-loop (18 in the 42-pathway merge).
+
+- Keep (Recommended): Port the rules as described.
+- Keep, max score on duplicates: My addition: a skipped duplicate's experiment score still counts, with the larger kept, as the cross-pathway merge does (S2.20). It can change which edges pass the frozen-edge threshold in stage 5.
+- Keep, no self-loops: The same, but a relation whose two ends land on one node makes no edge. Stage 5 says what self-loops do in the solve.
+
+**Answer:** Keep, max score on duplicates, written into S2.10
+
+**Q3 (S2.11).** S2.11 · Indirect-effect relations are discarded, fixed at compile time. The source comment says reachability is preserved, and it isn't: in the old master 181 of 598 entry pairs lose every path, and 48 of 186 in the 42-pathway merge. 176 of the 204 discarded relations also carried another subtype, whose sign is lost, and 22 nodes are left isolated. Under S1.29 this becomes a run-time setting recorded in the output.
+
+- Fix, default discard (Recommended): A run option, recorded in the output and applied before nodes are made. By default it discards, as FuSION 1 does, so old batches give the same results (decision 0017).
+- Fix, default keep as 1+: The same option, but by default indirect edges are kept and counted as one hop of unknown length, as in your roadmap objective 2 design.
+
+**Answer (free text):** both fixes are good, should be configuration with default being discarding indirect effects. old batches need not give the same results provided we are improving so much → written into S2.11, and [decision 0023](../decisions/0023-results-may-change-where-improved.md), which amends decision 0017
+
+**Q4 (S2.12).** S2.12 · Tool-written read (y). The y flag tells rgx and mff that wgx wrote the file. Then there's no duplicate test, no reverse edges or dummy tags, no component edges, and pathways come from the file's pathways attribute. The flag is trusted, not checked, so the old master, which wgx didn't write, gets no component edges and one-way associations in 65 batches. The draft proposes a reader that recognises FuSION's own merged-graph format instead of trusting a flag.
+
+- Fix as proposed (Recommended): FuSION's merged-graph format is recognised from the file itself. Old batches may still pass y. How the old master is read is S2.27's question.
+- Keep FuSION 1 behaviour: Trust the flag.
+
+**Answer:** Fix as proposed (Recommended), written into S2.12
+
+## 036 · Poll · 2026-11-10 04:41
+
+Asked after the stage 3 and stage 4 subagents finished, and after the stage 3 subagent reported that FuSION 1 had changed on 2026-11-09. Claude confirmed the change in chat: the UNDEFINED/TIMEOUT labelling fix, with one line added to `main.cc` (4733) and 11 lines to `GraphManagerNew.cc` (from 8180), plus nine new batch files.
+
+**Q1 (Reference).** FuSION 1 changed under the spec. On 2026-11-09 at 19:16 another session fixed the UNDEFINED/TIMEOUT labelling, adding 1 line to main.cc (at 4733) and 11 to GraphManagerNew.cc (around 8180), so later citations are off by those amounts. Behaviour described in stages 1 to 4 is unaffected, apart from stage 5's timeout lead. How should the spec's reference be held steady?
+
+- Pin a snapshot (Recommended): Copy FuSION 1's current source files (about 12 MB) into the read-only folder /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10. Every stage cites it. I shift stage 1 and stage 2 citations to it, stage 1's in a correction commit, and the remaining subagents use it. Run data under runs/ stays live.
+- Follow the live tree: Keep citing FuSION 1's working tree, and re-check the affected citations each time it changes.
+
+**Answer:** Pin a snapshot (Recommended) → [decision 0024](../decisions/0024-frozen-fusion1-snapshot.md)
+
+**Q2 (Resume text).** Stages 5 and 6 resume next. Their logged resume message says nothing in FuSION 1 has changed, which is no longer true. Approve this replacement? It's shown for the snapshot choice; with the live tree, its third sentence instead says to cite the current files.
+
+- Approve (Recommended): Resume stages 5 and 6 with this text, logged in full, and later stages 7 and 8 the same way. Preview shown with this option:
+
+  ```text
+  Your earlier run stopped before you finished, because
+  of a usage limit or the end of the session. Since you
+  started, FuSION 1 has changed: on 2026-11-09 another
+  session fixed the UNDEFINED/TIMEOUT labelling of Z3
+  results. It added z3_overall_timeout_ms to
+  Linux/include/GraphManagerNew.h, 11 lines after the
+  constructor in Linux/src/GraphManagerNew.cc (later
+  lines moved by 11 or more), one line at
+  Linux/src/main.cc:4733 (later lines moved by 1), and a
+  new timeout check from GraphManagerNew.cc:29478 on.
+  Nine batch files were also added under
+  runs/egfr_b10_gsea_fdr044_candidates/. From now on,
+  read and cite FuSION 1 code from the frozen copy at
+  /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10
+  (same relative paths), not the live tree. Re-check
+  every line number you noted earlier, then carry on and
+  finish the task exactly as your original prompt
+  describes: write only your own stage file, then reply
+  in at most 300 words.
+  ```
+
+- Restart them fresh: Start new subagents for stages 5 to 8 with the original prompts plus a note about the change, discarding their saved progress.
+
+**Answer:** Restart them fresh → [decision 0025](../decisions/0025-fresh-subagents-stages-5-to-8.md)
+
+**Q3 (S2.13).** S2.13 · Merge-exception set. An id in the set always gets its own node and never joins a box. The batch builds the set from the up and down genes, the source, the target and hsa_ids_not_to_be_merged.txt, and S1.17 decided 2.0 adds the first four itself. The FSC is not added, so an FSC that isn't differentially expressed lands inside its family node: the RAS trap. The draft proposes always adding the FSC being tested.
+
+- Fix as proposed (Recommended): The FSC joins the set automatically, along with S1.17's up and down genes, source and target. Merging must therefore know them, and Phase 2 designs how.
+- Keep FuSION 1 behaviour: The FSC is not added.
+
+**Answer:** Fix as proposed (Recommended), written into S2.13
+
+**Q4 (S2.14).** S2.14 · The inter-database map in merging. One file feeds two mechanisms: start's all_id_map, which would key a gene by its mapped id, and mff's naming-map step, which would add protein nodes and mapping edges. Neither has ever run, because all 17 copies of the file are empty, and the code has four faults, including a duplicate node for any id inside a family. The draft proposes dropping both. S1.16 kept the file's reader, so dropping both leaves that reader unused.
+
+- Drop both, redesign later (Recommended): Remove both uses. Mapping ids across sources is designed afresh in Phase 2, for decision 0020's plug-and-play inputs, and may reuse S1.16's two-column file.
+- Keep the keying, fixed: Keep all_id_map's keying path with its inconsistency fixed, and drop only the naming-map step.
+- Keep FuSION 1 behaviour: Both, as written.
+
+**Answer:** Drop both, redesign later (Recommended), written into S2.14
+
+## 037 · Subagent prompt · Note for the fresh stage 5 to 8 subagents · 2026-11-10 07:36
+
+Each fresh stage 5 to 8 subagent ([decision 0025](../decisions/0025-fresh-subagents-stages-5-to-8.md)) gets entry 006, a blank line, its stage section (entries 011 to 014), a blank line, and this note. Sent first to new subagents for stages 5 and 6 at 07:36; the stage 7 and 8 sends are logged as their own entries.
+
+```text
+Note added on 2026-11-10, after the prompt above was first written. On 2026-11-09 another session changed FuSION 1 to fix the UNDEFINED/TIMEOUT labelling of Z3 results. It added `z3_overall_timeout_ms` to `Linux/include/GraphManagerNew.h`; an initialisation and then a setter and getter to `Linux/src/GraphManagerNew.cc`, so old line numbers from 8180 to 8215 in that file moved down by 1 and those from 8216 on by 11; a helper `z3_unknown_is_timeout` at `GraphManagerNew.cc:29342`, with new checks from line 29478 on, which moved the lines after it further; and one line at `Linux/src/main.cc:4733` (`macOS/src/main.cc:4761`), so later lines in main.cc moved down by 1. Line numbers in your stage section's leads refer to the tree before that change. If a lead says Z3 timeouts are logged as UNDEFINED, it describes runs made before the fix: describe the code as it is now, and say how earlier runs were labelled. Nine batch files were also added under `runs/egfr_b10_gsea_fdr044_candidates/`.
+
+The reference is now a frozen copy of FuSION 1's source files at /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10, with the same relative paths; its README.txt says what it holds. Read and cite FuSION 1 code from there, not from the live tree, which may keep changing. This replaces the ground rule that names the Linux working tree as the reference. Run data under /home/ks-149-u24/Desktop/arjun/FuSION/runs/ and the KGML data directories are still read from the live tree.
+```
+
+## 038 · Poll · 2026-11-10 07:39
+
+The fifth stage 2 item poll, asked after the snapshot was made, the stage 1 and 2 citations were moved to it, and the stage 1 correction was committed (ce347a4).
+
+**Q1 (S2.15).** S2.15 · How stage 2 uses the symbol and pathway-name maps: for labels only. A node's display name is its key's symbol, or the key itself, and the edge report names nodes by all their members' symbols. Two lookups use operator[], which inserts an empty name for every unknown id; that once made a second read in one session segfault, and a fallback now hides it. 291 of the 2175 gene ids in the 42-pathway merge have no symbol. The draft proposes lookups that never insert, keeping the fallback to the id.
+
+- Fix as proposed (Recommended): Lookups never insert, and an id with no symbol is still labelled with the id itself.
+- Keep FuSION 1 behaviour: operator[] lookups, as now.
+
+**Answer:** Fix as proposed (Recommended), written into S2.15
+
+**Q2 (S2.16).** S2.16 · mff <list> xml <thres> <y|n> [map files…] -1. mff reads every listed file as rgx would, then folds them into one graph; with one file it just returns that graph. The help line misstates the arguments, and a blank line, bad path or CRLF in the list aborts the run. A one-file mff writes no edge report, so the batch's next mv fails. The draft proposes keeping mff <list> <thres> <y|n>, dropping the format token and the map-file list (S2.14 dropped their only use), and checking every listed path before reading any.
+
+- Fix, old lines still run (Recommended): The new form is mff <list> <thres> <y|n>. FuSION 1's xml token and map-file list are still accepted, with a warning that they're ignored, so old batches run. Every listed path is checked up front (decision 0021).
+- Fix as drafted: The format token and map-file list are no longer accepted, so old mff lines need editing.
+- Keep FuSION 1 behaviour: The current arguments and failure modes.
+
+**Answer:** Fix, old lines still run (Recommended), written into S2.16
+
+**Q3 (S2.17).** S2.17 · Merging nodes across pathways. mff folds the pathways in list order, building a new graph at each step, and unions every pair of boxes that share a non-exception id, transitively, across all pathways. This makes huge family nodes. In the 42-pathway merge: 52 growth-factor ligands (EGF, FGFs, VEGFs, PDGFs, INS, IGF, HGF), 44 chemokines, 19 G-protein subunits joined through one GNA12+GNG12 box, and 6-gene RAS and PKC nodes. The 87-pathway merge has a 161-gene GPCR node. The result can depend on list order. Was this transitive union intended? Your call matters here (open question 3).
+
+- Fix: explicit union (Recommended): The draft's proposal: the same union, computed in one order-independent pass, with every merged node's members listed in the output. Whether families should be unioned at all is revisited under roadmap objective 2.
+- No union across pathways: Boxes from different pathways merge only when they hold exactly the same genes. That avoids the 52- to 161-gene nodes, but a gene can then sit in several nodes, which S2.03's reports flag. Results change, which decision 0023 allows.
+- Keep FuSION 1 behaviour: The order-dependent fold, as now.
+
+**Answer:** Fix: explicit union (Recommended), written into S2.17
+
+**Q4 (S2.18).** S2.18 · Merge crash on chained keys, fixed only in the working tree. When pathways box overlapping families under different keys, the key map chains (A → B → C). The committed code followed one step in the edge phase and could crash; the working tree's final_rep_id, now in the snapshot, follows the whole chain. Three other places still follow one step, which can't crash but can key a complex by a stale member key.
+
+- Keep the fix (Recommended): Edge endpoints resolve through the whole chain. This only matters if S2.17 keeps chain-following, since an explicit union has no chains.
+- Keep, and fix the rest: Also make the three remaining one-step lookups follow the whole chain.
+
+**Answer:** Keep the fix (Recommended), written into S2.18
+
+## 039 · Poll · 2026-11-10 07:52
+
+The sixth stage 2 item poll.
+
+**Q1 (S2.19).** S2.19 · A node-type conflict drops a whole pathway. If a node in the next pathway shares its key with an existing node of a different KGML type, mff prints a warning, abandons that whole merge step and carries on, so the pathway silently vanishes from the result. This has never fired in a recorded run. The draft proposes treating it as an error naming the node and both pathways; under S1.28 the run then stops.
+
+- Fix as proposed (Recommended): An error naming the node and both pathways. The run stops at it, as S1.28 decided.
+- Fix, skip only that node: Keep merging the pathway, leave out only the conflicting node, and warn.
+- Keep FuSION 1 behaviour: Drop the whole pathway with a warning.
+
+**Answer:** Fix as proposed (Recommended), written into S2.19
+
+**Q2 (S2.20).** S2.20 · Merging edges across pathways. An edge matches an existing one when the endpoints, type and ordered subtype list are equal (or equal plus dummy_u_to_d). On a match its pathways are added and the larger score is kept. The 42-pathway merge has 140 node pairs with 2 or 3 parallel edges; RAF → MEK, for example, carries phosphorylation; activation + phosphorylation; and activation as three edges. It also has 4 pairs with opposite signs and 18 self-loops. All of these reach the solver, where each parallel edge is one more relaxable edge (stage 5's concern).
+
+- Keep (Recommended): Port the exact-list matching, with pathways unioned and the larger score kept.
+- Decide with stage 5: Hold this item until stage 5 shows how parallel and conflicting edges affect the solve.
+
+**Answer:** Keep (Recommended), written into S2.20
+
+**Q3 (S2.21).** S2.21 · Bug: one association can survive twice. The duplicate test accepts an existing edge equal to the incoming one plus dummy_u_to_d, but not the reverse. Key order decides which direction gets the tag in each pathway, so one association can end up as two parallel edges in the same direction, one tagged and one not. The 42-pathway merge has 6 such pairs, a count Claude reproduced. The draft proposes comparing subtype lists with dummy_u_to_d removed, and computing the tag once, on the merged graph.
+
+- Fix as proposed (Recommended): Compare without the tag and tag once on the merged graph, so each association survives exactly once in each direction.
+- Keep FuSION 1 behaviour: Duplicates like these stay.
+
+**Answer:** Fix as proposed (Recommended), written into S2.21
+
+**Q4 (S2.22).** S2.22 · Cost of merging. Merging k pathways takes k − 1 steps, each one copying the whole graph so far, with linear scans inside: 3 s for 42 pathways, 53 s for 87 and about 124 s for 163. The merge is repeated for every run, because the exception set changes the result. The draft proposes building the same merged graph in one pass over all pathways, with hashed indexes from id to node and from edge key to edge.
+
+- Fix as proposed (Recommended): One pass with hashed indexes, giving the same merged graph.
+- Fix, and reuse merges: Also merge each pathway list once without the run's exceptions and split those ids out afterwards, so runs on the same pathways share one merge. The split must be shown to give the same graph.
+
+**Answer:** Fix, and reuse merges, written into S2.22
+
+## 040 · Poll · 2026-11-10 07:56
+
+The seventh stage 2 item poll.
+
+**Q1 (S2.23).** S2.23 · Dead work inside the live paths. Four computations whose results nothing uses: occurrence maps built for every graph, naming two output files that are never written; an always-empty MAPK_merged_ids search; display names written and then overwritten in duplicate_node; and an edge-id vector copied after every edge just to store its size. The last is quadratic: one read of the old master makes about 27 million integer copies.
+
+- Drop (Recommended): None of the four in 2.0.
+- Keep: Port them as they are.
+
+**Answer:** Drop (Recommended), written into S2.23
+
+**Q2 (S2.24).** S2.24 · The merged-edge report, edges_merged_filename. After merging two or more graphs, mff writes a tab-separated provenance report to that fixed name in the launch directory: each merged edge, then each per-pathway edge it came from, with pathway names. The real run's report has 3585 lines for 2529 edges. Nothing reads it except the GUI's mv, and a one-file mff writes none. The draft proposes keeping it as an optional report, written to a path given to the command whenever it's asked for.
+
+- Fix as proposed (Recommended): An optional provenance report, written to the path the command is given.
+- Always write it: Write it on every merge, into the run's output directory (S1.26), as FuSION 1 does but without the fixed launch-directory name.
+- Drop: No merged-edge report in 2.0.
+
+**Answer:** Fix as proposed (Recommended), written into S2.24
+
+**Q3 (S2.25).** S2.25 · wgx <graph|0> <file> <tag> and the merged-graph XML. wgx writes nodes as entries (name = member ids, graphics = display names) and edges as relations with pathways and experiment_score. Nothing is XML-escaped (latent). Labels mix in other genes' aliases, entry names keep list order so keys can change on re-read, isolated nodes are written and then dropped on re-read, and the file claims to be KGML 0.7.1 when it isn't. The draft proposes keeping the format, escaping attribute values, and writing display names from the symbol map.
+
+- Fix, and mark the format (Recommended): As drafted, plus a marker naming the file as FuSION's merged-graph format rather than KGML, which S2.12's reader needs in order to recognise it. The marker is my addition.
+- Fix as drafted: Escape attribute values and take labels from the symbol map; the DOCTYPE stays as it is.
+- Keep FuSION 1 behaviour: The file as written today.
+
+**Answer:** Fix, and mark the format (Recommended), written into S2.25
+
+**Q4 (S2.26).** S2.26 · The mff → wgx → rgx round trip. Every batch that merges (75 of them) writes the merged graph and reads it straight back, and later stages run on the re-read graph. The re-read is an undocumented normalisation: it drops isolated nodes, re-keys nodes, sorts pathway lists, rebuilds labels and re-applies the exception set. The real run writes and re-parses 540 KB this way. The draft proposes keeping the merged graph as an artefact but running later stages on the in-memory graph after the same normalisation. Whether results match is a Phase 3 check (open question 1).
+
+- Fix as proposed (Recommended): Normalise in memory and keep writing the file as an artefact, which also serves as a saved step for partial runs (decision 0019).
+- Keep FuSION 1 behaviour: Write the file and parse it back.
+
+**Answer:** Fix as proposed (Recommended), written into S2.26
+
+## 041 · User prompt · 2026-11-10 10:58
+
+> continue
+
+## 042 · Poll · 2026-11-10 11:00
+
+Asked after the fresh stage 5 and 6 subagents both stopped on the plan's 5-hour limit (reset at 9:10), and after Claude checked which reference runs read the old master: 42 EGF-HeLa experiment batches, the `real_experiments` batches and the published b10 runs.
+
+**Q1 (S2.27).** S2.27 · The pre-merged master that 65 batches read. 65 of the 78 batch files that call mff never merge KGMLs; they include the 42 EGF-HeLa experiment batches and the published b10 runs. They read runs/real_experiments/merged_kegg_master_graph_with_exp_score.xml, made by an external script, through a one-file mff … y. Read that way, its 598 complexes have no component edges, associations stay one-way, and 1796 ids sit in several entries, which causes the RAS trap. The draft proposes dropping it, so that 2.0 builds merged graphs only from raw KGMLs (open question 2).
+
+- Drop, as drafted (Recommended): 2.0 builds merged graphs only from raw KGMLs. The 65 batches give different results, which decision 0023 allows, and Phase 3 compares against the raw-merge GSEA runs. The published runs stay reproducible with FuSION 1.
+- Compatibility reader: 2.0 can also read this one file the way FuSION 1 does, kept apart from the raw pipeline and flagged as legacy, so the published runs can be re-run in 2.0 and compared like for like.
+
+**Answer:** Compatibility reader, written into S2.27
+
+**Q2 (S2.28).** S2.28 · sz <graph|0>. Prints the node count by type (genes, complexes, compounds, others), the number of isolated nodes, and the edge count, and under DEBUG_FLAG also writes the counts to the debug log. A missing or non-numeric argument aborts the run; under S1.28 that becomes a reported error.
+
+- Keep (Recommended): The same two lines of counts.
+- Keep, and count families: Also print how many nodes hold more than one gene, and the largest, since S2.03 and S2.17 show family nodes matter.
+
+**Answer:** Keep, and count families, written into S2.28
+
+**Q3 (S2.29).** S2.29 · upfx <prefix>. Renames the debug log to <prefix>_mylog.txt and prefixes two pathz3 outputs (limits_timefile.txt and PO.dat). No batch file or GUI uses it, it covers only three of the fixed-name outputs, and it crashes if used before start. S1.25's per-run log name and S1.26's per-run output directory now cover its purpose. The draft proposes dropping it.
+
+- Drop (Recommended): No old batch uses it, so none breaks.
+- Keep: Port it, with the crash fixed.
+
+**Answer:** Drop (Recommended), written into S2.29
+
+**Q4 (Stages 5-6).** The fresh stage 5 and 6 subagents both stopped almost at once on your plan's 5-hour limit, which reset at 9:10. They had barely started, and the reference snapshot hasn't changed. Resume them now with this message, logged in full?
+
+- Resume both now (Recommended): Send the text shown to the stage 5 and stage 6 subagents. Stages 7 and 8 follow once both finish. (Its preview is the text of entry 043, wrapped over several lines.)
+- Restart them fresh: New subagents with the same prompts (entry 006, entry 011 or 012, and entry 037).
+
+**Answer:** Resume both now (Recommended)
+
+## 043 · Subagent prompt · Resume message to the fresh stage 5 and 6 subagents · 2026-11-10 11:01
+
+Sent word for word to the stage 5 and stage 6 subagents of [decision 0025](../decisions/0025-fresh-subagents-stages-5-to-8.md), as approved in entry 042, Q4.
+
+```text
+Your run stopped before you finished, because of your plan's usage limit. The reference snapshot has not changed, and your stage file has not been written yet. Carry on from where you stopped and finish the task exactly as your prompt describes: write only your own stage file, then reply in at most 300 words.
+```

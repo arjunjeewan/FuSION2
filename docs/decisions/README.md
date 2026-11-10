@@ -26,3 +26,6 @@ One file per decision, numbered in the order the decisions were made. Each recor
 | [0020](0020-plug-and-play-inputs.md) | Network and per-gene inputs must be plug and play; mechanism in Phase 2 | Accepted | 2026-11-09 |
 | [0021](0021-required-and-optional-inputs.md) | Inputs checked up front; missing required or named-but-unreadable inputs stop the run; frontend validates too | Accepted | 2026-11-09 |
 | [0022](0022-graph-display.md) | Graph display is a 2.0 feature; its design is worked out with the user | Accepted, design pending | 2026-11-09 |
+| [0023](0023-results-may-change-where-improved.md) | Old batches still run, but results may change where 2.0 improves (amends 0017) | Accepted | 2026-11-10 |
+| [0024](0024-frozen-fusion1-snapshot.md) | The spec cites a frozen FuSION 1 snapshot (amends 0012) | Accepted | 2026-11-10 |
+| [0025](0025-fresh-subagents-stages-5-to-8.md) | Fresh subagents draft stages 5 to 8 (replaces 0016 there) | Accepted | 2026-11-10 |

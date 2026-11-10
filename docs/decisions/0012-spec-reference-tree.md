@@ -1,6 +1,6 @@
 # 0012 · Reference tree for the spec
 
-- **Status:** Accepted
+- **Status:** Accepted. Amended by [decision 0024](0024-frozen-fusion1-snapshot.md): the spec now cites a frozen snapshot of this tree.
 - **Date:** 2026-10-27
 - **Asked in:** prompt log entry 005, Q2
 
