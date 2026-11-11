@@ -210,7 +210,7 @@ Names and evidence used below:
   - pathz3 requires every present edge to increase distance (S4.03), so none of these edges can be part of a solution path. Whether they still cost time or constrain the solve is stage 5's question.
   - The GUI's script comment, "Retain only those nodes that appear in some path of length <= $REACH_PATH_BOUND" (`gui4.java:140`), overstates what is kept.
 - **Proposed call:** keep. The rule never drops an edge that a bounded simple path uses, and exact simple-path pruning is exponential in general. If stage 5 shows that off-path edges matter, self-loops and edges into a source or out of a target are the cheap cases to trim.
-- **Decision:** deferred until stage 5 settles S5.13. If off-path edges still count as relaxed, trim self-loops and edges into a source or out of a target; if not, keep the walk rule as it is. (prompt log entry 060)
+- **Decision:** deferred until stage 5 settles S5.13. If off-path edges still count as relaxed, trim self-loops and edges into a source or out of a target; if not, keep the walk rule as it is. (prompt log entry 060) *Settled by S5.13 (prompt log entry 068):* off-path edges keep counting as relaxed, so the corridor trims self-loops and edges into a source or out of a target.
 
 ### S4.12 · Complex members are copied with their complex
 
@@ -405,7 +405,7 @@ Names and evidence used below:
 ## Open questions
 
 1. **Does off-path content in the corridor change pathz3's results, or only its cost (S4.11, S4.12)?** This covers isolated complex members, walk-only edges and self-loops. *Would settle it:* stage 5's reading of whether constraints are posted on nodes and edges that no chosen path uses, and whether an up- or down-regulated node with no edges must be relaxed. A phase-3 reference test would also settle it: run pathz3 on the full run's corridor with the 41 isolated members and 54 walk-only edges removed, and compare the `PO.dat` files.
-   *Still open, for stage 5:* stage 5's draft says off-path edges do change results (S5.13); S4.11 waits on that decision.
+   *Resolved by stage 5:* off-path edges change results, because every considered edge between present nodes counts whether or not it is selected (S5.13), so S4.11 trims self-loops and edges into a source or out of a target. Isolated complex members stay outside the encoding unless named essential, so they never enter the objective and count only in the Up and Down totals and the node-bound clamp (S5.10).
 2. **Can pathz3 run twice on one corridor object (S4.20)?** pathz3 writes the adjacency matrix and insert-only sequence maps into the graph object, and some mincut helpers keep function-static state sized on the first call. *Would settle it:* stage 5, or a reference run that calls `pathz3` twice on one corridor id and compares the result with the current two-`fb_rch` pattern.
    *Resolved:* stage 5's draft says no, because of function-static state; S4.20 decided that 2.0 computes the corridor once and that its solve must leave the corridor unchanged.
 3. **Is the claim-order count in S4.15 (57 ids) right?** It comes from a replay that follows rgx's claim order (relation order, components first); claiming in entry-file order would give 58. *Would settle it:* a phase-3 test that dumps the corridor's id lookup from the binary, or a run that names ATF2 (`hsa1386`) in an essential file and checks which node is forced.

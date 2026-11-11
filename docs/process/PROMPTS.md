@@ -1509,3 +1509,309 @@ The fifth stage 4 item poll.
 - Keep FuSION 1 behaviour: Recompute the corridor before each solve.
 
 **Answer:** Fix as proposed (Recommended), written into S4.20
+
+## 064 · Poll · 2026-11-11 20:31
+
+The last stage 4 item poll, with the stage 4 commit.
+
+**Q1 (S4.21).** S4.21 · What fb_rch hands to pathz3: only the corridor graph object (graph 0, or its printed id), with its nodes, edges, attributes, id lookup and creation order. The bound, sources, targets, flag, exclusions, traversable-edge rule and distances are all discarded. pathz3 takes its own bound and reads its endpoints from the connect-pairs file; the batches keep the two in step by hand, and nothing checks that they match. No batch writes the corridor to disk. The draft proposes that the corridor records its parameters, can be saved and loaded, and that pathz3 checks its own bound and pairs against them.
+
+- Fix as proposed (Recommended): The corridor carries its parameters, is saveable and loadable (decision 0019), and the solve checks itself against them.
+- Keep FuSION 1 behaviour: In memory only, unchecked.
+
+**Answer:** Fix as proposed (Recommended), written into S4.21
+
+**Q2 (S4.22).** S4.22 · Compile-time flags in this stage. ONLY_INTERAC_EDGES_FOR_MINCUT changes results and becomes S4.04's run setting. DUP_CHECK_FLAG_SET and DUMMY_EDGE_FLAG don't change fb_rch's output: fb_rch uses the default duplicate check, and no traversable edge carries dummy_u_to_d. The always-on asserts can't fire on a consistent graph. The draft proposes dropping those two flags for this stage, with stage 5 confirming them for its own copies.
+
+- Fix as proposed (Recommended): Following S1.29: the result-changing flag becomes S4.04's setting, and the two no-effect flags go for this stage.
+- Keep FuSION 1 behaviour: Keep all three as compile-time flags.
+
+**Answer:** Fix as proposed (Recommended), written into S4.22. All stage 4 items are decided, except S4.11, which is deferred to S5.13.
+
+**Q3 (Commit).** Stage 4 is then complete, apart from S4.11, which is deferred to stage 5's S5.13 and says so in its decision field. May I commit it locally as 'Review spec stage 4: reachability corridor'? It would hold the stage 4 spec and prompt log entries 056 to 063. The stage 5 to 8 drafts stay out until they're reviewed, and this poll's own entry goes into the next commit.
+
+- Commit (Recommended): One local commit ending with a Co-Authored-By: Claude line.
+- Show me the diff first: I list every change, then ask again.
+
+**Answer:** Commit (Recommended). This entry is left for the next commit.
+
+## 065 · Poll · 2026-11-11 20:45
+
+The first stage 5 item poll (`docs/spec/05-encoding-and-solve.md`). Before polling, Claude applied the stage 5 verification report after spot-checking it: the dump directories under `runs/` (171 with 5.55 GB at draft time, not 102 with 3.0 GB), the census bound range, the moved `r0_cxcl8_jun` limits file, the pre-fix timeout tests, the dump file sizes, the comparison batches' limits-file names, three line ranges, the never-filled static sets, the edge-relaxation rule, the dump-directory sharing condition and mode 1's parse.
+
+**Q1 (S5.01).** S5.01 · pathz3 takes 28 positional tokens, then up to five optional ones: graph, mode, connect-pairs file, four relaxation bounds, path bound, output prefix, 14 list files (8 of them empty in every real batch), the fold-change file, count/explore, and two timeouts. A missing number aborts the run, an unknown graph calls exit(1), and the help line documents none of the 28. The draft proposes keeping the positional form for old batches, adding names (decision 0018), validating every argument before the solve (decision 0021), and making an unknown graph a command error.
+
+- Fix as proposed (Recommended): Positional and named forms, everything validated up front, and an unknown graph is a command error.
+- Keep FuSION 1 behaviour: As now.
+
+**Answer:** Fix as proposed (Recommended), written into S5.01
+
+**Q2 (S5.02).** S5.02 · The optional arguments: coexpression CSV, coexpression threshold, frozen threshold, enable flag and seed. On Linux an empty token, such as an empty $VAR, stops the parse, so every later slot keeps its default: with an empty CSV, '700 800 1 42' leaves the frozen constraints off. On macOS each slot consumes its token. No logged line is affected, but stage 8's draft says the GUI never fills these slots on Linux, which its verifier is checking. The draft proposes taking the macOS behaviour and rejecting a non-numeric value with a message.
+
+- Fix as proposed (Recommended): Each position consumes its token, and non-numeric values are errors.
+- Keep Linux behaviour: A blank stops the parse.
+
+**Answer:** Fix as proposed (Recommended), written into S5.02
+
+**Q3 (S5.03).** S5.03 · The enable flag defaults to off. One flag gates both the coexpression and the frozen-edge constraints, and it defaults to 0. Six old batch lines pass a CSV and both thresholds but no flag. They ran with the constraints before the flag existed, but rerun today they run without them, with only a stderr note. 126 lines pass 1 and 32 pass 0. The draft proposes, under decision 0021: a given flag still decides, so 0 turns both off; with no flag, a given CSV and threshold turn coexpression on and a given frozen threshold turns frozen edges on; and the run records which families it used.
+
+- Fix as proposed (Recommended): A flag decides if given; otherwise the inputs given decide. The families used are recorded.
+- Fix, flag required: Passing a CSV or threshold without the flag is an error, so nothing is turned on implicitly.
+- Keep FuSION 1 behaviour: Off unless the flag says 1.
+
+**Answer:** Fix as proposed (Recommended), written into S5.03
+
+**Q4 (S5.04).** S5.04 · The connect-pairs file and the active source. One '<source> <target>' pair per line, resolved in the corridor, with unresolved pairs skipped silently; only the first pair's source is forced active. With no resolvable pair the code calls front() on an empty list, which is undefined behaviour. Every batch writes exactly one pair, repeating fb_rch's source and target by hand. The draft proposes taking the source and target from the corridor (S4.21) or from named arguments, requiring them to resolve, and supporting one pair until multi-pair semantics are designed.
+
+- Fix as proposed (Recommended): Source and target from the corridor or named arguments, required to resolve, one pair for now.
+- Keep FuSION 1 behaviour: The pairs file, as now.
+
+**Answer:** Fix as proposed (Recommended), written into S5.04
+
+## 066 · Poll · 2026-11-11 20:50
+
+The second stage 5 item poll.
+
+**Q1 (S5.05).** S5.05 · Node list files. Up, down, essential, avoid, active, inactive, confirmed up and down, relaxed, and non-relaxed are all read the same way and resolved in the corridor, with unresolved ids dropped silently. Essential means present, avoid means absent, active and inactive fix activity, and non-relaxed forbids relaxation. The relaxed-nodes list is read and ignored. The console gives counts, not names, and contradictory lists simply make the solve UNSAT. The draft proposes keeping the list semantics, dropping the ignored relaxed-nodes and relaxed-edges inputs, reporting which node each id bound to (S2.03), and rejecting contradictory lists before solving.
+
+- Fix as proposed (Recommended): Same semantics, the two ignored inputs dropped, bindings reported and contradictions rejected up front.
+- Keep FuSION 1 behaviour: As now.
+
+**Answer:** Fix as proposed (Recommended), written into S5.05
+
+**Q2 (S5.06).** S5.06 · Edge list files: essential, avoid, relaxed and non-relaxed, one '<source> <target> <subtypes>' per line. A line selects an edge only if its subtype field matches the stored order exactly, so activation_phosphorylation can match where phosphorylation_activation doesn't. Unmatched lines pass silently: one real avoid file has 10 lines and matched 3 edges. A line with only two ids reuses the previous line's subtypes. The draft proposes requiring the subtype field, comparing it as a set, and reporting every line that matches no edge.
+
+- Fix as proposed (Recommended): The subtype field is required and compared as a set, and unmatched lines are reported.
+- Keep FuSION 1 behaviour: Exact-order match, silent misses.
+
+**Answer:** Fix as proposed (Recommended), written into S5.06
+
+**Q3 (S5.07).** S5.07 · The observations and the node-bound clamp. up_use = up minus avoid, adjusted by the confirmed lists, and down_use likewise; only the up set loses avoided nodes. The node-relaxation bounds are clamped to |up_use| + |down_use|, which counts the source, the target and nodes outside the encoding, none of which can be relaxed. In the reference run only IRS2 can be relaxed, yet the window is n ∈ [0, 3]. The lists are also read twice, once into a map nothing uses. The draft proposes keeping the set arithmetic, dropping the unused read, and clamping the node bound to the number of observations that can actually be relaxed, printing that number.
+
+- Fix as proposed (Recommended): Same sets, one read, and a clamp that counts only relaxable observations, printed.
+- Keep FuSION 1 behaviour: As now.
+
+**Answer:** Fix as proposed (Recommended), written into S5.07
+
+**Q4 (S5.08).** S5.08 · Work whose result nothing uses. Before encoding, pathz3 registers an undirected copy of the corridor, fills an n×n adjacency matrix and computes its O(n³) transitive closure (about 24 s per call on the full run's corridor, 48 s per batch). It also allocates four n×n matrices nothing prints, opens a mincuts file it never writes, builds disjunctions it then discards, and asserts two totals every assignment satisfies. The draft proposes dropping all of it; none of it changes any output.
+
+- Drop (Recommended): None of it in 2.0.
+- Keep: Port it as it is.
+
+**Answer:** Drop (Recommended), written into S5.08
+
+## 067 · Poll · 2026-11-11 20:55
+
+The third stage 5 item poll.
+
+**Q1 (S5.09).** S5.09 · Solver, variables and bit widths. Each call makes one Z3 QF_BV solver. Every corridor node gets present, active and relaxed Booleans plus a distance bit-vector; every edge gets selected, relaxed and path-flag Booleans; and there are five single bound bit-vectors, all sized to their ranges. Bound values are built with bv_val, which wraps modulo 2^width, and the edge bound is never clamped, so on a small corridor an edge bound of 4 can silently become 0. With no observation in the corridor, the node-relaxation width is ceil(log2(0)), which is undefined. The draft proposes keeping the variable families and the bit-vector encoding, clamping or rejecting an edge bound above |E|, and stopping with a message when no observation reaches the corridor.
+
+- Fix as proposed (Recommended): Same encoding, an edge bound above |E| clamped or rejected, and a clear stop when no observation reaches the corridor.
+- Keep FuSION 1 behaviour: Wrapping bounds and an undefined width.
+
+**Answer:** Fix as proposed (Recommended), written into S5.09
+
+**Q2 (S5.10).** S5.10 · Which nodes and edges enter the encoding. Constraints are posted only over the edges reachable from the source along paths that don't pass through the target, plus their endpoints and any essential nodes: 108 of 115 nodes and 364 of 370 edges in the reference run. It's computed by a pair worklist with function-static memory, named for mincuts it never computes. A reached node with no out-edges would throw out_of_range, which a corridor can't trigger. Expressed nodes left out count in Up: but never in the objective. The draft proposes computing the sets with a plain forward search from the source that stops at the target, inside the corridor, and listing the observations that fall outside.
+
+- Fix as proposed (Recommended): The same sets from a plain forward search, with excluded observations listed.
+- Keep FuSION 1 behaviour: The pair worklist.
+
+**Answer:** Fix as proposed (Recommended), written into S5.10
+
+**Q3 (S5.11).** S5.11 · Path constraints under the bound. A selected edge implies both ends present and a strictly increasing distance; every target's distance is at most the path bound; a present source has a selected out-edge, a present target an in-edge, and every other present node both. Together these make the selected edges a DAG of source-to-target paths of at most b edges, and a self-loop can never be selected. An essential node that can't lie on a path, for example an FSC bound to an isolated complex member, trips a compiled-in assert and aborts the run. The draft proposes keeping the constraints, and reporting that case as infeasible with a message before solving.
+
+- Fix as proposed (Recommended): Same constraints, with a clear infeasibility message instead of an abort.
+- Keep FuSION 1 behaviour: The assert aborts the run.
+
+**Answer:** Fix as proposed (Recommended), written into S5.11
+
+**Q4 (S5.12).** S5.12 · Node relaxations. An up-regulated node is explained only if it's present and active; a down-regulated node if it's absent, or present and inactive; a node in both lists counts as up. Sources and targets are exempt, so the target's own expression never enters the objective. As a modelling choice that nothing states, an up gene on no path always costs 1 and a down gene on no path never does. The counted nodes go to a fixed-name diff_expr_nodes.txt in the launch directory, overwritten by each call. The draft proposes keeping the rule, and writing the counted observations and the excluded ones (source, target, outside the encoding) to the run's output.
+
+- Fix as proposed (Recommended): Same rule; the counted and excluded observations are written to the run's output, stating the modelling choices.
+- Keep FuSION 1 behaviour: As now.
+
+**Answer:** Fix as proposed (Recommended), written into S5.12
+
+## 068 · Poll · 2026-11-11 21:00
+
+The fourth stage 5 item poll. The S5.13 answer also settles stage 4's deferred S4.11.
+
+**Q1 (S5.13).** S5.13 · Edge relaxations and signs. An inhibition or repression edge is relaxed when both ends are present and in the same state; every other edge (activation, expression, phosphorylation, dephosphorylation, ubiquitination, binding, dummy_u_to_d, or none) is relaxed when both ends are present and not both active. Relaxation doesn't depend on whether the edge is selected, so edges no solution path uses still change the result: an inhibitory self-loop on a present node always costs 1, and walk-only edges count too. Connectivity ignores signs, so a forced node can hang off a relaxed inhibition edge. Your answer also settles S4.11: if off-path edges keep counting, the corridor drops self-loops and edges into a source or out of a target.
+
+- Fix as proposed (Recommended): Keep the sign rules and keep counting every edge between present nodes (FuSION's notion of consistency), but leave self-loops out of the count and report sign-consistent routes separately. S4.11 then trims the cheap off-path edges.
+- Count only selected edges: An edge counts as relaxed only if a solution path uses it, so unused edges never change the result. Frontiers change (decision 0023), and S4.11 keeps the walk rule as it is.
+- Keep FuSION 1 behaviour: As now, self-loops included.
+
+**Answer:** Fix as proposed (Recommended), written into S5.13 and S4.11
+
+**Q2 (S5.14).** S5.14 · Every path passes a differentially expressed node. Path flags on edges force every selected source-to-target path through an up- or down-regulated node before the target; a relaxed DE node still counts, and a direct edge from a non-DE source to the target can never be selected. No help line or output mentions this rule, yet the frontier depends on it. The draft proposes keeping the rule as it is, and documenting it in the help and the output.
+
+- Keep, documented (Recommended): Port the rule, and state it in the help and the run's output.
+- Make it a setting: On by default, but a run can turn it off, and the output records which.
+
+**Answer:** Keep, documented (Recommended), written into S5.14
+
+**Q3 (S5.15).** S5.15 · Coexpression constraints. The CSV's first line is skipped, columns are positional (ids in columns 3 and 4, score after the fourth comma), and rows scoring strictly above the threshold give pairs of corridor nodes. For each pair, if both are present their activity must match. The reference run loads 1 pair and emits 1 clause. Malformed and unresolved rows are skipped without a count, and every pathz3 call parses the file again. The draft proposes keeping the constraint and the strict threshold, finding columns by header name, reporting skipped and unresolved rows, and parsing the file once per run.
+
+- Fix as proposed (Recommended): Same constraint and strict threshold, columns by header name, skipped rows reported, one parse per run.
+- Keep FuSION 1 behaviour: Positional columns, silent skips, reparsed per call.
+
+**Answer:** Fix as proposed (Recommended), written into S5.15
+
+**Q4 (S5.16).** S5.16 · Frozen edges. Every considered edge whose experiment_score is strictly above the threshold can't be relaxed (97 clauses in the reference run), whether or not it's selected. The batches say 'frozen edges score >=800', but the test is >, so the reference run's one edge at exactly 800 isn't frozen. KGMLs without the attribute score 0 and can never be frozen, without notice. The draft proposes keeping the rule and the strict >, which matches the coexpression test and leaves results unchanged, correcting the batches' wording, stating the test in the help and output, and reporting how many considered edges have no score.
+
+- Fix as proposed (Recommended): Strict >, as now, stated clearly, with unscored edges reported.
+- Fix, use ≥: Change the test to ≥ to match the batches' wording. The reference run's edge at exactly 800 becomes frozen, so results can change (decision 0023).
+- Keep FuSION 1 behaviour: As now, unreported.
+
+**Answer:** Fix as proposed (Recommended), written into S5.16
+
+## 069 · Poll · 2026-11-11 21:05
+
+The fifth stage 5 item poll, with stage 5's open question 5.
+
+**Q1 (S5.17).** S5.17 · The FSC forced in or out. pathz3 has no FSC argument: the batches build the two cases from the lists. 'In' puts the FSC in the essential, active and non-relaxed lists; 'out' puts it in the avoid list, which also drops an up-regulated FSC from the observations. The two solves run on two separately built corridors, and the batch keeps 15 arguments in step across four command lines. The draft proposes making the FSC a named argument of the solve and running both cases on one corridor. 'In' means present and active, and 'out' means absent and removed from the observations.
+
+- Fix as proposed (Recommended): A named FSC, both cases solved on one corridor, with the in/out meanings above.
+- Keep FuSION 1 behaviour: Built by hand from the lists in the batch.
+
+**Answer:** Fix as proposed (Recommended), written into S5.17
+
+**Q2 (Down FSC).** What should 'FSC forced in' mean for a down-regulated FSC (stage 5, open question 5)? Today 'in' means present and active, which contradicts a down-regulated gene's observation. Its relaxation becomes true while the non-relaxed list forbids it, so every point of the with-FSC solve is UNSAT. That's traced from the code, not run.
+
+- Present, consistent (Recommended): 'In' means present on a path, with activity matching its observation: inactive when down-regulated, active when up-regulated.
+- Present and active, paid: Present and active either way, with its node relaxation paid in the objective for a down-regulated FSC.
+- Refuse it: A down-regulated FSC is rejected with a message, and only up-regulated or unobserved FSCs can be forced in.
+
+**Answer:** Present, consistent (Recommended), written into S5.17 and stage 5's open question 5
+
+**Q3 (S5.18).** S5.18 · How the Pareto frontier is enumerated. Assuming monotonicity (if (n, e) is SAT, so is every point with larger n and e), the search runs a diagonal search, then binary searches for the smallest n and the smallest e, records one or two points, and recurses into the two remaining windows. A function-static matrix caches SAT and UNSAT per point. It's correct when every check gets an exact answer; its weak points are unknown answers (S5.19), repeated timeouts (S5.20) and discarded models (S5.26). The draft proposes keeping the algorithm.
+
+- Keep (Recommended): Port the search, with its weak points fixed in S5.19, S5.20 and S5.26.
+- Hold for Phase 2: Decide the search algorithm in Phase 2, together with dump reuse (roadmap objective 4).
+
+**Answer:** Keep (Recommended), written into S5.18
+
+**Q4 (S5.19).** S5.19 · Unknown results. A check can return unknown. Since the 2026-11-09 fix it's labelled TIMEOUT when the reason says so or the check used 99% of the overall timeout, and UNDEFINED otherwise; before the fix every timeout was logged as UNDEFINED. Either way the search treats it as not SAT, so a frontier point found next to an unknown answer isn't certified Pareto-optimal, and nothing in the outputs says so. The full run's (n 7, e 1) and (n 8, e 0) may be dominated by the undecided (n 7, e 0). The draft proposes keeping the TIMEOUT/UNDEFINED distinction and marking every frontier point whose optimality depends on an unknown answer, in the frontier and solutions outputs.
+
+- Fix as proposed (Recommended): Keep the labels, and mark uncertified points in the outputs.
+- Keep FuSION 1 behaviour: Unmarked.
+
+**Answer:** Fix as proposed (Recommended), written into S5.19
+
+## 070 · Poll · 2026-11-11 21:20
+
+The sixth stage 5 item poll.
+
+**Q1 (S5.20).** S5.20 · Timed-out points are solved again. The search caches only SAT and UNSAT, so when it reaches a TIMEOUT or UNDEFINED point again, from another step or window, it solves the same query from scratch. In fdr050, 5 of the 9 four-hour unknown checks repeated a query that had already timed out: about 20 of the run's 50.7 hours. It still happens after the 2026-11-09 fix. The draft proposes caching TIMEOUT and UNDEFINED like SAT and UNSAT within a solve, and keeping that cache across a resumed solve (decision 0019).
+
+- Fix as proposed (Recommended): Cache unknown answers too, and keep the cache when a solve is resumed.
+- Keep FuSION 1 behaviour: Re-solve timed-out points.
+
+**Answer:** Fix as proposed (Recommended), written into S5.20
+
+**Q2 (S5.21).** S5.21 · Solver timeouts. timeout1 becomes Z3's :solver2_timeout and timeout2 its :timeout, in milliseconds. Both apply to each check separately, and nothing limits a whole solve: the full run's without-FSC solve took 15.9 h under a 4 h cap, and fdr050's 34.5 h. The limits file logs CPU time, while the cap and the TIMEOUT test use wall time, and what timeout1 actually does is undocumented (open question 1). The draft proposes keeping a per-query timeout, adding an optional budget for the whole solve that stops cleanly and saves state for resuming (decision 0019), and logging wall time.
+
+- Fix as proposed (Recommended): A per-query timeout, an optional whole-solve budget with clean resumable stops, and wall time logged.
+- Keep FuSION 1 behaviour: Per-check timeouts only.
+
+**Answer:** Fix as proposed (Recommended), written into S5.21
+
+**Q3 (S5.22).** S5.22 · Random seed. It defaults to 42, is set on the solver, and is written at the top of each dump. Reruns reproduce on the same machine and Z3 build: the fdr025 rerun matched the reference run byte for byte. The smallest-e step writes its dumps without the seed line, and a source comment claims standalone Z3 on a dump reproduces the in-process run byte for byte, which is untested and unlikely without the timeouts and solver history. Outside the dumps, the seed appears in only one console line. The draft proposes keeping the seed and its default, recording it in the run's outputs, and writing it into every dump.
+
+- Fix as proposed (Recommended): Seed 42 by default, recorded in the outputs and in every dump.
+- Keep FuSION 1 behaviour: As now.
+
+**Answer:** Fix as proposed (Recommended), written into S5.22
+
+**Q4 (S5.23).** S5.23 · SMT dumps. Before every uncached check, the whole formula is written to <fold-change name>_smt-files_<timestamp>/PO_constraints_nr_<n>_er_<e>.smt2 in the launch directory, and FuSION never reads them. When this stage was drafted, runs/ held 171 dump directories with 5.55 GB; the full run alone wrote 123 MB. A re-solved point overwrites its earlier dump, and variable names are session ids, meaningless without the run's solutions file. The draft proposes writing dumps only under the debug option (S1.29), into the run's output directory, named by solve case and point. Reusing dumps (roadmap objective 4) is a Phase 2 question.
+
+- Fix as proposed (Recommended): Debug-only dumps in the run's output directory, named by case and point.
+- Fix, on by default: Same location and naming, but written unless turned off, ready for roadmap objective 4's reuse.
+- Keep FuSION 1 behaviour: Always written, in the launch directory.
+
+**Answer:** Fix as proposed (Recommended), written into S5.23
+
+## 071 · Poll · 2026-11-11 21:35
+
+The seventh stage 5 item poll.
+
+**Q1 (S5.24).** S5.24 · The limits file (limits_timefile.txt). Each pathz3 call truncates it in the launch directory and writes a free-text trace of the search: windows, every check with its CPU time and sat/unsat/unknown, cache hits, binary-search steps and results. Points are written (e, n) here but (n, e) in PO.dat, and the window line mixes both orders. The trace is the only record of unknown answers (S5.19) and solver times, and mode 1 empties it while writing nothing (S5.28). The draft proposes a structured search log in the run's output directory instead: one record per check with point, step, outcome, wall and CPU time, and reason, all in one point order. One record per check means it can still be followed while a solve runs.
+
+- Fix as proposed (Recommended): A structured per-check search log in the run's output directory, one point order.
+- Keep FuSION 1 behaviour: The free-text trace in the launch directory.
+
+**Answer:** Fix as proposed (Recommended), written into S5.24
+
+**Q2 (S5.25).** S5.25 · PO.dat and the dominance filter. After the search the points are sorted by n descending, then e ascending, and a filter skips any point whose e equals the last kept point's e. Of two such points it keeps the larger n, which is backwards. It also never fires, because the search's windows give every point a distinct e. The rest are written as <n>\t<e> to PO.dat, which plot_po.sh and pex read; there is no header, no case label and no mark for uncertified points (S5.19). The draft proposes dropping the filter, keeping the two-column file for stage 6, and carrying the certification flag in the structured outputs.
+
+- Fix as proposed (Recommended): Drop the filter, keep the two-column file, certification flag in the structured outputs.
+- Keep a corrected filter: As proposed, but keep a filter that drops the larger n, as a guard in case a later search change yields dominated points.
+- Keep FuSION 1 behaviour: The backwards filter stays.
+
+**Answer:** Fix as proposed (Recommended), written into S5.25
+
+**Q3 (S5.26).** S5.26 · Solutions at each frontier point. The search finds a model at every frontier point and discards it, so afterwards each point is solved again, with a blocking clause after each solution. In fdr050 that re-solving cost about 2226 s (with FSC) and 12,871 s (without). The blocking clause covers every Boolean, including don't-care bits such as the activity of absent nodes, so a second solution may differ only in such a bit. With count = explore = 1 (166 of 170 batch lines) each point costs two more checks and prints an empty 'Solution 2' header. With no frontier point, no solution files are written at all. The draft proposes keeping the search's model at each point, enumerating further solutions only on request while blocking only on present nodes, their activity and selected edges, and always writing the solution files, empty when there is no point.
+
+- Fix as proposed (Recommended): Reuse the search's model, extra solutions on request with a tight blocking clause, files always written.
+- Keep FuSION 1 behaviour: Re-solve every point and block on every variable.
+
+**Answer:** Fix as proposed (Recommended), written into S5.26
+
+**Q4 (S5.27).** S5.27 · Solutions and relaxations files. For each frontier point, temp_w/temp_wo _solutions.txt lists every present node (nid, rep id, symbol, up/down/not DE, present, active/inactive) and every selected edge (eid, subtypes, both ends with their state, then a bracketed list of pathways); _relaxations.txt lists every relaxed node and edge, present or not. Example node line: 39118\thsa3725\tJUN\tup_reg\tpresent\tactive. The ids are corridor ids, which differ between the two solves (S4.14); an absent node's active/inactive is an arbitrary model value; and the format is positional text with a bracketed tail. The draft proposes keeping both files for stage 6 until it settles its inputs, naming nodes and edges by stable keys (S4.14), and leaving out the activity of absent nodes.
+
+- Fix as proposed (Recommended): Same two files for now, stable keys, no activity for absent nodes.
+- Keep FuSION 1 behaviour: Corridor ids and every column as now.
+
+**Answer:** Fix as proposed (Recommended), written into S5.27
+
+## 072 · Poll · 2026-11-11 21:50
+
+The last stage 5 item poll.
+
+**Q1 (S5.28).** S5.28 · Mode 1: testing given points. With mode 1, pathz3 reads '<n> <e>' lines from a file, checks each point, stops at the first SAT one ('Sat point obtained on previous curve') or reports 'New curve completely separated from previous points', and writes no solutions. No batch uses it: all 170 lines are mode 0. It truncates the previous solve's PO.dat and limits file before it starts, and a blank or short line silently reuses the previous point. The draft proposes dropping it: decision 0019's 'solve part of the frontier' is designed in Phase 2 and can cover this use.
+
+- Drop (Recommended): Remove mode 1; Phase 2's partial-frontier design covers checking given points.
+- Fix and keep: Keep mode 1 as its own option, without truncating earlier outputs and with strict line parsing.
+- Keep FuSION 1 behaviour: As now.
+
+**Answer:** Drop (Recommended), written into S5.28
+
+**Q2 (S5.29).** S5.29 · Function-static state. Seven encoding functions keep static sets of what they've already encoded and skip those items on later calls; six more keep sets they never fill, and one keeps an unused static vector. The batches stay correct only because their second fb_rch builds a new corridor with new ids. A second pathz3 on the same graph would encode no edges, skip the essential nodes and most rules, and most likely report the single point (n 0, e 0) with no error. Traced from the code; no batch does it. This answers stage 4's open question 2 (no). The draft proposes that no state survives a solve: each solve builds its encoding from its own inputs.
+
+- Fix as proposed (Recommended): No state survives a solve; each solve encodes from its own inputs.
+- Keep FuSION 1 behaviour: Static state stays, with a second solve per corridor unsupported.
+
+**Answer:** Fix as proposed (Recommended), written into S5.29
+
+**Q3 (S5.30).** S5.30 · Where the outputs go. limits_timefile.txt and PO.dat go to the launch directory with the upfx prefix joined on; the solutions, relaxations and mincuts files go wherever the solve's prefix points (the batches use $WRITE_DIR/temp_w and temp_wo); diff_expr_nodes.txt and the dump directories go to the launch directory without any prefix. Every batch moves files with exec mv after each solve. Two runs in one directory overwrite each other's PO.dat, limits file and diff_expr_nodes.txt. The draft proposes that every output of a solve goes to the run's output directory, named by solve case, with no fixed names written to the launch directory (as decided for S1.26).
+
+- Fix as proposed (Recommended): Everything in the run's output directory, named by solve case.
+- Keep FuSION 1 behaviour: Fixed names in the launch directory, moved by the batch.
+
+**Answer:** Fix as proposed (Recommended), written into S5.30
+
+**Q4 (S5.31).** S5.31 · Console output. A successful pathz3 prints setup lines (seed, coexpression pairs loaded, dump directory, list counts, Up/Down counts, the bound clamp), encoding milestones, each frontier point as it is found as (e, n), the frontier summary ('(0 ,1) is not dominated'), 'Solution 1'/'Solution 2', and a '[pathz3 timing]' wall-clock line. Points are (e, n) with uneven spacing, the timing line is missing when the frontier is empty and in mode 1, some lines describe unused work ('Not printing matrices in the current run'), and stdout versus stderr follows no rule. The draft proposes printing the same milestones with points in one labelled order, always printing the timing line, and removing the lines about unused work.
+
+- Fix as proposed (Recommended): Same milestones, labelled points in one order, timing line always, no lines about unused work.
+- Keep FuSION 1 behaviour: Console output as now.
+
+**Answer:** Fix as proposed (Recommended), written into S5.31. All 31 stage 5 items are now decided.
+
+## 073 · Correction · 2026-11-11 21:32
+
+Entries 062 to 072 give estimated times instead of the times they were logged. The times they were logged, taken from the session record, are:
+
+| Entry | Logged |
+|---|---|
+| 062 | 2026-11-11 20:18 |
+| 063 | 2026-11-11 20:19 |
+| 064 | 2026-11-11 20:20 |
+| 065 | 2026-11-11 20:25 |
+| 066 | 2026-11-11 20:26 |
+| 067 | 2026-11-11 20:27 |
+| 068 | 2026-11-11 20:40 |
+| 069 | 2026-11-11 20:49 |
+| 070 | 2026-11-11 21:04 |
+| 071 | 2026-11-11 21:25 |
+| 072 | 2026-11-11 21:30 |

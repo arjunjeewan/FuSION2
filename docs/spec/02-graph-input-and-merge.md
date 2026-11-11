@@ -627,7 +627,7 @@ Counts come from Python scripts that parse these files; FuSION 1 was not run. `<
 4. **Does every raw merge end with each id in exactly one node (S2.03, S2.17)?** It holds in every recorded raw merge, but the code does not guarantee it (step 2 resets ids, and `duplicate_node` copies all of a node's ids). *Would settle it:* a phase 3 property test that merges random pathway lists in random orders with FuSION 1 and checks the written XML.
    *Still open, for phase 3.* With S2.17's explicit union, 2.0 guarantees it by construction.
 5. **What does `dummy_u_to_d` mean on component edges, where both directions carry it (S2.09), compared with one direction on association pairs (S2.10)?** *Would settle it:* stage 5's account of how the solver uses the tag.
-   *Still open, for stage 5.*
+   *Resolved by stage 5:* the solver never reads the tag, so it has no meaning there; every `dummy_u_to_d` edge counts in the activation family (S5.13).
 6. **Is the `final_rep_id` fix really output-preserving (S2.18)?** The byte-identical comparison comes from the session that wrote the fix; I could not rerun it. *Would settle it:* build the committed and working trees in phase 3 and diff wgx output for the 163- and 42-pathway lists.
    *Still open, for phase 3.*
 7. **Do any later stages read the edge fields the constructor leaves uninitialised (`weight`, `capacity`, `flow`, `other1`–`other4`, `deleted`; S2.04)?** *Would settle it:* stages 4 and 5.
