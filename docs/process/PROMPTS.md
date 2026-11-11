@@ -1328,3 +1328,184 @@ The last stage 3 item poll, with a factual question from the draft's open questi
 - Not sure: Record it as unknown. Phase 2 decides whether to add a scale check anyway.
 
 **Answer:** Log fold changes, written into stage 3's open questions. All 19 stage 3 items are now decided.
+
+## 056 · Poll · 2026-11-11 19:47
+
+**Q1 (Commit).** Stage 3 is complete. May I commit it locally as one commit, 'Review spec stage 3: expression data'? It would hold the stage 3 spec, decision 0026 with its index row, and prompt log entries 044 to 055. The stage 4 to 8 drafts stay out until they're reviewed, and this poll's own log entry goes into the next commit.
+
+- Commit (Recommended): One local commit ending with a Co-Authored-By: Claude line.
+- Show me the diff first: I list every change, then ask again.
+
+**Answer:** Commit (Recommended). This entry is left for the next commit.
+
+## 057 · Poll · 2026-11-11 20:02
+
+The first stage 4 item poll (`docs/spec/04-reachability-corridor.md`). Before polling, the stage 4 verification subagent (entry 048's prompt) checked the draft, and Claude spot-checked its report and applied it. The draft cited 83 `GraphManagerNew.cc` lines in the numbering from before 2026-11-09 19:16; these were moved to the snapshot, and the script confirmed the moved ranges start on the functions they name. Six claims were corrected: the header lines in S4.13, the member-list reader in S4.12, the observations seen by the two solves in S4.06 and S4.16, b = 0 in S4.18, the pathway origin of the signed bindings in S4.04, and the claim-order count in S4.15 (57, not 58). Four minor slips were also corrected: in S4.07, S4.05, S4.20 and the scope. The stage 6 draft had already been corrected the same way from its own verification report.
+
+**Q1 (S4.01).** S4.01 · fb_rch <graph-id> <sources…> -1 <targets…> -1 <excluded…> -1 <bound> <edges_to_tgt>. Each list is read until a token that is exactly -1, into a set, and 0 means the latest graph. All 170 batch lines have one source, one target and no exclusions. A missing -1 walks the million-slot token vector, taking 10, 0 and empty strings as ids; a missing number aborts the run, and extra tokens are ignored. The draft proposes keeping the positional form for old batches, adding names (decision 0018), and rejecting a list without its terminator, a missing argument or extra tokens.
+
+- Fix as proposed (Recommended): Positional form still accepted, names added, and malformed lines rejected with a message.
+- Keep FuSION 1 behaviour: No checks.
+
+**Answer:** Fix as proposed (Recommended), written into S4.01
+
+**Q2 (S4.02).** S4.02 · Resolving the listed ids. Each source, target and excluded id is looked up in the input graph; the first claim wins, and a member id resolves to its whole family node (S2.03). An unknown id only gets a warning, and if no source or target resolves, the call later fails with a message blaming the edge-type flag. A node listed twice is seeded twice. The draft proposes making an unresolvable source or target a command error (decision 0021), resolving each id once, and reporting which node each id bound to.
+
+- Fix as proposed (Recommended): An unknown source or target is an error, each id is resolved once, and the binding is reported.
+- Keep FuSION 1 behaviour: Warnings only.
+
+**Answer:** Fix as proposed (Recommended), written into S4.02
+
+**Q3 (S4.03).** S4.03 · The bound and path length. Length is the number of edges, so the bound b admits paths of up to b edges, inclusive. Edges have no weights, and a complex is reached by an edge into the complex itself. Indirect relations aren't edges at all (S2.11, whose '1+' option would make each count as one hop). b < 0 is an error. b = 0 is accepted but can never keep an edge between a distinct source and target (S4.18).
+
+- Keep (Recommended): Edge-count length, b ≥ 0, inclusive.
+- Keep, but reject b = 0: The same, but refuse b = 0 up front, since it can't connect a distinct source and target.
+
+**Answer:** Keep (Recommended), written into S4.03
+
+**Q4 (S4.04).** S4.04 · Which edges can be traversed. Every build fixes this at compile time: an edge is never followed if any of its subtypes is component, association, dissociation or mapping. So a relation KEGG marks as both binding and signed (e.g. activation + association) is dropped with the binding: 21 edges in the reference graph and 40 in the full graph. Only 8 and 4 of those are chemokine ligand → receptor edges (hsa04062); the rest come from other pathways. Following them naively would also follow their reverse copies (S2.10). The draft proposes making the non-traversable set a run setting, recorded in the output, defaulting to today's four. Whether signed bindings should be traversable is your biological call (open question 4).
+
+- Fix as proposed (Recommended): A run setting with today's four subtypes as the default, recorded in the output (S1.29).
+- Fix, traverse signed bindings: The same setting, but a binding that also carries activation, inhibition or phosphorylation is followed in the direction KGML records, not its reverse copy. Corridors change, which decision 0023 allows.
+- Keep FuSION 1 behaviour: A compile-time rule, as now.
+
+**Answer:** Fix as proposed (Recommended), written into S4.04
+
+## 058 · Poll · 2026-11-11 20:10
+
+The second stage 4 item poll.
+
+**Q1 (S4.05).** S4.05 · The edges_to_tgt flag acts only on edges into a target. 1 drops expression or repression edges, 2 drops activation, inhibition or phosphorylation edges, and anything else, 0 included, filters nothing. The batch names ($ONLY_ACT_EDGES_TO_TARGET = 1, $ONLY_EXPR_EDGES_TO_TARGET = 2) and the GUI labels promise more than this: flag 2 also keeps subtype-less, dephosphorylation and other edges, and a typo like 3 silently means no filter. 75 batches pass 0, 11 pass 2 and none passes 1. The draft proposes accepting only 0, 1, 2 or their names, and making each rule match its name, which gives the same corridors on every graph measured.
+
+- Fix as proposed (Recommended): Only 0, 1 and 2, or their names. 'Expression only' keeps just expression/repression edges into a target, and 'activation only' just activation/inhibition/phosphorylation.
+- Keep FuSION 1 behaviour: The drop rules as they are, and any other value means no filter.
+
+**Answer:** Fix as proposed (Recommended), written into S4.05
+
+**Q2 (S4.06).** S4.06 · Excluded nodes are never seeded or entered, but one can still slip into the corridor as an isolated member of a copied complex (S4.12). No batch or GUI script excludes anything. The batches avoid the FSC in pathz3 instead, so both solves run on the same corridor, though not on the same observations: avoiding an up-regulated FSC such as JUN also drops it from the up set (Up: 3, then Up: 2). The draft proposes keeping the exclusion list and never letting an excluded node into the corridor as a complex member.
+
+- Fix as proposed (Recommended): Keep exclusions, and keep excluded nodes out of the corridor entirely.
+- Keep FuSION 1 behaviour: Excluded nodes can re-enter as complex members.
+
+**Answer:** Fix as proposed (Recommended), written into S4.06
+
+**Q3 (S4.07).** S4.07 · Forward search. Breadth-first search from the sources over traversable edges, giving ds(v), the exact shortest distance from the nearest source, for every node within the bound: 354 nodes in the reference run, 1186 in the full run. The avoidable costs are implementation details, such as about 0.92 million queue comparisons in the full run and copied vectors. The draft proposes porting the search and its distances.
+
+- Keep (Recommended): Port the search and its distances, without the avoidable costs.
+- Keep, export distances: The same, and also write each corridor node's distances to the nearest source and target, for inspection and for the graph display (decision 0022).
+
+**Answer:** Keep, export distances, written into S4.07
+
+**Q4 (S4.08).** S4.08 · The forward graph: an intermediate copy. Every edge with both ends in the forward set is copied into a new registered graph, complex members included, and the backward search runs over that copy. Nothing uses it afterwards, it's never freed, and in the full run it's 2.1 times the corridor's nodes. The draft shows the copy isn't needed: running the backward search on the forward set inside the input graph gives the same corridor, which the verifier confirmed on four cases. The draft proposes dropping it.
+
+- Drop (Recommended): Search backward within the input graph. The corridor is unchanged, and its graph id becomes one lower; no batch hard-codes graph ids.
+- Keep: Build the intermediate forward graph, as now.
+
+**Answer:** Drop (Recommended), written into S4.08
+
+## 059 · Subagent prompt · Verification sent for stage 7 · 2026-11-11 20:11
+
+Entry 048's text, word for word, with `<STAGE FILE>` replaced by `docs/spec/07-gsea-shortlisting.md`, sent once the stage 7 draft was written ([decision 0026](../decisions/0026-maximum-parallel-subagents.md)).
+
+## 060 · Poll · 2026-11-11 20:16
+
+The third stage 4 item poll.
+
+**Q1 (S4.09).** S4.09 · Backward search and the keep rule. A breadth-first search back from the targets over the forward set gives dt(v), the distance to the nearest target. A node is kept if ds(v) + dt(v) ≤ b, and an edge u → v if both ends are kept and ds(u) + 1 + dt(v) ≤ b. Those are exactly the nodes and edges on some walk of at most b edges from a source to a target; the reference corridor has 115 nodes and 370 edges. The draft found no problem in the rule itself; walks versus simple paths is S4.11.
+
+- Keep (Recommended): Port the keep rule.
+- Hold for stage 5: Decide after stage 5's review shows how the solve uses the corridor.
+
+**Answer:** Keep (Recommended), written into S4.09
+
+**Q2 (S4.10).** S4.10 · Several sources or targets. The corridor is the union over every (source, target) pair, cross pairs included, and a node that is both a source and a target keeps its cycles of up to b edges. pathz3 solves only the pairs in its connect-pairs file, so the corridor can hold paths for pairs no solve asks about. No batch uses more than one source or one target.
+
+- Keep (Recommended): The union, which is never too small for any pair.
+- Fix: solved pairs only: Build the corridor only for the pairs pathz3 will solve.
+
+**Answer:** Fix: solved pairs only, written into S4.10
+
+**Q3 (S4.11).** S4.11 · Walks, not simple paths. The keep rule admits walks, so the corridor keeps edges that no bounded simple path uses: 31 of 370 in the reference run and 54 of 2138 in the full run. They are self-loops, edges into the source, edges out of the target, and edges whose only bounded walks repeat a node. Stage 5's draft, not yet reviewed, finds that such off-path edges do change results, because pathz3 counts an edge as relaxed whenever both its ends are present (S5.13). The draft proposes keeping the walk rule, since exact simple-path pruning is exponential, and trimming the cheap cases if stage 5 confirms they matter.
+
+- Decide with stage 5 (Recommended): Hold until S5.13 is settled. If off-path edges keep counting as relaxed, trim self-loops and edges into a source or out of a target; if not, keep the walk rule as it is.
+- Keep the walk rule: Port it unchanged, now.
+- Trim the cheap cases now: Drop self-loops, edges into a source and edges out of a target from the corridor, whatever stage 5 decides.
+
+**Answer:** Decide with stage 5 (Recommended), written into S4.11 as deferred
+
+**Q4 (S4.12).** S4.12 · Complex members come along with their complex. Copying a group node copies all its members, whether or not they lie on a bounded walk, so members with no corridor edges appear: 3 of the 115 nodes in the reference corridor (DOCK2, ELMO1/ELMO2, TIRAP) and 41 of 592 in the full one. They are the isolated nodes sz reports. They enter the id lookup and the solver, and an excluded node can re-enter this way. Stage 5's draft says isolated expressed members count only in Up: and the relaxation-bound clamp, not in the objective, which stage 5's review will confirm. The draft proposes keeping each complex's member list, but adding a member as a corridor node only if it's kept in its own right.
+
+- Fix as proposed (Recommended): Members stay listed on their complex, but only members kept in their own right become corridor nodes.
+- Keep FuSION 1 behaviour: Every member comes along, as now.
+
+**Answer:** Fix as proposed (Recommended), written into S4.12
+
+## 061 · Subagent prompt · Verification sent for stage 8 · 2026-11-11 20:17
+
+Entry 048's text, word for word, with `<STAGE FILE>` replaced by `docs/spec/08-frontend-workflow.md`, sent once the stage 8 draft was written ([decision 0026](../decisions/0026-maximum-parallel-subagents.md)).
+
+## 062 · Poll · 2026-11-11 20:21
+
+The fourth stage 4 item poll.
+
+**Q1 (S4.13).** S4.13 · Copying attributes and merging duplicate edges. Copied nodes keep their type, key, member ids (registered first-claim-wins), labels and description. A copied edge merges with an existing one when source, target, type and ordered subtype list match, or match plus dummy_u_to_d; pathways are unioned and the larger score kept. In the full run 4126 selected edges become 3535, because the old master's 768 duplicate relations first merge here. After stage 2's fixes raw reads have no duplicates, but S2.27's compatibility reader keeps them. The draft proposes porting the copy and the merge rule as described.
+
+- Keep (Recommended): Port the attribute copy and the merge rule.
+- Keep, and report merges: The same, and print how many duplicate edges the corridor merged, since sz counts before and after fb_rch aren't comparable.
+
+**Answer:** Keep (Recommended), written into S4.13
+
+**Q2 (S4.14).** S4.14 · Node and edge ids change with every copy. Ids come from session-wide counters, so every copy renumbers everything: EGFR is node 3273 in the full run's master graph, 7596 in the phase-1 corridor and 10044 in the phase-2 corridor. Outputs mix these ids, so comparing the two solves has to go through gene keys. The draft proposes naming nodes and edges in outputs by stable keys (the rep id for a node; source, target and subtypes for an edge), with any internal id that does appear meaning the same thing in every step of a run.
+
+- Fix as proposed (Recommended): Stable keys in every output, and internal ids, where shown, stable across a run.
+- Keep FuSION 1 behaviour: Fresh ids per copy, as now.
+
+**Answer:** Fix as proposed (Recommended), written into S4.14
+
+**Q3 (S4.15).** S4.15 · The corridor rebuilds the id lookup. pathz3 resolves its pairs and every node file (up, down, essential, avoid, …) against the corridor's own lookup, rebuilt first-claim-wins from the copied nodes, not against the input graph's. In the full run that moves 57 of 1399 ids to a different node. For example, ATF2's own node is outside the corridor, so hsa1386 resolves to the 10-gene CREB3-family node, and naming ATF2 as the FSC would force the whole family. The draft proposes resolving every id once per run, against one lookup, and carrying that binding into the corridor.
+
+- Fix as proposed (Recommended): One lookup per run, and the corridor inherits its bindings.
+- Keep FuSION 1 behaviour: The corridor rebuilds its own lookup.
+
+**Answer:** Fix as proposed (Recommended), written into S4.15
+
+**Q4 (S4.16).** S4.16 · The corridor decides which expression changes pathz3 sees. Up- or down-regulated genes off the corridor are dropped, and pathz3 lowers its node-relaxation bound to the number left: of the reference run's 45 changed genes, 3 remain, so the requested bound of 8 becomes 3. Nothing lists the genes left out. S3.12 already decided to report them, as its 'outside the corridor' group. The draft proposes keeping the rule and writing those genes out together with the corridor's parameters.
+
+- Fix as proposed (Recommended): Keep the rule, and write out the out-of-corridor genes with the corridor's parameters, as S3.12's second group.
+- Keep FuSION 1 behaviour: They vanish silently.
+
+**Answer:** Fix as proposed (Recommended), written into S4.16
+
+## 063 · Poll · 2026-11-11 20:27
+
+The fifth stage 4 item poll.
+
+**Q1 (S4.17).** S4.17 · Console output. A successful call prints Bound: 10, the 'N out of M edges to target excluded' line, fwd nodes 354, eids 2529, edges 895, the forward graph's node and edge counts, the corridor's, and Reachability Graph: 86. Three different node counts appear, with no label saying what each counts, and M counts edges into a target examined from any node within the bound, twice for a source listed twice. The draft proposes printing the same counts, each labelled with what it counts. The forward-graph line goes with S4.08.
+
+- Fix as proposed (Recommended): The same counts, each labelled.
+- Keep FuSION 1 behaviour: Unlabelled counts, as now.
+
+**Answer:** Fix as proposed (Recommended), written into S4.17
+
+**Q2 (S4.18).** S4.18 · Failures, and what graph 0 names afterwards. A failed call prints 'Error: reachability didn't work' and the batch carries on. With no such graph, or b < 0, nothing is created. If the flag dropped every edge into the target, which also happens when no source or target resolved, the message blames the edge types and graph 0 is an empty graph. If no target is reachable it prints 'Exiting.' without exiting, and graph 0 is empty. The next pathz3 0 then runs on the input graph or on an empty one. The draft proposes that a failure leaves no graph and stops the run (S1.28), with a message naming the real cause, and that an empty corridor counts as a failure.
+
+- Fix, empty = result (Recommended): Real failures stop the run, with a message naming the cause. An empty corridor ('no path within b') is reported as a result, not a failure, and its solve is skipped, so one small bound doesn't halt a bound sweep (decision 0018). The empty-corridor part is my refinement.
+- Fix as drafted: An empty corridor also counts as a failure and stops the run.
+- Keep FuSION 1 behaviour: Carry on after failures, as now.
+
+**Answer:** Fix, empty = result (Recommended), written into S4.18
+
+**Q3 (S4.19).** S4.19 · Trace files fb_rch and fb_rch_back. Two fixed-name debug traces are written to the launch directory on every call, one entry per node each search dequeued, mixing rep ids with input-graph node ids. A two-call batch loses the first call's files, a failed call can leave a stale fb_rch_back, and nothing reads either. The draft proposes writing them only under the debug option (S1.29), into the run's output directory (S1.26), naming nodes by rep id.
+
+- Fix as proposed (Recommended): Debug-only traces in the run's output directory, naming nodes by rep id.
+- Drop them: No trace files at all; S4.07's exported distances cover inspection.
+- Keep FuSION 1 behaviour: Always written, in the launch directory.
+
+**Answer:** Fix as proposed (Recommended), written into S4.19
+
+**Q4 (S4.20).** S4.20 · The corridor is computed twice per batch. 84 batch files and the GUI call fb_rch again before phase 2, because pathz3's undirected copy moves graph 0, and the fresh corridor also gives the second solve a graph pathz3 hasn't written to. In every log both corridors match. That costs a second forward graph and corridor (1264 + 592 nodes in the full run) and shifts every id between phases. Stage 5's draft says pathz3 can't safely run twice on one corridor, because some helpers keep function-static state. The draft proposes computing the corridor once and letting both solves use it; decision 0019 also needs it saveable.
+
+- Fix as proposed (Recommended): One corridor per run, shared by both solves and saveable. 2.0's solve must then leave the corridor unchanged, which FuSION 1's doesn't (stage 5).
+- Keep FuSION 1 behaviour: Recompute the corridor before each solve.
+
+**Answer:** Fix as proposed (Recommended), written into S4.20
