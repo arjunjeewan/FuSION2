@@ -1815,3 +1815,252 @@ Entries 062 to 072 give estimated times instead of the times they were logged. T
 | 070 | 2026-11-11 21:04 |
 | 071 | 2026-11-11 21:25 |
 | 072 | 2026-11-11 21:30 |
+
+## 074 · Poll · 2026-11-11 21:38
+
+The stage 5 commit poll.
+
+**Q1 (Commit).** Stage 5 (encoding and Pareto solve) is fully decided: 31 items, 27 fix / 2 keep / 2 drop. May I commit it locally as one commit? It would contain the new docs/spec/05-encoding-and-solve.md; two cross-stage notes (stage 4: S4.11 settled by S5.13 and its open question 1 resolved; stage 2: open question 5 resolved, as the solver never reads dummy_u_to_d); and prompt log entries 064 to 073. Entry 073 is a correction listing the real logging times of entries 062 to 072, whose stated times were estimates up to 28 minutes off. Message: 'Review spec stage 5: encoding and Pareto solve', ending with the Co-Authored-By line. The stage 6, 7 and 8 drafts stay out.
+
+- Commit as shown (Recommended): One local commit with those four files; nothing is pushed.
+- Change something first: Tell me what to change before committing.
+
+**Answer:** Commit as shown (Recommended), committed as 5448bf4
+
+## 075 · Poll · 2026-11-11 22:51
+
+The first stage 6 item poll. Before it, the stage 6 verifier's corrections were applied to the draft:
+
+- S6.26's example pair;
+- the `not_present` counts, 1935 node and 667 edge lines in the relaxation files dated 2026-11-10 or earlier (S6.02, S6.15, open question 4);
+- S6.05's three b10 runs and how its edges are counted;
+- a real one-column collapse case in S6.13;
+- `alt:-1` in S6.01;
+- the unwritable prefix in S6.09;
+- the ipython dependency in S6.11;
+- the legend's dash patterns in S6.16;
+- the manifest's escapes in S6.19;
+- CDKN1A and FOXO6 do appear on the page cited in S6.06;
+- open question 3, answered yes (r5_mcl1_stat3).
+
+Claude also corrected S6.14's citation of `edge_has_subtype`, which ends at line 1874, not 1873.
+
+**Q1 (S6.01).** S6.01 · psp command line: 'psp <solution_file> <src> <tgt> <path_mode> <po_selector> <out_prefix>', path_mode shortest | alt[:W] | all | subgraph. No batch file or GUI has ever called psp. A missing token arrives as an empty string (a missing prefix writes '_n7_e0.dot' into the launch directory), extra tokens are ignored, 'alt:-1' is accepted and draws only the unconnected source and target, and errors leave the exit status unchanged. The draft proposes keeping the six arguments (named, decision 0018) and rejecting an unknown mode, a bad window, missing or extra arguments, and identical output names for the two cases. Whether psp survives as its own command is S6.26.
+
+- Fix as proposed (Recommended): Named arguments, strict validation; psp's survival as a command decided in S6.26.
+- Drop psp now: Unused, so leave it out of 2.0; S6.26 can still carry its path filter into the one renderer.
+- Keep FuSION 1 behaviour: As now.
+
+**Answer:** Fix as proposed (Recommended), written into S6.01
+
+**Q2 (S6.02).** S6.02 · Reading the solution and relaxation dumps. psp (C++) and pex (Python) each parse temp_*_solutions.txt and temp_*_relaxations.txt: blocks start at 'Current PO point: N nodes, M edges relaxed', only lines under 'Solution 1' are kept, and tab-split lines with 6 fields are nodes and 11+ are edges. Both key everything by rep id, so the nid shift between solves doesn't affect them. Problems: later witnesses are ignored silently; a PO point with no witness (its witness solve ended unknown) is skipped silently by psp and drawn as an empty page by pex, with no mention of the timeout. 12 such points sit in four old runs, and it still happens after the 2026-11-09 fix (r5_mcl1_stat3, without FSC, (7,0)). The draft proposes one documented reader for the renderers, rep-id keys, every recorded witness read, and a missing witness marked as such. Stage 5 already decided the solve keeps its model (S5.26) and uses stable keys (S5.27).
+
+- Fix as proposed (Recommended): One documented reader, all witnesses, missing witnesses marked.
+- Keep FuSION 1 behaviour: Two parsers, first witness only, witness-less points skipped or drawn empty.
+
+**Answer:** Fix as proposed (Recommended), written into S6.02
+
+**Q3 (S6.03).** S6.03 · Choosing PO points. Both renderers take 'all' (every point, ascending (n, e)), 'least' (smallest n + e, ties to smaller n) or '<n>,<e>' (that point; an unknown point prints the available ones and draws nothing). All 24 pex calls use 'all'. Problems: points without a witness are in pex's set but not psp's (S6.02), so 'least' can pick an empty page in pex; psp's sscanf accepts trailing text ('7,1x' gives 7,1), pex rejects it. The draft proposes keeping the three selectors: the witness-less case is fixed by S6.02 and malformed arguments are already rejected under S1.05.
+
+- Keep (Recommended): all, least and <n>,<e> as they are, with S6.02 and S1.05 covering the problems.
+- Fix: add selectors: Also allow a list or range of points; tell me which forms in a note.
+
+**Answer:** Keep (Recommended). Not yet written into S6.03: the question's premise that S1.05 rejects malformed arguments was imprecise, so a follow-up question confirms it (entry 076).
+
+**Q4 (S6.04).** S6.04 · psp's path modes. Over edges with both ends active, psp runs a forward search from the source and a backward one from the target, then keeps an edge whose shortest walk through it is: equal to the shortest path length L (shortest); at most L + W (alt, W = 2 by default); any finite length (all); or every candidate edge with no test (subgraph). It costs O(V + E) per point. On the full JUN run with FSC at (2,6) it gives 6 nodes/6 edges (shortest), 6/6 (alt), 76/103 (all) and 79/106 (subgraph). alt and all work on walks, not simple paths: an edge passes if a walk through it fits, even when no simple path does, the same issue as S4.11. No such edge shows up in that run. Which edges are candidates is wrong in two ways, handled in S6.05 and S6.06. The draft proposes keeping the filter and the four modes, documented as walk-based, since enumerating simple paths would be exponential.
+
+- Keep (Recommended): Distance filter and four modes, documented as walk-based.
+- Fix: simple paths for alt: Enumerate simple paths up to L + W for alt, accepting exponential worst cases on dense corridors.
+
+**Answer:** Keep (Recommended), written into S6.04
+
+## 076 · Poll · 2026-11-11 22:55
+
+The second stage 6 item poll, with a follow-up to entry 075's S6.03 question and stage 6's open question 5. After it, S6.03's proposed call was corrected to drop the imprecise S1.05 premise.
+
+**Q1 (S6.03).** S6.03 follow-up. In my last question I said malformed selectors are 'already rejected under S1.05'. That was imprecise: S1.05 only lets a command tell a missing argument from an empty one. Today pex rejects a selector with trailing text such as '7,1x', while psp reads it as 7,1. Which form should 'keep' port?
+
+- Keep, strict (Recommended): all, least and <n>,<e>; trailing text such as '7,1x' is an error, as in pex.
+- Keep, lenient: Trailing text is ignored, as in psp.
+
+**Answer:** Keep, strict (Recommended), written into S6.03
+
+**Q2 (S6.05).** S6.05 · psp draws relaxed inhibition edges as ordinary path edges. Its candidate edges are those with both ends active, whatever the sign, and it never reads the relaxations file. Under the solver's rule an inhibition or repression edge with both ends active is relaxed and counts against the edge budget. Example, full JUN run without FSC, point (2,7): one shortest path is EGFR → SRC → CDC42 → MAPK14 → TP53 → DUSP1 ⊣ MAPK1 → ETS1 → CXCL8, and DUSP1 ⊣ MAPK1 (inhibition_dephosphorylation) is one of that point's 7 relaxed edges, drawn as a plain hop. Each solution file of the three b10 full runs has 3 to 5 such edges. The draft says a path view must use the solver's polarity rule and either follow only honoured edges or mark relaxed ones. The solver's own paths ignore signs (S5.11), and S5.13 already decided that sign-consistent routes are reported separately.
+
+- Fix: mark relaxed edges (Recommended): Paths follow the witness's edges as the solver chose them, with relaxed ones drawn as relaxed; sign-consistent routes come from S5.13's separate report.
+- Fix: honoured edges only: The path view follows only edges whose effect the solution honours.
+- Keep FuSION 1 behaviour: Relaxed inhibitions drawn as plain path edges.
+
+**Answer:** Fix: mark relaxed edges (Recommended), written into S6.05
+
+**Q3 (S6.06).** S6.06 · Both renderers hide honoured inhibitions and the nodes they switch off. They build the explanation from edges whose ends are both active; pex then adds the relaxed overlay. Under the solver's rule an inhibition is honoured exactly when its ends differ (active ⊣ inactive or inactive ⊣ active), and the solutions file lists such edges as present, but neither renderer draws one, nor a present inactive node unless it ends a relaxed edge. Example, full JUN run with FSC, (7,0): CDKN1A ⊣ CDK2 ⊣ FOXO6 is a present double negative, with CDK2 and ID1 present and inactive; CDKN1A and FOXO6 are on the page, CDK2, ID1 and both inhibition edges are not. Across 569 renders, 1192 such present edges and 302 present nodes go undrawn, so a down-regulated gene explained through an inhibition never shows its explanation. The draft proposes drawing every present node and edge of the witness, with each node's activity and whether each edge is honoured or relaxed. Choosing that also answers stage 6's open question 5: the explanation is every present element of the witness.
+
+- Fix as proposed (Recommended): Draw the whole witness: every present node with its activity, every present edge as honoured or relaxed.
+- Fix, active core by default: Same, but the page opens on the both-active core and the inactive part is one click away.
+- Keep FuSION 1 behaviour: Both-active edges plus the relaxed overlay.
+
+**Answer:** Fix as proposed (Recommended), written into S6.06 and stage 6's open question 5
+
+**Q4 (S6.07).** S6.07 · psp's DOT and SVG output. For each point psp writes <prefix>_n<n>_e<e>.dot (source green, target red, the rest grey, one edge per distinct source/target/subtype, so expression + activation gives two parallel edges) and runs 'dot -Tsvg' through system(). File names reach the shell unquoted (a space breaks it, a metacharacter runs), labels aren't escaped (a quote in a symbol breaks the file), a missing dot is reported only after the .dot is written, each point costs one dot process, and the drawing has no expression colours, polarity or relaxations. FuSION 1's Linux README wrongly says dot must be at /usr/bin/dot and that pex uses it. The draft proposes keeping a static export, escaping names and labels, checking for dot before the run starts (decision 0021), and documenting dot correctly.
+
+- Fix as proposed (Recommended): Static export kept, escaped, dot checked up front, documented correctly.
+- Fix, no Graphviz: Write the static export (e.g. SVG) directly from 2.0, so dot is no longer a dependency.
+- Keep FuSION 1 behaviour: As now.
+
+**Answer:** Fix as proposed (Recommended), written into S6.07
+
+## 077 · Poll · 2026-11-11 22:57
+
+The third stage 6 item poll.
+
+**Q1 (S6.08).** S6.08 · psp's edge-sources CSV. Per point psp writes <prefix>_n<n>_e<e>_edge_sources.csv with header edge_index,source_symbol,source_hsa,target_symbol,target_hsa,subtype,pathway_ids,pathway_names: one row per kept edge line (not deduplicated), sorted by source symbol, target symbol and subtype, fields quoted, pathway ids joined by ';', names from start's pathway-name map. No real CSV exists, since psp was never run. Problems: rows don't match the drawing, because two edge ids with the same source, target and subtype give two rows but one drawn edge (104 rows for 103 edges on the full JUN run, with FSC, (2,6), mode all); a quote inside a field isn't doubled; psp needs start only for this lookup, while pex reads the map file itself. The draft proposes one row per drawn edge listing all its edge ids, standard CSV quoting, and names from the run's one pathway-name map.
+
+- Fix as proposed (Recommended): One row per drawn edge with all its edge ids, standard quoting, one name map.
+- Keep FuSION 1 behaviour: One row per edge line, as now.
+
+**Answer:** Fix as proposed (Recommended), written into S6.08
+
+**Q2 (S6.09).** S6.09 · psp's messages and failures. Each drawn point prints 'plot_solution_paths: PO (n,e) mode=<mode> -> <svg> (<k> nodes, <m> edges); sources -> <csv>'; errors (unreadable file, no points parsed, bad selector or mode, missing path, Graphviz status) go to stderr and the batch carries on. Problems: <m> counts CSV rows, not drawn edges (S6.08); output streams aren't checked, so with an unwritable prefix the DOT file is never written, dot fails, and psp prints 'graphviz returned 512' followed by its success line; no failure changes the exit status. The draft proposes that a failure fails the command, as S1.28 decided, and that the printed counts match what is drawn.
+
+- Fix as proposed (Recommended): Failures fail the command; counts match the drawing.
+- Keep FuSION 1 behaviour: As now.
+
+**Answer:** Fix as proposed (Recommended), written into S6.09
+
+**Q3 (S6.10).** S6.10 · pex command line: 11 positional tokens (four solution/relaxation files, LFC file, pathway map, src, tgt, both|incl|excl, all|least|<n>,<e>, out prefix) plus optional site dir, run key and PO png. The dispatcher builds a python3 command string and runs it through system(); a file argument of 0 means none. 24 batch files call pex: 22 with 'both all', and the single-solve r7_epha2_curated and r8_phlda1_curated with '0 0' and 'incl all'; none passes the site tokens. Problems: the optional-token size tests are always true (it works only because empty strings are skipped); src, tgt, cases and po aren't quoted and no value is escaped, so an empty source gives an argparse error reported as 'renderer returned 512', and a quote or $ in a path is read by the shell; run title, takeaway and site title can only be set by running the script directly; extra tokens are ignored. The draft proposes named arguments (decision 0018), each value passed as its own argument with no shell, missing required arguments rejected, and every site option settable from a batch.
+
+- Fix as proposed (Recommended): Named arguments, no shell, required ones checked, all site options available.
+- Keep FuSION 1 behaviour: Positional tokens through a shell command string.
+
+**Answer:** Fix as proposed (Recommended), written into S6.10
+
+**Q4 (S6.11).** S6.11 · Finding the helpers and what they need. pex's script is <binary's directory>/supporting_files/plot_explanation.py, found on Linux via /proc/self/exe and on macOS via _NSGetExecutablePath (unresolved, possibly relative), falling back to '.'; S1.20 already decided to fix that lookup. It runs on the first python3 on PATH and needs pyvis plus jinja2, networkx, jsonpickle and ipython; the repo's .venv has them, /usr/bin/python3 here doesn't, and the repo has no requirements file. psp needs dot on PATH (only in a conda env on this machine). plot_po.sh is named by an absolute path in each batch and needs bash, awk, mktemp and gnuplot with pngcairo. Nothing is checked before the run: a missing pyvis shows up only at the end. The draft proposes S1.20's single install-directory lookup, every helper's dependencies listed in one place, and all of them checked before the first step runs (decision 0021).
+
+- Fix as proposed (Recommended): One lookup, one dependency list, checked before the run starts.
+- Keep FuSION 1 behaviour: Three conventions, dependencies found when their step runs.
+
+**Answer:** Fix as proposed (Recommended), written into S6.11
+
+## 078 · Poll · 2026-11-11 22:58
+
+The fourth stage 6 item poll.
+
+**Q1 (S6.12).** S6.12 · pex's other inputs. Every file argument is optional: '0', an empty string or a path that isn't a regular file all count as absent, silently. A missing solutions file skips that case with a message; a missing relaxations file silently drops the overlay; a missing LFC file makes the hover show 'lfc: n/a'; a missing pathway map shows ids instead of names. pex parses the LFC file (first two fields, float(), bad lines skipped, a repeated gene keeps its last value) and the pathway map (split at the first tab, else ' => ', else the first space) itself, with rules that differ from the C++ readers (S3.14, S1.19). A mistyped path therefore silently removes part of the output, against decision 0021. The draft proposes that a named file that can't be read is an error (decision 0021), '0' means not given, and pex reuses the run's one LFC reader (S3.14) and one pathway-name map (S1.19).
+
+- Fix as proposed (Recommended): Unreadable named files are errors; one LFC reader and one name map for the whole run.
+- Keep FuSION 1 behaviour: Silent fallbacks and pex's own parsers.
+
+**Answer:** Fix as proposed (Recommended), written into S6.12
+
+**Q2 (S6.13).** S6.13 · pex: which nodes are drawn, the layout and the relaxed-node table. pex draws the active nodes, the relaxed nodes and the ends of every drawn pair; any other node is 'parked' in a collapsible table headed 'Relaxed-away nodes (no surviving edge)' (symbol, hsa, log-FC, expression). The layout is hierarchical left to right by hop distance from the source, physics off, with same-level edges curved. The replay parked 1969 nodes in 569 renders. Problems: the table calls every parked node relaxed, but 84 never were (e.g. BCL2, active, whose only edges are honoured inhibitions); and when the source has no drawn edge every node gets level 1 and the drawing collapses into one column (a real case: EGFR, whose only edge is the honoured inhibition EGFR ⊣ CTNND1, parked as 'relaxed-away'). With S6.06's decision those honoured inhibitions are now drawn, so these cases go away and the table would hold relaxed nodes that are not in the witness. The draft proposes keeping the layout and the table, with the table saying why each node is in it.
+
+- Fix as proposed (Recommended): Same layout and table, each row saying why the node is there.
+- Keep FuSION 1 behaviour: Table labels every parked node relaxed.
+
+**Answer:** Fix as proposed (Recommended), written into S6.13
+
+**Q3 (S6.14).** S6.14 · pex edge polarity. pex calls an edge inhibitory when any '_'-separated part of its dumped subtype is inhibition or repression, and activating otherwise, which matches the solver's rule since 2026-07-21 (so dephosphorylation and ubiquitination alone count as activation). Within a pair it draws at most one edge per effect: a grey arrow for activation, a red T-bar for inhibition, with subtypes and pathway names in the hover. The only problem is that the rule exists twice, in C++ and in Python, linked by a comment. The draft proposes keeping it, with the polarity rule defined in one place that both the solver and the renderer use.
+
+- Keep (Recommended): Same polarity and one-edge-per-effect drawing, one shared rule.
+- Fix: one edge per subtype: Draw each subtype as its own edge instead of merging by effect.
+
+**Answer:** Keep (Recommended), written into S6.14
+
+**Q4 (S6.15).** S6.15 · pex: how relaxed edges are drawn. Each node pair is drawn one of four ways: (1) nothing relaxed: solid edge per effect; (2) only relaxed records: dashed edge, 'effect REMOVED by relaxation'; (3) kept and relaxed effects differ: purple dotted edge, 'net effect FLIPPED'; (4) the same effect both kept and relaxed: solid edge plus a dashed curved twin. The replay drew 45198 solid, 1917 dashed, 8 flipped and 0 twins: case 4 can no longer happen under the solver's rule. A relaxed edge that isn't in the witness (not_present, 667 lines) is drawn exactly like one that is, and relaxed status is matched on (source, target, subtype) rather than edge id. Stage 6's open question 4, whether not_present edges count as relaxed, is settled by S5.13: they do. The draft proposes keeping cases 1 to 3, dropping case 4, matching relaxed edges by edge id, and showing whether each relaxed edge is part of the witness.
+
+- Fix as proposed (Recommended): Cases 1 to 3, no twin, match by edge id, witness membership shown.
+- Keep FuSION 1 behaviour: All four cases, matched by (source, target, subtype).
+
+**Answer:** Fix as proposed (Recommended), written into S6.15 and stage 6's open question 4
+
+## 079 · Poll · 2026-11-11 23:00
+
+The fifth stage 6 item poll.
+
+**Q1 (S6.16).** S6.16 · pex node colours. Fill follows the observed expression class: up #8CCB4E (green), down #F2A24C (orange), other #DEDEDE (grey). The source has a dark-green border and the target a dark-blue one, both 4 px wide, and relaxed nodes get a dotted border; the hover shows symbol, rep id, lfc, class and flags. Problems: the docstring and RUNNING.md say 'red/blue for up/down', which is wrong, since the code draws green/orange; the legend's dash patterns (6,4 and 2,3) and 3 px rings differ from what is drawn ([8,6], [2,6], 4 px); the fill shows the observed class, not the solved activity, which only the hover shows (more visible now that S6.06 draws inactive nodes); and psp uses another scheme (S6.26). The draft proposes porting the drawn colours and treating the docs as the error.
+
+- Keep, legend fixed (Recommended): Port fill and borders, make the legend match the drawing, correct the docs; how solved activity is shown visually goes to decision 0022's design.
+- Fix: fill by activity: Fill shows the solved activity, with the observed class shown another way (e.g. ring or badge).
+- Keep FuSION 1 behaviour: Colours and legend exactly as now.
+
+**Answer:** Keep, legend fixed (Recommended), written into S6.16
+
+**Q2 (S6.17).** S6.17 · pex's HTML page. One page per case and point, <prefix>_<incl|excl>_n<n>_e<e>.html, built by pyvis and then patched with regular expressions (removing pyvis's header and Bootstrap, adding responsive CSS, the title, subtitle, legend, table and a fit-on-load script). The title is 'Explanation subgraph (with FSC|without FSC) : <src> → <tgt> — PO n nodes, e edges relaxed', and the subtitle is always 'Showing one representative solution (of several) found at this PO point.' Problems: every incl page says 'with FSC', including the single-solve runs r7_epha2_curated and r8_phlda1_curated, which have no FSC; the title names source and target by rep id, not symbol; '(of several)' is hard-coded even when the witness is unique; and the regex patching ties the page to pyvis 0.3.2's exact markup. The draft proposes a title built from the run's real case and from symbols, 'of several' only when known, and the page generated directly instead of patching a library template.
+
+- Fix as proposed (Recommended): Correct case and symbols in the title, honest subtitle, page generated directly.
+- Keep FuSION 1 behaviour: pyvis page patched by regular expressions, fixed wording.
+
+**Answer:** Fix as proposed (Recommended), written into S6.17
+
+**Q3 (S6.18).** S6.18 · Every pex page carries its own copy of vis.js. Pages inline vis-network's JavaScript and CSS so each works offline as one file. On 2026-11-11 runs/ held 238 pex pages, 174.5 MB, each over 700 KB; in the reference run's 707 KB page about 97% is the library and about 7 KB is the graph. The public site holds 37 such pages, 27 MB. The draft proposes shipping the library once per output directory or site, or serving it from the 2.0 frontend, keeping pages usable offline.
+
+- Fix as proposed (Recommended): One copy of the library per output directory or site (or served by the frontend); pages stay usable offline.
+- Keep FuSION 1 behaviour: Self-contained pages, each with its own library copy.
+
+**Answer:** Fix as proposed (Recommended), written into S6.18
+
+**Q4 (S6.19).** S6.19 · pex site mode. With --site-dir D, pages go to D/<run-key>/ (prefix forced to pex, --out-prefix silently ignored); pex writes a run index page (title, the Pareto PNG, each case's PO points linked to their pages) and manifest.json, then rebuilds D/index.html as a landing page with one card per run (thumbnail, title, takeaway). No batch uses it: the three-run public site was built by running the script directly with --run-title and --takeaway, which a batch can't set. The manifest file is never explicitly closed. The draft proposes keeping the static report (run page, manifest, landing page) with every option settable from a batch; whether the 2.0 frontend replaces it is for decision 0022's design.
+
+- Fix as proposed (Recommended): Keep the static report, every option settable from a batch; frontend role decided under 0022.
+- Drop site mode: Leave publishing to the 2.0 frontend.
+- Keep FuSION 1 behaviour: As now.
+
+**Answer:** Fix as proposed (Recommended), written into S6.19
+
+## 080 · Poll · 2026-11-11 23:01
+
+The sixth stage 6 item poll.
+
+**Q1 (S6.20).** S6.20 · pex's messages and exit status. Each page prints 'plot_explanation: <case> PO (n,e) -> <file> (<k> nodes, <m> edges)', then a total line. If nothing is drawn, the script prints 'nothing rendered' and exits 1, and the dispatcher prints 'plot_explanation: renderer returned 256 (is python3 with pyvis installed? script: …)'. Problems: the dispatcher prints the raw wait status (256 for exit 1, 512 for an argparse error) with the same pyvis hint whatever the cause; a run where one case is skipped still exits 0; the batch carries on regardless. The draft proposes reporting the actual cause, and that a failure fails the command, as S1.28 decided.
+
+- Fix as proposed (Recommended): Real cause reported; failures fail the command.
+- Keep FuSION 1 behaviour: Raw status and one generic hint.
+
+**Answer:** Fix as proposed (Recommended), written into S6.20
+
+**Q2 (S6.21).** S6.21 · A solve without PO points leaves the renderers a missing or stale file. When pathz3 finds no PO point it truncates the .dat file but neither creates nor truncates the solutions and relaxations files. In the reference run, plot_po.sh then labels the without-FSC curve 'no solution within bounds' and pex skips that case. If an earlier run left a temp_wo_solutions.txt in the same directory, pex and psp draw that old file as current while the Pareto plot says 'no solution', with no warning; and 'file missing' looks the same as 'no solution'. The draft proposes that stage 5 always writes each case's results, including an explicit 'no PO point' result, and the renderers report that result as such. S5.26 already decided the solution files are always written.
+
+- Fix as proposed (Recommended): Explicit 'no PO point' result, reported by the renderers as such.
+- Keep FuSION 1 behaviour: Missing or stale files as now.
+
+**Answer:** Fix as proposed (Recommended), written into S6.21
+
+**Q3 (S6.22).** S6.22 · plot_po.sh's arguments and how batches call it. It takes 12 positional arguments under set -eu (WITH.dat, WITHOUT.dat, OUT.png, SRC, TGT, FSC, FSC_ID, BOUND, COEXP, FROZEN, NODE_UB, EDGE_UB). 22 batch files call it through 'exec cd $WRITE_DIR; bash /home/ks-149-u24/…/plot_po.sh …', all with bounds 8 and 8, with source, target and FSC labels typed by hand. Problems: an absolute path into one user's checkout; hand-typed labels can drift from the ids; a variable with an empty value vanishes and shifts every later argument; only two curves can be drawn, so single-solve runs get no plot; 'mktemp --suffix' is GNU-only (open question 1); the exit status is ignored. The draft proposes a built-in Pareto plot step that takes the run's own results, ids and symbols and draws one or two curves. Where and with what the plot is drawn is already deferred to Phase 2; your standing preference for PO curves is gnuplot, never matplotlib.
+
+- Fix as proposed (Recommended): Built-in plot step from the run's own data, one or two curves; tool chosen in Phase 2.
+- Fix, keep plot_po.sh: Keep the script, called by the binary with the run's own data and labels instead of from batches.
+- Keep FuSION 1 behaviour: Batches call the script by absolute path.
+
+**Answer:** Fix as proposed (Recommended), written into S6.22
+
+**Q4 (S6.23).** S6.23 · The Pareto plot's look (plot_po.sh). A pngcairo image, 980×690, Liberation Sans 13 on #fcfcfb, titled '<SRC> → <TGT> · Pareto frontier', with a subtitle giving FSC, bound, coexpression and frozen thresholds and the two relaxation limits. Axes are 'Node relaxations' and 'Edge relaxations' over [−0.5, UB + 0.5] with integer tics, a light grid and left/bottom borders. The with-FSC curve is blue #2a78d6 with circles, the without-FSC curve red #e34948 with squares, each marker on a background-coloured halo; an empty curve gets a key entry 'no solution within bounds'. Problems: the subtitle prints the coexpression and frozen thresholds even when the run didn't use them, and a missing Liberation Sans is silently replaced. The draft proposes porting the look as the 2.0 Pareto plot.
+
+- Keep, subtitle fixed (Recommended): Port the look; the subtitle lists only constraints the run used (S5.03 records them) and the font is checked with the other dependencies (S6.11).
+- Keep FuSION 1 behaviour: Port the look exactly, subtitle included.
+
+**Answer:** Keep, subtitle fixed (Recommended), written into S6.23
+
+## 081 · Poll · 2026-11-11 23:01
+
+The last stage 6 item poll.
+
+**Q1 (S6.24).** S6.24 · Points present on both Pareto curves are moved apart. plot_po.sh's two awk passes shift every point found in both .dat files by +0.10 in y on the with-FSC curve and −0.10 on the without-FSC curve, so overlapping frontiers both stay visible; on the FOSB run, whose curves are identical, the PNG shows two parallel lines with touching markers. The offset is in data units, so on screen it shrinks as the edge bound grows: it is tuned for 8, the value all 22 calls pass, and with a larger bound the markers overlap again. The draft proposes keeping the offset but sizing it from the axis range, so the markers touch at any bound.
+
+- Fix as proposed (Recommended): Offset scaled to the axis range.
+- Keep FuSION 1 behaviour: Fixed ±0.10 data-unit offset.
+
+**Answer:** Fix as proposed (Recommended), written into S6.24
+
+**Q2 (S6.25).** S6.25 · Inline gnuplot lines in batch files and GUI templates. 62 of the 89 batch files carry 130 inline 'exec … gnuplot -p -e "…"' lines: 56 open an on-screen window, 60 write $PLOT_FILE as a 900×650 PNG, 12 write $PLOT_FILE_WO_GENE (broken by S1.07), 2 write pareto.png. Both GUIs write only a window line and a PNG line, never psp, pex or plot_po.sh. pathz3's own gnuplot call has been commented out since 2019. Three plot styles coexist, the window lines need a display (pop-ups under the GUI, failure when headless), and nothing checks their status. The draft proposes dropping them: the 2.0 GUI emits the built-in plot step (S6.22), and old batch files keep working because exec passes these lines to the shell (S1.14).
+
+- Drop (Recommended): 2.0 generates only the built-in plot step; old inline lines still run through exec.
+- Keep FuSION 1 behaviour: The 2.0 GUI keeps writing inline gnuplot lines.
+
+**Answer:** Drop (Recommended), written into S6.25
+
+**Q3 (S6.26).** S6.26 · Two renderers that disagree about one solution. psp draws a path filter over the both-active edges, one edge per subtype, source green and target red, no relaxations, as a static SVG plus CSV via Graphviz; no batch calls it. pex draws the whole both-active subgraph plus the relaxed overlay, one edge per effect, nodes filled by expression class, as interactive HTML via Python and pyvis; 24 batches call it. In the reference run at (1,0) psp would draw 10 edges and pex 8 for the same witness. Each carries its own copy of the dump reader and the polarity rule. The draft proposes one explanation renderer in 2.0, offering psp's path filter (S6.04) and edge-source table (S6.08) as options of pex's view, with a static export (S6.07); how it is built is for decision 0022's graph-display design.
+
+- Fix as proposed (Recommended): One renderer; psp's path filter and edge table become options of the pex view.
+- Keep both renderers: psp and pex stay separate commands, sharing one reader and one polarity rule.
+
+**Answer:** Fix as proposed (Recommended), written into S6.26. All 26 stage 6 items are now decided.
