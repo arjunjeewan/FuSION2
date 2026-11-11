@@ -2064,3 +2064,182 @@ The last stage 6 item poll.
 - Keep both renderers: psp and pex stay separate commands, sharing one reader and one polarity rule.
 
 **Answer:** Fix as proposed (Recommended), written into S6.26. All 26 stage 6 items are now decided.
+
+## 082 · Poll · 2026-11-11 23:02
+
+The stage 6 commit poll.
+
+**Q1 (Commit).** Stage 6 (results and plots) is fully decided: 26 items, 20 fix / 5 keep / 1 drop. May I commit it locally as one commit? It would contain the new docs/spec/06-results-and-plots.md (decisions, the verifier's corrections, my S6.14 citation fix, S6.03's corrected premise, and its open questions closed or deferred) and prompt log entries 074 to 081. Message: 'Review spec stage 6: results and plots', ending with the Co-Authored-By line. The stage 7 and 8 drafts stay out.
+
+- Commit as shown (Recommended): One local commit with those two files; nothing is pushed.
+- Change something first: Tell me what to change before committing.
+
+**Answer:** Commit as shown (Recommended), committed as ba62454
+
+## 083 · Poll · 2026-11-11 23:05
+
+The first stage 7 item poll. Before it, the stage 7 verifier's corrections were applied to the draft:
+
+- S7.08: at least five of the 42 fdr:0.25 pathways pass mostly on genes outside their relations, not two (Viral carcinogenesis, Transcriptional misregulation in cancer and Malaria added);
+- S7.05: the stable-sort variant changes 158 ES values, the AVX2 and SSE variants 159;
+- S7.01 and S7.15: 17 of the 19 batches run `gsea` on the line before `mff`; in r7 and r8 an `exec echo` line sits between them;
+- S7.07: `updated_pathways/xml_files` holds 273 KGMLs, 163 of them shared with the other directory;
+- wording: `pip3` in the macOS README (S7.02); the stale-list case prints the script's and C++'s errors, only `mff` is silent (S7.03); gseapy's NaN warning added to the stderr list (S7.17).
+
+Claude checked the 273 count, the README line and the five pathways' presence in the fdr:0.25 shortlist before applying them.
+
+**Q1 (S7.01).** S7.01 · gsea command line: 'gsea <lfc_file> <kgml_list> <selector> <out_list> [<keep_ids>]', long name gsea_select_pathways. C++ checks none of the values and hands them to the Python script; the step works before start, and every batch runs it right before mff (17 of 19 on the next line). The argument count is never checked: with the selector missing the script exits 2; with the shortlist path missing, the whole analysis runs, prints its selection and then dies with FileNotFoundError; extra tokens are ignored. The draft proposes keeping the four arguments, the optional keep list and both names (positional, and by name under decision 0018), and reporting a wrong argument count before the analysis runs.
+
+- Fix as proposed (Recommended): Same arguments and names, count checked before the analysis.
+- Keep FuSION 1 behaviour: Unchecked arguments.
+
+**Answer:** Fix as proposed (Recommended), written into S7.01
+
+**Q2 (S7.02).** S7.02 · Running the GSEA script. C++ builds a 'python3 "…/gsea_select_pathways.py" …' string and runs it with system(), so the arguments pass through sh in double quotes ($, backquote, " or \ in a path get interpreted). python3 is whichever is first on PATH: the sweep launchers put the repo's .venv first (Python 3.12.3, gseapy 1.3.1, pandas 3.0.1, numpy 2.4.3), and that .venv's activate script points at a path that no longer exists. The READMEs say 'pip install pyvis gseapy' with no versions, and there is no requirements file. Results depend on the versions: the tie order comes from numpy and the CPU (S7.05), and under pandas 3 an inf value crashes gseapy (S7.04). The call uses 1000 permutations, sizes 15 to 500, seed 42, weight 1 and 4 threads. The draft proposes that whatever runs GSEA in 2.0 pins its library versions, records them with each result, and gets its arguments without a shell; the helper's language is a Phase 2 choice (S1.20).
+
+- Fix as proposed (Recommended): Pinned and recorded versions, no shell; implementation language chosen in Phase 2.
+- Keep FuSION 1 behaviour: Unpinned python3 from PATH through a shell string.
+
+**Answer:** Fix as proposed (Recommended), written into S7.02
+
+**Q3 (S7.03).** S7.03 · GSEA failure and what mff merges afterwards. The script exits 1 when no pathway passes (writing an empty shortlist) and 2 on a bad selector; C++ then prints 'no shortlist produced, script returned <wait status> (is python3 with gseapy installed? …)' for every cause and carries on, and the next line runs mff on the list path. So a mistyped selector in a re-run merges the previous run's stale shortlist and the run ends with status 0; with no file or an empty one, mff merges nothing and rgx then reads any merged graph an earlier run left behind. No real run hit this. The draft proposes that a script failure or an empty selection fails the gsea step, which stops the batch before mff (S1.28), with the exit code and the script's own reason. For an empty corridor, S4.18 decided the opposite: a reported result, not a failure, so a bound sweep isn't halted. The same question arises for an FDR sweep, where a strict cut-off can select nothing.
+
+- Fix, empty = reported result (Recommended): A script failure stops the batch; an empty selection ends that run as a reported result ('no pathway passed'), like S4.18's empty corridor, so a sweep carries on.
+- Fix as drafted: A script failure or an empty selection both stop the batch before mff.
+- Keep FuSION 1 behaviour: Carry on into mff with whatever list is there.
+
+**Answer:** Fix, empty = reported result (Recommended), written into S7.03
+
+**Q4 (S7.04).** S7.04 · The LFC file as gsea reads it. The script splits each line on whitespace, takes the id and float() of the second token, silently skips lines that don't parse (NA, '1,5', a header), accepts nan, inf, exponents and '1_000', and lets a repeated id keep its last value. gseapy then drops NaN with a warning, crashes on inf under pandas 3 (TypeError), and fails on a one-line file; ids not in 'hsa1956' form match no gene set, and if none match the step ends in a LookupError traceback. So gsea, cudf and pex read the same file by different rules, and S3.14's table wrongly says gsea keeps nan and inf. S3.14 already decided on one LFC parser for every command. The draft proposes reading the file with that one parser, so gsea ranks exactly the values cudf classifies, with the reader reporting a non-finite value instead of letting it crash the GSEA library.
+
+- Fix as proposed (Recommended): S3.14's single parser; non-finite values reported by the reader.
+- Keep FuSION 1 behaviour: gsea's own parser and gseapy's handling.
+
+**Answer:** Fix as proposed (Recommended), written into S7.04
+
+## 084 · Poll · 2026-11-11 23:09
+
+The second stage 7 item poll.
+
+**Q1 (S7.05).** S7.05 · Tied values are ordered by numpy's unstable sort, so the shortlist depends on the CPU. The EGF file's 3054 genes have only 190 distinct values (two decimals), so 2994 genes are tied, with blocks of 145 at 0.00 and 71 at −0.06, and gseapy warns about it in every run. numpy picks its sort code by CPU features, so the same inputs and library versions give different tie orders and results: fdr:0.25 selects 42 pathways with AVX-512 (the real runs) but 44 with AVX2 only, SSE, or a stable sort; at fdr:0.4 the counts range from 71 to 80, and NES moves by up to 1.37. All 19 real tables match only because they ran on the same Xeon; Apple silicon was not tested. The draft proposes ordering tied values by gene id, ascending, so every machine gives the same ranking, scores and shortlist. That changes the real runs' shortlists (fdr:0.25 gives 44 instead of 42), which decision 0023 allows.
+
+- Fix as proposed (Recommended): Ties broken by gene id, ascending: the same result everywhere, independent of file order.
+- Fix: ties in file order: A stable sort keeps tied genes in the LFC file's order (here the same as gene id order, but it would differ for files ordered otherwise).
+- Keep FuSION 1 behaviour: Whatever order numpy's sort leaves.
+
+**Answer:** Fix as proposed (Recommended), written into S7.05
+
+**Q2 (S7.06).** S7.06 · The candidate list file (one KGML path per line). gsea trims each line, drops a CRLF's \r, skips blank lines, and skips paths that don't exist with one warning naming the first; there is no comment syntax. mff reads the same format but keeps the \r and aborts on a blank line or a bad path (S2.16). So gsea quietly cleans a list mff would reject, and a candidate whose file is missing just drops out of the shortlist with a warning. All 19 batches pass the same 167-path list. S2.16 already decided that mff checks every listed path before the run starts (decision 0021). The draft proposes reading candidate lists with that same reader and checks, so a missing candidate stops the run instead of silently leaving the shortlist.
+
+- Fix as proposed (Recommended): One list reader shared with mff; a missing candidate stops the run before it starts.
+- Keep FuSION 1 behaviour: gsea's lenient reader, missing files skipped with a warning.
+
+**Answer:** Fix as proposed (Recommended), written into S7.06
+
+**Q3 (S7.07).** S7.07 · Candidates that share a pathway id collapse into one. A candidate's id is its KGML root name without 'path:' (or the file path if that's missing), and candidates are kept in a dict keyed by that id, so a second file with the same id silently replaces the first: a list naming the same five files twice gives five tested pathways and a five-line shortlist, where mff would have read ten files. The two KGML directories share 163 pathways with the same names, and two of those pairs have different gene sets (hsa04080, hsa04141), so a list drawing on both would silently lose one version. No real list does this. The draft proposes stopping with an error that names both files when two candidates share a pathway id.
+
+- Fix as proposed (Recommended): Duplicate pathway ids are an error naming both files.
+- Fix: warn and keep the first: Warn, naming both files, and test only the first.
+- Keep FuSION 1 behaviour: The later file silently wins.
+
+**Answer:** Fix as proposed (Recommended), written into S7.07
+
+**Q4 (S7.08).** S7.08 · Gene sets come from every gene entry of each KGML. A candidate's set is every name of every gene entry in its KGML (colon removed, repeats dropped); relations play no part, so a gene with no edge in the pathway still counts. This makes every tested set exactly one file mff can merge. But GSEA scores membership while mff merges relations: across the 167 candidates, 3301 of 21,205 memberships (16%) are genes on no relation of their pathway, and at least five of the 42 fdr:0.25 pathways pass mostly on such genes (e.g. Viral carcinogenesis: 6 of its 205 genes are on its 3 relations; Systemic lupus erythematosus: 21 of 143 on 7). Ids are KEGG's on both sides (decision 0020). The draft proposes keeping the method; how other pathway sources supply gene sets is for Phase 2.
+
+- Keep, show relation share (Recommended): Same gene sets, plus a table column giving each pathway's share of genes that sit on its relations, so cases like Viral carcinogenesis are visible.
+- Keep as drafted: Same gene sets, no extra column.
+- Fix: relation genes only: Score only genes on at least one relation of their pathway (a change of method; shortlists change).
+
+**Answer:** Keep, show relation share (Recommended), written into S7.08
+
+## 085 · Poll · 2026-11-11 23:10
+
+The third stage 7 item poll.
+
+**Q1 (S7.09).** S7.09 · Size filter. gseapy tests a set only when 15 to 500 of its genes are in the ranking (constants in the script; 15 is GSEA's default). On the real inputs 166 of 167 candidates are tested; Sulfur relay system has only 6 ranked genes. An untested pathway gets no scores, is never selected, and has a table row only if the keep list chose it, so otherwise only the count line shows it existed. If no candidate is in range (e.g. ids in the wrong form), gseapy raises LookupError and the step ends in an uncaught traceback. The draft proposes keeping 15 to 500, giving every candidate a table row (an untested one with its ranked-gene count and no scores), and reporting 'no candidate has 15 to 500 ranked genes' as a gsea failure instead of a traceback; that is an input problem, unlike S7.03's empty selection.
+
+- Fix as proposed (Recommended): 15 to 500 kept, a row for every candidate, no-candidate case a clean failure.
+- Keep FuSION 1 behaviour: Untested candidates leave no row; traceback when none fits.
+
+**Answer:** Fix as proposed (Recommended), written into S7.09
+
+**Q2 (S7.10).** S7.10 · Enrichment score, leading edge, Tag % and Gene %. This is the classic weighted GSEA running sum (weight 1): hits add |r| over the set's total |r|, misses subtract 1/(N − m); ES is the running sum's extreme, the leading edge is the set's genes up to that rank (from the bottom for negative ES), Tag % is leading-edge size over set size, Gene % is the rank fraction. Recomputing from gseapy's ranking reproduces all 166 real ES values to within 9×10⁻¹⁶ and every leading edge, Tag % and Gene % exactly (e.g. Bladder cancer: ES 0.747, Tag % 10/39, Gene % 6.12%). No problems were found in the formula; the tie order that feeds it is S7.05. The draft proposes keeping it.
+
+- Keep (Recommended): Same formula and columns.
+- Fix: unweighted (weight 0): Classic Kolmogorov–Smirnov form, ignoring the LFC magnitudes (a change of method; results change).
+
+**Answer:** Keep (Recommended), written into S7.10
+
+**Q3 (S7.11).** S7.11 · Significance. gseapy shuffles gene labels 1000 times with seed 42 to give each set 1000 null scores, from which it derives NES, nominal p, the FDR q-value (pooled over all tested sets, S7.12) and FWER p. Thread count and candidate order don't change the numbers. The fixed seed hides Monte Carlo noise: with seeds 1 to 20, fdr:0.25 selects 41 to 46 pathways (38 always, 8 sometimes; ErbB signaling passes with 4 of 20 seeds), and 10,000 permutations (11.6 s instead of 1.3 s) select 43. Matching FuSION 1's numbers exactly needs gseapy's own random stream, so a reimplementation would agree statistically but not byte for byte, and pathways near a cut-off could change. The draft proposes porting the procedure with seed 42 and 1000 permutations, leaving the noise for you to weigh.
+
+- Keep, as run settings (Recommended): Defaults seed 42 and 1000 permutations, both settable and recorded in the output, like S1.29's other result-changing settings.
+- Keep as drafted: Seed 42 and 1000 permutations, fixed.
+- Fix: 10,000 by default: Less Monte Carlo noise at about 10 s more per call.
+
+**Answer:** Keep, as run settings (Recommended), written into S7.11
+
+**Q4 (S7.12).** S7.12 · A pathway's FDR depends on the other candidates. All candidates go into one GSEA call, and the q-value pools every tested set's null scores and NES (gseapy documents this). ES, NES and nominal p depend only on a pathway's own genes, but its FDR moves with what else was offered: dropping the four updated_pathways KGMLs changes 154 of the remaining 162 FDRs (by at most 0.0071), and GnRH signaling and Type II diabetes then pass fdr:0.4 although neither is related to the four; GSEA on just the 42 fdr:0.25 pathways gives all 42 an FDR ≤ 0.068. So a cut-off means different things for different candidate lists. The draft proposes keeping this, since it is GSEA's definition of the q-value and the table lists every tested candidate.
+
+- Keep (Recommended): GSEA's pooled q-value; read each result against its own candidate list.
+- Fix: fixed background: Always compute FDR over one fixed reference set of pathways, then restrict to the candidates, so cut-offs are comparable across lists (a change of method).
+
+**Answer:** Keep (Recommended), written into S7.12
+
+## 086 · Poll · 2026-11-11 23:12
+
+The fourth stage 7 item poll.
+
+**Q1 (S7.13).** S7.13 · The selector: fdr:Q, pval:P, nes:X, top:N, comma-joined. Terms are applied in turn to the tested pathways sorted by |NES| (fdr keeps FDR ≤ Q, pval keeps nominal p ≤ P, nes keeps |NES| ≥ X, top keeps the first N); an unknown key or unparsable value exits 2. All 19 batches use a single fdr: term (0.25, 0.3, 0.4, 0.44, 0.5). Problems: values aren't range-checked (top:-5 keeps 161 of 166, top:0 and fdr:nan keep none, nes:-1 and fdr:inf keep all, fdr:0_5 reads as 5.0 and keeps all); term order matters once top: bites (top:10,fdr:0.06 keeps 7, fdr:0.06,top:10 keeps 8); and FDR isn't monotone in |NES|, so fdr: and nes: cut-offs aren't interchangeable. The draft proposes keeping the four keys and the in-turn rule, accepting only finite, in-range values (fdr and pval 0 to 1, nes ≥ 0, top a positive integer), with an error naming any bad term.
+
+- Fix, order-independent (Recommended): As proposed, but the thresholds always apply before top:N, so term order never matters. No real batch combines terms.
+- Fix as drafted: Range-checked values, terms applied in the order written.
+- Keep FuSION 1 behaviour: Unchecked values, in-turn rule.
+
+**Answer:** Fix, order-independent (Recommended), written into S7.13
+
+**Q2 (S7.14).** S7.14 · The keep list. An optional comma-separated list of gene ids: every candidate whose gene set (all its KGML gene ids, ranked or not) contains one is chosen whatever its GSEA result, even if it was too small or large to test. Ids must match exactly in 'hsa1956' form; an id in no candidate gets a warning. The console adds a 'plus <n> kept' line and the table a kept_for column. Three batches use it with source, target and FSC: in the keep run, fdr:0.4 picks 71 and the keep list adds 16, for 87. It exists because GSEA scores transcription, so the pathway the stimulus signals through can score low (ErbB signaling, FDR 0.259, misses fdr:0.25). The only problem: an id in the wrong form (hsa:1956, EGFR) just warns and the intended pathways are silently missing; the same ids drive fb_rch and pathz3, which would fail on them too. The draft proposes keeping it.
+
+- Keep (Recommended): Same keep rule and outputs; id forms handled by Phase 2's id mapping (S2.14).
+- Fix: unmatched id is an error: A keep id in no candidate stops the run (a valid id in no KGML, like PHLDA1, would then need removing).
+
+**Answer:** Keep (Recommended), written into S7.14
+
+**Q3 (S7.15).** S7.15 · The shortlist file. Written only after GSEA succeeds: one KGML path per chosen pathway, exactly as the candidate list gave it, in candidate-list order, no header, empty when nothing is chosen. Every batch passes it to mff. Users also edit and reuse it directly: r7 and r8 append a curated non-KEGG KGML to it, and a batch written today reruns from r5's saved list instead of running gsea again. No problems were found in the format; the hand-over to mff is a file round trip, which decision 0019 keeps anyway as a saveable step output. The draft proposes keeping it.
+
+- Keep (Recommended): Same plain list of paths, usable and editable between steps.
+- Fix: add a header: Record the selector, LFC file and candidate list in comment lines at the top (mff would need to skip them).
+
+**Answer:** Keep (Recommended), written into S7.15
+
+**Q4 (S7.16).** S7.16 · The results table <stem>.gsea.tsv. Written next to the shortlist (run/gsea_kgml_files.txt gives run/gsea_kgml_files.gsea.tsv), tab-separated with a header: Term, pathway_name, genes, ES, NES, NOM p-val, FDR q-val, FWER p-val, Tag %, Gene %, Lead_genes, selected, kept_for, kgml. Rows are every tested pathway by |NES|, then untested chosen ones with empty scores. Problems: nothing reads it back, although the docstring says it is for picking a different threshold without re-running; candidates neither tested nor kept have no row (fixed by S7.09); 'genes' counts parsed ids, including NaN genes gseapy dropped (fixed by S7.04). Your S7.08 answer adds a relation-share column. The draft proposes keeping the table.
+
+- Keep (Recommended): Same table, with S7.04's, S7.08's and S7.09's changes.
+- Fix: re-select from a saved table: Also let a run apply a new selector to a saved table without re-running GSEA (about 3 s saved per call).
+
+**Answer:** Keep (Recommended), written into S7.16
+
+## 087 · Poll · 2026-11-11 23:14
+
+The last stage 7 item poll.
+
+**Q1 (S7.17).** S7.17 · gsea's console report. stderr carries gseapy's tie warning (with a timestamp), its NaN warning when the file has NaN values, and the script's warnings (missing KGMLs, unknown keep ids, empty selection). stdout gives the LFC file, '3054 genes ranked by log-fold change, 1000 permutations', '166 of 167 candidate pathways tested', the NES range, 'selected 42 of 166 tested pathways (fdr:0.25)', a table of the chosen pathways (number, id, name, genes, ES, NES, nominal p, FDR) with a kept-for column when there is a keep list, and the shortlist and table paths. The only problem: the gene count includes NaN genes that gseapy then drops (3055 reported for 3054 ranked), which S7.04's fix removes. The draft proposes keeping the report.
+
+- Keep (Recommended): Same report; the count is right once S7.04's single parser is in place.
+- Fix: shorter report: Print only the summary lines and point to the table, without the per-pathway rows.
+
+**Answer:** Keep (Recommended), written into S7.17
+
+**Q2 (S7.18).** S7.18 · The review pause, which you added on 2026-09-28. After the GSEA script returns, whether or not it succeeded, FuSION checks whether stdin is a terminal; if so it prints 'Review the pathways selected above. Press Enter to merge them, Ctrl-C to abort: ' and waits. Without a terminal (nohup, &, < /dev/null) there's no pause, and both sweep launchers redirect stdin, so no real run has ever paused. Problems: it also pauses after a failure, offering to merge nothing; a batch started in a terminal without redirection blocks there; Ctrl-C while the script runs kills only Python, and the batch carries on. The draft proposes dropping it: decision 0019 lets a run stop after gsea, so you can read the table and restart from the saved shortlist; S1.03 already dropped interactive input. The 2.0 frontend could also show the shortlist for approval before the merge (stage 8).
+
+- Drop (Recommended): Review by stopping after gsea (decision 0019) or in the frontend; no terminal prompt in the batch.
+- Keep, opt-in: Pause only when the batch asks for it, still only on a terminal, and never after a failure.
+- Keep FuSION 1 behaviour: Pause whenever stdin is a terminal.
+
+**Answer:** Drop (Recommended), written into S7.18
+
+**Q3 (S7.19).** S7.19 · Cost of the gsea step. One call takes 3.3 s wall and 13.4 s CPU with a 318 MB peak: 1.7 s to start Python and import gseapy and pandas, 0.24 s to parse 167 KGMLs, 1.3 s for GSEA on 4 threads. The shortlist pays for itself: the CHANGELOG measured a b7 EGFR→CXCL8 batch at 7 s with the fdr:0.25 shortlist against 3 min 14 s with all 163 KGMLs. Every run recomputes the same analysis (19 batches, identical score columns, about a minute in all), and the candidate KGMLs are parsed once in Python and the chosen ones again by mff in C++. The draft proposes keeping the step as it is: it's cheap, and starting from a saved shortlist (decision 0019) removes the repeats.
+
+- Keep (Recommended): Cheap enough; saved shortlists (decision 0019) avoid repeats.
+- Fix: parse KGMLs once: Share one parse of the candidate KGMLs between gsea and mff (depends on Phase 2's choice of GSEA language).
+
+**Answer:** Keep (Recommended), written into S7.19. All 19 stage 7 items are now decided.
