@@ -1102,3 +1102,229 @@ Sent word for word to the stage 5 and stage 6 subagents of [decision 0025](../de
 ```text
 Your run stopped before you finished, because of your plan's usage limit. The reference snapshot has not changed, and your stage file has not been written yet. Carry on from where you stopped and finish the task exactly as your prompt describes: write only your own stage file, then reply in at most 300 words.
 ```
+
+## 044 · Poll · 2026-11-10 12:38
+
+The last stage 2 item poll, with the stage 2 commit.
+
+**Q1 (S2.30).** S2.30 · add <edges_file> <out_xml>, a plaintext edge list to KGML-style XML. It reads lines of the form src tgt type subtype, numbers ids by first appearance, and writes entries plus relations with pathways="KEGG" so that mff … y can merge them; the GUI's script uses a standalone copy through exec. It warns on every type other than PPRel, but KEGG spells it PPrel, so correct lines trigger the warning and a PPRel line is written as a type nothing else recognises. Each edge takes one subtype only. The draft proposes keeping the command and its format, checking types against KEGG's spelling and rejecting malformed lines with a message.
+
+- Fix as proposed (Recommended): Same command and output format, KEGG's spellings, and malformed lines rejected. A plain edge list like this is also a candidate exchange format for decision 0020's plug-and-play inputs, in Phase 2.
+- Fix, several subtypes: The same, plus comma-separated subtypes on one line (activation,phosphorylation), each written as its own subtype.
+- Keep FuSION 1 behaviour: The PPRel check and one subtype per edge, as now.
+
+**Answer:** Fix as proposed (Recommended), written into S2.30. All 30 stage 2 items are now decided.
+
+**Q2 (Commit).** Once S2.30 is decided, stage 2 is complete. May I commit it locally as one commit, 'Review spec stage 2: graph input and merging'? It would hold the stage 2 spec; decisions 0023 to 0025 with their index rows and the status notes on 0012, 0016 and 0017; the new docs/spec/README.md; and prompt log entries 032 to 043. The stage 3 and 4 drafts stay out until they're reviewed.
+
+- Commit (Recommended): One local commit ending with a Co-Authored-By: Claude line. This poll's own log entry goes into the next commit.
+- Show me the diff first: I list every change, then ask again.
+
+**Answer:** Commit (Recommended). This entry is left for the next commit.
+
+## 045 · User prompt · 2026-11-11 00:52
+
+Sent while Claude was verifying the stage 3 draft.
+
+> max out the number of agents. i have max sub now
+
+## 046 · User prompt · 2026-11-11 00:52
+
+Sent right after entry 045. Claude found the stage 5 and 6 subagents still running (started 12 hours earlier) and read this as repeating entry 045 → [decision 0026](../decisions/0026-maximum-parallel-subagents.md).
+
+> Try again
+
+## 047 · Subagent prompt · Fresh stage 7 and 8 drafts · 2026-11-11 00:55
+
+Launched together under [decision 0026](../decisions/0026-maximum-parallel-subagents.md), alongside the running stage 5 and 6 drafts. As [decision 0025](../decisions/0025-fresh-subagents-stages-5-to-8.md) sets out, each prompt is entry 006, a blank line, the stage section (entry 013 for stage 7, entry 014 for stage 8), a blank line, and the note in entry 037, all word for word.
+
+## 048 · Subagent prompt · Verification of a drafted stage · 2026-11-11 00:55
+
+The verification prompt of [decision 0026](../decisions/0026-maximum-parallel-subagents.md). It is sent word for word, with `<STAGE FILE>` replaced by the stage's spec file; each send is logged by entry number and stage. First sent for stage 4 (`docs/spec/04-reachability-corridor.md`).
+
+```text
+You are checking a draft specification against the code and data it describes. The draft is /home/ks-149-u24/Desktop/arjun/FuSION2/<STAGE FILE>, one stage of a specification of FuSION 1 written by another agent. FuSION 1's source code is frozen at /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10, with the same relative paths as the FuSION 1 repo; its README.txt says what it holds. Run data are under /home/ks-149-u24/Desktop/arjun/FuSION/runs/. In this shell, grep is a wrapper that silently skips gitignored directories such as runs/, so use /usr/bin/grep.
+
+Some of the draft's line numbers may refer to FuSION 1's live tree as it was before 2026-11-09 19:16. At that time Linux/src/main.cc gained one line at 4733 (macOS/src/main.cc at 4761), and Linux/src/GraphManagerNew.cc gained one line at 8180, ten more from 8216, and a helper at 29342. So an old number may be off by 1, 11 or more against the snapshot.
+
+Do this:
+1. For every citation of FuSION 1 code in the draft, whether path:line or a bare line range that inherits its file from the surrounding text, open the snapshot at that location and confirm it holds what the draft says. Where it doesn't, find the right lines.
+2. For every count, size or measured value the draft reports, recompute it from the files it names. Write any helper scripts under /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/. Where a value could only come from running FuSION, or from a rebuild that the draft describes but that does not exist, say so instead.
+3. Check each item's account of behaviour (inputs, outputs, defaults, edge cases, formats) against the code.
+
+Do not edit the draft or any other file in either repo, and do not build or run FuSION. Reply in at most 500 words: every discrepancy you found (item id, what the draft says, what is true, with file:line), the claims you could not check and why, and a one-line verdict.
+```
+
+## 049 · Poll · 2026-11-11 01:58
+
+The first stage 3 item poll (`docs/spec/03-expression-data.md`). Before polling, Claude checked 41 of the draft's code citations against the snapshot and recomputed its data claims from the LFC files; all matched.
+
+**Q1 (S3.01).** S3.01 · cudf <lfc_file> <up_threshold> <down_threshold> <up_out> <down_out>, with the long name create_up_down_file. It never touches the graph, so it runs before start in every batch. The argument count is never checked: extra tokens are ignored, a missing threshold aborts the whole run, and a missing output path fails only after the other output has been truncated. The draft proposes keeping the five positional arguments and both names, and reporting a wrong argument count before any file is touched.
+
+- Fix as proposed (Recommended): Same five arguments (also nameable, decision 0018) and both names, with a wrong count reported as an error before anything is opened.
+- Keep FuSION 1 behaviour: No argument-count check.
+
+**Answer:** Fix as proposed (Recommended), written into S3.01
+
+**Q2 (S3.02).** S3.02 · Threshold parsing. Each threshold goes through std::stof, which reads the longest numeric prefix and ignores the rest: 1.01x reads as 1.01, and a typo like 1.0l as 1.0. It accepts nan and inf, which silently empty a list or fill it with every gene. A token with no numeric prefix, or the empty string of a missing argument, throws and aborts the whole run with status 134. The draft proposes accepting a threshold only when the whole token is a finite number, and otherwise failing with an error that names the argument.
+
+- Fix as proposed (Recommended): The whole token must be a finite number; anything else is a named error, and the run stops (S1.28).
+- Keep FuSION 1 behaviour: Prefix parsing; nan and inf accepted.
+
+**Answer:** Fix as proposed (Recommended), written into S3.02
+
+**Q3 (S3.03).** S3.03 · The LFC input file. Plain text, one gene per line: the first whitespace-separated token is the id, the second the value, and anything after is ignored. LF and CRLF both work. Values are used as given, with no log transform or scale check, and there's no header or comment convention. The id is copied verbatim and must match the network's ids exactly, which ties the file to KEGG (decision 0020): hsa:3725, JUN or the bare Entrez id 3725 pass through cudf and then match nothing. The draft proposes keeping the format, and leaving id mapping to Phase 2.
+
+- Keep (Recommended): Port the two-column format. Mapping ids from other sources onto network ids is decision 0020's Phase 2 question.
+- Keep, strip colons: The same, and also remove colons from ids as the KGML reader does, so hsa:3725 matches now. Symbols and Entrez ids still wait for Phase 2.
+
+**Answer:** Keep (Recommended), written into S3.03
+
+**Q4 (S3.04).** S3.04 · Bug: a value that isn't a number counts as 0. When the second token has no numeric prefix, the read stores 0 without a message, so a header line, NA, nan, inf or - all read as an LFC of 0. With the real thresholds a 0 lands in no list, so nothing shows; with a threshold that admits 0, a header line becomes a gene, and with both thresholds at 0 (the GUI script) every NA gene lands in both lists. The draft proposes skipping, and reporting with its line number, any line whose value isn't a finite number.
+
+- Fix as proposed (Recommended): Such lines are skipped and reported by line number. Well-formed files give the same lists as now.
+- Keep FuSION 1 behaviour: Unreadable values count as 0.
+
+**Answer:** Fix as proposed (Recommended), written into S3.04
+
+## 050 · Subagent prompt · Verification sent for stage 6 · 2026-11-11 01:59
+
+Entry 048's text, word for word, with `<STAGE FILE>` replaced by `docs/spec/06-results-and-plots.md`, sent once the stage 6 draft was written ([decision 0026](../decisions/0026-maximum-parallel-subagents.md)).
+
+## 051 · Poll · 2026-11-11 02:01
+
+The second stage 3 item poll.
+
+**Q1 (S3.05).** S3.05 · Bug: a line without a value reuses the previous line's gene or value. The id and value variables live outside the read loop, so a blank line re-classifies the previous gene (and can write it twice), and a line with an id but no value takes the previous line's value. A blank first line reads an uninitialised value. No real LFC file has such a line. The draft proposes skipping and reporting any line that lacks an id or a value, and never carrying a value over.
+
+- Fix, blank lines silent (Recommended): A line with an id but no value is skipped and reported by line number. Blank lines are skipped without a message, and no value is ever carried over. The silent blank lines are my refinement.
+- Fix as drafted: Every skipped line is reported, blank ones included.
+- Keep FuSION 1 behaviour: Values carry over from the previous line.
+
+**Answer:** Fix, blank lines silent (Recommended), written into S3.05
+
+**Q2 (S3.06).** S3.06 · Classifying a gene. A gene is up when value >= up_threshold, and down when value <= down_threshold; the two tests are independent and both inclusive, and only the id is written. FuSION 1 compares 32-bit floats. With doubles on both sides, every real file (at most two decimals) gives the same lists, but a value within float rounding of a threshold could differ: 1.0099999999 is up at 1.01 in FuSION 1, but not with doubles.
+
+- Keep, in doubles (Recommended): The same inclusive, independent rule, with values and thresholds both as doubles. Results on real files are identical, and decision 0023 allows the rounding-edge difference.
+- Keep, in floats: The same rule with 32-bit floats, matching FuSION 1 bit for bit.
+
+**Answer:** Keep, in doubles (Recommended), written into S3.06
+
+**Q3 (S3.07).** S3.07 · No check that the up threshold is above the down threshold. When up_threshold <= down_threshold, every value between them goes into both lists without a warning. The GUI-written script sets both to 0.0, which on the EGF file puts 1630 genes up, 1569 down and 145 in both; pathz3 then quietly treats those 145 as up. The draft proposes rejecting up_threshold <= down_threshold with an error before anything is written.
+
+- Fix as proposed (Recommended): Reject up_threshold <= down_threshold before writing anything. A FuSION 1 GUI script with both thresholds at 0.0 then stops with this error.
+- Warn only: Report the overlap as a warning and carry on, as before.
+- Keep FuSION 1 behaviour: No check.
+
+**Answer:** Fix as proposed (Recommended), written into S3.07
+
+**Q4 (S3.08).** S3.08 · Repeated gene ids. cudf classifies each line on its own, so a repeated id can be written to a list several times or, if its values disagree, to both lists. The TNFa file lists hsa5806 three times and hsa3280 twice, and its up list holds hsa5806 three times. gsea and pex keep the last value instead. The draft proposes reporting repeats, writing each gene at most once per list, and stopping with an error when an id's lines put it in different classes. Whatever is chosen also binds gsea and pex (S3.14).
+
+- Fix as proposed (Recommended): Repeats are reported, each gene is written at most once per list, and lines that put one gene in different classes are an error.
+- Fix, last value wins: Repeats are reported, and each gene's last value is used, as gsea and pex already do. No error.
+- Keep FuSION 1 behaviour: Line by line, repeats and all.
+
+**Answer:** Fix as proposed (Recommended), written into S3.08
+
+## 052 · Subagent prompt · Verification sent for stage 5 · 2026-11-11 02:02
+
+Entry 048's text, word for word, with `<STAGE FILE>` replaced by `docs/spec/05-encoding-and-solve.md`, sent once the stage 5 draft was written ([decision 0026](../decisions/0026-maximum-parallel-subagents.md)).
+
+## 053 · Poll · 2026-11-11 17:46
+
+The third stage 3 item poll (asked at 02:02, answered by 17:46).
+
+**Q1 (S3.09).** S3.09 · The up and down list format. Two plain-text files, one gene id per line exactly as read, with no header or values. Entries follow input order (S3.08 now removes repeats), and an empty list is an empty file. pathz3's other node lists use the same format and reader. Under decision 0019 the lists are a saveable step that a later run can start from.
+
+- Keep (Recommended): Port the format, written on every cudf as now.
+- Keep, files optional: The lists stay in memory and are written only when asked, since the exception set no longer needs them on disk (S1.17). Saving still works for partial runs.
+
+**Answer:** Keep (Recommended), written into S3.09
+
+**Q2 (S3.10).** S3.10 · Outputs are truncated before the input is checked. All three files are opened at once, so both outputs are emptied before any check. A wrong LFC path therefore empties the previous run's lists, and the batch carries on with status 0; pathz3 then computes an undefined bit width from ceil(log2(0)). Clashing paths destroy data silently: an up path equal to the LFC path truncates the input before it is read. The draft proposes checking the LFC file and both output paths before truncating anything, stopping the run on failure (decision 0021), and refusing output paths that coincide with each other or with the input.
+
+- Fix as proposed (Recommended): Check every path first, stop on failure, and refuse clashing paths.
+- Keep FuSION 1 behaviour: Open all three at once, as now.
+
+**Answer:** Fix as proposed (Recommended), written into S3.10
+
+**Q3 (S3.11).** S3.11 · Console output. On success cudf prints nothing beyond the command echo, so the effect of the thresholds stays invisible until pathz3 prints Up: N Down: M after graph matching: 3 and 0 in the real run, against the 43 and 2 that cudf wrote. The draft proposes printing how many genes went to each list and, together with S3.04, S3.05 and S3.08, how many lines were skipped or repeated.
+
+- Fix as proposed (Recommended): Print the counts per list and the skipped and repeated lines.
+- Keep FuSION 1 behaviour: Silent on success.
+
+**Answer:** Fix as proposed (Recommended), written into S3.11
+
+**Q4 (S3.12).** S3.12 · How a list entry becomes a graph node. cudf writes every gene that passes a threshold, and pathz3 later looks each one up exactly in the graph being solved, the corridor. Absent ids are skipped silently. In the real run cudf wrote 43 up and 2 down genes; 30 and 1 are in the merged graph, and only 3 and 0 reach the solve. Nothing lists the other 42. The draft proposes keeping the exact lookup and reporting how many entries of each list match no node of the graph being solved, and which ones.
+
+- Fix, report two levels (Recommended): Keep the exact lookup, and list unmatched genes in two groups: not in the merged network at all, and in the network but outside the corridor. The split is my refinement; stage 4's S4.16 reports the corridor side too.
+- Fix as drafted: One list of genes that match no node of the graph being solved.
+- Keep FuSION 1 behaviour: Unmatched genes vanish silently.
+
+**Answer:** Fix, report two levels (Recommended), written into S3.12
+
+## 054 · Poll · 2026-11-11 19:39
+
+The fourth stage 3 item poll.
+
+**Q1 (S3.13).** S3.13 · The other readers of the lists. pathz3 first reads both lists into a map that nothing uses afterwards (two parses and one lookup per entry, discarded), then reads them again for real (S3.12). Every batch also builds the merge-exception file from the lists, which S1.17 has already moved into memory. The draft proposes keeping the list format that both readers rely on, and leaving the unused read to stage 5.
+
+- Keep (Recommended): Port the list format. Stage 5's review decides the unused read.
+- Keep, drop the read now: The same, and record here that pathz3's unused first read goes, for stage 5 to confirm.
+
+**Answer:** Keep (Recommended), written into S3.13
+
+**Q2 (S3.14).** S3.14 · Readers of the LFC file disagree. The real run parses its LFC file three times: in cudf and in the Python behind gsea and pex. The three treat headers, blank lines, NA, nan, inf, 1,5, 1_000, 1.5abc and repeated ids differently, so one gene can get three different values in one run. No real run is affected yet. pathz3 receives the path too, but uses only its base name, to name the SMT dump directory. The draft proposes one set of parsing rules (S3.03 to S3.05 and S3.08) for every consumer.
+
+- Fix as proposed (Recommended): One LFC parser, used by every command that reads the file.
+- Keep FuSION 1 behaviour: Each reader keeps its own parser.
+
+**Answer:** Fix as proposed (Recommended), written into S3.14
+
+**Q3 (S3.15).** S3.15 · suggest_thresholds.py: invocation and report. python3 suggest_thresholds.py LFC_FILE [--current UP DOWN] [--plot OUT.png] prints the distribution (min, max, mean, SD, median, MAD), a table of candidate thresholds, and three explanatory lines. Nothing in FuSION calls it, and the report has no machine-readable form. The draft proposes keeping the advisory report as it is; Phase 2 decides whether it becomes a FuSION command or stays a separate tool.
+
+- Keep (Recommended): Port the report. Its form, command or separate tool, is a Phase 2 decision, alongside the all-C++ backend.
+- Keep, as a FuSION command: Decide now that it becomes a backend command, with a machine-readable result the frontend can show.
+
+**Answer:** Keep (Recommended), written into S3.15
+
+**Q4 (S3.16).** S3.16 · suggest_thresholds.py reads the LFC file differently from cudf. It skips headers and NA, blank and one-field lines, which cudf reads as 0 or as stale values; it reads 1_000 as 1000, where cudf reads 1; and it accepts nan and inf, where a single NaN breaks the sort and turns the mean and SD into NaN. Its docstring claims 'Counting mirrors cudf exactly'. The draft proposes reading the file with the same rules as cudf (S3.14).
+
+- Fix as proposed (Recommended): The same parser as cudf and every other reader, so its counts are the ones cudf writes.
+- Keep FuSION 1 behaviour: Its own parser.
+
+**Answer:** Fix as proposed (Recommended), written into S3.16
+
+## 055 · Poll · 2026-11-11 19:45
+
+The last stage 3 item poll, with a factual question from the draft's open questions.
+
+**Q1 (S3.17).** S3.17 · suggest_thresholds.py's candidate cuts are quantiles (1%, 2.5%, 5%), median ± k·MAD and mean ± k·SD (k = 2, 3). Your batches cut at ±3·SD about 0 instead: the real batch derives ±1.01 from SD 0.336, a row the script never prints. Its mean-centred SD k=3 row, +1.046 / −0.972, gives 39 up genes rather than 43, and it drops FOSB (1.04), the FSC of one of your b10 runs. Which centre should an SD-based threshold use (open question 1)?
+
+- Show both centres (Recommended): Keep the seven criteria and add ±k·SD about 0 (k = 2, 3), the rule your batches use, so the table includes the cut in use. This addition is mine.
+- Zero-centred only: Replace the mean-centred SD rows with ±k·SD about 0.
+- Keep as drafted: The seven criteria as they are.
+
+**Answer:** Show both centres (Recommended), written into S3.17
+
+**Q2 (S3.18).** S3.18 · suggest_thresholds.py counts genes in the file, not genes the solve sees. #up and #down count rows of the LFC file, because the script has no graph. For the real run's ±1.01 it shows 43 and 2, while 30 and 1 are in the merged graph and only 3 and 0 reach pathz3. The draft proposes keeping it this way: counting what the solve sees needs the corridor, which exists only after fb_rch, and S3.11 and S3.12 now report those counts where they're known.
+
+- Keep (Recommended): Count rows of the file; the matched counts come from S3.11 and S3.12.
+- Fix, optional graph: Optionally take a merged graph and also count only the genes in it. The corridor still comes later.
+
+**Answer:** Keep (Recommended), written into S3.18
+
+**Q3 (S3.19).** S3.19 · suggest_thresholds.py --plot. With gnuplot on PATH it draws a log-scale histogram of 80 bins as a 980×620 PNG, with candidate cuts as dotted lines and the cuts in use as solid blue and red. It exits 0 even when the plot wasn't written, and a file whose values are all equal makes gnuplot fail and leaves a 0-byte PNG. The draft proposes keeping the plot and exiting non-zero when a requested plot isn't written.
+
+- Fix as proposed (Recommended): Keep the plot, and report a failure when it isn't written. Where 2.0 draws plots, gnuplot or the frontend, is a Phase 2 question.
+- Keep FuSION 1 behaviour: Exit 0 regardless.
+
+**Answer:** Fix as proposed (Recommended), written into S3.19
+
+**Q4 (TNFa scale).** A fact only you can settle (stage 3, open question 2): is runs/real_experiments/final_tnfa_p38i_combined.tsv on a log scale? Its values reach +94.57 (CXCL8), its 19 batches cut at ±1.45, and nothing in the repo records how it was made; it comes from auxilliary/IITB_ACTREC_old_data/. The answer decides whether 2.0 should check the scale of per-gene values (decision 0020).
+
+- Raw fold changes: Not log-transformed, so 2.0 should check the scale of per-gene values.
+- Log fold changes: Already log-scaled, so +94.57 is a genuine outlier.
+- Not sure: Record it as unknown. Phase 2 decides whether to add a scale check anyway.
+
+**Answer:** Log fold changes, written into stage 3's open questions. All 19 stage 3 items are now decided.

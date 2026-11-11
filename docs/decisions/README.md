@@ -29,3 +29,4 @@ One file per decision, numbered in the order the decisions were made. Each recor
 | [0023](0023-results-may-change-where-improved.md) | Old batches still run, but results may change where 2.0 improves (amends 0017) | Accepted | 2026-11-10 |
 | [0024](0024-frozen-fusion1-snapshot.md) | The spec cites a frozen FuSION 1 snapshot (amends 0012) | Accepted | 2026-11-10 |
 | [0025](0025-fresh-subagents-stages-5-to-8.md) | Fresh subagents draft stages 5 to 8 (replaces 0016 there) | Accepted | 2026-11-10 |
+| [0026](0026-maximum-parallel-subagents.md) | Subagents at maximum parallelism; verification subagents per stage | Accepted | 2026-11-11 |
