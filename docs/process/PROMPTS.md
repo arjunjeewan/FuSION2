@@ -2243,3 +2243,335 @@ The last stage 7 item poll.
 - Fix: parse KGMLs once: Share one parse of the candidate KGMLs between gsea and mff (depends on Phase 2's choice of GSEA language).
 
 **Answer:** Keep (Recommended), written into S7.19. All 19 stage 7 items are now decided.
+
+## 088 · Poll · 2026-11-11 23:25
+
+The stage 7 commit poll.
+
+**Q1 (Commit).** Stage 7 (GSEA shortlisting) is fully decided: 19 items, 9 fix / 9 keep / 1 drop. May I commit it locally as one commit? It would contain the new docs/spec/07-gsea-shortlisting.md (decisions, the verifier's corrections, open questions marked) and prompt log entries 082 to 087. Message: 'Review spec stage 7: GSEA shortlisting', ending with the Co-Authored-By line. The stage 8 draft stays out.
+
+- Commit as shown (Recommended): One local commit with those two files; nothing is pushed.
+- Change something first: Tell me what to change before committing.
+
+**Answer:** Commit as shown (Recommended), committed as 4192226
+
+## 089 · Poll · 2026-11-12 17:15
+
+The first stage 8 poll: three framing questions and S8.01. Before it, the stage 8 verifier's corrections were applied to the draft, after Claude checked each against the snapshot and the run data:
+
+- S8.08: `Linux/output_script.txt` is a list-mode script (lines 149, 157, 164 and 167 active, lines 61-62 empty);
+- S8.11: one batch (`r5_mcl1_stat3/resolve_wo_n7_e0`) sets a node relaxation lower bound of 7, and the stepper field still shows a stored value above 50;
+- S8.27: 22 batches call `plot_po.sh`, not 24;
+- S8.23: GUI sessions use split threshold 15000, and the GUI run wrote a 13,375,038-byte merged graph, not about 2 MB;
+- open question 2: `runs/egf_hela_hsa1956_cxcl8_b6/` appears to be the GUI run of 2026-07-09;
+- S8.03 and S8.16: Save on the edge-files page never writes the session file;
+- minor: S8.05 (`optInt`), S8.04 (field values and the `new File(null)` NPE), S8.01 (`gui4.java:4004`), S8.28 (the two run windows differ slightly), S8.15 (an arbitrary `HashSet` element), S8.32 (an empty `README.md`), S8.02 (which fields the empty check covers).
+
+**Q1 (macOS GUI).** Stage 8 scope, open question 1: macOS/frontend is not a copy of Linux/frontend, as the drafting brief assumed. Its ScriptFile.java fills the three coexpression placeholders and its ReachPathBoundCard.java commits a typed bound (both fix Linux bugs, S8.17 and S8.09); its README differs; and macOS/advtempscript.txt comments out the additional-edges lines and adds '*DISPLAY*' progress echoes no in-scope GUI reads. These came in your macOS commits of 2026-07-10, after the Linux GUI's last change. Decision 0014 covers Linux/frontend and frontend1 only. How should stage 8 treat the macOS GUI?
+
+- Note its fixes only (Recommended): Keep decision 0014's scope; the items already cite macOS/frontend where it fixes a Linux problem, as stage 5 does for the macOS backend.
+- Cover it fully: Amend decision 0014 so stage 8 describes macOS/frontend and its template as a third version (another draft-and-verify pass).
+
+**Answer:** Note its fixes only (Recommended), written into stage 8's open question 1
+
+**Q2 (Sessions).** Stage 8, open question 2: must 2.0 import FuSION 1's GUI sessions? There are three session files (arjun.json, arjun.j.json, arpit.json) under Linux/frontend/sessions/; 27 of their 28 absolute paths no longer exist; the only stored pipeline is empty. The GUI's one recorded run appears to be runs/egf_hela_hsa1956_cxcl8_b6/ (2026-07-09). No batch file under runs/ comes from the GUI's template, and old batch files keep running in 2.0 anyway (decisions 0017, 0023).
+
+- No import (Recommended): 2.0 starts with fresh sessions; the three old files stay in FuSION 1.
+- One-time importer: 2.0 can read a FuSION 1 session file once, flagging the stale paths for the user to fix.
+
+**Answer:** No import (Recommended), written into stage 8's open question 2
+
+**Q3 (S1.08).** A clash with stage 1's S1.08. You decided that extra tokens after a let value are an error, on the basis that no real file has any. But the GUI stores ids as display text ('hsa1956 - egfr') and its template writes 'let $SRC_NODE hsa1956 - egfr', relying on let keeping only the first token; its 2026-07-09 run did exactly that. No such script survives, because output_script.txt is overwritten each run and the two tracked GUI scripts have bare ids, and S8.12 proposes that 2.0's frontend store and write bare ids. Should S1.08 stand?
+
+- Keep S1.08 (Recommended): An old GUI-style line now stops with an error naming the key; none is saved, and 2.0's frontend writes bare ids.
+- Amend S1.08: warn: Extra tokens give a warning and the first token is used, so old GUI-generated scripts would still run.
+
+**Answer:** Keep S1.08 (Recommended). S1.08 stands; a note goes into stage 1 with the cross-stage corrections.
+
+**Q4 (S8.01).** S8.01 · Build, launch and the launch directory. The README builds the GUI with javac and starts it with java from Linux/ (JDK 21 asked; the code needs Java 16+; org.json is the only library). Every file the GUI touches (accounts, sessions, the template, the generated script, ./fusion, the editor's files) is a path relative to the JVM's working directory, which must be Linux/, and the backend inherits that directory, so its fixed-name outputs and SMT dumps land in Linux/. Started anywhere else, the GUI has no accounts and can't find the template or ./fusion, with no message. Linux/README.md's install guide tells users to run the out-of-scope GUIForExecutable instead, and 67 stale compiled classes are tracked in git. The draft proposes that 2.0's frontend finds the backend and its data through configuration, not its working directory, and that no compiled classes are kept in the repository.
+
+- Fix as proposed (Recommended): Configured locations, no reliance on the working directory, no compiled classes in git.
+- Keep FuSION 1 behaviour: Must be launched from Linux/.
+
+**Answer:** Fix as proposed (Recommended), written into S8.01
+
+## 090 · Poll · 2026-11-12 17:17
+
+The second stage 8 poll.
+
+**Q1 (S8.02).** S8.02 · Login, sign-up and fusion_users.dat. LoginPage is the GUI's entry point: sign-up takes username, email and password, creates the user's session file and rewrites the whole account map (Java-serialised) to fusion_users.dat; sign-in compares an unsalted SHA-256 hash. Problems: the hashes are unsalted, and FuSION 1's git tracks the account file with arpit's email and password hash, open to offline attack; the login guards nothing, since sessions are plain JSON anyone with file access can read or edit, and anyone can sign up; a username containing / or .. puts its session file outside the sessions folder; 'Wrong password!' also shows for an unknown user; accounts and sessions can disagree (arjun has sessions but no account). The draft proposes keeping per-user sign-in and per-user sessions, with salted, slow password hashes in a store outside the repository, validated usernames, and no committed account file.
+
+- Fix as proposed (Recommended): Per-user accounts done properly: salted slow hashes, validated names, nothing committed.
+- Drop the login: Treat 2.0's frontend as a single-user local app with no accounts; sessions belong to whoever runs it.
+- Keep FuSION 1 behaviour: As now.
+
+**Answer:** Fix as proposed (Recommended), written into S8.02
+
+**Q2 (S8.03).** S8.03 · Window frame and step navigation. Every window is an undecorated Swing frame with its own header and buttons. The configuration steps are cards in one CardLayout, in a Next order (working directory and LFC, pathway XML, path bound, relaxation bounds, node ids, thresholds, edge files, pipeline editor), each page with Prev, Next, Save and Sessions, plus a ☰ menu listing the steps in a different order. Problems: nothing is saved until Save (and Save on the edge-files page doesn't write the file); closing loses changes silently; Prev discards unsaved page values; the ☰ menu skips Next's checks, so a skipped reach-path page leaves the edge restriction at −1 and the run dies with 'Index -1 out of bounds for length 3'; Prev can do nothing on a page reached by the menu; the card stack grows on every visit. The draft proposes dropping it: Swing frames and a card stack don't carry over to a web frontend; Phase 5 designs navigation, and these problems are what it must not repeat.
+
+- Drop (Recommended): Phase 5 designs the web navigation, avoiding the listed problems.
+- Keep the step order: Drop the Swing frame, but keep the same step-by-step wizard order as the 2.0 frontend's starting point.
+
+**Answer:** Drop (Recommended), written into S8.03
+
+**Q3 (S8.04).** S8.04 · Sessions window. After sign-in, 'Your Sessions' lists the user's sessions as '<name> (<creation timestamp>)', with Configure, New Session, Delete, Log Out and Submit (frontend opens the pipeline editor, frontend1 runs at once). Problems: sessions are addressed by list position, so after deleting an earlier entry an open session's Save overwrites its neighbour; New Session followed by Cancel or a blank name still opens a session, and with index −1 the read fails and the next page throws a NullPointerException with nothing shown; the duplicate-name check compares the untrimmed name but stores the trimmed one; the timestamp is the creation time and never changes. The draft proposes keeping named, per-user sessions that can be created, opened, run and deleted, addressed by a stable id, with Cancel actually cancelling.
+
+- Fix as proposed (Recommended): Same session operations, stable ids, a working Cancel.
+- Keep FuSION 1 behaviour: Sessions addressed by list position.
+
+**Answer:** Fix as proposed (Recommended), written into S8.04
+
+**Q4 (S8.05).** S8.05 · The session file frontend/sessions/<user>.json. One JSON array per user, rewritten whole on each save, with 34 keys per session (working directory, LFC file, pathway source, split threshold, path bound and edge restriction, solver settings, relaxation bounds, node ids, mapping files, thresholds, edge files, coexpression inputs, pipeline). Problems: paths are absolute and unchecked, and 27 of the 28 stored paths no longer exist (e.g. CoexpressionCsv names the old coexpression_csv/ folder); org.json's put(key, null) deletes the key, so choosing one pathway source removes the other field entirely; threshold overrides (S8.15) aren't stored; nothing about runs is stored (output directory, time, outcome). The draft proposes one stored record per session with every input a run needs, keyed by a stable id, its paths checked when it opens, both pathway-source fields kept, and the overrides stored.
+
+- Fix as proposed (Recommended): Complete, id-keyed session records with paths checked on opening and overrides kept.
+- Keep FuSION 1 behaviour: As now.
+
+**Answer:** Fix as proposed (Recommended), written into S8.05
+
+## 091 · Poll · 2026-11-12 17:19
+
+The third stage 8 poll.
+
+**Q1 (S8.06).** S8.06 · Defaults of a new session. Until a page sets them, a session holds defaults that contradict every real batch: up/down thresholds 0 and 0 (every gene ≥ 0 is up and ≤ 0 down, a 0 in both; the batches use ±0.67, ±1.01 or ±1.45); split threshold 15000, so no multi-gene box is ever collapsed (every batch uses 1); relaxation bounds 20–80 and 20–70 (84 of 85 batches start both lower bounds at 0, with upper bounds 0 to 20, 8 the commonest); path bound 50 (the batches use 6 to 15); timeouts 60000/150000 ms (the batches use 600000/3000000 or 3600000/14400000); edge restriction −1, which is not a valid choice and crashes the script filler if the page is skipped; and mapping files relative to Linux/, where they don't exist (one with a leading space in its name). The draft proposes defaulting to what the real batches use (split threshold 1, edge restriction 0, relaxation bounds from 0, path bound 10, the shipped maps), and having the user set the LFC thresholds or accept a suggested value (suggest_thresholds, decision 0013) instead of defaulting to 0.
+
+- Fix as proposed (Recommended): Defaults from the real batches; LFC thresholds set by the user or suggested, never 0 by default.
+- Fix, all from the b10 runs: Also default the upper bounds to 8/8 and the timeouts to 3600000/14400000, as in your b10 runs.
+- Keep FuSION 1 behaviour: Current defaults.
+
+**Answer:** Fix as proposed (Recommended), written into S8.06
+
+**Q2 (S8.07).** S8.07 · Working-directory and log-fold-change pages. 'Welcome to FuSION' shows the session's working directory with a 'Change Directory' chooser; it becomes $WORK_DIR, under which each run makes its output directory. 'Log Fold Changes File' has a 'Choose File' chooser (no file-type filter); Next stays disabled until a file is set. The file becomes $LOG_FOLD_CHANGE_FILE, and its base name names the output directory and Pareto files. Neither page checks anything: the directory may not exist or be writable, and the file may not be an LFC file (arpit.json stores /home/linux/generated_script.txt as one); after a choice the page shows only the file name, not where it is. The draft proposes keeping both inputs, since a results location and an LFC file are needed for any run, with their checks under S8.30.
+
+- Keep (Recommended): Both inputs stay; checks come from S8.30.
+- Fix: show full paths: Keep both, and also show each chosen file's full path rather than its name alone.
+
+**Answer:** Keep (Recommended), written into S8.07
+
+**Q3 (S8.08).** S8.08 · Pathway XML page. Two radio buttons choose the pathway source: a text file listing KGMLs to merge, or one pre-merged XML; a 'Node Split Threshold' field sets $NODE_SPLIT_THRESHOLD. The mode is stored as a comment prefix (KEGG = '' or ';;') that ScriptFile pastes onto five template lines. Problems: the pre-merged mode also comments out the additional-edges step, so a chosen additional-edges file is silently ignored; the list mode relies on '' + null, so the merged graph is written to a file named 'null' (or an empty name after a save and reopen), and it always fails at exec add (S8.24); Next requires no file in either mode; a non-numeric split threshold makes Next and Save silently do nothing. Your arjun sessions use the pre-merged mode; Linux/output_script.txt is a list-mode script. The draft proposes keeping the choice between a KGML list and a pre-merged graph, stored as an explicit choice, with the additional-edges step in both modes and the chosen file required.
+
+- Fix as proposed (Recommended): Explicit pathway-source choice, additional edges in both modes, file required.
+- Keep FuSION 1 behaviour: Comment-prefix modes as now.
+
+**Answer:** Fix as proposed (Recommended), written into S8.08
+
+**Q4 (S8.09).** S8.09 · Reach path bound and edges-to-target restriction. 'Maximum Signalling Path Length' is a 0 to 100 slider with a text field; the slider stores at once, but a typed value only on Enter. It becomes the bound for both fb_rch and both pathz3 lines. 'Final Edges in pathways restricted to:' offers activation only, expression only or no restriction (1, 2, 0), passed as fb_rch's last argument; Next and Save require a choice. Problems: a typed bound is silently lost unless Enter was pressed (macOS/frontend already commits it on focus loss and before Next/Save); 0 is accepted and gives an empty corridor (S4.18); the labels promise more than fb_rch did, which S4.05's fix now makes each rule match its name. The draft proposes keeping both inputs, committing a typed bound without Enter as the macOS copy does, and rejecting a bound below 1.
+
+- Fix as proposed (Recommended): Both inputs kept; typed bound committed; bound at least 1.
+- Keep FuSION 1 behaviour: Typed bound needs Enter; 0 accepted.
+
+**Answer:** Fix as proposed (Recommended), written into S8.09
+
+## 092 · Poll · 2026-11-12 17:21
+
+The fourth stage 8 poll.
+
+**Q1 (S8.10).** S8.10 · Solver configuration dialog. 'Configure' opens a modal dialog with four integer fields: Increment Solver Timeout, Overall Solver Timeout, Solutions to Count and Solutions to Explore, which become the last four positional arguments of each pathz3 line. The timeouts are milliseconds, but the dialog shows no unit. A field that doesn't parse shows 'Invalid Inputs', yet OK then stores 0 for it and closes anyway, so a 0 timeout reaches pathz3 silently. The draft proposes keeping the settings, showing their units, and rejecting an invalid entry instead of storing 0. In 2.0 the settings follow stage 5's decisions: a per-query timeout plus an optional whole-solve budget (S5.21), and extra solutions only on request (S5.26).
+
+- Fix as proposed (Recommended): Solver settings with units, invalid entries rejected, mapped onto S5.21's and S5.26's settings.
+- Keep FuSION 1 behaviour: Four unlabelled integers; invalid becomes 0.
+
+**Answer:** Fix as proposed (Recommended), written into S8.10
+
+**Q2 (S8.11).** S8.11 · Relaxation bounds page. Two cards, node and edge relaxation bounds, each with lower and upper steppers and a two-thumb slider over 0 to 100; typed values are clamped and committed on Enter or focus loss, and the slider keeps lower ≤ upper. They become the four relaxation bounds of both pathz3 lines. Problems: a stored lower bound above 50 puts the slider's lower thumb at 50 (the stepper still shows the stored value), and any change on that card then rewrites it to 50, a Swing RangeSlider quirk; one batch does use a lower bound of 7 (r5_mcl1_stat3's resolve_wo_n7_e0); values stay on the page until Next or Save. The draft proposes keeping the input as four bounded integers with lower ≤ upper; the slider fault belongs to the Swing control.
+
+- Keep (Recommended): Four bounded integers, lower ≤ upper; the Swing slider fault doesn't carry over.
+- Fix: no upper cap of 100: Same input, but bounds limited by the graph's size rather than a fixed 0 to 100.
+
+**Answer:** Keep (Recommended), written into S8.11
+
+**Q3 (S8.12).** S8.12 · Node IDs page. Source, target and FSC fields with suggestions from the symbol map; picking one stores '<id> - <lower-case symbol>' (e.g. 'hsa1956 - egfr'), and the script relies on let keeping the first token (S1.08 stands, so 2.0 must write bare ids). Problems: Enter with no exact match still stores the typed text ('EGFR' becomes the node 'hsaEGFR'); text typed without Enter or a pick is lost; a reopened page shows empty fields; an empty field writes 'let $SRC_NODE hsa'; an unknown or empty FSC is silently skipped by pathz3, so the with- and without-FSC solves are the same problem and the run is no significance test; only one source, target and FSC can be entered. The draft proposes keeping the symbol-aware lookup, storing bare ids, accepting only ids in the map, showing the stored values, and requiring all three ids. Your r7 and r8 runs are single solves with no FSC, which requiring an FSC would rule out in the GUI.
+
+- Fix, FSC optional (Recommended): As proposed, but source and target are required and the FSC optional: no FSC means a single solve, as in r7 and r8.
+- Fix as drafted: As proposed, with all three ids required.
+- Keep FuSION 1 behaviour: Display text stored, unchecked.
+
+**Answer:** Fix, FSC optional (Recommended), written into S8.12
+
+**Q4 (S8.13).** S8.13 · Mapping files dialog and the start line. 'Change Mapping Files' offers three choosers: the HSA-to-gene-symbol map, the pathway-name map and the cross-database map, which feed 'start' (and the cross-database map also both mff lines). Problems: the defaults are names relative to Linux/, where neither file exists (the shipped copies are in Linux/frontend/), so a new session gets no suggestions and start runs with empty name maps, with only a stderr line to show for it; the dialog edits the session directly, with no Cancel and no way to clear a file; an empty cross-database map gives start and mff an empty token. The draft proposes shipping the two reference maps with 2.0, using them by default from a checked location, and keeping the three choosers for other maps. S2.14 already dropped both uses of the cross-database map, pending Phase 2's id-mapping design.
+
+- Fix, two choosers (Recommended): Ship and default the two reference maps, keep choosers for the symbol and pathway-name maps; a cross-database input waits for Phase 2's id mapping (S2.14).
+- Fix as drafted: Ship the two maps, keep all three choosers.
+- Keep FuSION 1 behaviour: Relative default names, dialog as now.
+
+**Answer:** Fix, two choosers (Recommended), written into S8.13
+
+## 093 · Poll · 2026-11-12 17:22
+
+The fifth stage 8 poll, with stage 8's open question 3.
+
+**Q1 (S8.14).** S8.14 · Threshold filter page. Down and Up threshold fields, a Filter button that checks them (numbers, down ≤ up), stores them and previews the LFC file in columns (Up, Not DE, Down, plus four override-only columns), each entry like 'hsa3725 - JUN (2.41)'. Problems: only Filter stores the thresholds, so typed values are lost on Next or Save unless Filter was pressed (RUNNING.md warns about this); the preview is a fifth LFC parser with its own rules (lines with three or more fields skipped, one non-numeric value aborts the whole preview, a repeated id keeps its last value, down = up shows a gene as Up only); and the preview isn't what the run uses, since cudf reclassifies from the file. S3.07 already makes up ≤ down an error. The draft proposes keeping a live preview of the up and down lists, taking the thresholds as typed, and computing the preview with the backend's single LFC parser (S3.14), so it shows exactly what cudf will produce.
+
+- Fix as proposed (Recommended): Live preview from the backend's own parser; thresholds kept as typed.
+- Keep FuSION 1 behaviour: Filter-only storage and the GUI's own parser.
+
+**Answer:** Fix as proposed (Recommended), written into S8.14
+
+**Q2 (S8.15).** S8.15 · Node overrides reach the script as gene text. On the threshold page, Search highlights lines and Override moves a gene into chosen columns (Up / Not DE / Down; Active / Inactive; Relaxed / Non-relaxed). ScriptFile writes four of the lists (confirmed up, confirmed down, inactive, relaxed) as comma-joined display text, or an empty temp file path. So overriding JUN to Inactive writes 'let $INACTIVE_NODES_FILE hsa3725 - jun (2.41)'; pathz3 tries to open a file named 'hsa3725', fails and uses an empty set: no override has ever reached a solve. Also: Search alone records an override (an arbitrary match), override keys are lower-cased so removal fails for upper-case symbols, three columns are never written, overrides aren't saved, and the temp file vanishes when the GUI exits. The draft proposes keeping per-gene overrides, written as one-id-per-line files in the run directory, passing every kind pathz3 accepts, and storing them with the session.
+
+- Fix as proposed (Recommended): Real override files in the run directory, every accepted kind passed, stored with the session.
+- Drop overrides: No per-gene overrides in the 2.0 frontend; users edit the node files themselves.
+
+**Answer:** Fix as proposed (Recommended), written into S8.15
+
+**Q3 (Overrides).** Stage 8, open question 3: what should the three override kinds the GUI collects but never writes do? 'Active' and 'Non Relaxed Node' match pathz3's active-node and non-relaxed-node files, which the template already fills with the source, target and FSC. 'Not Differentially Expressed' has no pathz3 input: it would mean dropping the gene from the up and down lists the solve treats as observations.
+
+- Wire all three (Recommended): Active and Non-relaxed join pathz3's active and non-relaxed node files; Not DE removes the gene from the observed up and down lists.
+- Wire two, drop Not DE: Active and Non-relaxed only; the Not DE override goes.
+- Drop all three: Only the four kinds the GUI already writes.
+
+**Answer:** Wire all three (Recommended), written into S8.15 and stage 8's open question 3
+
+**Q4 (S8.16).** S8.16 · Edge files page and the coexpression inputs. Five optional file choosers (additional, essential, avoid, relaxed and non-relaxed edges), a coexpression CSV chooser and two integer steppers (COEXP_THRESH, FROZEN_THRESH). An unchosen file is written as an empty value, which pathz3 treats as an unopenable file and an empty set. Problems: Save on this page never writes the session file (only Next does); a chosen file can't be removed again; the edge-file formats are neither shown nor checked; the thresholds accept negative numbers. The draft proposes keeping the page's inputs, since all are live pathz3 inputs; S8.17 fixes how they reach pathz3, S8.30 checks them, and Phase 5's navigation (S8.03) covers Save and clearing a choice.
+
+- Keep (Recommended): Same inputs; delivery, checks and page behaviour handled by S8.17, S8.30 and Phase 5.
+- Keep FuSION 1 behaviour: Page as now, including its Save and removal faults.
+
+**Answer:** Keep (Recommended), written into S8.16
+
+## 094 · Poll · 2026-11-12 17:24
+
+The sixth stage 8 poll.
+
+**Q1 (S8.17).** S8.17 · The coexpression and frozen-edge settings never reach pathz3 on Linux. The template ends both pathz3 lines with $COEXPRESSION_CSV $COEXP_THRESH $FROZEN_THRESH $NEW_CONSTRAINTS_ENABLED $Z3_RANDOM_SEED, but ScriptFile has no replacement for the first three placeholders, so they reach the batch as literal '%__a21__%' etc. Linux pathz3 takes '%__a21__%' as the CSV path, fails to parse '%__a22__%' and stops reading, so it logs 'enabled=0' and emits neither constraint family: every Linux GUI run was solved without them, silently, although the page asks for them and arjun.json stores 700, a CSV and 800. Filling the placeholders alone wouldn't suffice, since an empty CSV token also stops the Linux parser. macOS fixes both halves. S5.02 already decided the backend half (each optional slot consumes its token, as on macOS; a non-numeric value is an error). The draft proposes filling all three values and stopping on any unfilled placeholder (S8.20).
+
+- Fix as proposed (Recommended): Values filled, S5.02's slot parsing, unfilled placeholders stop the run.
+- Keep FuSION 1 behaviour: Constraints silently off in GUI runs.
+
+**Answer:** Fix as proposed (Recommended), written into S8.17
+
+**Q2 (S8.18).** S8.18 · The pipeline editor page (gui4, 4601 lines). The last page embeds a block editor: ten built-in blocks (let, cudf, exec, start, mff, wgx, rgx, fb_rch, pathz3, result) plus user templates, connectable with type checks, fed by 'Input Data' cards from a Data_Coming_From_Frontend.txt the page writes (base names only). Execute writes a plan (execution.txt) in its own notation, Save/Load write a .pipeline file also kept in the session (your only stored pipeline is empty), and Submit runs the template, ignoring the drawn pipeline. Nothing in the editor affects a run, its cycle check can never fire, and it rebuilds and rereads its files on every visit. The draft proposes dropping it; the flexible step order and partial runs it points towards are designed in Phase 2 (decisions 0018 and 0019).
+
+- Drop (Recommended): Drop this editor; whether 2.0's frontend offers a working visual pipeline builder is a Phase 5 question, built on decisions 0018 and 0019.
+- Keep and make it work: Port the editor and make Submit run the drawn pipeline.
+
+**Answer:** Keep and make it work. Not yet written into S8.18: a follow-up confirms how it combines with S8.20 (entry 095).
+
+**Q3 (S8.19).** S8.19 · The pipeline editor's 'Gen Script' and block library files. 'Gen Script' writes a template-like file with unfilled placeholders, nothing reads it, and its output wouldn't run (undefined variables such as $KEGG_XML_FILE, gaps that shift arguments). The shipped block_templates.txt and block_descriptions.txt contradict the built-ins and the real commands (rgx, fb_rch, pathz3, let and exec get two integer inputs and one file output; cudf 'processes package dependency files and generates upgrade plans', mff 'computes maximum flow'), and the editor's README describes cloning a separate repository and running it under JDK 8. The draft proposes dropping it with S8.18.
+
+- Drop (Recommended): Drop with the editor; its output is never run and its library is wrong.
+- Keep FuSION 1 behaviour: Keep Gen Script and the library files.
+
+**Answer:** Keep FuSION 1 behaviour. Not yet written into S8.19: a follow-up confirms whether the files are kept as they are or made correct (entry 095).
+
+**Q4 (S8.20).** S8.20 · Filling the batch template (ScriptFile). On Submit, ScriptFile reads Linux/advtempscript.txt, makes an empty temp file, replaces about forty %__..__% placeholders by plain text substitution, and writes Linux/output_script.txt. Problems: three templates exist and two are never read; nothing ties the GUI's fields to the placeholders, so three are never filled (S8.17) and leftovers go undetected; values go in unquoted, so a path with a space or a stored id like 'hsa1956 - egfr' becomes several tokens; the edge restriction is used as an array index, so its default −1 throws; output_script.txt is overwritten by every run; two generated scripts are committed. The draft proposes keeping the approach of generating a batch file from the session (the batch language stays, decision 0018), from one template kept with the backend, using named arguments, with every value checked, quoted where needed (S1.05's quoting), and a stop on any unfilled placeholder.
+
+- Fix as proposed (Recommended): One template with the backend, named arguments, checked and quoted values, no unfilled placeholders.
+- Fix: no template: The frontend calls the backend's steps directly instead of generating a batch file (the batch stays for command-line users).
+- Keep FuSION 1 behaviour: Text substitution into advtempscript.txt.
+
+**Answer:** Fix as proposed (Recommended), written into S8.20
+
+## 095 · Poll · 2026-11-12 17:26
+
+Follow-ups to entry 094's S8.18 and S8.19 answers. After it, a note on how the two combine was added to S8.20's decision.
+
+**Q1 (S8.18).** S8.18 follow-up. You chose to keep the pipeline editor and make Submit run the drawn pipeline. S8.20 keeps generating a batch file from one template. How should the two fit together in 2.0?
+
+- Template = default pipeline (Recommended): The standard run is a pre-drawn pipeline the editor opens with; users edit, add or remove blocks; every Submit turns the drawn pipeline into a batch file. One generation path.
+- Pipeline when drawn: Submit runs the drawn pipeline if there is one, otherwise the standard template filled from the session's pages (two generation paths).
+
+**Answer:** Template = default pipeline (Recommended), written into S8.18 and S8.20
+
+**Q2 (S8.19).** S8.19 follow-up. With the editor kept and made to work (S8.18), you chose to keep 'Gen Script' and the block library files. Today Gen Script's output doesn't run and the library files contradict the real commands (e.g. cudf 'processes package dependency files', mff 'computes maximum flow'). Did you mean to keep them as they are, or to keep them and make them correct?
+
+- Keep and correct (Recommended): Gen Script writes a runnable batch file of the drawn pipeline; the block library's inputs, outputs, types and descriptions match the real commands.
+- Keep exactly as now: Gen Script and the two library files as FuSION 1 has them.
+
+**Answer:** Keep and correct (Recommended), written into S8.19
+
+## 096 · Poll · 2026-11-12 17:27
+
+The seventh stage 8 poll.
+
+**Q1 (S8.21).** S8.21 · The generated script's run directory. The output directory is $WORK_DIR/<src>_to_<tgt>_fsc_<fsc>_<lfc file name>_b<bound>, and the script first runs 'exec if [ -d $WRITE_DIR ] ; then /bin/rm -rf $WRITE_DIR; fi', then recreates it; the run's fixed-name files are moved there from the launch directory with exec mv. Problems: a rerun with the same source, target, FSC, LFC file name and bound deletes the earlier results without asking, even when thresholds, relaxation bounds, edge files or coexpression settings differ; each pathz3 leaves its SMT dump directory in Linux/, never moved; moving fixed-name files by name can grab an earlier run's file (e.g. PO.dat), and two simultaneous runs take each other's; a working directory with a space is cut at the space. The draft proposes a new directory for every run, never deleting one, with every output of the run in it (SMT dumps included) and the run's full parameters recorded there.
+
+- Fix as proposed (Recommended): A fresh, never-deleted directory per run, holding all its outputs and its full parameters.
+- Keep FuSION 1 behaviour: Same-name reruns delete earlier results.
+
+**Answer:** Fix as proposed (Recommended), written into S8.21
+
+**Q2 (S8.22).** S8.22 · The generated script's input preparation. As in the hand-written batches: cudf writes up_reg and down_reg; exec lines echo the source and target into files, write connect_pairs, cat cudf's lists, the source, the target and the not-merged ids file into the merge-exception file for start, and touch an empty avoid file; one 'exec cd $WRITE_DIR;' line does nothing, since each exec gets its own shell. This is file plumbing through exec with a disk round trip for cudf's lists. The draft proposes following S1.17's decision: the backend builds the exception set itself from cudf's lists, the source, the target and the not-merged file (S2.13 adds the FSC), so the frontend supplies only those inputs.
+
+- Fix as proposed (Recommended): The backend assembles the exception set; the frontend passes only the inputs.
+- Keep FuSION 1 behaviour: exec plumbing in the generated script.
+
+**Answer:** Fix as proposed (Recommended), written into S8.22
+
+**Q3 (S8.23).** S8.23 · The generated script's graph building. List mode merges the KGMLs and writes a master graph, runs exec add (S8.24), then both modes do a second mff with 'y' over the master (plus the additional-edges XML in list mode), write merged_master_graph.xml, move edges_merged_filename, and read the graph back with rgx. Problems: in pre-merged mode the user's XML is parsed twice and written once more per run, and with the GUI's split threshold of 15000 the GUI run wrote a 13 MB merged graph from a 1.9 MB input; the one-file mff writes no edges_merged_filename, so the mv fails or moves an earlier run's file; every run rebuilds the graph from scratch, even when the session already built the same one. The draft proposes building the graph once in memory (S2.26's decision), saving it with the run, and letting a later run of the session start from it (decision 0019).
+
+- Fix as proposed (Recommended): One in-memory build, saved with the run, reusable by later runs.
+- Keep FuSION 1 behaviour: Rebuild and round-trip the graph every run.
+
+**Answer:** Fix as proposed (Recommended), written into S8.23
+
+**Q4 (S8.24).** S8.24 · 'exec add' cannot run. In list mode the script runs 'exec add $ADDITIONAL_EDGES_FILE $ADDITIONAL_EDGES_XML_FILE', which hands 'add' to /bin/sh; add is a FuSION command (S2.30) and Linux/add is a standalone build of it, but the shell looks it up on PATH and finds nothing, so it fails with 'add: not found' and writes no XML. The next lines still add that missing XML to the merge list, so the second mff aborts on it: every list-mode GUI run fails here, whether or not an additional-edges file was chosen. Even a working add would produce an empty XML that fails a reader assertion when no file was chosen. S2.30's text says this line runs the standalone tool, which holds only when the launch directory is on PATH (a stage 2 correction to come). The draft proposes calling the built-in add command, only when an additional-edges file was chosen, in both pathway modes (S8.08).
+
+- Fix as proposed (Recommended): Built-in add, only with a chosen file, in both modes.
+- Keep FuSION 1 behaviour: exec add through the shell.
+
+**Answer:** Fix as proposed (Recommended), written into S8.24
+
+## 097 · Poll · 2026-11-12 17:29
+
+The eighth stage 8 poll.
+
+**Q1 (S8.25).** S8.25 · The generated script's two solves. As in the hand-written batches: fb_rch, then the with-FSC node files (active, non-relaxed and essential hold source, target and FSC; avoid is empty) and the first pathz3 (33 arguments), then fb_rch again with the same arguments, the without-FSC files (the avoid file holds the FSC) and the second pathz3, each followed by exec mv of its limits and PO files. Problems: the corridor is computed twice (S4.20) and the second solve waits for the first although neither reads the other's output; the search mode is fixed at 0. Since then, stage 4 decided to compute the corridor once (S4.20), stage 5 made the FSC a named argument with both cases solved on one corridor (S5.17), and mode 1 was dropped (S5.28). The draft proposes keeping these commands, with their costs handled in stages 4 and 5 and their optional arguments in S8.17.
+
+- Keep (Recommended): The default pipeline still runs both FSC cases, written with S5.17's named FSC on one corridor (S4.20).
+- Keep FuSION 1 behaviour: Two fb_rch calls and two hand-built pathz3 lines, as the template has them.
+
+**Answer:** Keep (Recommended), written into S8.25
+
+**Q2 (S8.26).** S8.26 · The generated script's Pareto plot and wrap-up. The template opens a persistent gnuplot window ('gnuplot -p', with-FSC blue, without-FSC red), then draws the same plot again to a PNG named after the run, moves mylog.txt into the run directory and exits. Problems: this isn't the canonical plot (current batches call plot_po.sh, which styles the curves and keeps coincident points visible; here equal curves hide one another); the -p window opens on whatever machine runs the backend and fails without a display, and it is the only result the GUI shows; the plot is drawn twice. The draft proposes drawing the plot once, to a file, with the canonical plot, and showing it in the frontend (S8.29). S6.22 already made the canonical plot a built-in step.
+
+- Fix as proposed (Recommended): S6.22's built-in plot, drawn once to a file and shown in the frontend.
+- Keep FuSION 1 behaviour: gnuplot window plus a second PNG plot.
+
+**Answer:** Fix as proposed (Recommended), written into S8.26
+
+**Q3 (S8.27).** S8.27 · Commands the GUI cannot emit. Neither the template nor the editor's generator has a gsea, psp, pex or plot_po.sh line, so a GUI user can't shortlist pathways, plot solution paths or explanation subgraphs, or get the canonical Pareto plot, although 19 of the 88 batch files run gsea, 25 run pex and 22 call plot_po.sh. The template also fixes the constraint-family switch to 1, the seed to 42, the search mode to 0, no fb_rch exclusions, one source-target pair and no upfx. A GUI run does strictly less than current batches, and nothing says so. The draft proposes that the 2.0 frontend can request pathway shortlisting, the explanation and solution-path views and the canonical Pareto plot. With S8.18, these would be blocks of the pipeline editor, with the default pipeline including the ones current batches use.
+
+- Fix as proposed (Recommended): Every live step available from the frontend, as editor blocks; the default pipeline matches current batches (gsea, solve, plot, explanations).
+- Fix, steps only on request: All steps available as blocks, but the default pipeline stays the minimal solve.
+
+**Answer:** Fix as proposed (Recommended), written into S8.27
+
+**Q4 (S8.28).** S8.28 · Running the backend and the run window. Submit starts './fusion -b output_script.txt' in the launch directory and opens a log window: each output line with a timestamp, and a stage label guessed from the echoed command (cudf 'Processing fold-change data', mff 'Merging pathways', pathz3 'Constraint solving (Z3)', and so on); at the end it shows 'Execution Completed' and offers another experiment. Problems: the exit status is ignored, so aborted runs show 'Execution Completed'; there is no Stop, and closing the window leaves the backend running (closing the GUI deletes the run's temp file); nothing prevents a second Submit sharing Linux/ with the first; progress is guessed from echoes, so an hours-long solve shows nothing; windows pile up. Stage 1 cites a dead copy of this code (to be corrected). The draft proposes keeping a live log with a stage indicator, reporting the exit status, offering Stop, giving each run its own directory (S8.21), and refusing or queueing a second run that would share one.
+
+- Fix as proposed (Recommended): Live log and stage indicator, real exit status, Stop, one directory per run.
+- Keep FuSION 1 behaviour: Run window as now.
+
+**Answer:** Fix as proposed (Recommended), written into S8.28
+
+## 098 · Poll · 2026-11-12 17:31
+
+The last stage 8 poll.
+
+**Q1 (S8.29).** S8.29 · Showing results. The GUI shows only the run log. It doesn't open the run directory, the plot, pathz3's solution files or anything else; the only picture is the gnuplot window the script itself pops up, and users find $WORK_DIR/<run>/ by hand. No session links to its runs' results, so the user can't tell which directory came from which settings, and a rerun silently replaces it (S8.21). The two Pareto curves, the FSC comparison and the explanations computed in stages 5 and 6 are never shown. The draft proposes that the 2.0 frontend shows each run's results (at least the two Pareto curves, the solutions and the explanation views), linked from its session, with decision 0022 designing the graph display.
+
+- Fix as proposed (Recommended): Results shown in the frontend and linked from the session; graph display designed under decision 0022.
+- Fix, links only: The frontend lists each run's output files and opens them, without its own result views.
+
+**Answer:** Fix as proposed (Recommended), written into S8.29
+
+**Q2 (S8.30).** S8.30 · No checks before a run. Submit fills the template with whatever the session holds: nothing checks that files exist and are readable, that ids exist, that numbers are in range, or that paths contain no space (a path with a space is cut by let, e.g. '/home/u/My Data/x.tsv' becomes '/home/u/My'). Bad inputs surface only as backend log lines or not at all: a missing map gives an empty map, an unknown FSC gives two identical solves, an empty edge-file name an empty set, an unfilled placeholder silently disables constraints; and 27 of 28 stored paths are stale. The draft proposes checking every input before a run starts, as decision 0021 requires of both the backend and the frontend.
+
+- Fix as proposed (Recommended): Every input checked before the run, in the frontend and again in the backend.
+- Keep FuSION 1 behaviour: No checks.
+
+**Answer:** Fix as proposed (Recommended), written into S8.30
+
+**Q3 (S8.31).** S8.31 · Files shipped with the GUI. Linux/frontend/ carries the symbol map (6334 lines) and pathway-name map (2822), the not-merged ids file (hsa1432, hsa5594, hsa5599), a KGML list of 162 paths on another user's machine (none exists here), the org.json jar, three icons (two unused), dummy.txt and an empty README; git also tracks 67 stale classes, arpit's session, and in Linux/ the template, two generated scripts and the account file with an email and password hash. Nothing reads the data files where they are. The draft proposes shipping only what 2.0 reads (the reference maps with their source and date, and a KGML list that resolves) and keeping compiled classes, sessions, accounts and generated scripts out of the repository. KEGG data (KGMLs and KEGG-derived maps) comes with licence terms, which matters for what a repository ships.
+
+- Fix, KGMLs not shipped (Recommended): Ship the reference maps with source and date, and a KGML list resolved against the user's own KGML directory; no compiled, generated or personal files.
+- Fix as drafted: Ship the maps and a KGML list that resolves, as the draft says.
+- Keep FuSION 1 behaviour: Ship the same files.
+
+**Answer:** Fix, KGMLs not shipped (Recommended), written into S8.31
+
+**Q4 (S8.32).** S8.32 · frontend1, the older snapshot (2026-07-02). Its 18 Java files all exist in frontend/src, most identical or differing only in line endings. The behavioural differences are that its sessions window and edge-files page Submit and run at once, skipping the pipeline editor, and its ☰ menu's ninth entry opens the edge-files page. Keeping two copies in step is the cost. With S8.18 the editor now matters, so frontend1's one real difference, a Submit that runs straight away, amounts to a 'run the default pipeline as is' shortcut. The draft proposes dropping frontend1.
+
+- Drop (Recommended): Drop the copy; a 'run the default pipeline as is' button is for Phase 5's design.
+- Keep its quick Submit: Drop the copy, but require a run-at-once Submit that skips the editor in 2.0's frontend.
+
+**Answer:** Keep its quick Submit, written into S8.32. All 32 stage 8 items are now decided.
