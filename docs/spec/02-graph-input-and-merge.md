@@ -333,7 +333,7 @@ Counts come from Python scripts that parse these files; FuSION 1 was not run. `<
   - **Two or more graphs:** `merge_graphs` folds them left to right (S2.17), runs the naming-map step (S2.14) and writes the edge report (S2.24). It prints ` merging graphs: <a> and <b>` for each step, then `New graph: 83` and `Total time taken (in sec): 3.00` (`run_console.log:87-216`).
   - **One graph:** it prints `Only one graph. Returning same.`, returns that graph, and skips the naming step and the report.
   - **Two forms in the batch files:**
-    - 13 batches run `mff $GSEA_KGML_LIST xml $NODE_SPLIT_THRESHOLD n $INTER_DB_MAP_FILE -1` over raw KGMLs (or `$LIST_OF_MERGED_KEGG_XML_FILE` in place of the GSEA list);
+    - 13 batches run `mff $GSEA_KGML_LIST xml $NODE_SPLIT_THRESHOLD n $INTER_DB_MAP_FILE -1` over raw KGMLs (or `$LIST_OF_MERGED_KEGG_XML_FILE` in place of the GSEA list); by 2026-11-12, after the fdr044 candidate runs and other later batches, 32 of the 97 `*.batch` files that call `mff` do;
     - 65 run `mff $NEW_LIST_OF_MERGED_XML_FILE xml $NODE_SPLIT_THRESHOLD y $INTER_DB_MAP_FILE -1` over a one-line list that names the old master. That form is just a read (S2.27).
 - **Problems:**
   - The help line ends the arguments with `<inter_db_map> <graph-id>` (`main.cc:900`), but the code expects map files ended by `-1`. Without the `-1`, the loop walks a million empty tokens (S1.05).
@@ -607,7 +607,7 @@ Counts come from Python scripts that parse these files; FuSION 1 was not run. `<
   </pathway>
   ```
 
-  Entries are written in string order of id. Each entry has type `gene` and its own id as label, and there is no `experiment_score`. The `pathways` attribute marks the file as meant for a `y` read: the GUI's script merges it with the master through `mff … y` (S2.26). No batch file uses the in-binary `add`, which is why the output above is reconstructed rather than quoted. The GUI script calls the standalone tool instead, through `exec add …` (`Linux/output_script.txt:164`).
+  Entries are written in string order of id. Each entry has type `gene` and its own id as label, and there is no `experiment_score`. The `pathways` attribute marks the file as meant for a `y` read: the GUI's script merges it with the master through `mff … y` (S2.26). No batch file uses the in-binary `add`, which is why the output above is reconstructed rather than quoted. The GUI script means to call the standalone tool instead, through `exec add …` (`Linux/output_script.txt:164`), but `/bin/sh` looks `add` up on `PATH`, which does not hold the launch directory, so the line fails with `add: not found` and writes no XML (S8.24).
 - **Problems:**
   - The type check compares against `PPRel`, but KEGG and every downstream comparison spell it `PPrel`. A correct `PPrel` line therefore triggers the warning, and a `PPRel` line is written verbatim as a type no other code recognises.
   - Each edge can have only one subtype; `activation,phosphorylation` would be written as a single unknown subtype name.
@@ -615,6 +615,20 @@ Counts come from Python scripts that parse these files; FuSION 1 was not run. `<
   - The standalone tool does not skip a short line. It re-adds the previous line's edge instead, so a trailing blank line duplicates the last edge.
 - **Proposed call:** fix. Keep the command and its output format, but check types against KEGG's spelling and reject malformed lines with a message.
 - **Decision:** fix as proposed. A plain edge list like this is also a candidate exchange format for the plug-and-play inputs of [decision 0020](../decisions/0020-plug-and-play-inputs.md), in Phase 2. (prompt log entry 044)
+
+### S2.31 · ECrel relations become signalling edges
+
+- **FuSION 1:** `Linux/src/XMLParser.cc:2225-2250` (every `<relation>` becomes an edge, whatever its `type`); `edge_type` (S2.04); traversable subtypes (S4.04); edge signs (S5.13)
+- **What it does:**
+  - Every KGML relation becomes an edge, whatever its type. KEGG uses ECrel for two enzymes that catalyse successive reaction steps through a shared compound, and an ECrel relation's only subtype is `compound`. Real relation, `auxilliary/hsa_pathways_with_exp_score/hsa05204.xml`: `<relation entry1="61" entry2="74" type="ECrel" experiment_score="0">` with `<subtype name="compound" value="69"/>`.
+  - `compound` is not one of the non-traversable subtypes (S4.04), so `fb_rch` walks ECrel edges, and the solver counts them in the activation family (S5.13).
+  - Counts: 25 of the 2529 edges in the fdr:0.25 merge, 59 of 7400 in the full JUN run's merged graph and 50 of 7517 in the old master. Most come from Chemical carcinogenesis - DNA adducts (hsa05204), but signalling maps contribute too, among them hsa04114, hsa04670, hsa04380, hsa04650 and hsa04664.
+  - 48 of the 97 runs under `runs/` that have a merged graph and solution files use at least one ECrel edge in a witness. An edge was matched by its endpoints, subtype and pathways against the run's own merged graph, with no other relation type on the same pair. Examples: PLCG1 → PPP3CA (`path:hsa04650`) in `runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b10_t700_f800_nr7_er7_off`, and ATP2A1 → PPP3R1 (`path:hsa04380`) in `runs/egf_hela/experiment/egf_to_il8_fsc_nfkb1_b15`.
+- **Problems:**
+  - Whether an enzyme-enzyme link carries a signal is a modelling choice that nothing states. Some of these edges stand for real second-messenger signalling, such as PLCγ → Ca²⁺ → calcineurin; others are steps of a metabolic route.
+  - No output says which edges of a solution are ECrel.
+- **Proposed call:** fix, raised by Claude after the stage 7 and 8 reviews (no draft): make ECrel edges a run setting and mark them in the outputs.
+- **Decision:** fix as a setting, kept by default: ECrel edges stay unless a run setting excludes them, and the outputs mark them (prompt log entry 100)
 
 ## Open questions
 

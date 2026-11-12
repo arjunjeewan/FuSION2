@@ -23,7 +23,7 @@ Names and evidence used below:
 
 ### S4.01 · `fb_rch` command line
 
-- **FuSION 1:** `Linux/src/main.cc:2109-2232`; help line `main.cc:904`; GUI template `Linux/frontend/src/gui4.java:2175-2176`
+- **FuSION 1:** `Linux/src/main.cc:2109-2232`; help line `main.cc:904`; GUI template `Linux/advtempscript.txt:229`, `282` (the pipeline editor's `fb_rch` block, `Linux/frontend/src/gui4.java:2175-2176`, has the same eight slots)
 - **What it does:** The batch form is
 
   `fb_rch <graph-id> <source id>… -1 <target id>… -1 <excluded id>… -1 <bound> <edges_to_tgt>`
@@ -149,7 +149,7 @@ Names and evidence used below:
 - **Problems:** The avoidable costs are small at these sizes:
   - Queue membership is tested with `std::find` over the whole queue on every relaxation (`17921`), about 0.92 million comparisons in the full run, since `std::find` stops at a hit, or about 1.2 million counting the backward search's test at `18091`. A "first reached" test would do, as the dead `bounded_reach` uses (`17620`).
   - `vector<int> nids = graph->get_node_ids()` (`17942`) copies the node list and is never used. The re-filter on `distances_from_source <= bound` (`17945-17952`) can never remove a node.
-  - Every adjacency and subtype accessor returns a copy of its vector (`get_outlist` at `2119-2132`, `edge_has_subtype` at `1856-1873`). `NOT_INTERAC_EDGE` calls `edge_has_subtype` up to four times per edge.
+  - Every adjacency and subtype accessor returns a copy of its vector (`get_outlist` at `2119-2132`, `edge_has_subtype` at `1856-1874`). `NOT_INTERAC_EDGE` calls `edge_has_subtype` up to four times per edge.
 - **Proposed call:** keep. Port the search and its distances; the costs above are implementation details, not behaviour.
 - **Decision:** keep, and also write each corridor node's distances to the nearest source and target, for inspection and for the graph display ([decision 0022](../decisions/0022-graph-display.md)) (prompt log entry 058)
 
@@ -208,7 +208,7 @@ Names and evidence used below:
     - edges out of the target: 1 and 0;
     - the rest, whose only bounded walks repeat a node.
   - pathz3 requires every present edge to increase distance (S4.03), so none of these edges can be part of a solution path. Whether they still cost time or constrain the solve is stage 5's question.
-  - The GUI's script comment, "Retain only those nodes that appear in some path of length <= $REACH_PATH_BOUND" (`gui4.java:140`), overstates what is kept.
+  - The GUI's script comment, "Retain only those nodes that appear in some path of length <= $REACH_PATH_BOUND" (`Linux/advtempscript.txt:225` and `277`, repeated in the pipeline editor at `gui4.java:140`), overstates what is kept.
 - **Proposed call:** keep. The rule never drops an edge that a bounded simple path uses, and exact simple-path pruning is exponential in general. If stage 5 shows that off-path edges matter, self-loops and edges into a source or out of a target are the cheap cases to trim.
 - **Decision:** deferred until stage 5 settles S5.13. If off-path edges still count as relaxed, trim self-loops and edges into a source or out of a target; if not, keep the walk rule as it is. (prompt log entry 060) *Settled by S5.13 (prompt log entry 068):* off-path edges keep counting as relaxed, so the corridor trims self-loops and edges into a source or out of a target.
 
@@ -362,9 +362,9 @@ Names and evidence used below:
 
 ### S4.20 · The corridor is computed twice per batch
 
-- **FuSION 1:** batch pattern `fb_rch 0 …` before phase 1 and `fb_rch $MERGED_GRAPH_NUM …` before phase 2 (for example the reference batch); GUI writer `Linux/frontend/src/gui4.java:4352-4354`, `4406-4415`; pathz3's undirected copy `Linux/src/main.cc:4588`, `Linux/src/GraphManagerNew.cc:8449-8464`
+- **FuSION 1:** batch pattern `fb_rch 0 …` before phase 1 and `fb_rch $MERGED_GRAPH_NUM …` before phase 2 (for example the reference batch); GUI template `Linux/advtempscript.txt:229`, `279-282`; the pipeline editor's script writer `Linux/frontend/src/gui4.java:4352-4354`, `4406-4415`, whose output is never run (S8.19); pathz3's undirected copy `Linux/src/main.cc:4588`, `Linux/src/GraphManagerNew.cc:8449-8464`
 - **What it does:**
-  - 84 batch files, and the GUI writer, call `fb_rch` again before phase 2 with the same arguments on the saved merged-graph id. The GUI's script comment says "Reconstructing the same graph as was done earlier.", but its second call takes its inputs from a separate block (`gui4.java:4407`, `4513-4542`), so there the arguments match only if the user enters them the same way twice.
+  - 84 batch files and the GUI template (`advtempscript.txt:282`) call `fb_rch` again before phase 2 with the same arguments on the saved merged-graph id; the template's comment says "Reconstructing the same graph as was done earlier." (`advtempscript.txt:279`). The pipeline editor's script writer, whose output is never run (S8.19), takes the second call's inputs from a separate block (`gui4.java:4407`, `4513-4542`), so there the arguments would match only if the user entered them the same way twice.
   - In all 75 logs with two calls when this stage was drafted, and all 83 when it was verified, both corridors have the same node and edge counts.
   - The second call is needed only because pathz3 registers an undirected copy of the corridor, so `0` no longer names the corridor.
   - The fresh copy also gives the second solve a graph that pathz3 has not written to. pathz3 stores an adjacency matrix (`fill_adj_matrix_for_graph`, `8378-8398`) and insert-only sequence maps (`preprocess_graph_for_mincut`, `2468-2518`) in the graph object.

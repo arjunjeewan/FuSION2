@@ -166,11 +166,13 @@ FuSION 1 was not built or run. Counts come from that copy and from Python script
   | blank | previous gene again (S3.05) | skipped | skipped |
   | `hsa9` (no value) | previous line's value | skipped, counted | skipped |
   | `hsa1<TAB>NA` | 0 | skipped, counted | skipped |
-  | `hsa2<TAB>nan`, `hsa3<TAB>inf` | 0 | NaN, infinity kept | NaN, infinity kept |
+  | `hsa2<TAB>nan`, `hsa3<TAB>inf` | 0 | NaN, infinity kept | NaN, infinity kept (gseapy then drops NaN and stops on infinity, S7.04) |
   | `hsa4<TAB>1,5` | 1 | skipped, counted | skipped |
   | `hsa5<TAB>1_000` | 1 | 1000 | 1000 |
   | `hsa6<TAB>1.5abc` | 1.5 | skipped, counted | skipped |
   | `hsa7` twice (2.0, then −2.0) | in both lists | both rows counted | −2.0 (last wins) |
+
+  Stage 8 found a fifth parser, the GUI's threshold preview (S8.14): it counts only lines with exactly two fields, one non-numeric value on such a line aborts the whole preview, and a repeated id keeps its last value.
 
 - **Problems:** One file can mean different things to different steps of the same run: a gene can be ranked by gsea, shown by pex and classified by cudf with three different values. No real run is affected, because the EGF files are clean and no batch passes the TNFα file, the only real file with repeats, to `gsea` or `pex`. The three parses of a 3054-line file cost nothing that matters; the issue is consistency.
 - **Proposed call:** fix. Every consumer of the LFC file applies one set of parsing rules, the ones settled in S3.03 to S3.05 and S3.08.

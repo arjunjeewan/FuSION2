@@ -2575,3 +2575,26 @@ The last stage 8 poll.
 - Keep its quick Submit: Drop the copy, but require a run-at-once Submit that skips the editor in 2.0's frontend.
 
 **Answer:** Keep its quick Submit, written into S8.32. All 32 stage 8 items are now decided.
+
+## 099 · Poll · 2026-11-12 17:33
+
+The stage 8 commit poll.
+
+**Q1 (Commit).** Stage 8 (frontend workflow) is fully decided: 32 items, 24 fix / 6 keep / 2 drop, with its open questions resolved or deferred to phase 3. May I commit it locally as one commit? It would contain the new docs/spec/08-frontend-workflow.md (decisions, the verifier's 14 corrections) and prompt log entries 088 to 098. Message: 'Review spec stage 8: frontend workflow', ending with the Co-Authored-By line. The corrections that stages 7 and 8 found in stages 1 to 4 come next, as a separate commit.
+
+- Commit as shown (Recommended): One local commit with those two files; nothing is pushed.
+- Change something first: Tell me what to change before committing.
+
+**Answer:** Commit as shown (Recommended), committed as 460eaf0
+
+## 100 · Poll · 2026-11-12 17:44
+
+A new stage 2 finding, raised while checking the stage 7 drafter's cross-stage notes. Claude measured it on the run data first (relation types in three merged graphs; witness edges matched to each run's own merged graph). The answer became the new item S2.31.
+
+**Q1 (ECrel).** A new stage 2 finding: KEGG's ECrel relations become signalling edges. FuSION reads every KGML relation type as an edge, ECrel included. ECrel means two enzymes catalyse successive reaction steps through a shared compound, and its only subtype is 'compound', so fb_rch traverses it and the solver counts it as an activation (S5.13). Counts: 25 of 2529 edges in the fdr:0.25 merge, 59 of 7400 in the full JUN run, and 50 of 7517 in the old master. Most come from Chemical carcinogenesis (hsa05204), but signalling maps contribute too (Osteoclast differentiation, NK cell cytotoxicity, Fc epsilon RI, leukocyte migration, oocyte meiosis). 48 of the 97 runs with solutions have at least one ECrel edge in a witness, e.g. PLCG1 → PPP3CA (NK cell cytotoxicity) and ATP2A1 → PPP3R1 (osteoclast differentiation). No stage item covers this. How should 2.0 treat ECrel relations?
+
+- Setting, kept by default (Recommended): ECrel edges stay unless a run setting excludes them, and outputs mark them, so you can compare. Some carry real second-messenger signalling (PLCγ → Ca²⁺ → calcineurin), and half the runs use them.
+- Setting, excluded by default: Like S2.11's default for indirect effects: ECrel edges dropped unless asked for; the 48 runs' results change (decision 0023 allows).
+- Keep FuSION 1 behaviour: Always ordinary edges, unmarked.
+
+**Answer:** Setting, kept by default (Recommended), written into the new item S2.31
