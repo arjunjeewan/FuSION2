@@ -30,3 +30,5 @@ One file per decision, numbered in the order the decisions were made. Each recor
 | [0024](0024-frozen-fusion1-snapshot.md) | The spec cites a frozen FuSION 1 snapshot (amends 0012) | Accepted | 2026-11-10 |
 | [0025](0025-fresh-subagents-stages-5-to-8.md) | Fresh subagents draft stages 5 to 8 (replaces 0016 there) | Accepted | 2026-11-10 |
 | [0026](0026-maximum-parallel-subagents.md) | Subagents at maximum parallelism; verification subagents per stage | Accepted | 2026-11-11 |
+| [0027](0027-graph-display-in-phase-5.md) | The graph display is designed in Phase 5, with the frontend (amends 0022's timing) | Accepted | 2026-11-12 |
+| [0028](0028-phase-2-method.md) | Phase 2: skeleton first, then parallel section drafts with verifiers, every choice polled | Accepted | 2026-11-12 |

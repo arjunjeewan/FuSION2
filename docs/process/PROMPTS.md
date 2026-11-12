@@ -2598,3 +2598,147 @@ A new stage 2 finding, raised while checking the stage 7 drafter's cross-stage n
 - Keep FuSION 1 behaviour: Always ordinary edges, unmarked.
 
 **Answer:** Setting, kept by default (Recommended), written into the new item S2.31
+
+## 101 · Poll · 2026-11-12 17:46
+
+The commit poll for the stage 1 to 4 corrections.
+
+**Q1 (Commit).** May I commit the stage 1 to 4 corrections locally as one commit? It contains: stage 1, live GUI citations for S1.01 and S1.10 plus a note that S1.08 stands; stage 2, S2.30's exec add fix, S2.16's current count (32 raw-KGML batches) and the new item S2.31 (ECrel, your decision); stage 3, S3.14's gseapy NaN/inf note and the fifth parser (GUI preview); stage 4, GUI citations moved from the pipeline editor to the template that runs, and edge_has_subtype ending at 1874; plus prompt log entries 099 and 100. Message: 'Correct spec stages 1 to 4 after the stage 7 and 8 reviews', ending with the Co-Authored-By line.
+
+- Commit as shown (Recommended): One local commit with those five files; nothing is pushed.
+- Change something first: Tell me what to change before committing.
+
+**Answer:** Commit as shown (Recommended), committed as 64e88bc
+
+## 102 · Poll · 2026-11-12 17:48
+
+Asked after Phase 1 was complete (commits 5448bf4 to 64e88bc).
+
+**Q1 (Display).** Phase 1 is complete: all eight spec stages are reviewed and committed, with the corrections to stages 1 to 4 in 64e88bc. Decision 0022 said the graph display is crucial and that we'd work out how to build it after the stage 6 and 8 reviews; those reviews now pin down a lot (draw the whole witness, honoured vs relaxed edges, one renderer with a path filter, a pipeline editor with a default pipeline, results linked from sessions). How should we run the graph-display ideation?
+
+- Options paper, then polls (Recommended): Parallel research subagents measure what must be drawn (sizes from real runs) and compare approaches (browser graph libraries, server-side layout, static export); I write docs/design/graph-display.md, a verifier checks it, and I poll each choice.
+- Your vision first: You describe what you want to see and do with the display; I turn that into the options paper and polls.
+- Defer to Phase 5: Design it together with the frontend screens; go straight to Phase 2 architecture now.
+
+**Answer:** Defer to Phase 5 → [decision 0027](../decisions/0027-graph-display-in-phase-5.md)
+
+## 103 · Poll · 2026-11-12 17:49
+
+**Q1 (Phase 2).** Phase 2 is the architecture of FuSION 2.0: the C++ backend's modules, data model and run directory, the batch language's named arguments, sweeps and partial runs, the solver layer, how the Spring Boot frontend talks to the backend, build and platforms, and the hooks Phase 3's tests need. Phase 1 left a list of questions for it (named-argument and sweep syntax, plug-and-play inputs, id mapping, where plots are drawn, suggest_thresholds' form, SMT dump reuse, GSEA's language, the pipeline editor's default pipeline). How should Phase 2 be run?
+
+- Skeleton, then parallel sections (Recommended): I draft the top-level shape (process model, module boundaries, data flow) and poll its choices; then subagents draft each module section in parallel against it, verifiers check them, and I poll every section's choices.
+- One author, in order: I write every section myself in dependency order, polling as I go: slower, most coherent.
+- Deferred questions first: Poll Phase 1's deferred questions one by one, then write the architecture around the answers.
+
+**Answer:** Skeleton, then parallel sections (Recommended) → [decision 0028](../decisions/0028-phase-2-method.md)
+
+## 104 · Poll · 2026-11-12 17:55
+
+The first poll on the architecture skeleton, `docs/architecture/00-skeleton.md`, which Claude drafted from the 209 spec decisions.
+
+**Q1 (A1 process).** Architecture skeleton, Choice A1 · How the Spring Boot frontend runs the C++ backend. Proposed: the backend is a command-line program, fusion; for each run the frontend writes the batch file into a new run directory, starts fusion on it as a child process, follows its progress, and reads the results from the run directory; Stop sends a signal that the backend turns into a clean stop that saves solve state for resuming. That keeps the batch language as the only interface (decision 0018, S8.20), and a crash in Z3 ends one run, not the web server.
+
+- CLI child process (Recommended): One fusion process per run, driven by its batch file; results read from the run directory.
+- Local backend service: A long-running C++ service (HTTP or gRPC) the frontend calls; richer live interaction, but a second interface to keep in step with the batch language.
+- JNI library in the JVM: Lowest latency, but a native crash takes the frontend down, and it must be packaged per platform.
+
+**Answer:** CLI child process (Recommended), written into Choice A1
+
+**Q2 (A2 progress).** Choice A2 · How the frontend follows a run's progress (S1.10 left this to Phase 2). Proposed: the backend writes structured events, one JSON object per line, to events.jsonl in the run directory (step started and finished, each solver check with its point and outcome, warnings, final status), while the human-readable console log stays on stdout. The frontend follows events.jsonl instead of guessing stages from the command echo, as FuSION 1's GUI does.
+
+- events.jsonl (Recommended): Structured events in the run directory; console log unchanged for people.
+- Parse the console echo: As FuSION 1's GUI does (S1.10, S8.28).
+
+**Answer:** events.jsonl (Recommended), written into Choice A2
+
+**Q3 (B1 structure).** Choice B1 · Backend structure. Proposed: a C++ library, libfusion, holds all behaviour and reports through a logger and event interface, never writing to the console itself; a thin fusion executable reads batch files and calls it. Phase 3's tests call the library directly and also run fusion end to end.
+
+- Library + thin CLI (Recommended): libfusion with all behaviour; fusion only parses batch files and calls it.
+- Single executable: No library boundary, as in FuSION 1.
+
+**Answer:** Library + thin CLI (Recommended), written into Choice B1
+
+**Q4 (C1 modules).** Choice C1 · Backend module list. Proposed ten modules: core (ids, errors, logging and events, the settings registry, seeded randomness and stable orderings); batch (the batch language, stage 1); network (graph model, KGML, merged-graph, legacy-master and edge-list readers, writer, plug-and-play network input, id mapping); merge (union, exception split, reuse, report); expression (the one per-gene value reader, cudf, threshold suggestion); corridor (fb_rch); solve (Z3 encoding, Pareto search, cache, timeouts and budget, resume, seed, dumps, witnesses); results (frontier, witnesses, relaxations, sign-consistent routes, structured outputs, Pareto plot, explanation export); enrichment (GSEA); run (run directory, manifest, saved steps, resume, events). The frontend gets web, accounts, sessions, pipeline and runner modules; its screens are Phase 5's.
+
+- These modules (Recommended): Ten backend modules matching the spec stages, plus five frontend modules.
+- Fewer, larger modules: E.g. merge folded into network and results into solve.
+
+**Answer:** These modules (Recommended), written into Choice C1
+
+## 105 · Poll · 2026-11-12 18:00
+
+The second poll on the architecture skeleton.
+
+**Q1 (D1 data flow).** Choice D1 · Data flow between steps. Proposed: each step is a function from typed values to typed values (network to merged network; values to observations; network, observations and endpoints to corridor; corridor to frontier and witnesses; frontier to outputs). The batch interpreter keeps these values in memory, with graphs keeping integer ids and 0 for the latest (S2.01). Each step's output can be saved to the run directory in a documented format and loaded back, which is how a run stops after or starts from any step (decision 0019, S2.26). No step keeps state between calls (S5.29).
+
+- In memory + saved steps (Recommended): Typed values passed in memory; every step's output saveable and loadable.
+- Files between every step: Each step reads and writes files, as FuSION 1's mff → wgx → rgx round trip does.
+
+**Answer:** In memory + saved steps (Recommended), written into Choice D1
+
+**Q2 (E1 outputs).** Choice E1 · Output formats and the run manifest. Proposed: every run directory has run.json recording FuSION's and its libraries' versions (Z3 and the rest), the batch file and command line, every setting with its value and source (default, positional or named), each input's path, size and SHA-256, start and end times, exit status and outputs. Structured results are JSON (frontier with each point's certification flag, witnesses keyed by stable ids, corridor summary); tables are TSV with headers (search log, GSEA table, edge sources). FuSION 1's text formats (temp_w_solutions.txt and the rest) are written only when a run setting asks for them, for old scripts.
+
+- run.json + JSON/TSV (Recommended): A manifest per run, JSON results, TSV tables; old text formats on request.
+- Plain text only: Documented text layouts per file, as in FuSION 1.
+
+**Answer:** run.json + JSON/TSV (Recommended), written into Choice E1
+
+**Q3 (F1 helpers).** Choice F1 · Languages for the helpers. Proposed: the whole backend is C++, as your original brief asked. GSEA prerank is reimplemented in C++ (seeded, ties by gene id, S7.05), agreeing with gseapy statistically but not byte for byte (S7.11; decision 0023 allows it). Threshold suggestion becomes a C++ command (S3.15). The explanation export is JSON plus a static page sharing one drawing-library copy (S6.18, S6.26), written by C++. gnuplot stays an external tool for the Pareto image, your standing preference for PO curves, checked up front like any dependency (S6.11). No Python remains.
+
+- All C++, gnuplot kept (Recommended): No Python; GSEA and thresholds in C++; gnuplot draws the Pareto PNG.
+- C++ + pinned Python: Keep gseapy and pyvis as pinned helpers: closer to FuSION 1's numbers, two runtimes to install.
+- All C++, no gnuplot: C++ also draws the Pareto plot itself (SVG and PNG).
+
+**Answer (free text):** "would it be faster to plot entirely using cpp or cpp+gnuplot". Not yet written into Choice F1: Claude measured both and asked again (entry 106).
+
+**Q4 (G1 build).** Choice G1 · Backend language level, build and dependencies. Proposed: C++20 with CMake (GCC 12+ or Clang 15+, Apple Clang on macOS; FuSION 1 builds as C++0x with no optimisation); Z3 through its C++ API at a pinned version recorded in the manifest (this machine has 4.8.12, which FuSION 1 links); pugixml for XML, replacing libxml++ 2.6 and its glibmm chain; nlohmann/json; Catch2 for tests; small libraries fetched at pinned versions by the build, Z3 from the system or a pinned download. CMake isn't installed here yet.
+
+- C++20, CMake, pugixml (Recommended): As proposed, with Catch2 and nlohmann/json.
+- Keep libxml++: As proposed, but keep FuSION 1's XML library.
+- C++17: As proposed, at C++17 for older compilers.
+
+**Answer:** C++20, CMake, pugixml (Recommended), written into Choice G1
+
+## 106 · Poll · 2026-11-12 18:03
+
+The third poll on the architecture skeleton, with the follow-up to entry 105's F1 question. Before it, Claude timed a real Pareto plot: `plot_po.sh` on the FOSB run took 0.11 s wall and 43 MB per plot over five runs; bare gnuplot took 0.06 s for pngcairo and 0.02 to 0.03 s for svg.
+
+**Q1 (F1 plots).** F1 follow-up: which is faster, plotting entirely in C++ or C++ with gnuplot? Measured here on the FOSB run's real Pareto plot: plot_po.sh (bash, awk and gnuplot's pngcairo) takes 0.11 s wall and 43 MB per plot; gnuplot alone costs 0.06 s for a PNG and 0.02 s for an SVG, mostly start-up. Written by C++ itself, an SVG takes well under a millisecond; a PNG needs a drawing library such as cairo (the one gnuplot uses), roughly 10 to 50 ms, mostly font set-up. So pure C++ is faster, but by about 0.1 s per run, against runs of 13 s to 50 h, so speed shouldn't decide it. What differs is dependencies and look: gnuplot is one more program to install on both platforms and reproduces S6.23's look exactly; C++ needs no tool for SVG but redraws the look itself, and PNG would bring cairo into the build. Which should 2.0 use? (Either way GSEA and thresholds are C++ and no Python remains, unless you pick the last option.)
+
+- All C++, gnuplot kept (Recommended): gnuplot draws the Pareto image exactly as today; about 0.1 s per run.
+- All C++, C++ draws SVG: No external tool: C++ writes the Pareto plot as SVG in S6.23's style, in under a millisecond; PNG only through an optional converter.
+- C++ + pinned Python: Keep gseapy and pyvis as pinned helpers, with gnuplot for the plot.
+
+**Answer:** All C++, gnuplot kept (Recommended), written into Choice F1
+
+**Q2 (G2 frontend).** Choice G2 · Frontend stack. Proposed: Java 21 LTS (installed on this machine) with Spring Boot 3, built with Gradle.
+
+- Java 21, Boot 3, Gradle (Recommended): As proposed.
+- Maven instead: Java 21 and Spring Boot 3, built with Maven.
+
+**Answer:** Java 21, Boot 3, Gradle (Recommended), written into Choice G2
+
+**Q3 (G3 platforms).** Choice G3 · Platforms. Proposed: Linux (x86-64) and macOS (Apple silicon and x86-64) both supported first-class, from one source tree; FuSION 1 keeps a separately drifting macOS/ copy. Windows is out of scope.
+
+- Linux + macOS, one tree (Recommended): Both first-class from one source tree; no Windows.
+- Linux only: macOS best-effort.
+
+**Answer (free text):** "linux + macOS + windows, all three natively. rn windows works w the linux version through WSL, but ideally the end biologist user would not want to set that up." Written into Choice G3, with its consequences for A1, section 01 and section 11.
+
+**Q4 (H1 sections).** Choice H1 · The sections drafted in parallel after the skeleton, each answering the Phase 1 questions assigned to it: 01 batch language and interpreter (named-argument and sweep syntax, partial-run commands, run-directory naming, debug option); 02 network model, inputs and id mapping (plug-and-play, id mapping, merged-graph format, legacy reader, ECrel and indirect settings); 03 merge (union, exception split, reuse); 04 expression (value inputs, one parser, threshold suggestion and its plot); 05 corridor; 06 solve (Z3 layer, search and cache, timeouts and budget, resume and partial frontiers, dumps and their reuse); 07 results and outputs (structured results, Pareto plot step, explanation export, FuSION 1 text formats); 08 enrichment (GSEA in C++); 09 runs (run directory, manifest, saved steps, resume, events); 10 frontend architecture (accounts, sessions, pipeline model and default pipeline, runner, validation; screens left to Phase 5); 11 build, dependencies and platforms; 12 test architecture (Phase 3 hooks).
+
+- These twelve (Recommended): Twelve sections, drafted in parallel, each verified and polled.
+- Fewer, larger sections: E.g. 03 folded into 02 and 09 into 01.
+
+**Answer:** These twelve (Recommended), written into Choice H1
+
+## 107 · Poll · 2026-11-12 18:04
+
+A follow-up to entry 106's G3 answer (native Windows), which affects the already-approved Choice A1.
+
+**Q1 (A1 Stop).** Native Windows (your G3 answer) changes one part of Choice A1, which you approved with 'Stop sends a signal': Windows has no POSIX signals. Proposed instead: the frontend asks for a stop through the run itself, by writing a stop request into the run directory or sending a stop message on the backend's standard input. A watcher thread in fusion sees it, interrupts the running Z3 check (Z3 has an interrupt call for exactly this), saves the solve state for resuming, and exits with a 'stopped' status. That works the same on Linux, macOS and Windows. Killing the process stays the last resort, without a saved state.
+
+- Platform-neutral stop (Recommended): Stop request via the run directory or stdin, Z3 interrupted, state saved; identical on all three platforms.
+- Signals, plus a Windows path: Keep POSIX signals on Linux and macOS, and add a separate Windows mechanism (console control events).
+
+**Answer:** Platform-neutral stop (Recommended), written into Choice A1
