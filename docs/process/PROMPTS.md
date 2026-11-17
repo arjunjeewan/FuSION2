@@ -2742,3 +2742,4376 @@ A follow-up to entry 106's G3 answer (native Windows), which affects the already
 - Signals, plus a Windows path: Keep POSIX signals on Linux and macOS, and add a separate Windows mechanism (console control events).
 
 **Answer:** Platform-neutral stop (Recommended), written into Choice A1
+
+## 108 · Poll · 2026-11-12 18:05
+
+The skeleton commit poll.
+
+**Q1 (Commit).** The architecture skeleton is fully decided (11 choices). May I commit it locally as one commit? It would contain the new docs/architecture/00-skeleton.md; decisions 0027 (graph display designed in Phase 5) and 0028 (Phase 2 method) with their index rows; and prompt log entries 101 to 107. Message: 'Set up Phase 2: architecture skeleton and decisions 0027 and 0028', ending with the Co-Authored-By line. After that, the twelve section drafts start in parallel, each followed by a verifier.
+
+- Commit as shown (Recommended): One local commit with those files; nothing is pushed.
+- Change something first: Tell me what to change before committing.
+
+**Answer:** Commit as shown (Recommended), committed as 2320528
+
+## 109 · Poll · 2026-11-12 18:11
+
+Asked before the twelve architecture sections are drafted.
+
+**Q1 (Template).** Before the twelve section drafts start: what should each architecture section contain? Proposed template, shown on the right. Every choice a section makes gets its own 'Decision: pending' line, which I poll one by one, as with the spec items.
+
+- Full template (Recommended): Scope, requirements carried in, design with C++ interface outlines, choices, interfaces with other sections, test hooks, open questions. Preview:
+  ```
+  # NN · <Section title>
+
+  ## Scope
+  Modules (C1) and spec items it implements;
+  what it leaves to other sections.
+
+  ## Requirements carried in
+  Every decided spec item / decision it must
+  honour, cited (S2.17, 0019, ...).
+
+  ## Design
+  Components and data structures; interfaces as
+  C++ declarations in outline (no bodies);
+  algorithms with complexity; file formats with
+  examples; errors, events and settings it adds.
+
+  ## Choices
+  ### NN.C1 · <title>
+  - Proposed / Alternatives / Why (evidence)
+  - Decision: pending
+
+  ## Interfaces with other sections
+  What it needs from and gives to each section.
+
+  ## Test hooks
+  What Phase 3 can test, library-level and
+  end to end.
+
+  ## Open questions
+  ```
+- Lighter template: Design and choices only, in prose, without C++ interface outlines or test hooks. Preview:
+  ```
+  # NN · <Section title>
+
+  ## Design
+  Components, data, formats, in prose.
+
+  ## Choices
+  ### NN.C1 · <title>
+  - Proposed / Alternatives / Why
+  - Decision: pending
+
+  ## Open questions
+  ```
+
+**Answer:** Full template (Recommended) → [decision 0029](../decisions/0029-architecture-section-template.md)
+
+**Q2 (Consistency).** Twelve sections drafted in parallel may define the shared things differently: the graph and corridor types, setting names, file formats, event names. How should conflicts between sections be caught?
+
+- One cross-section check (Recommended): After the drafts and their verifiers, one more subagent reads all twelve together and lists every conflict; I poll each resolution before anything is committed.
+- Per-section verifiers only: Each section's verifier also checks its interfaces against the other drafts.
+
+**Answer:** One cross-section check (Recommended) → [decision 0029](../decisions/0029-architecture-section-template.md)
+
+## 110 · Subagent prompt · Phase 2 shared brief · 2026-11-12 18:14
+
+Each of the twelve Phase 2 section prompts (entries 111 to 122) is this text, then a blank line, then that entry's section text ([decision 0028](../decisions/0028-phase-2-method.md), [decision 0029](../decisions/0029-architecture-section-template.md)).
+
+```text
+You are drafting one section of FuSION 2.0's architecture (Phase 2). Work on your own; other agents draft the other sections in parallel.
+
+Background. FuSION 2.0, in /home/ks-149-u24/Desktop/arjun/FuSION2, is a from-scratch rewrite of FuSION 1, in /home/ks-149-u24/Desktop/arjun/FuSION. FuSION 1 merges KEGG pathway maps (KGML) into a signalling network, keeps the corridor of bounded paths from a source gene to a target gene, and uses the Z3 SMT solver to enumerate the Pareto frontier of explanations of a gene-expression experiment, trading node relaxations against edge relaxations, once with a chosen gene (the FSC) forced in and once with it forced out. FuSION 2.0's backend is entirely C++ and its frontend is Spring Boot Java. The user decides everything, and the decisions are recorded in the FuSION2 repository:
+
+- docs/spec/01-batch-language.md to docs/spec/08-frontend-workflow.md: Phase 1's spec of FuSION 1. Every item ends with a Decision line (keep, fix or drop, often with details). These decisions are binding.
+- docs/decisions/: numbered decision records 0001 to 0029, indexed in README.md.
+- docs/architecture/00-skeleton.md: the architecture skeleton. Its eleven decided Choices are the contract every section follows: the process model (A1), progress events (A2), library plus thin CLI (B1), the module list (C1), data flow (D1), output formats and run.json (E1), languages (F1), build (G1), frontend stack (G2), platforms (G3: Linux, macOS and Windows, all native) and the sections (H1).
+- docs/process/PROMPTS.md: the prompt log. Read the user's own words there when a decision needs interpreting.
+
+Your task. Write the architecture section described at the end of this prompt, as one new file in docs/architecture/. Follow decision 0029's template exactly:
+
+    # NN · <Section title>
+
+    ## Scope
+    ## Requirements carried in
+    ## Design
+    ## Choices
+    ### NN.C1 · <title>
+    - **Proposed:** …
+    - **Alternatives:** …
+    - **Why:** …
+    - **Decision:** pending
+    ## Interfaces with other sections
+    ## Test hooks
+    ## Open questions
+
+Rules.
+
+1. Read first: the skeleton, decisions 0017 to 0029, and every spec stage and item your section lists. Read the items themselves, not only their Decision lines.
+2. Design FuSION 2.0, not FuSION 1. FuSION 1 is evidence of behaviour, data sizes and pitfalls. Cite FuSION 1 code at the frozen snapshot /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10, with paths as in the FuSION 1 tree (for example Linux/src/main.cc:4733), and run data under /home/ks-149-u24/Desktop/arjun/FuSION/runs/. Both are read-only.
+3. Searching: grep in this shell is a wrapper that silently skips gitignored directories such as runs/ and auxilliary/, so use /usr/bin/grep. The large FuSION 1 files (Linux/src/GraphManagerNew.cc, about 31k lines; Linux/src/main.cc, about 8k) are best searched first and read in ranges.
+4. Requirements carried in lists every decided spec item and decision your design must honour, each cited (for example S5.17, decision 0019). Do not re-decide them. If one looks wrong, impossible or in conflict with another, say so under Open questions and design around the decision as written. Do not change a skeleton Choice either; if your design needs one changed, explain why under Open questions.
+5. Every design choice that is not already decided goes under Choices, with Proposed (your recommendation), Alternatives (at least one real alternative), Why (the evidence: measurements, sizes, costs, risks) and "- **Decision:** pending". List real choices only.
+6. Design gives:
+   - the components and data structures;
+   - the public interface as C++20 declarations in outline (namespaces, types and key signatures, no function bodies), in the module that Choice C1 assigns;
+   - algorithms with their time and memory complexity;
+   - every file your section writes in a run directory, with a short real-looking example;
+   - every result-changing setting your section adds, with name, type and default (all settings are recorded in run.json, E1);
+   - the events it emits to events.jsonl (A2);
+   - its errors, saying which are failures that stop the batch (S1.28) and which are reported results that let a sweep carry on (S4.18, S7.03).
+7. Efficiency matters: the user asked for maximum efficiency. Where data size drives a choice, measure it on the real runs (corridors, merged graphs, solution files, LFC files, logs), and say what you measured and how.
+8. Portability: Linux, macOS and Windows, all native (G3). Flag anything platform-specific: paths, processes, shells, signals, file locking, line endings.
+9. Determinism: seeds, stable orderings and recorded versions wherever a result could otherwise vary.
+10. Write only your section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. Put scratch files and helper scripts under /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/<NN>/, where NN is your section number.
+11. Style: match the spec files, using docs/spec/05-encoding-and-solve.md as the model. Plain, direct English; short sentences; bullets for lists; real examples; exact numbers; no filler. Use code blocks only for interface outlines and file-format examples.
+12. When you finish, reply in at most 300 words with: the number of choices; the three to five most important design points; your open questions; and anything you need from, or that conflicts with, another section. Do not paste the section itself.
+```
+
+## 111 · Subagent prompt · Phase 2 section 01 · Batch language and interpreter · 2026-11-12 18:14
+
+Sent with entry 110's shared brief in front of it.
+
+```text
+Your section: 01 · Batch language and interpreter. File: docs/architecture/01-batch-language.md.
+
+- Modules: batch, and the fusion executable (B1).
+- Spec to read: stage 1, all items; S2.01 and S1.09 (graph ids, 0, #LASTGRAPHNUM); S2.16 (old mff lines still accepted); S4.18 and S7.03 (reported results that skip a run's later steps); S8.18 to S8.20 and S8.25 to S8.27 (the frontend's default pipeline becomes a batch file); decisions 0017, 0018, 0019, 0021 and 0023.
+- Phase 1 questions this section answers:
+  - the named-argument syntax and the sweep syntax (decision 0018);
+  - the commands or options for the four partial runs of decision 0019: stop after a step, start from a saved step, resume a stopped solve, solve part of the frontier;
+  - how a batch names its run directory (S1.26);
+  - the one debug option (S1.29);
+  - the command table that drives dispatch, help and argument names (S1.12);
+  - which shell exec uses on each platform, given that FuSION 1 batch files carry POSIX shell lines (S1.14, G3);
+  - quoting and Windows paths (S1.05).
+- Also cover: how FuSION 1 batch files keep running (positional arguments, mff's xml token and map lists accepted with warnings; decisions 0017 and 0023); checking a whole batch file before any step runs (decision 0021); how a sweep's runs are laid out, and how one point's reported result (an empty corridor or an empty selection) lets the sweep carry on; the fusion command line itself (-b, -h and any new options).
+- Neighbours: 09 (run directory, manifest, saved steps, resume), 10 (the frontend writes batch files), 06 (partial frontiers).
+```
+
+## 112 · Subagent prompt · Phase 2 section 02 · Network model, inputs and id mapping · 2026-11-12 18:14
+
+Sent with entry 110's shared brief in front of it.
+
+```text
+Your section: 02 · Network model, inputs and id mapping. File: docs/architecture/02-network.md.
+
+- Modules: network.
+- Spec to read: stage 2, all items (S2.01 to S2.31) and its open questions; S1.15 to S1.19 (start and its maps); S4.14 and S4.15 (stable keys, the id lookup); S5.27 (stable keys in outputs); S8.31 (no KGMLs shipped); decisions 0020, 0021 and 0023.
+- Phase 1 questions this section answers:
+  - the plug-and-play mechanism for network inputs from any pathway source (decision 0020): built-in readers, one exchange format with converters, or both;
+  - id mapping across sources (S2.14), possibly reusing S1.16's two-column file;
+  - the merged-graph format, marked as FuSION's own (S2.25);
+  - the legacy reader for the old master (S2.27);
+  - the ECrel and indirect-effect settings (S2.31, S2.11);
+  - the plain edge list (add, S2.30) as a candidate exchange format.
+- Also cover: the graph model (nodes with member ids and family boxes, S2.02, S2.03, S2.07 and S2.08; edges with type, ordered subtypes, pathways and score, S2.04 and S2.10; groups and component edges, S2.09); stable node and edge keys that survive copies (S4.14) and appear in every output (S5.27); the id lookup and the family-node trap (S2.03); the memory layout for graphs of up to about 8,000 nodes and 82,000 edges (measure real merged graphs under runs/).
+- Neighbours: 03 (merge consumes and produces the model), 05 (corridor), 04 (gene ids shared with the values), 09 (saved graphs).
+```
+
+## 113 · Subagent prompt · Phase 2 section 03 · Merge · 2026-11-12 18:14
+
+Sent with entry 110's shared brief in front of it.
+
+```text
+Your section: 03 · Merge. File: docs/architecture/03-merge.md.
+
+- Modules: merge.
+- Spec to read: S2.13 and S2.16 to S2.24 in full, with S2.26 and S2.27; S1.17 (the exception set); S8.22 and S8.23; decisions 0019, 0021 and 0023.
+- Phase 1 questions this section answers:
+  - the explicit, order-independent union in one pass, with every merged node's members listed (S2.17);
+  - merge reuse: each pathway list merged once without the run's exceptions and the exception ids split out afterwards, so runs on the same pathways share one merge (S2.22), including how reusable merges are keyed and where they live;
+  - the merge report (S2.24);
+  - node-type conflicts that stop the run (S2.19);
+  - undirected interactions (S2.21).
+- Also cover: how merging learns the exception set (the up and down genes, source, target, FSC and the not-merged file; S1.17, S2.13, S8.22); edge merging across pathways (S2.20, and S2.10's maximum score); the cost on the real 42-, 87- and 163-pathway lists (measure what you can from the logs under runs/); the equivalence Phase 3 must prove between merging then splitting and FuSION 1's exception-aware merge (S2.22).
+- Neighbours: 02 (graph model), 04 (expression lists feed the exception set), 09 (merge cache and saved merged graphs).
+```
+
+## 114 · Subagent prompt · Phase 2 section 04 · Expression · 2026-11-12 18:14
+
+Sent with entry 110's shared brief in front of it.
+
+```text
+Your section: 04 · Expression. File: docs/architecture/04-expression.md.
+
+- Modules: expression.
+- Spec to read: stage 3, all items and its open questions; S7.04 (gsea uses the same parser); S8.14 and S8.15 (the frontend's preview and overrides); decisions 0013, 0020, 0021 and 0023.
+- Phase 1 questions this section answers:
+  - plug-and-play per-gene value inputs from any data modality (decision 0020);
+  - the one LFC parser used by every reader (S3.14) and its exact rules (S3.03 to S3.08);
+  - the form of threshold suggestion, now a C++ command (S3.15 to S3.18, F1), and its histogram plot (S3.19; gnuplot is kept for plots, F1).
+- Also cover: classification into the up and down lists (cudf; S3.01, S3.06, S3.07) and the observations type the solve uses; the frontend's live preview, which must show exactly what cudf will produce (S8.14), so define how the frontend gets it (a backend command, A1); the Not DE override (S8.15); the report of unmatched genes in two groups (S3.12, S4.16).
+- Neighbours: 05 and 06 (observations), 08 (GSEA ranks the same values), 10 (preview and overrides).
+```
+
+## 115 · Subagent prompt · Phase 2 section 05 · Corridor · 2026-11-12 18:14
+
+Sent with entry 110's shared brief in front of it.
+
+```text
+Your section: 05 · Corridor. File: docs/architecture/05-corridor.md.
+
+- Modules: corridor.
+- Spec to read: stage 4, all items and its open questions; S5.10, S5.11 and S5.13 (what the solve needs from the corridor; the trimming that settled S4.11); decisions 0019, 0021 and 0023.
+- Phase 1 questions this section answers:
+  - the traversable-subtype setting (S4.04);
+  - trimming self-loops and edges into a source or out of a target (S4.11, as settled by S5.13);
+  - the exported distances (S4.07);
+  - one corridor per solved pair (S4.10);
+  - stable ids and no rebuilt lookup (S4.14, S4.15);
+  - the corridor computed once and left unchanged by the solve (S4.20).
+- Also cover: the keep rule and its cost on real graphs (measure corridor sizes on real runs); excluded nodes (S4.06); the edges-to-target restriction (S4.05); isolated complex members (S4.12); what the corridor hands the solve (S4.21) and its saved format (decision 0019); the empty corridor as a reported result (S4.18).
+- Neighbours: 02 (graph), 06 (solve), 07 (distances for display), 09 (saved corridor).
+```
+
+## 116 · Subagent prompt · Phase 2 section 06 · Solve · 2026-11-12 18:14
+
+Sent with entry 110's shared brief in front of it.
+
+```text
+Your section: 06 · Solve. File: docs/architecture/06-solve.md.
+
+- Modules: solve.
+- Spec to read: stage 5, all items (S5.01 to S5.31) and its open questions; S6.02 and S6.21 (what results need); S2.31 and S2.11 (settings that change the encoding); decisions 0019, 0021 and 0023, and the skeleton's A1 (stop) and F1.
+- Phase 1 questions this section answers:
+  - the Z3 layer: C++ API, solver and tactic configuration, bit widths (S5.09);
+  - the encoding's structure (S5.10 to S5.17), with the FSC as a named argument and both cases solved on one corridor (S5.17);
+  - the Pareto search, kept as it is (S5.18), with its cache including unknown answers, kept across resumes (S5.19, S5.20);
+  - the per-query timeout and the optional whole-solve budget, with clean, resumable stops (S5.21);
+  - resume state, and solving part of the frontier or one FSC case (decision 0019);
+  - the seed (S5.22);
+  - debug dumps (S5.23), and whether and how dumps are reused to cut SAT and UNSAT calls (roadmap objective 4);
+  - certification of points next to unknown answers (S5.19);
+  - keeping the search's models as witnesses, with extra solutions on request and a tight blocking clause (S5.26).
+- Also cover: interrupting a running check for Stop (A1); whether the two FSC cases, or several frontier points, can be solved in parallel (Z3 contexts are per thread) and what that would buy on the real b10 runs (measure from their logs and limits files: per-check times, the 15.9 h and 50.7 h runs); the structured search log (S5.24); no state between solves (S5.29); memory and time measured on the real dumps (the *_smt-files_* directories under runs/).
+- Neighbours: 05 (corridor in), 07 (frontier and witnesses out), 09 (resume state, cancellation), 01 (partial-run commands).
+```
+
+## 117 · Subagent prompt · Phase 2 section 07 · Results and outputs · 2026-11-12 18:14
+
+Sent with entry 110's shared brief in front of it.
+
+```text
+Your section: 07 · Results and outputs. File: docs/architecture/07-results.md.
+
+- Modules: results.
+- Spec to read: stage 6, all items and its open questions; S5.24 to S5.27, S5.30 and S5.31; S5.13 (sign-consistent routes reported separately); S2.31 (ECrel edges marked); decisions 0022, 0023 and 0027, and the skeleton's E1 and F1.
+- Phase 1 questions this section answers:
+  - the structured results (the frontier with certification flags, witnesses keyed by stable ids) in a form the Phase 5 display can use (decision 0027);
+  - the one explanation renderer's export: JSON plus a static page sharing one copy of the drawing library, with psp's path filter and edge-source table as options and a static export (S6.26, S6.04, S6.07, S6.08, S6.18);
+  - the site report, kept, with every option settable from a batch (S6.19);
+  - the built-in Pareto plot step drawn by gnuplot (S6.22 to S6.24, F1);
+  - FuSION 1's text formats written only on request (E1, S5.27).
+- Also cover: drawing the whole witness, with activity and honoured or relaxed edges (S6.05, S6.06, S6.13, S6.15); the one polarity rule shared with the solve (S6.14); the explicit "no PO point" result (S6.21); console output (S5.31); which drawing library the static page uses and its licence, given that one copy ships per output directory or site.
+- Neighbours: 06 (frontier and witnesses), 05 (distances), 02 (symbols and pathway names), 10 (the frontend reads results), 09 (where outputs go).
+```
+
+## 118 · Subagent prompt · Phase 2 section 08 · Enrichment · 2026-11-12 18:14
+
+Sent with entry 110's shared brief in front of it.
+
+```text
+Your section: 08 · Enrichment. File: docs/architecture/08-enrichment.md.
+
+- Modules: enrichment.
+- Spec to read: stage 7, all items and its open questions; S3.14 and S7.04 (the one LFC parser); decisions 0019, 0020 and 0023, and the skeleton's F1 (GSEA prerank reimplemented in C++).
+- Phase 1 questions this section answers:
+  - GSEA prerank in C++: the running-sum ES with weight 1 (S7.10), label permutations, NES, nominal p, the FDR q-value pooled over the candidates (S7.11, S7.12) and FWER;
+  - the random number generator, the seed (default 42) and the permutation count (default 1000), as recorded settings (S7.11);
+  - ties ordered by gene id (S7.05);
+  - the selector, order-independent and range-checked (S7.13);
+  - the keep list (S7.14) and the shortlist file (S7.15);
+  - the table, with the relation-share column and a row for every candidate (S7.08, S7.09, S7.16);
+  - an empty selection as a reported result (S7.03).
+- Also cover: how close the C++ results must come to gseapy 1.3.1 and how Phase 3 checks it (gseapy's Python reference code is in FuSION 1's .venv, gseapy/algorithm.py); performance against the measured 1.3 s on 4 threads (S7.19); sharing one parse of the candidate KGMLs with the merge (S7.19's alternative); gene sets for non-KEGG sources (decision 0020, S7.08).
+- Neighbours: 04 (values), 02 and 03 (KGMLs and the merge), 09 (saved shortlist).
+```
+
+## 119 · Subagent prompt · Phase 2 section 09 · Runs · 2026-11-12 18:14
+
+Sent with entry 110's shared brief in front of it.
+
+```text
+Your section: 09 · Runs. File: docs/architecture/09-runs.md.
+
+- Modules: run, and the run-level parts of core: the settings registry, events, error and logging conventions, seeded randomness and stable orderings (C1).
+- Spec to read: S1.25, S1.26, S1.28 and S1.29; S5.20 to S5.23 and S5.30; S8.21 and S8.28; decisions 0019, 0021 and 0023, and the skeleton's A1, A2, D1 and E1.
+- Phase 1 questions this section answers:
+  - the run directory's layout and naming, never deleted or reused (S8.21); how a batch names it belongs to section 01, so define the interface between the two;
+  - the run.json manifest schema (E1);
+  - the events.jsonl schema (A2);
+  - the platform-neutral stop request (A1);
+  - the saved-step registry: how each step's output is saved, found and loaded, and how a run starts from a saved step or resumes a stopped solve (decision 0019, D1);
+  - the per-run debug log (S1.25);
+  - where shared caches live, such as reusable merges (S2.22) and solve caches, outside any one run directory.
+- Also cover: the settings registry (every result-changing setting with name, type, default and source, recorded in run.json); the error and failure conventions every module shares (S1.28; reported results, S4.18 and S7.03); two runs at once (S8.28); input hashing and the checks before a run (decision 0021); disk use (FuSION 1's dumps took 5.55 GB under runs/, S5.23).
+- Neighbours: every section; above all 01 (batch commands), 06 (resume state) and 10 (the frontend follows events and reads run.json).
+```
+
+## 120 · Subagent prompt · Phase 2 section 10 · Frontend architecture · 2026-11-12 18:14
+
+Sent with entry 110's shared brief in front of it.
+
+```text
+Your section: 10 · Frontend architecture. File: docs/architecture/10-frontend.md.
+
+- Modules: the frontend's web, accounts, sessions, pipeline and runner (C1). The screens and the graph display are Phase 5's (decision 0027); design the architecture underneath them.
+- Spec to read: stage 8, all items and its open questions; S1.10; S6.19 and S6.26 (results the frontend shows); decisions 0018, 0019, 0021, 0022 and 0027, and the skeleton's A1, A2, E1, G2 and G3.
+- Phase 1 questions this section answers:
+  - accounts with salted, slow password hashes, kept out of the repository (S8.02);
+  - sessions with stable ids, complete records and paths checked on opening (S8.04, S8.05);
+  - the pipeline model: blocks that match the real commands, the default pipeline, and turning a drawn pipeline into a batch file (S8.18 to S8.20, S8.25 to S8.27);
+  - the quick Submit that runs the default pipeline without opening the editor (S8.32);
+  - the runner: one fusion child process per run, following events.jsonl, Stop, the real exit status, two runs at once (S8.28, A1, A2);
+  - validation before a run (S8.30, decision 0021), including how the frontend asks the backend to check inputs and to preview thresholds (S8.14);
+  - results linked from sessions (S8.29);
+  - overrides (S8.15) and defaults (S8.06).
+- Also cover: how the Spring Boot application is structured and delivered so that a biologist on Windows, macOS or Linux installs one thing and opens it (G3): a local web application in the browser, or a desktop shell; where it stores accounts and sessions (an embedded database or files) and why; security for a local application (bind to localhost only, or serve a multi-user lab server).
+- Neighbours: 01 (batch language), 09 (runs and events), 07 (results), 04 (preview), 11 (packaging).
+```
+
+## 121 · Subagent prompt · Phase 2 section 11 · Build, dependencies and platforms · 2026-11-12 18:14
+
+Sent with entry 110's shared brief in front of it.
+
+```text
+Your section: 11 · Build, dependencies and platforms. File: docs/architecture/11-build.md.
+
+- Modules: none of its own; the repository layout, build and packaging for all of them.
+- Spec to read: S1.20 and S6.11 (finding helpers and checking dependencies before a run); S7.02 (pinned and recorded versions); S8.01 and S8.31 (no compiled classes or personal files in the repository, no KGMLs shipped); decisions 0001, 0005, 0006 and 0021, and the skeleton's F1, G1, G2 and G3.
+- Phase 1 questions this section answers:
+  - the concrete versions behind G1 to G3;
+  - the CMake structure for libfusion and fusion;
+  - pinning and fetching the dependencies (Z3, pugixml, nlohmann/json, Catch2);
+  - which Z3 version to pin: this machine has 4.8.12, which FuSION 1 links, and newer versions may change solve times and results;
+  - compilers per platform (GCC, Clang, Apple Clang, and MSVC or clang-cl on Windows);
+  - the frontend's Gradle build;
+  - packaging per platform, so that a biologist installs one thing that includes the backend, Z3, gnuplot and a Java runtime (G3, F1);
+  - the repository layout;
+  - the licences of everything shipped.
+- Also cover: finding the backend's own files after installation (S1.20); checking external dependencies such as gnuplot before a run (S6.11); reproducible builds and recording versions in run.json (E1); continuous integration once the user pushes the repository (decision 0006).
+- Neighbours: 10 (frontend packaging), 12 (CI), and every module (its dependencies).
+```
+
+## 122 · Subagent prompt · Phase 2 section 12 · Test architecture · 2026-11-12 18:14
+
+Sent with entry 110's shared brief in front of it.
+
+```text
+Your section: 12 · Test architecture. File: docs/architecture/12-tests.md.
+
+- Modules: none of its own; the test layout and harnesses for all of them.
+- Spec to read: every stage's open questions marked for phase 3 (stages 1 to 8); S2.22 (the merge-then-split equivalence to prove); stage 2's open question 4 (each id in exactly one node, a property test); S7.11 (agreement with gseapy); decisions 0003, 0023 and 0024, and the skeleton's B1 and G1.
+- Phase 1 questions this section answers:
+  - library-level tests per module (Catch2, G1);
+  - end-to-end tests through fusion on small fixtures;
+  - the reference-test runner that runs FuSION 1 batch files through 2.0 and compares the results with FuSION 1's outputs against a recorded list of expected differences (decision 0023);
+  - determinism tests (seeds, tie orders, platform independence);
+  - performance benchmarks on real-size inputs;
+  - the phase 3 experiments the spec left open.
+- Also cover: test data under the KEGG licence constraint (S8.31: no KGMLs in the repository), so which fixtures are synthetic and which are read from a local KGML directory; the frozen FuSION 1 snapshot as the reference (decision 0024); running the tests on all three platforms (G3); how long the reference suite may take, given real solves of hours (measure from runs/).
+- Neighbours: every section's Test hooks.
+```
+
+## 123 · Subagent prompt · Verification of a drafted architecture section · 2026-11-12 18:52
+
+The verification prompt of [decision 0028](../decisions/0028-phase-2-method.md), adapted from entry 048 for architecture sections. It is sent word for word, with `<SECTION FILE>` replaced by the section's file; each send is logged by entry number and section.
+
+```text
+You are checking a draft architecture section for FuSION 2.0 against the decisions it must honour and the code and data it cites. The draft is /home/ks-149-u24/Desktop/arjun/FuSION2/<SECTION FILE>, written by another agent. The binding decisions are in the same repository: the Phase 1 spec, docs/spec/01-batch-language.md to docs/spec/08-frontend-workflow.md, where every item ends with a Decision line; the decision records in docs/decisions/ (0001 to 0029); and the architecture skeleton, docs/architecture/00-skeleton.md, whose eleven Choices carry Decision lines. FuSION 1's source code is frozen at /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10, with the same relative paths as the FuSION 1 repo; its README.txt says what it holds. Run data are under /home/ks-149-u24/Desktop/arjun/FuSION/runs/. In this shell, grep is a wrapper that silently skips gitignored directories such as runs/, so use /usr/bin/grep.
+
+Do this:
+1. Decisions. For every spec item, decision record and skeleton Choice the draft cites, open it and confirm that the draft states it correctly and that the design honours it. Report any place where the design contradicts or quietly re-decides a Decision line or a skeleton Choice, and any decided item in the section's area that the draft should carry but omits.
+2. Choices. Check that every undecided design choice is listed under Choices, with a real alternative and the evidence for its recommendation. Report choices made silently in the Design part, and listed choices that the spec or the skeleton has already decided.
+3. Citations. For every citation of FuSION 1 code (path:line, or a line range that inherits its file from the surrounding text), open the snapshot at that location and confirm it holds what the draft says. Where it doesn't, find the right lines.
+4. Numbers. For every count, size, timing or measured value, recompute it from the files it names. Write any helper scripts under /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/verify/. Where a value could only come from running FuSION or software that is not installed, say so instead.
+5. Design. Check the interface outlines and file formats for internal consistency (names, types and fields used the same way throughout), check the stated complexities, and report anything that would not work natively on Linux, macOS or Windows.
+
+Do not edit the draft or any other file in either repo, and do not build or run FuSION. Reply in at most 500 words: every discrepancy you found (where in the draft, what it says, what is true, with file:line), the claims you could not check and why, and a one-line verdict.
+```
+
+## 124 · Subagent prompt · Verification sent for section 04 · 2026-11-12 18:52
+
+Entry 123's text, word for word, with `<SECTION FILE>` replaced by `docs/architecture/04-expression.md`, sent once the section 04 draft was written.
+
+## 125 · Subagent prompt · Verification sent for section 08 · 2026-11-12 18:53
+
+Entry 123's text, word for word, with `<SECTION FILE>` replaced by `docs/architecture/08-enrichment.md`, sent once the section 08 draft was written.
+
+## 126 · Subagent prompt · Verification sent for section 07 · 2026-11-12 18:58
+
+Entry 123's text, word for word, with `<SECTION FILE>` replaced by `docs/architecture/07-results.md`, sent once the section 07 draft was written.
+
+## 127 · User prompt · 2026-11-12 19:00
+
+> continue, i reset limit
+
+Sent after the usage limit stopped nine subagents: the drafters of sections 01, 02, 05, 09, 11 and 12, and the verifiers of sections 04, 07 and 08. The drafters of sections 03, 06 and 10 were still running.
+
+## 128 · Subagent prompt · Phase 2 resume message to drafters · 2026-11-12 19:00
+
+Sent word for word to the drafters of sections 01, 02, 05, 09, 11 and 12. A later send to another drafter is logged as its own entry.
+
+```text
+Your run stopped before you finished, because of a usage limit that has now been reset. Your section file may already be partly or fully written: check it, carry on from where you stopped, and finish the task exactly as your original prompt describes. Other agents have meanwhile written their own section files in docs/architecture/; leave those alone. Write only your own section file, then reply in at most 300 words.
+```
+
+## 129 · Subagent prompt · Phase 2 resume message to verifiers · 2026-11-12 19:00
+
+Sent word for word to the verifiers of sections 04, 07 and 08. A later send to another verifier is logged as its own entry.
+
+```text
+Your run stopped before you finished, because of a usage limit that has now been reset. The draft you are checking has not changed. Carry on from where you stopped and finish the task exactly as your original prompt describes, then reply in at most 500 words.
+```
+
+## 130 · Subagent prompt · Verification sent for section 02 · 2026-11-12 19:02
+
+Entry 123's text, word for word, with `<SECTION FILE>` replaced by `docs/architecture/02-network.md`, sent once the section 02 draft was written.
+
+## 131 · Subagent prompt · Verification sent for section 09 · 2026-11-12 19:05
+
+Entry 123's text, word for word, with `<SECTION FILE>` replaced by `docs/architecture/09-runs.md`, sent once the section 09 draft was written.
+
+## 132 · Subagent prompt · Verification sent for section 10 · 2026-11-12 19:07
+
+Entry 123's text, word for word, with `<SECTION FILE>` replaced by `docs/architecture/10-frontend.md`, sent once the section 10 draft was written.
+
+## 133 · Subagent prompt · Verification sent for section 05 · 2026-11-12 19:08
+
+Entry 123's text, word for word, with `<SECTION FILE>` replaced by `docs/architecture/05-corridor.md`, sent once the section 05 draft was written.
+
+## 134 · Subagent prompt · Verification sent for section 06 · 2026-11-12 19:09
+
+Entry 123's text, word for word, with `<SECTION FILE>` replaced by `docs/architecture/06-solve.md`, sent once the section 06 draft was written.
+
+## 135 · Subagent prompt · Verification sent for section 12 · 2026-11-12 19:09
+
+Entry 123's text, word for word, with `<SECTION FILE>` replaced by `docs/architecture/12-tests.md`, sent once the section 12 draft was written.
+
+## 136 · Subagent prompt · Verification sent for section 03 · 2026-11-12 19:12
+
+Entry 123's text, word for word, with `<SECTION FILE>` replaced by `docs/architecture/03-merge.md`, sent once the section 03 draft was written.
+
+## 137 · Poll · 2026-11-12 19:14
+
+Asked when the first Phase 2 verification report (section 04) came in.
+
+**Q1 (Fixes).** The first Phase 2 verification report is in, for section 04 (expression). Every citation and measurement checked out, but it lists about 14 points to fix before polling. Some are design-level: two of the section's own choices conflict; about seven choices are made silently in the design and must be listed and polled; it overlaps skeleton Choices A1 (a JSON query is a second interface) and F1; and some file fields have inconsistent shapes. The other eleven sections will bring similar reports. In Phase 1 I applied verifier corrections myself. How should Phase 2's be applied?
+
+- Drafter revises, I check (Recommended): Each verifier report goes back to its section's own drafter, who still has its context, to fix every finding, list silent choices under Choices and raise skeleton overlaps as open questions; I spot-check the revision before the cross-section check. All prompts logged.
+- I apply them myself: As in Phase 1: I edit each section from its verifier report. Slower, but one hand edits every section.
+- Fresh reviser per section: A new agent revises each section from the draft plus the verifier report.
+
+**Answer:** Drafter revises, I check (Recommended) → [decision 0030](../decisions/0030-verifier-findings-to-drafters.md)
+
+## 138 · Subagent prompt · Revision of a verified architecture section · 2026-11-12 19:14
+
+The revision prompt of [decision 0030](../decisions/0030-verifier-findings-to-drafters.md). It is sent to a section's own drafter, word for word with `<SECTION FILE>` replaced by the section's file, followed by the verifier's report as the verifier wrote it. Each send is logged by entry number and section.
+
+```text
+A verifier has checked your section, <SECTION FILE>, against the spec, the decision records, the skeleton, FuSION 1's code and the run data. Its report is below. Revise your section to deal with every point in it:
+
+1. Correct every citation, number and statement of fact the report shows to be wrong. Re-measure where needed.
+2. Make names, types, fields and file formats consistent throughout the section.
+3. For every choice the report says you made silently in the Design part, either list it under Choices (Proposed, Alternatives, Why, "- **Decision:** pending") or, where a spec item or skeleton Choice already decides it, cite that decision and follow it.
+4. Where your design needs a skeleton Choice or a spec Decision changed, do not change it silently. Keep your proposal only as a Choice that names the decision it would amend, and say so under Open questions, so that the user can be polled.
+5. Where you disagree with a finding, keep your text and say why in your reply.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 300 words: what you changed, any findings you did not accept and why, and any new choices or open questions.
+
+The verifier's report:
+```
+
+## 139 · Subagent prompt · Revision sent for section 04 · 2026-11-12 19:14
+
+Entry 138's text with `<SECTION FILE>` replaced by `docs/architecture/04-expression.md`, followed by the section 04 verifier's report, sent to the section 04 drafter. The report as sent:
+
+```text
+**What checks out.** Every FuSION 1 citation is correct: main.cc:2629-2699 and 2677-2689; suggest_thresholds.py:67-81, 84-91 and 149-220; gsea_select_pathways.py:86-96; plot_explanation.py:132-143; ThresholdFilterPanel.java:496-520; compute_lfc.py:90-94; and reference batch lines 67-68, 145, 169 and 269. These numbers all recompute from the named files:
+- census: 114 batches (73/22/19) and r7–r26;
+- the SHA-256;
+- the EGF lists: 43/2, byte-identical to the reference run, and 77/13 at ±0.67;
+- TNFα: 33/6 against 35/7, and its three repeats;
+- every digit of thresholds.tsv/json. Summing in double in ascending order reproduces them; Python's `statistics` does not;
+- the TNFα MAD conflicts;
+- the probe table: 15,552, 3,054, 1,359, 21/44/11 and 38/31/28;
+- the symbol map: 6,325 symbols, 8 with two ids;
+- the match report: 14/28/3, with its row values;
+- 6,372 lines;
+- the timings, re-measured at 1.27 ms and 8.9 ms.
+
+Scripts are in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/verify/.
+
+**Discrepancies (draft line numbers)**
+1. **L31:** compute_lfc.py did not turn the probe table into the EGF file. It writes both files from HeLa_normalized_exponentiated_gene_expression.csv (compute_lfc.py:26, 112-113).
+2. **L651** says "only the TNFα file has repeats". The second TNFα file that L107 counts, which the draft never names (`auxilliary/IITB_ACTREC_old_data/IITB_ACTREC_old_data/final_tnfa_treated.tsv`), has the same three repeats.
+3. **L423 vs L248/711:** L423 says "about 150 KB"; L248 and L711 say 115 KB. The answer format in L235-243, with symbols, is 191 KB compact or 216 KB with spaces. The awk stand-in prints 114,793 B with one-letter keys and no symbols, so it is not "the whole preview".
+4. **L133:** "one flat array of (line, value) pairs" cannot back `span<const double>` and `span<const uint32_t>` (L325-326).
+5. **Field shapes disagree:**
+   - `values_read` lists sha256 but its example (L562) has none.
+   - `skipped`, `repeated` and `unmapped` are arrays, counts or objects depending on the file (L236, L462, L501).
+6. **Number grammar:**
+   - The regex (L115) rejects `1.`; the prose (L631) accepts it.
+   - S3.02 (03-expression-data.md:36) sets no decimal grammar, so rejecting thresholds like `0x1p0` is a new, unpolled rule.
+   - "whole, finite number" (L52, L574) reads as "integer".
+7. **04.C9 keys on the file.** Two `value_column`s of one table, such as the probe table's time points, cannot both be used in one run. That conflicts with 04.C1.
+8. **Decision 0021:**
+   - Encoding, empty and missing-column failures happen when the step runs (L581-583), although the pre-run pass already reads the file to hash it (L584).
+   - 08-enrichment.md:378 expects `values.empty` to be caught before the run.
+   - What an empty `id_map` or `not_de` file does is not stated.
+9. **04.C6** offers "a separate executable" (L682). Choice F1 already made threshold suggestion a C++ command (skeleton L96).
+10. **04.C8 and open question 3:**
+    - A1 kept "the batch language as the only interface" (skeleton L25). A JSON query is a second interface, so A1 needs a poll; the draft says it leaves A1 unchanged.
+    - Missing alternative: the frontend runs a one-line batch and reads cudf.json.
+    - Where the console log goes in query mode is not said; A2 puts it on stdout, which carries the answer.
+11. **Choices made silently in Design** (none is listed under Choices):
+    - a lone CR ends a line (L104), against S3.03's "LF or CRLF";
+    - BOM, UTF-16 and NUL handling (L100-101);
+    - `values.changed`;
+    - `lists.overlap` (L177), where S5.12 treats an id in both lists as up (05-encoding-and-solve.md:241);
+    - default output names in the named form (L145);
+    - Not DE is applied after the conflict check (L141-142), so it cannot rescue a conflicting gene;
+    - `%DE` at one decimal against S1.27 (L209, raised only as open question 2).
+12. **L663** leaves "relaxed" out of S8.15's override kinds.
+13. **Portability:**
+    - `-ffp-contract=off` has no MSVC spelling; MSVC needs `/fp:precise` without `/fp:contract` (as 08-enrichment.md:394 says).
+    - `long double` is 128-bit on Linux aarch64 and 80-bit on macOS x86-64, not 64-bit on all Arm as L607 says.
+    - `from_chars` returns `result_out_of_range` on underflow and leaves the value unset (LWG 3081), so L116's "possibly 0" needs its own handling.
+    - The temp-file rename (L143) fails on Windows if the target file is open.
+    - "never a missed one" (L145) does not hold on case-insensitive Linux mounts or for NFC/NFD name variants on APFS.
+14. **Minor:**
+    - The probe-table read would also skip and report 1,227 rows with an empty Gene_Symbol (L622).
+    - Test hook L747: the lists match the EGF file's as sets at ±1.01, but in a different order. At ±0.67, full-precision values give 75 up, not 77.
+    - L209's "exact" quantile: the exact value is 0.66675; 0.6667499999999973 is the double result.
+
+**Could not check**
+- Apple libc++ support for floating-point `from_chars`/`to_chars`: no macOS toolchain here.
+- Windows timings.
+- Corridor membership, confirmed only indirectly (from `Up: 3 Down: 0`, the solutions file and diff_expr_nodes.txt), because the corridor is not saved.
+- Real C++ preview latency: the awk script is only a stand-in.
+
+**Verdict:** an accurate, well-measured draft that needs these fixes before polling: 04.C9's keying, the A1 and F1 overlaps, the silent choices, the 0021 timing and the inconsistencies above.
+```
+
+## 140 · Subagent prompt · Revision sent for section 08 · 2026-11-12 19:15
+
+Entry 138's text with `<SECTION FILE>` replaced by `docs/architecture/08-enrichment.md`, followed by the section 08 verifier's report, sent to the section 08 drafter. The report as sent:
+
+```text
+**Discrepancies** (line numbers refer to 08-enrichment.md)
+
+1. **Draw count is wrong (line 230).** The draft says "1379 32-bit draws per shuffle". Each shuffle makes 1228 bounded draws, and that number is fixed. Canon's method then adds second draws, so a shuffle takes 1353 to 1409 32-bit draws: the first takes 1378 and the mean is 1382. The total for P = 1000 is 1,381,866, so "1.38 million" is right.
+2. **Three citation ranges are off.**
+   - `algorithm.rs:219-255` (line 248): `running_enrichment_score` is lines 219-242. Line 244 onwards is `reconstruct_run_es_from_tops`.
+   - `xoshiro256plusplus.rs :70-73` (line 227): `next_u32` is lines 70-75, and the shift is on line 74.
+   - `increasing_uniform.rs:40-100` (line 228): should be 40-108, because `calculate_bound_u32` ends at 108.
+   - Every other gseapy and rand citation holds, as do `gsea.py:493` and the `base.py` ranges. The draft cites no code from the FuSION 1 snapshot itself.
+3. **08.C5 is already decided (lines 473-481).** In poll 087 Q3 the user was offered "parse KGMLs once" and chose S7.19 Keep. The proposal agrees with that, so 08.C5 belongs under Requirements carried in, not Choices.
+4. **Byte order is attributed to C1 (line 213).** The draft says "Byte order is core's stable id order (C1)", but C1 only says "stable orderings", and S7.05 says "by gene id, ascending". Whether ids compare by bytes or numerically (`hsa999` against `hsa1000`) is undecided. S7.05's measured row (44/79/86/91) happens to use byte order.
+5. **The tie warning is dropped silently (line 342).** S7.17's keep includes gseapy's tie warning, and the draft removes it without listing a Choice.
+6. **"Only difference" is incomplete (lines 426, 577).** The draft says the tie order is the only recorded difference from FuSION 1's tables. S7.08's `relation_share` column and S7.09's rows for untested candidates are expected differences too.
+7. **`<out_list>` may leave the run directory (lines 287, 398).** S8.21 and the skeleton put every output in the run directory, but `<out_list>` can be an absolute path elsewhere. The draft never says what happens then, yet the Portability part says the outputs live in the run directory.
+8. **Choices made outside the Choices part:**
+   - Line 545 proposes batch argument names `lfc`, `candidates`, `select`, `out`, `keep`. These clash with `GseaArgs`'s field names `values` and `selector` (lines 179-186), and `lfc` sits badly with Open question 7's point about other data types.
+   - `gsea.output` extends S3.10's rule to `gsea`.
+   - Files are written under a temporary name and then renamed.
+9. **Internal inconsistencies:**
+   - The example table (lines 310-313) lists Viral carcinogenesis (|NES| 1.409) before Nicotine addiction (1.652), against the row order it states.
+   - The score matrix keeps the observed score in column 0 (line 74), so the null scores are not contiguous, but line 266 describes "one in-place sort of 166,000 doubles".
+   - Keep matching runs over all C candidates, not S (line 273).
+10. **No other problems found.** Open question 3 (S1.27 against S7.17) is raised properly, and the Portability part is correct: FMA flags, 64-bit only, `unsigned long`, and `to_chars` on macOS 13.3.
+
+**Verified** with scripts in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/verify/08/scripts/
+
+- **Input data:** both md5 checksums, and every count and size under Data and sizes. One addition: a second 68-gene block exists at −0.11.
+- **Relation share:** 17,904 / 17,396 / 3301, the 76 and 21, and every example.
+- **Arithmetic:** the memory sizes, step counts and probabilities, and 08.C8's sizes.
+- **gseapy 1.3.1, ties by id, seed 42:** it reproduces every example row, the console values, 44/79/86/91 against 42/71/87/90, Renal and Thyroid joining, 79+11 against 71+16, and the 4.2×10⁻⁶ gap. Seeds 1 to 20 give exactly 0.082/0.153/0.373, 68–84, at most 12 differing (median 6), and 39–45.
+- **My own port** of the random stream and the walk matches gseapy's core bit for bit: 166 observed scores, 166,000 null scores, and every NES, nominal p, FDR and FWER. The generator test values and the first-shuffle prefix also match. The leading-edge rules give 166/166, and gseapy's Python call equals its core.
+- **Sources:** the downloaded gseapy and rand sources match tag v1.3.1 and the crates.io checksums. The licences hold, and `rand-0.9.2` is the version compiled into the `.so`. Expat took 123.7 ms.
+
+**Could not check:**
+- The C++ timing and memory estimates (0.2 s, 1.5 s, 15 s, about 3 MB): that needs a build.
+- pugixml's speed: it is not installed here.
+- The draft's own reference port: it is kept outside the repository, so I wrote my own instead.
+- The machine load at drafting time.
+- Floating-point behaviour on Apple silicon and Windows: no such hardware here.
+
+**Verdict:** The design is sound and its central claim, exact agreement with gseapy, holds. It needs small fixes: the draw count, three citation ranges, 08.C5's status, the byte-order attribution, the tie warning, where `<out_list>` may point, and the argument names.
+```
+
+## 141 · Subagent prompt · Verification sent for section 01 · 2026-11-12 19:15
+
+Entry 123's text, word for word, with `<SECTION FILE>` replaced by `docs/architecture/01-batch-language.md`, sent once the section 01 draft was written.
+
+## 142 · Subagent prompt · Verification sent for section 11 · 2026-11-12 19:18
+
+Entry 123's text, word for word, with `<SECTION FILE>` replaced by `docs/architecture/11-build.md`, sent once the section 11 draft was written.
+
+## 143 · Subagent prompt · Revision sent for section 07 · 2026-11-12 19:18
+
+Entry 138's text with `<SECTION FILE>` replaced by `docs/architecture/07-results.md`, followed by the section 07 verifier's report, sent to the section 07 drafter. The report as sent:
+
+```text
+**Section 07 (results) check: the evidence holds, but three Decision lines are re-decided, one contradicts A1, and three designs fail on some platform.**
+
+Both code citations are correct: the polarity rule is at `GraphManagerNew.cc:28552-28595` and the parser at `plot_explanation.py:72-129`. My helper scripts are in `/tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/verify/` (07_*.py).
+
+**Decisions contradicted or re-decided**
+- **A1:** draft l.787-788 treats a `partial` case as a result with exit 0 "so a sweep carries on". A1 says Stop exits with a "stopped" status (00-skeleton.md:23).
+- **S5.25:** it keeps the two-column file (05-encoding-and-solve.md:472-473). The design writes the `.dat` only with `legacy_text` (l.721). OQ2 flags this, but the design already applies it.
+- **S6.16 and decision 0027:** S6.16 (06-results-and-plots.md:368) leaves how activity is shown to the display design, now Phase 5. 07.C4 decides it in Phase 2 (OQ6 flags it).
+- **S4.14:** the decided edge key is source, target and subtypes (04-reachability-corridor.md:270-271). The draft's key adds the relation (l.323). That changes a decided key and needs a poll. By S4.14's key the full JUN run has 279 edges, not 280.
+- **S5.17:** the draft omits its decided meaning of "in" (05:338).
+- **S5.19:** it keeps the TIMEOUT/UNDEFINED distinction. The examples at l.395 and l.718 call the 14,396 s check at (7,0) UNDEFINED. That is FuSION 1's label from before the fix (wo limits file l.74-75); 2.0 would print TIMEOUT.
+- **S5.30:** outputs are "named by solve case", but 07.C1 puts both cases in one file. This is a minor tension, also raised in OQ9.
+
+**Choices made silently**
+- l.472 builds levels over selected edges only and says "as pex did". pex used all drawn pairs, relaxed edges included (06:304), so S6.13's kept layout changes.
+- psp's `src`/`tgt` must equal the solve's endpoints (l.763, l.779).
+- Positional pex reads the run's own data instead of the given files (l.764; OQ8).
+- A minor imprecision at l.281: JUN's only in-edge is the kept MAPK1 → JUN. The relaxed DUSP1 ⊣ MAPK1 is MAPK1's only in-edge.
+
+**Numbers.** Everything I recomputed reproduces except:
+- `dot` on the drafter's `with_n3_e4.dot` takes 0.04–0.05 s, not 0.21 s (l.590, l.873).
+- The edge table is about 12–21 KB per point by my estimate, not "about 10 KB" (l.803).
+- gnuplot takes 0.17–0.18 s against 0.16 s, which is noise.
+
+What does reproduce: the census (181 files, 591/14, 579 equal, 12 below, medians and 95th percentiles), the six FSC verdicts, 1,058/38/0 groups, L 5–9, the fdr050 routes, the 793/3,328 corridor, the batch census (116, 51 pex lines, 204/204/113, 29 plot_po.sh lines), 9,645,947 bytes of pages, the 10.1.5 and Cytoscape sizes, 312 MB of Graphviz, and the prototype file sizes.
+
+**Design consistency**
+- `View` and `build_view` hold one witness (l.452-463), but l.548 says the view file holds all of them.
+- `Header` source, target and FSC are indices into `Tables`, which hold only nodes a witness or observation refers to (l.125). An unobserved source has no entry when no case has a witness.
+- The view's observation keys (`explained`, `relaxed`, `exempt`, l.535) don't map onto `ObservationStatus` (l.206-208).
+- A flipped `ViewEdge` mixes two effects but is described as one (source, target, effect) group (l.439).
+- The legacy example puts a relaxations-file line (IRS2 `not_present`) inside a solutions block (l.725-730).
+
+**Platforms**
+- `fc-match` is not shipped with macOS (l.816).
+- The site replace renames a temporary directory over an existing non-empty `<key>/` (l.692). That fails on Linux and macOS (ENOTEMPTY) and on Windows.
+- The strict-CSP claim (l.567) is incomplete: vis-network 10.1.5's standalone build calls `document.createElement("style")`, so `style-src` needs an exception.
+- The Windows reserved-name list (l.690) omits COM0 and LPT0.
+
+**Could not check**
+- 2.0's check counts and console lines for the reference run under the clamped box: the l.353/371 counts are FuSION 1's, and only running 2.0 gives them.
+- The ~20 KB `fusion-explain.js` and the 5–10 KB run page, which are not yet written.
+- Layout parity between vis-network 10 and 9.1.2.
+- gnuplot and font behaviour on Windows.
+
+**Verdict:** well evidenced, but poll the S5.25, S6.16 and S4.14 changes, fix the A1 exit status, the multi-witness view and the three platform issues before polling.
+```
+
+## 144 · Subagent prompt · Revision sent for section 09 · 2026-11-12 19:27
+
+Entry 138's text with `<SECTION FILE>` replaced by `docs/architecture/09-runs.md`, followed by the section 09 verifier's report, sent to the section 09 drafter. The report as sent:
+
+```text
+## Verification of docs/architecture/09-runs.md (line numbers refer to the draft)
+
+**Decisions**
+- S8.15 is not carried. Its decision says the frontend writes override files into the run directory. Line 1072 ("writes nothing else … except `stop`") contradicts it. Line 841 ("top level holds only…") also has no place for the batch file that A1 has the frontend write.
+- 09.C8 (919–927) brings back the option poll 107 rejected (POSIX signals plus Windows console events) without saying so. It should be polled as a change to A1.
+- B1: the `run` watcher calls `std::_Exit(3)` (283), against line 429 ("never calls `exit`"). The library-level Stop test (1100) would kill the test runner.
+- 0017: inputs made during the run (node files built by `exec`, cudf's lists) cannot pass through phases 3–4 (348–358) or `Files::input()`. 01.C12 handles them; 09 does not.
+- Line 410 makes ASSERT_FLAG a debug flag without saying so. S1.29 leaves each flag's kind to the stage that owns it.
+
+**Choices**
+- Made silently: `-ffp-contract=off` (468, 1085).
+- 09.C13's "no shared store" alternative (984) fails S2.22, by line 986's own reading.
+- 09.C13 re-decides 03.C3/03.C4. Section 03 stores one `<root>/merge/1/<key>.xml`, keyed by a rules version and without FuSION's version (03-merge.md:240, 511). Line 376 credits 09's layout to 03.C4, and line 391 adds the build id to the key.
+
+**Citations:** `z3++.h:228-230` and `make_runs.py:4` are correct. The 27 `exit(1)` calls and the 24 `sto*` calls (4 inside `try`) recount exactly.
+
+**Numbers that are wrong**
+- 483: the full run has 13 pex pages (9,645,947 B, about 0.74 MB each), not 14.
+- 474, 990: the nine runs made two different merges, not one (r0–r6 on 87 pathways; r7–r8 on 88, with the curated KGML).
+- 899: only r9, r10 and r12 had finished checks (8, 5 and 8).
+- 911: there are 12 launchers, not three. The four in `real_experiments` run `fusion` in the foreground; the three `egf_hela` sweeps run it in the background without redirecting stdin.
+- 1081: "22 MB at most" leaves out the outputs that `commit()` hashes (network up to 13.4 MB; the full run's dumps 123.1 MB).
+
+Every other figure recomputes correctly: 199 dump directories and 5.77 GB at about 18:40, run and dump sizes, 129/19 networks, 49/408/281.3/35 inputs, logs, 116/113/855, hashes, 175 inputs = 7,252,671 B, RSS range, 50.7 h and 52.1 h, and the mt19937_64 value. Re-running the Java tryLock test reproduces the fcntl/flock result.
+
+**Design**
+- Line 565's comment says `emit` adds "v, seq and t", but the envelope at 230 uses `time` and also has `run`.
+- 579's "empty = required" cannot express decision 0021's optional inputs or computed defaults (`log`, `cache_dir`).
+- Check-only mode skips hashing (361, 969), but phase 3 checks hashes (352). The test at 1115 then cannot pass.
+- The build id (1082) cannot tell two builds with uncommitted changes apart. Line 391 keeps them out of the store, but fingerprints (306) still let a run resume across them.
+- Windows `LockFileEx` locks are mandatory. The human-readable pid line (151) needs the lock placed past the end of the file.
+- "never reads stdin" (287, 906) conflicts with 04.C8, whose preview queries read JSON from stdin.
+- The references to sections 01, 06 and 10 at 441, 1030–1032, 1050, 1054, 278 and 1129 are out of date; those drafts have changed since. Section 06's `solve.check` now also has its own `seq` field, which clashes with the envelope's, and names its cases `in`/`out` where 09 uses `with`/`without`.
+
+**Not checkable here**
+- Windows and macOS behaviour: replacing a file with `MoveFileExW` while readers hold it open, and macOS 13.3 for floating-point `to_chars`.
+- Timings: I re-ran them on a loaded machine and they agree in order of magnitude only.
+- The 18:38 check counts: running jobs keep adding to them. Now: 2,697 checks, at most 28 per solve, median 1.40 s, 10.0% over 783 s.
+- Sizes for 2.0 itself are estimates.
+
+My helper scripts are in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/verify/09/. Some went into the shared verify/ folder above it, where other verifiers have been overwriting files.
+
+**Verdict:** well evidenced and largely sound. Before polling, fix S8.15, 0017, B1, 09.C8's missing poll history, the store conflict with section 03, and the five wrong numbers.
+```
+
+## 145 · Subagent prompt · Revision sent for section 02 · 2026-11-12 19:31
+
+Entry 138's text with `<SECTION FILE>` replaced by `docs/architecture/02-network.md`, followed by the section 02 verifier's report, sent to the section 02 drafter. The report as sent:
+
+```text
+I found 20 problems in 02-network.md: 9 wrong numbers, 4 decision problems and 7 design gaps. Line numbers (l.) refer to the draft. My scripts are in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/verify/. My simulation of FuSION 1's `y` read reproduces run.log:38-39 and 56-57, and mylog.txt:1-4, exactly.
+
+**Wrong numbers**
+1. l.138 and l.142 (also l.145, 834, 991): the 273-KGML rows keep maplink relations, which adds 75 `map` nodes. The drafting agent's replay has no maplink filter. With the draft's default (skip), the rows are 2,955 nodes / 10,187 edges, and 10,028 / 149,039 at threshold 15000.
+2. Pathway-set column: that replay gives component edges an empty pathway set (scratch `kgml_merge_sim.py:158-160`), which contradicts l.262. The true counts are 207, 836, 1,174 and 1,788.
+3. l.918 says 148 field reads sit in the mincut routine at GraphManagerNew.cc:11980.
+   - That routine has 22. About 146 is the total across 29 functions; the largest is at GraphManagerNew.cc:12867, with 38.
+   - The conclusion still holds: the entry points at 15185, 15357 and 24304 are never called.
+4. l.995: 125 ids, not 124 (the same set as l.321).
+5. l.446 and l.990: the coexpression census 114/253/0/335 is FuSION 1's graph 84. A 2.0 build gives 115/250/0/337 with the run's exceptions, or 107/258/0/337 without them (the graph shown at l.445).
+6. l.153: the example key `hsa5906|hsa673|…` cannot exist. BRAF is in the RAF box keyed `hsa369`.
+7. l.356-378: the example's entry numbers break l.380's canonical order.
+   - In the real build they are 75, 294, 345, 396, 531, 697 and 723.
+   - Entry 1 is `c_s_cpdC00752_hsa10544_hsa7056_c_e`.
+8. Stale or overstated counts:
+   - l.222: the 111 `rgx … y` and 65 `mff … y` lines include macOS/model_example; runs/ alone has 110 and 64.
+   - l.179: there are now 51 copies of `inter_db_mapping_file`, not 17; all are still empty.
+9. l.384, 773 and 932: the embedded-source sizes and the 16,657 figure count only reached entries. Documents hold every entry (l.239), which gives 458 KB, 1.65 MB and 3.25 MB, and 37,767 entries.
+
+**Decisions**
+10. Silent re-decisions, made without a Choice:
+   - S1.16 "keep": l.175-176 reject one-token lines and add `#` and colon rules. FuSION 1 maps such an id to "" (GraphManagerNew.cc:8014-8015).
+   - S1.18/S1.19: l.183 adds `#` comment lines to the decided reader rule.
+   - S2.02 "keep": l.103 drops other_value1, excess and the stored display names.
+   - S2.10 "keep": l.230 rejects bad scores. FuSION 1 keeps stof's numeric prefix, else 0 (XMLParser.cc:1521).
+   - add's output format (open question 5) belongs under Choices.
+11. Unsurfaced S2.13/S2.27 tension: l.204 and l.674 apply the auto-added FSC to legacy reads. Runs whose FSC was not differentially expressed are then not reproduced "the way FuSION 1 does".
+12. Skeleton C1 gives `core` "ids … stable orderings". The draft puts handles, keys and canonical order in `network` without addressing this.
+13. Already decided:
+   - 02.C6 is decided by S2.11 and S2.31; only where ECrel is applied is open.
+   - The first two bullets of 02.C4 are decided by S2.25.
+
+**Design**
+14. `EdgeKey`'s defaulted `<=>` (l.550-551) compares interned handles, which follow first appearance. The canonical sort and `find_edge` then depend on list order unless string content is compared.
+15. The byte-identity claims (l.154, l.986) conflict with absolute input paths in the header (l.353) and the unspecified order of `<input>`/`<source>`.
+16. IdIndex lookup is O(1) at l.197 but a binary search at l.828.
+17. `BindingTable` (l.642) gets no `LabelMap`, yet must write the label and member columns.
+18. Edge-table endpoint types apply to a whole cell. The 8 complexes that mix compound and gene components (9 in the 273) cannot be written, which breaks l.737 and l.984.
+19. l.220's four-field test should skip blank and `#` lines. l.112's normal form ("whatever its reader") does not hold for legacy or `add` networks.
+20. Portability:
+   - On macOS, floating-point `std::to_chars` needs deployment target 13.3 or later.
+   - Windows long paths also need the LongPathsEnabled policy, not only the manifest.
+
+**Verified correct:**
+- the other citations (EdgeNew compiles to 216 B; Node 28 B, Edge 32 B);
+- the log lines, and the 42- and 167-KGML node, edge and subtype counts;
+- all legacy figures;
+- the relation, maplink, symbol-map, batch and TNFα counts. The batch split 56/7/2 holds once pre-reorganisation paths are mapped to runs/.
+
+**Not checked:**
+- timings: my Python run was about 2× slower than the draft's;
+- the 400-bytes-per-edge estimate and the C++ benchmark targets;
+- "every KEGG human pathway", which needs KEGG online;
+- figures quoted from the spec;
+- real macOS and Windows behaviour.
+
+**Verdict:** the design follows the decisions in substance. The 273-row and pathway-set numbers, the 148 citation and the examples need fixing, and the silent re-decisions need polling.
+```
+
+## 146 · Subagent prompt · Revision sent for section 05 · 2026-11-12 19:32
+
+Entry 138's text with `<SECTION FILE>` replaced by `docs/architecture/05-corridor.md`, followed by the section 05 verifier's report, sent to the section 05 drafter. The report as sent:
+
+```text
+I checked 05-corridor.md against the spec, decisions 0017–0029, the skeleton and the run data. My own replay reproduces FuSION 1's printed corridor counts in all 29 configurations under `runs/` and in the 82k graph. Most numbers hold, but there are real problems with the choices, one missing caveat on the evidence for 05.C2, and several wrong claims about other sections. Draft lines are given as 05:N.
+
+**Decisions and choices**
+1. **05.C3 (05:404) is already decided.** S4.05 lists FuSION 1's drop of activation+expression edges under flag 1 as a fault (spec 04:122), and its decision makes each rule match its name (04:125). The listed alternative reopens that.
+2. **05.C4's alternative contradicts S4.10** (04:198, build only for pairs the solve will solve) together with S5.04 (05-encoding:104).
+3. **Three choices are made silently, not listed under Choices:**
+   - Reuse of an equal corridor for the second `fb_rch` (05:360).
+   - `into_target` counts only tails with ds ≤ b−1 (05:113, 05:174). S4.17 decided to print "the same counts", and FuSION 1's M differs in 2 of 29 configurations (fdr025 b7: 11→10; full network b6: 18→17).
+   - Id checks run only when the step runs (05:212), while decision 0021 says the backend validates all inputs before the first step.
+4. **05:181 and 05:566 credit "the legacy reader (S2.27)" with folding the 82k graph's duplicates.** S2.27 limits that reader to the old master. The 82k graph is another master's `wgx` output, so this rests on 02.C5, which is still pending (02-network.md:777).
+
+**Evidence for 05.C2**
+5. The networks of experiment5.0, experiment7.1 and the b15-exhaustive run keep 734–755 `indirect` relations from an older build. S2.11's default discards them, and the draft doesn't say so.
+   - With the default, the 2.0 corridors become 71/188, 638/2381 and 679/2634, not the table's values (05:195–197).
+   - In experiment5.0, trimming first then equals keeping then trimming. So 05.C2's "101 of 933 edges, 11 %" and the DUSP1/JUNB witness (05:394, 05:398) disappear.
+
+**Numbers that hold:** every table value, the reference run's counts, the b = 4 corridor (7/9), the extra-edge counts, all four witnesses, the observation splits, the duplicate folds, the both-kinds counts, the four nodes on no simple path, and the batch census. File sizes match within 3 %.
+
+**Numbers that don't**
+6. **05:18:** the 95 logs / 175 calls (`runs/` minus 17 logs started after 18:20 today) hold 27 configurations, not 29. Today there are 112 logs / 192 calls under `runs/` (29), or 117 / 202 with `macOS/` and `auxilliary/` (31).
+7. **05:170:** the subtype vocabulary has 13–16 names, not "13 or 14" (15 in the fdr040, fdr044 and fdr050 networks).
+8. **05:323–326:** the backward trace sample shows 3 of the 9 nodes in entry 0 of `fb_rch_back`.
+9. **05:500, "stop at their first corridor":** in all 111 batches the first `exec mv fb_rch` follows the last `fb_rch`, and in 109 of them a `pathz3` as well.
+
+**Design consistency**
+10. `Request::sources`/`targets` (05:98) vs `source`/`target` in the settings and JSON (05:246, 05:264).
+11. "Every call writes three files" (05:256, 05:441) conflicts with the conditional observations file (05:303) and with reuse writing none (05:360).
+12. For an unreachable target, the empty reason counts drops from "any reached node" (05:176), but the message says "within b−1" (05:234). Also, `uint32_t` b − 1 wraps at b = 0.
+13. The backward-search cost (05:179) leaves out in-edges whose tail is outside F. The overall O(N+E·σ) still holds.
+14. **Wrong claims about other sections:**
+    - 01 lists seven arguments, including `skip_subtypes`, and names the flag `to_target` (01:214). So 05:476 and 05:496 are wrong.
+    - 10 uses `both`, not `any` (10:416).
+    - 09's envelope is `time` with dotted `step.started`/`step.finished` (09:230–238), not `t` and `step_started`.
+    - 04 has `Regulation` but no `Direction`, and it already designs `match_observations`/`observations_match.tsv` (04:372–382), which duplicates `place()`.
+
+Nothing found that would fail natively on Linux, macOS or Windows.
+
+**Citations:** the draft cites no FuSION 1 path:line. Its quoted strings exist at `GraphManagerNew.cc:17815` and `main.cc:904`.
+
+**Not checkable:** the digest value; the 10 ms C++ budget; the Python step counts (74,549 and 15.3 M; my search took 161,698 steps); and "n moves down by 1, 1, 2", which needs a solve, though it follows if the recorded solves are exact.
+
+My scripts are `s05_*.py` in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/verify/. Another verifier writes to the same folder and overwrote `census.py`.
+
+**Verdict:** a sound, well-measured design that needs fixes before polling: 05.C3 is already decided, 05.C2 needs the indirect-edge caveat, three silent choices must be listed, and the census and cross-section claims need correcting.
+```
+
+## 147 · Subagent prompt · Revision sent for section 12 · 2026-11-12 19:34
+
+Entry 138's text with `<SECTION FILE>` replaced by `docs/architecture/12-tests.md`, followed by the section 12 verifier's report, sent to the section 12 drafter. The report as sent:
+
+```text
+**Verdict:** not ready to commit as is. The structure and most of the evidence hold, but there are about 10 factual errors, 3 cross-section conflicts and several interface inconsistencies.
+
+**Numbers wrong**
+- **EGF-HeLa b6 row and "How long" (T2):** the draft says "4–108 s, 623 s" and "about 2050 s". The timing.log files give 13.5–107.8 s per case and 724 s in all, so T2 is about 2151 s. The `[pathz3 timing]` console lines omit the with-FSC solves of the four NFKB1 nr4 cases, where no PO point was found.
+- **Running jobs (Evidence used, 12.C12, OQ6):** "25 jobs (r9–r26) were running" is wrong. Per status.log, r9–r16 were stopped at 18:06 (exit 143). At most 18 ran at once: r17–r26, the 7 string125 reruns, and r6/resolve_wo_n2_e8.
+- **"8 distinct lists/raw merges":** there are 7. The r7 and r8 lists differ only in the folder of the same curated XML (identical SHA-256), and both use the same 55-id exception set (cf. 03-merge.md:554).
+- **12.C6 "15 initial entries":** the table has 16 (XD-01 to XD-16). XD-15 comes from G1/11.C2, not from a spec decision.
+- **XD-08 "up to 57":** S4.15 and the draft's own X05 say 57 or 58.
+- **"19 GSEA cases":** there are 18, because the sweep's fdr025 is not a separate case.
+- **"All 352 manifest entries match the live tree":** 351 do; README.txt exists only in the snapshot.
+- **Peak memory:** "b10 runs peaked 1.1–2.0 GB" holds only for the slow runs; sweep fdr025/030/040 peaked at 0.32–0.52 GB. The "10 min 58 s, 318,920 kB" figure comes from the sweep's fdr025/run_time.txt; the reference run has no run_time.txt.
+
+**Citations**
+- The CHANGELOG range "53-131" for the merge-chain fix should be 123-133.
+- The ErbB range "0.24–0.30" is not in S7.11, which the draft cites; it is at CHANGELOG.md:102-103.
+- All other citations hold: Makefile:56 and 64-65, XMLParser.cc:1481-1490, output_script.txt:31-32, gsea.py:493, r5 limits 83-85, temp_wo_solutions.txt:2, temp_wo_relaxations.txt:26, and CHANGELOG 31-42, 163-197, 239, 248.
+
+**Decisions and choices**
+- **12.C10 (exact gseapy agreement)** contradicts F1's accepted "statistically, not byte for byte". Under 0028 that is a skeleton change needing its own poll, and the choice is fully settled by 08.C1 anyway. S7.11's Decision line says nothing about statistical agreement.
+- **Missing from "Requirements carried in":** 0018, G2 (JUnit/Gradle) and H1 (this section's mandate). S5.24, S8.21 and S2.13 are used in the design but not carried in.
+- **`fake-fusion` gap:** 10-frontend.md:1266 and 1295 expect section 12 to supply `fake-fusion`, a native stand-in process. The draft assigns a Java `FakeFusion` to section 10, so neither section supplies it.
+- **Z3 gate missing:** 11-build.md:656 (11.C2) gives Phase 3 a speed gate across Z3 4.8.12, 4.16.0 and 5.3.3. It is absent from X01–X10.
+- **Choices made silently:** T3 switches to 2.0's own frontiers after the golden search, and the traceability test starts failing at the end of Phase 4.
+
+**Design**
+- `ScriptedOracle::ask(solve::Point, solve::Step)` doesn't match section 06, which declares `ask(Point, Phase)` returning a struct `Answer` (06-solve.md:445-448).
+- `CaseSpec` has no edge lists (S5.06) or confirmed lists (S5.07). The r5 and r6 without-FSC solves avoid edges, so R1 cannot check them.
+- **e2e comparison:** the cases compare witnesses.json and search_log.tsv byte for byte against one cross-platform golden set. That contradicts 12.C11 and the Determinism text, and `Normaliser` can't mask the TSV's wall and CPU columns (06:58).
+- `Case::paths` does not match the JSON's `path_map` pairs, and `map<Stage, map<string,path>>` cannot hold `solve.with/without`.
+- **Benchmark memory:** `getrusage(RUSAGE_CHILDREN)` reports the largest reaped child, so later samples inherit earlier peaks on Linux and macOS. Use wait4's rusage.
+- **Data root:** it omits r7/r8's curated XML, the `_plus_phlda1` LFC file and the per-case inputs that `$CASE` maps to.
+- **Toy fixtures:** the 12 toy cases use three XMLs (report_example ×3, report_example_with_pathways ×7, with_node_included ×2), but the fixture list names only with_node_included.
+- **XD-07:** it allows corridor.edges, but seen_in lists only 3 cases, while most corridors have self-loops (5 in the reference run, 7 in the full run, per S5.13). 12.C5's "predicts exactly" overstates what is only a bound.
+- **Capture batch:** the text says to write the corridor "after each fb_rch", but the batch is cut before the first pathz3, so only corridor_1 is captured.
+- `diff`'s O(V+E) ignores the remapping of node indices when the two node sets differ.
+
+**Verified:**
+- **Search and verification counts:** 24 runs and 1,241,580 s; 703 checks (262 sat, 402 unsat, 39 unknown) and 1,057,265 s; 360 verification checks, 702,742 s, 23 unknown; T3's 312 checks; 149,664 s for the slowest search.
+- **Witnesses:** 179 frontier points, 177 witnessed, all with counts equal to their points; 6 moved points; 14,396 s at (7, 0).
+- **Batch corpus:** 107 files, 1,300,313 bytes, 24,787 lines, all LF; the `exec mv` counts, 44 pex files, 22 plot_po.sh files, and the 62 and 53 stale-path references.
+- **Binary and data:** binary size and hash; Z3 4.8.12; data-root sizes and hashes; 26 dumps totalling 46.3 MB; corridors of 134–2138 edges.
+- **Fixtures and GSEA:** the toy and model-example figures, the GSEA figures, and both exhaustive-frontier counts.
+
+**Could not check** (they need runs): the 150–200 MB data-root estimate, the experiment costs, canonicalisation in "milliseconds", whether KEGG's current files differ, rlimit portability, and Z3 5.3.3's behaviour.
+
+My helper scripts are in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/verify/.
+```
+
+## 148 · Subagent prompt · Revision sent for section 10 · 2026-11-12 19:34
+
+Entry 138's text with `<SECTION FILE>` replaced by `docs/architecture/10-frontend.md`, followed by the section 10 verifier's report, sent to the section 10 drafter. The report as sent:
+
+```text
+Verdict: not ready to poll. FuSION 1 citations and most numbers hold; cross-section facts are stale (01, 04, 07, 11 changed until 19:30) and several design points fail.
+
+NN = docs/architecture/NN-*.md; L = draft line.
+
+Decisions
+- `relaxed` override and "five edge files" (L60, L62, L837): S5.05 dropped relaxed node/edge inputs (spec/05-encoding-and-solve.md:125); 06 has none (06:612-613).
+- S8.31 ships a KGML list (spec/08-frontend-workflow.md:539); L48 omits it.
+- Omitted: 0021's given-but-empty = empty list; S1.28 restart of `failed` runs (Resume, L721).
+- L459's backend defaults are the b10 values S8.06's poll declined (06:602, 06:707; PROMPTS.md:2338).
+- Lab-mode `exec` refusal (L189) re-decides S8.27 unflagged; `Preferences.kgmlDir` (L286) contradicts Principle 1/0020.
+
+Silent choices: `.out` outside the run directory (L686; S8.21), capturing the whole console; session-name label and 60 s `destroyForcibly` against 09 (09:1075-1076); bound max 100 (L475).
+
+Stale cross-references
+- Exit codes are 0, 1, 2 (usage), 3, 130 (01:446-448); L993, L995, L1232, L1286 follow 01's rejected alternative (01:1053).
+- `$$` exists (01:872): L536, L1238, L1329. Queries: 01 `--query` (01:436; `-e` rejected, 01:1054); 04 now a batch line, Not DE as a file, 18 ms (04:246-277): L639-646, L1251.
+- `--jobs auto` divides by 3 GiB (01:904): L744, L1202.
+- Points: `points/<NN>-<label>/` (01:950); 01:397 runs one batch per value; `--check --json` gives a count, not labels (01:476): L681, L801, L1216, L1231.
+- Names don't follow 01 (01:400-409): L398, L817.
+- Events are dotted, envelope `v, seq, time, run, type` (09:230-243; 06:648-654); no `frontier_point`: L238, L247, L705-706, L974, L1254, L1256.
+- Labels cut to 44, ", " becomes "--" (09:108): L680, L925, L1026.
+- 11 uses `fusion.backend.executable` (11:547), has no `--check-deps` (11:469) or `$FUSION_DATA` (01:158 has it; 11:422 uses `$FUSION_HOME`): L139, L146, L460, L951, L1260-1261.
+
+Design
+- 07's shells load `../../lib/*.js` (07:581-582); under `sandbox` (opaque origin) the `SameSite=Strict` cookie isn't sent, so the owner-checked route refuses them (L173, L183, L1253).
+- Cycle: `SessionBusy`/`CHANGED_SINCE_LAST_RUN` (L363, L366) need runner; 10.C8 forbids it (L1148).
+- `let` rule (L526) vs inline literals (L827-832); trim-to-ancestors (L521) vs "ends after that block" (L549); Tarjan yields SCCs, not every cycle (L507).
+- Merge Patch `null` deletes keys (L208 vs L314). SSE ids `/` vs `:`; EventSource resends one id (L219, L230, L1088).
+- `password`/`passwordHash`, `gene`/`geneId`; `RunRecord` lacks JSON's `pipeline`.
+- Session names (L310) allow a newline into the `;;` header, injecting batch lines. Lab mode doesn't confine `map=`/preview paths (`accounts.json` readable).
+- No section defines 10.C11's map query.
+
+Platform: Spring Boot sets `java.awt.headless=true`, breaking `Desktop.browse`/Dock quit; Windows `<data dir>\cache` equals 09.C13's `%LOCALAPPDATA%\FuSION\Cache` (09:981); the setup token shows in `ps` (L154-155).
+
+Numbers (rest reproduced): pex pages 383, median 733,953, 280.9 MB (L30, L1055; report copies rebuilt 18:34); 18 solves ran at 19:01 (`resolve_wo_n2_e8`, 17:05): L29, L701, L1071, L1209; `/usr/bin/z3` embeds Z3 statically, a libz3-linked binary starts in 3.63 ms (L646); corridors reach 793/3,328 (05:200; L1052); only five launchers redirect stdin (L1195); bcrypt-12 measured 0.36 s (L1128); 16 GiB Linux/Windows laptops get 3.
+
+Unchecked (needs Windows, macOS or 2.0's catalog): `CREATE_NO_WINDOW`, quoting, `run.lock` sharing, jpackage job objects, WatchService latency, "9 blocks, 60 arguments".
+```
+
+## 149 · Subagent prompt · Revision sent for section 06 · 2026-11-12 19:36
+
+Entry 138's text with `<SECTION FILE>` replaced by `docs/architecture/06-solve.md`, followed by the section 06 verifier's report, sent to the section 06 drafter. The report as sent:
+
+```text
+**Decisions and skeleton**
+- 06.C7 lets a killed run resume, against A1's "no saved state". Only Open question 3 raises it; it needs a poll.
+- 06.C8's default re-asks cached TIMEOUTs on a longer resumed timeout, narrowing S5.20. Open question 1's "follows S5.20 as decided" is wrong.
+- 06.C6 reports Pareto-minimal model counts, ignoring S5.25's premise that the search yields the frontier.
+- `r_v` exists only for relaxable observations, which exclude the non-relaxed list, yet "Lists" asserts `¬r_v` for that list. As written, a non-relaxed observed node is unconstrained; FuSION 1 forced it consistent (S5.05).
+- Omitted: S5.06's required subtype field has no error. A gene in both confirmed lists ends up both up and down (S3.07/S3.08), and nothing rejects it.
+- Silent choices: endpoint defaults (source and target present and active); upper box defaults of 8 (S8.06 fixes only the lower bounds); the Z3 version kept out of the fingerprint, unlike 09's build id (09-runs.md:306, 881).
+
+**Citations** (others check out)
+- r6 is README.md:181-184, not 174-183.
+- 06.C1's "push, two bounds, check, pop" is not FuSION 1's pattern. The binary searches hold one bound in an outer push (GraphManagerNew.cc:29572-29573, 29687-29688).
+- z3++.h:226-229 (4.8.12) doesn't mention cross-thread use of `interrupt()`; it says "no guarantee the object will actually stop".
+
+**Numbers**
+- The reference run without the FSC took 601.6 s (run/timing.log). The 632 s is fdr_sweep/fdr025's.
+- 06.C5's "(1, 0)" first model did not reproduce. My z3 4.8.12 replays of nr_1_er_4 (push, seed 42) gave (1, 3) or (1, 1), which answer no smallest-e check.
+- Examples: the journal box has n in [0, 1] but seq 1 is at (1, 4); the clamped search starts at (0, 4) (29391-29392). case.json's "edges 364, self_loops 0" is inconsistent: those 364 include 5 self-loops.
+- r2 to r4 avoid 1, 2 and 4 nodes (README:66-67), not 2 to 4.
+- Dumps under runs/ reach 26.9 MB; 2.9 MB holds only for b10.
+- runs/ keeps growing (now 222 limits files, 2707 checks); the 25 checks and 13 s reproduce only without r0_string125. Pin a snapshot.
+- All other recomputed figures match.
+
+**Design**
+- Setting names don't follow 01 as claimed (01-batch-language.md:215: `node_relax_lb`, `timeout_ms`, `budget_ms`, `coexpression_csv`). 01 already has `threads`, `retry` and `answers_from`.
+- The "exact, then monotone" lookup lets a cached TIMEOUT hide a later monotone proof.
+- The transfer's δ assumes one FSC, but 06.C10 allows a set.
+- The replay hook fails where a re-ask turned SAT: r6 without CREB1 at (2, 8), plus 6 in real_experiments.
+- Frozen `¬x_e` still binds self-loops; 4 of the reference run's 5 were frozen.
+- Windows: `GetThreadTimes` ticks at about 15.6 ms, so most `cpu_s` values read 0.
+
+**Unchecked:** replay timings (43.5 s, 258 s, 53.5/47.9 s, …) need full Z3 sessions. My spot-checks agreed: about 51 MB peak, and reason `timeout` before `pop`, "not known" after. Scripts: /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/verify/06/
+
+**Verdict:** well evidenced and mostly sound. Fix the 632 s, the non-relaxed encoding, the examples and the (1, 0) claim; poll A1 and S5.20.
+```
+
+## 150 · Subagent prompt · Revision sent for section 01 · 2026-11-12 19:36
+
+Entry 138's text with `<SECTION FILE>` replaced by `docs/architecture/01-batch-language.md`, followed by the section 01 verifier's report, sent to the section 01 drafter. The report as sent:
+
+```text
+The draft is well evidenced and most of its numbers are right, but it needs a revision pass before polling: it misreads S4.18, makes several unlisted choices and unnamed amendments, the merge look-ahead has gaps, and some counts are wrong. Line numbers below refer to docs/architecture/01-batch-language.md. My helper scripts are in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/verify/01/
+
+**Decisions**
+- **S4.18 misread:** line 253 skips every later line after an empty corridor, and open question 5 (line 1098) calls that "the decision as written". S4.18 (spec/04:345) skips only "its solve". Skipping all later steps is S7.03's wording (spec/07:105), so this is an unlisted choice.
+- **Amendments not named (decision 0030):**
+  - 01.C11 overrides S1.14 (spec/01:170).
+  - 01.C12 relaxes decision 0021, S1.15 (spec/01:189) and S2.16 (spec/02:343).
+  - `$$` changes S1.07.
+- **Silent choices with no Choice entry:**
+  - steps take the latest value of a kind by default (229);
+  - the BatchFacts look-ahead (231). The alternative is to split exceptions at the corridor, which S2.22's merge reuse already does;
+  - the `$FUSION_*` variables and their reserved prefix (150);
+  - UTF-8-only batch files (106);
+  - `upfx` accepted with a warning (222), although S2.29 drops it.
+- **Gaps:**
+  - BatchFacts (649) leaves out S1.17's up and down genes.
+  - The `mff` row (209) leaves out `not_merged`, which the examples at 270 and 405 use, and `tool_written`.
+  - Positional batches name no FSC, so S2.13 cannot add it for them; the draft doesn't say so.
+  - The legacy `mv edges_merged_filename` after an old-master one-file `mff … y` (S2.27) has no report to write, and the draft doesn't say what happens.
+  - S1.27 and S2.27 are not carried.
+- **Wrong example rule:** `requires(frozen_threshold, coexpression_csv)` at 980 contradicts S5.03 and S5.16 (spec/05:88, 313-322).
+
+**Citations:** `main.cc:1148-1300`, `Gui4Panel.java:153` and every line number cited in the real batch are correct.
+
+**Numbers:** most are confirmed, including the real batch's line counts, the corpus counts, run times, memory, the status-143 runs and the re-solve figures. Wrong:
+- 348: 1,644 lines, not 1,649. The 1,649 includes the GUI template's five `%__c__%` lines.
+- 350: 114 `rgx` lines use `y`; two use `n`.
+- 880: there are 8 relative `mv` destinations, not 16.
+- 880 and 958: "every launcher starts fusion in the batch file's directory" is false.
+  - `runs/egf_hela/experiment/run_nr4_er4_sweep.sh:18-24` and its two siblings `cd` into `$EXP/<sub>/`.
+  - `runs/real_experiments/run_experiment_1.sh:19` never changes directory.
+- 952: 114 files define `$WORK_DIR`, not 115.
+- 999: the features listed give 3,194 and 723. 120 of the "plain echo" lines are `cd …;` chains, which `cmd.exe` can't run either.
+- Stale: SMT dumps are now 5.85 GB in 200 directories (971); 114 files run `wgx` then `rgx` (1043).
+- Examples: the real batch has 174 inputs totalling 7,250,798 bytes (782). The `seq` and time order of the events at 785 and 793 contradict each other.
+
+**Design**
+- `lex()` gets no variables, yet whether a line is `exec` depends on the expanded first token. `expand()` has no `exec` mode for `$$`.
+- Status names disagree: `reported_empty` in the enum, `reported` in the event, `ok` in `run_finished`.
+- Sweep-point naming disagrees:
+  - `Point.label` is "01-fdr0.25" (624), but `points.tsv` has `fdr0.25`;
+  - Interfaces (1074) says `points/<label>/`, but 286 says `points/<NN>-<label>/`;
+  - 09.C1 truncates labels at 44 characters, not 32.
+- Row sweeps (280) put `label=` before positional tokens, which 01.C1 forbids.
+- `load run= step=` restores several graphs, which breaks "one graph id per line".
+- 01.C12's rule covers only named outputs. Line 269's `temp_*` inputs, derived from pathz3's prefix, would therefore fail the pre-run check.
+- Test hook 1082 can't pass:
+  - the GUI template has placeholders;
+  - `output_script.txt` has an empty `mff` list (149) and an empty `wgx` file (157);
+  - S3.07 rejects its 0.0/0.0 thresholds.
+- 415 escapes `$` only inside quoted values, but `$` is expanded everywhere.
+- Windows: `$FUSION_*` paths reach `exec` text with `\`, which busybox `sh` treats as an escape. These variables should hold `/` paths.
+- Stale cross-section references:
+  - the `pathz3` names differ from 06's (`node_min`, `timeout` as a duration, `coexp` and others);
+  - 10.C15 is now 10.C14, and section 10 now writes `fusion --check`;
+  - `$FUSION_DATA`, `--home` and `--check-deps` are not section 11's proposals.
+
+**Could not check**
+- busybox-w32's size and applets: needs a Windows build or the network.
+- The 11 ms replay (mine took 17 ms) and the C++ timing.
+- Section 04's 1.3 ms start-up figure.
+- "No state saved" for the killed runs.
+- The exit status of `gnuplot -p` without a display, which matters under S1.28.
+```
+
+## 151 · Subagent prompt · Revision sent for section 03 · 2026-11-12 19:38
+
+Entry 138's text with `<SECTION FILE>` replaced by `docs/architecture/03-merge.md`, followed by the section 03 verifier's report, sent to the section 03 drafter. The report as sent:
+
+```text
+I checked 03-merge.md against the spec, decision records 0017–0029 and the skeleton, using an independent prototype. It reproduces most of the draft's numbers. There are 14 discrepancies. Scripts are in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/verify/03/
+
+**Decisions and choices**
+1. 03-merge.md:90, :95 and :639 reuse the documents the pre-run check parsed, for both gsea and mff. In prompt log 087 Q3 (S7.19 "keep") the user rejected sharing one parse between gsea and mff, and 08-enrichment.md:43 and :590 follow that. Also, ":639 (08.C5)" cites the wrong choice: 08.C5 is the relation_share column.
+2. The draft neither cites nor reconciles two skeleton rules:
+   - the shared store (:240) writes outside the run directory, against "Run outputs" (S1.26, S8.21);
+   - the memory tier (:239) keeps state between calls, against D1.
+3. :457 and :492 count 346 multi-id nodes, 12 of them compound nodes. S2.28 decided "more than one gene", which gives 334. The "1.99 MB" at :490 breaks S1.27's exact numbers.
+4. 03.C2 amends S8.22's list and 03.C5 amends S2.07's single-read rule, but neither says so. Two choices are made without a Choices entry: the key leaves out FuSION's version (:511), and the legacy master must stand alone, with edge tables bound by first claim (:249).
+
+**Numbers**
+5. :232, :553 and :668 say 47 merges, 1,233 s, 9 contents, 220 s. runs/ actually holds 49 raw-KGML merges, 1,481 s and 10 contents, about 335–346 s merged once each. The draft's figures leave out egf_hela's two 163-pathway builds. The cost table's 47 includes those builds but leaves out fdr030 (56 pathways) and fdr040 (71 pathways).
+6. The "11 of 89 complexes get another key" claim (:120, :669, :690) is wrong:
+   - FuSION 1's re-read recomputes complex keys from the components (XMLParser.cc:1098-1099, GraphManagerNew.cc:2438-2466), so all 89 match 2.0.
+   - The reference run's fb_rch and fb_rch_back use only 2.0 keys.
+   - The stale keys exist only in the written names: 10, not 11.
+   - OQ3's example, c_s_hsa6772_c_e, is in both r5's FuSION 1 corridor and its 2.0 network.
+   - The key change that does show is S2.11's: in the 87- and 90-pathway runs the receptor node loses CCDC6, NCOA4, TFG, TPM3 and TPR, its key moves from hsa10342 to hsa1436, and FuSION 1's solutions name c_s_hsa10342_c_e.
+7. :135 and OQ2 (:685-689) omit other S2.11 effects: BAK1 and BAX split (hsa05132 entry 808), and GNAO1, GNAL, HK1-3, HKDC1 and VDAC1 leave the network.
+8. The 542 component rows at :429 are one row per edge and pathway. One per group, as the text says, gives 586 (3,729 rows in all).
+9. Smaller corrections:
+   - the :677 baseline of 122–126 s is the 163-pathway build from before indirect relations were discarded, not the 167 list;
+   - the 88 row at :262 covers r7–r16 only (r17–r26 have 6,454 boxes, 384 groups, 6,040 relations);
+   - the string125 files are 4.14 MB;
+   - "tens of MB" at :269 conflicts with section 02's estimate of about 7 MB;
+   - the key digest at :227 needs a trailing LF.
+
+**Design**
+10. The key leaves out paths, but an edge table's pathway defaults to its file name (02-network.md:280). Identical tables under two names collide, and "each once" drops one of them.
+11. Interface gaps:
+    - get_or_build (:357) gets only the id map's digest, but DocCache::get needs the IdMap itself;
+    - section 02's Provenance (document, relation) cannot record groups;
+    - the split never marks as exception nodes the 14 exception ids whose base node holds only them.
+12. Store entries with one key (:500) are not identical: they embed different input paths and writer versions.
+13. Apple's libc++ lacks floating-point std::from_chars (:510).
+14. The merge.fsc_unknown warning for line 171 (:458) contradicts JUN's fsc reason (:420).
+
+**Verified**
+- Both code citations (XMLParser.cc:899-900; main.cc:2376, 2468-2469).
+- The agreement table, 6/7/12/12 duplicates, 6 component pathway lists, 11 and 13 lost ids.
+- The exception set (49/35/21), the base nodes, the AP-1 and JNK box counts, the shortcut errors (3 and 6).
+- The split table, and split equals the direct merge on the real exception sets and in 220 random cases.
+- The key 2a7ca3a6…, the complex counts, the threshold-15000 counts, the cost-table sizes, counts and times, and expat's time.
+
+**Not checkable**
+- The draft prototype's 240 random cases, shuffles and timings: the prototype is outside both repos, and I verified with my own instead.
+- 03.C4's TSV and JSON sizes: their formats aren't given.
+- The C++ estimates: nothing was built.
+
+Verdict: the algorithm and most numbers hold, but fix items 1, 5, 6, 7 and 10 before polling.
+```
+
+## 152 · User prompt · 2026-11-12 23:52
+
+> I hit my usage limit while you were working, but it has reset now. Please continue from where you left off.
+
+Sent after the usage limit stopped nine subagents: the drafters of sections 01, 02, 03, 05, 06, 09, 10 and 12, all revising their sections from their verifiers' reports, and the verifier of section 11.
+
+## 153 · Subagent prompt · Phase 2 resume message to revising drafters · 2026-11-12 23:52
+
+Sent word for word to the drafters of sections 01, 02, 03, 05, 06, 09, 10 and 12. A later send to another drafter is logged as its own entry.
+
+```text
+Your run stopped before you finished, because of a usage limit that has now been reset. You were revising your section to deal with the verifier's report in my last message, and your section file may already be partly revised. Check it, carry on from where you stopped, and finish the revision exactly as that message describes. Edit only your own section file, then reply in at most 300 words.
+```
+
+## 154 · Subagent prompt · Resume message sent to the section 11 verifier · 2026-11-12 23:52
+
+Entry 129's text, word for word, sent to the verifier of section 11.
+
+## 155 · Subagent prompt · Revision sent for section 11 · 2026-11-12 23:55
+
+Entry 138's text with `<SECTION FILE>` replaced by `docs/architecture/11-build.md`, followed by the section 11 verifier's report, sent to the section 11 drafter. The report as sent:
+
+```text
+**Decisions and Choices**
+- Silent choices in Design: Z3 linked dynamically, no static-libz3 alternative (l.202); Ctrl-C via `ctrl_c=false` (206); four new components put in `core`, beyond C1's list (17); `FUSION_HOME/GNUPLOT/DOT` overrides (409, 464); MSVC 19.40 floor (241; OQ2, l.913, then calls 19.40 a raise); "no result file holds an absolute path" (513).
+- C4's vendoring alternative would amend G1 ("fetched by the build") without naming it; OQ1/OQ2 recommend amending G2/G1, which decision 0030 puts under Choices.
+- Omitted: S8.13 (maps used by default from a checked location). Other cited items are stated correctly.
+
+**Citations**: main.cc:4721-4722, Makefile:10/68, macOS/README.md:43 all correct.
+
+**Numbers**
+- l.582, 842: platforms.yml costs $2.19 at the stated $0.010 Windows rate (GitHub-confirmed); $2.28 uses $0.016; ratio ≈12.
+- l.182, 724: 124 MB is 4.8.12's header (1.31 s); 4.15.3 takes 1.47 s, 134 MB.
+- l.561, 764: full closure is 110 files, 105.5 MB (111th is linux-vdso); the cairo+pango closure is 37 libraries, 12.9 MB without glibc; 31/10.2 MB not reproducible.
+- l.465-466: `nosuchterm` exits 0 only because it is a warning; real errors exit 1: the `.` error (draft: 0), unwritable output, missing data (S3.19 saw 1 too).
+- l.665 says 4.8.12 lacks `ctrl_c`: it has a solver-level one; tested, setting it false lets SIGINT reach the app's handler. Only the global form is new.
+- l.158, 866: `isolated_nodes_after_indirect_discard.csv` is not an input; nothing reads it.
+- 22 batches (l.414) vs 29 lines (921): today 29 batches, one line each.
+- l.916's 2,341 `pathway_` names are rows; 1,869 are distinct.
+- l.233, 664: both quotes are 5.3.0's; 5.1.0 says "cross-compiler determinism".
+- l.888-889 stale: section 12 now follows C15 and fast_float (12-tests.md:66, 688).
+- Confirmed: Z3 comparison table, glibc floors, machine facts, fonts, maps, counts, 5.3.3 digests, upstream dates.
+
+**Design**
+- l.194-198: the 5.3.3 x64-win zip has no `lib/cmake` (macOS and Linux zips do), and Ubuntu's libz3-dev ships only z3.pc, so CONFIG mode fails on Windows and under SYSTEM, naming no versions.
+- That zip ships msvcp140/vcruntime140/vcomp140 DLLs; the layout (420) and licences have no MSVC runtime, so fusion.exe fails on clean Windows.
+- l.391: posix_spawn's chdir needs `addchdir_np`, GLIBC_2.29, above C1's 2.28 floor.
+- l.293 vs 167, 172: `verify_z3_runtime`/`library_versions` sit in core but need libz3, which only solve links.
+- l.101 vs 167, 183: run and results use JSON, but core links it PRIVATE; json_fwd in public headers needs PUBLIC.
+- Shapes: `libraries.z3` object vs strings (492-493; 09 uses a string); `features` (363, 617) vs `terminals` (496); `needed_by` string (364) vs array (617).
+- l.519, 525, 814: a vendor-pinned Temurin toolchain rejects this JDK (vendor "Ubuntu"), and toolchains cannot pin 21.0.13+9.
+- l.626-628 say `/opt/fusion/share/fusion`, elsewhere `/opt/fusion/lib/app/backend`.
+
+**Unverifiable**: 46,785,235 bytes for "20 modules" (list not given; 69 = 85,023,528 ✓); size estimates; 11 concurrent jobs; Z3 5.x speed and cross-platform identity (not installed); macOS/Windows behaviour; pugixml, fast_float, Catch2, CMake, Ninja, busybox and Temurin dates (not fetched).
+
+Scripts: /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/verify/11/
+
+**Verdict**: well evidenced, but Z3 packaging, portability, the core–Z3 layering, the ctrl_c/gnuplot evidence and the CI arithmetic need revision.
+```
+
+## 156 · Subagent prompt · Cross-section check of the twelve architecture sections · 2026-11-13 00:10
+
+The one cross-section check of [decision 0029](../decisions/0029-architecture-section-template.md), sent once all twelve sections were drafted, verified, revised by their drafters and spot-checked by Claude ([decision 0030](../decisions/0030-verifier-findings-to-drafters.md)). Choice counts at the time: 01: 19, 02: 17, 03: 9, 04: 11, 05: 9, 06: 20, 07: 12, 08: 13, 09: 16, 10: 21, 11: 23, 12: 17.
+
+```text
+You are checking twelve architecture sections of FuSION 2.0 for conflicts between them. They are /home/ks-149-u24/Desktop/arjun/FuSION2/docs/architecture/01-batch-language.md to 12-tests.md. Different agents drafted them in parallel against the skeleton, docs/architecture/00-skeleton.md; each was then checked by a verifier and revised. The binding decisions are the Phase 1 spec (docs/spec/01-batch-language.md to 08-frontend-workflow.md, the Decision line of each item), the decision records (docs/decisions/, 0001 to 0030) and the skeleton's eleven decided Choices. Each section lists its own undecided choices as NN.Ck, each ending "- **Decision:** pending". FuSION 1's code is frozen at /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10, and its run data are under /home/ks-149-u24/Desktop/arjun/FuSION/runs/; in this shell, grep silently skips gitignored directories such as runs/, so use /usr/bin/grep.
+
+Do this:
+1. Shared things. Find every name, type, field, file format, file or directory name, event, setting, argument name, command-line option, exit status and status value that more than one section defines or uses. List each one on which the sections disagree: which sections, what each says (file:line), and which section owns it, by the skeleton's module list (Choice C1) or by its subject.
+2. Ownership. List anything two sections both claim to design, and anything a section expects another to supply that no section supplies.
+3. Choices. List choices in different sections that answer the same question, whether they agree or conflict, so that one poll can cover them; and choices whose answer would decide another section's choice.
+4. Decisions. List places where two sections read the same decision differently. List every proposed amendment of a decided spec item or skeleton Choice, across all twelve sections, with the choice that proposes it.
+5. For every conflict, propose one resolution and say which section's text would change.
+
+Do not edit any file in either repository, and do not build or run anything. Write the full list to /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/xcheck/conflicts.md, grouped as above, most important first, each conflict numbered and with its proposed resolution; put any helper scripts in the same folder. Then reply in at most 600 words: the number of items in each group, and the ten most important conflicts with their proposed resolutions.
+```
+
+## 157 · Poll · 2026-11-13 22:48
+
+Asked when the cross-section check (entry 156) reported back. Its full list is in Claude's scratchpad (`phase2/xcheck/conflicts.md`).
+
+**Q1 (Method).** The cross-section check found 179 items across the twelve sections: 32 things the sections define differently, 11 things two sections both design, 19 gaps no section fills, 13 decisions two sections read differently, 30 pairs of choices answering one question (asked together), 33 ordering dependencies, and 41 proposed amendments of decided items (8 the sections hadn't flagged). With the sections' own 187 choices that is roughly 230 decisions, each with a proposed resolution or recommendation. After you answer, each section's drafter applies the approved changes (decision 0030). How should these decisions reach you?
+
+- Polls, mechanical grouped (Recommended): Every substantive conflict and every choice gets its own question, 4 per poll, in dependency order (08.C1 first). About 30 purely mechanical alignments (spellings, owners, stale cross-references, examples) come as a few grouped questions that list each item. Roughly 55 polls.
+- One review page: I publish every item and choice with its recommendation on one page; you mark anything you'd change; I poll only the marked ones and record the rest as accepted.
+- Every item its own question: No grouping at all: roughly 58 polls of four.
+
+**Answer:** Polls, mechanical grouped (Recommended) → [decision 0031](../decisions/0031-polling-the-architecture-sections.md)
+
+## 158 · Poll · 2026-11-13 23:01
+
+The grouped mechanical alignments of [decision 0031](../decisions/0031-polling-the-architecture-sections.md), item numbers as in the cross-section check's list.
+
+**Q1 (Group 1).** Mechanical group 1 of 4 · shared vocabulary and formats, each following its owner. 1.1: one core vocabulary, section 09's names (core::Failure as the base exception with UsageError and InstallError, Report and Outcome<T> for step results, Log and Events, core::Context for every step, a 32-byte core::Sha256, one stable_compare), adopted by 01 to 08 and 11. 1.9: 'fusion --check --json' prints 01's diagnostics array plus 09's command, setting and path fields and 01's features, with one C++ type in 09. 1.14: run.json follows 09's schema with 11's version, tool, platform, install and environment blocks, 01's variables and normalised lines, a list of volatile fields, and 11's pins in its example. 1.17: generic conditions use 09's and 01's codes (input.*, io.write, artefact.*, output.clash, batch.*, deps.missing); modules keep codes only for their own faults; one network.flag_mismatch. 1.22: one run-level bindings.tsv written by 02's binding table, with 02's columns plus 06's line and note. 1.25: 02 adds an 'unscored' edge flag; the score stays 0 for comparisons (S2.10).
+
+- Accept all (Recommended): All as proposed.
+- Discuss some first: Name the items you want as separate questions (via Other).
+
+**Answer:** Accept all (Recommended)
+
+**Q2 (Group 2).** Mechanical group 2 of 4 · small rules and housekeeping. 1.26: a label becomes a directory name per Unicode code point, each run of characters outside [A-Za-z0-9._-] becoming one '-', ends trimmed, with one shared test for the C++ and Java copies. 1.27: gnuplot 5.4 or later with pngcairo for both plots, 11's lookup order (FUSION_GNUPLOT, then the bundle, then PATH), and the step called plot_pareto everywhere. 1.28: every backend write uses 09's OutputFile and its Windows retry rule. 1.29 to 1.32: examples use the owners' names; 12 tests the legacy reader against graph 2's counts (3,100 nodes, 7,400 edges); small mismatches follow the owner ('ok'/'failed', 'sz', batch.undefined_variable, 'overrides/' reserved); every stale cross-reference between sections is updated.
+
+- Accept all (Recommended): All as proposed.
+- Discuss some first: Name the items you want as separate questions (via Other).
+
+**Answer:** Accept all (Recommended)
+
+**Q3 (Group 3).** Mechanical group 3 of 4 · who owns what. 2A.1: 11 owns the external-tool check and deps.missing; each command declares its tool needs in 01's command table; 09's pre-run check calls it; 07 states only gnuplot's need and the font rule. 2A.2: the solve's saved step is 06's journal and case.json; results.json is a final output that pex and plot_pareto may also read from a parent run. 2A.5: 09 owns core's ids and orderings, adopting 02's outline (interner, GeneId, one comparison). 2A.6 and 2A.7: every module writes through 09's OutputFile (temporary name, then rename) and 09's pre-run check finds output clashes by file identity, as 04 designs; that also settles 08.C13. 2A.9: one diagnostic, from 01's check, for a FuSION 1 batch that names no FSC; 03 drops merge.fsc_unknown. 2A.10: 12 keeps the one copy of the JSON Schemas, each written by its format's owner. 2A.11: the process helper is 11's core::Process. 4A.5: following your S7.19 answer, 02.C15 keeps its full pre-run parse of network inputs but shares no parse between gsea and mff.
+
+- Accept all (Recommended): All as proposed.
+- Discuss some first: Name the items you want as separate questions (via Other).
+
+**Answer:** Accept all (Recommended)
+
+**Q4 (Group 4).** Mechanical group 4 of 4 · gaps with an obvious owner. 2B.1: 02 adds the polarity rule's functions (effect_of, is_relaxed) and NodeKey and NodeKind. 2B.6: 02 adds a query-only 'labels map=<file>' command for the frontend's gene lookup, run through 01's query mode. 2B.7: 07 puts a results summary (points per case, least relaxations, FSC verdict) in run.json. 2B.9: 01's pathz3 row gains answers_from and free. 2B.10: a list a step writes records the base its relative lines resolve against. 2B.11, 2B.12, 2B.14, 2B.18: 02 adds the builder calls and header fields 03 needs, returns each list line's text with its path (file stem as the fallback pathway id), defines Maps, and exports normalise_subtype; 08 defines Shortlist. 2B.13: a small gnuplot runner and the plot palette go into core beside 11's process layer, shared by 04's histogram and 07's plot. 2B.15: 01's command table gains tool needs and a shell-command mark. 2B.16: install and dependency errors use 09's error event, and startup install errors exit 1. 2B.17: 09's lock can lock any file (for the site). 1.23: gsea gains kgml_dir and the value-reading arguments; pex takes the solve's values and the reading arguments only for a positional lfc_file.
+
+- Accept all (Recommended): All as proposed.
+- Discuss some first: Name the items you want as separate questions (via Other).
+
+**Answer:** Accept all (Recommended)
+
+## 159 · Poll · 2026-11-15 12:19
+
+The first substantive poll of decision 0031: the choices the cross-section check said to settle first.
+
+**Q1 (08.C1).** 08.C1 · GSEA's random numbers. The drafter read gseapy 1.3.1's Rust core and the rand crate it uses; a port of that stream and its formulas reproduced gseapy to the last bit on the real inputs (all 166 scores, all 166,000 null scores, every NES, p, FDR and FWER), and the verifier's own port agreed. That would amend your skeleton answer F1, which said the C++ GSEA agrees 'statistically but not byte for byte'. With exact agreement, every number that differs from FuSION 1's tables traces to the tie order (S7.05), Phase 3 can require equality, and seed 42 keeps its meaning. A different stream acts like a different seed: seeds 1 to 20 move fdr:0.4's selection by up to 12 pathways, so a statistical test couldn't catch a porting error that size. Cost: about 100 lines of integer code plus gseapy's BSD and rand's MIT notices. If accepted, core holds this generator for GSEA and section 09's generator for everything else, and 12.C10's statistical test lapses.
+
+- Exact port (Recommended): Amend F1: C++ GSEA reproduces gseapy 1.3.1 bit for bit; Phase 3 tests exact equality.
+- FuSION's own generator: As F1 says: a fully specified generator of FuSION's own, statistical agreement only; one generator in core.
+- Counter-based generator: Philox-style: permutations computable in parallel; statistical agreement only.
+
+**Answer:** Exact port (Recommended), amending skeleton Choice F1; recorded in the ledger for 08.C1, 1.19 and 12.C10
+
+**Q2 (02.C11).** 02.C11 · The stable edge key. S4.14 decided stable keys for nodes and edges, worded 'source, target and subtypes'. Without the relation type that key isn't unique: 3 edges collide in the reference merge and 35 in the full run (for example a PPrel and a GErel between the same genes). Proposed key: (source key, target key, type, ordered subtypes), printed src|tgt|type|sub1,sub2 ('|' occurs in no gene id or complex key, while '_' occurs in every complex key); JSON also gives the four fields; indices appear only beside keys. Every output, section 07's results and the Phase 5 display use it, and 07 drops its separate run-stable edge ids (07.C11). Sections disagreed on whether adding the type amends S4.14 or just fixes its wording; this answer settles S4.14 either way.
+
+- Key with the type (Recommended): Source, target, type and subtypes; S4.14 amended or clarified accordingly; 07.C11 lapses.
+- S4.14 as worded, plus ids: Key without the type (not unique), with 07.C11's run-stable edge ids carrying identity.
+- Opaque hash: A 64-bit hash of the fields: compact but unreadable in TSVs and useless for grep.
+
+**Answer:** Key with the type (Recommended), settling S4.14's key; 07.C11 lapses
+
+**Q3 (02.C5).** 02.C5 · The legacy reader. S2.27 kept a compatibility reader for 'this one file', the old master. Of the 65 one-file 'mff … y' batches, 56 read that master, 7 read masters FuSION 1's own wgx wrote (runs/egf_hela/experiment/), and 2 name missing files. Proposed: read every unmarked file that FuSION 1 wrote (the old master, its wgx outputs, its add output) with the legacy reader, reproducing FuSION 1's graph 2 exactly. That is the read plus an in-memory replay of wgx → rgx y, already reproduced exactly on the full run (3,100 nodes, 7,400 edges) and the GUI run (8,139 nodes, 82,188 edges). Then exact duplicate edges are merged at read time (768 on the full run), as FuSION 1 did at the corridor copy (S4.13), so corridors and solves are unchanged. This widens S2.27's 'this one file' and moves S4.13's merge from the corridor to reading.
+
+- As proposed (Recommended): Every unmarked FuSION 1-written file, graph 2 exactly, duplicates merged at read.
+- Only the old master: Recognised by its SHA-256, as S2.27 words it; FuSION 1's other written masters go through the 2.0 reader and aren't reproduced.
+- Keep duplicate edges: Exact FuSION 1 edge counts, but edge keys stop being unique and section 05 merges them at the corridor.
+
+**Answer:** As proposed (Recommended), widening S2.27's scope and moving S4.13's duplicate merge to reading
+
+**Q4 (02.C15).** 02.C15 · How deeply network inputs are checked before a run (decision 0021). Proposed: the pre-run check fully parses every network input and list entry with every S2.06 check, and keeps each step's parsed documents in memory for that step (not shared between gsea and mff, following your S7.19 answer); the frontend validates through the same check. A full parse finds a malformed KGML before a run that may last 50 hours; it costs under a second for all 273 KGMLs, the parse is not repeated, and holding the documents costs about 2 MB. Section 05's id check before the first step (05.C3) and section 03's node-type conflict check rely on it.
+
+- Full parse up front (Recommended): Every input fully parsed and checked before the first step.
+- Existence and format only: Check files exist and sniff their format; parse at the step (05.C3 and 03's early checks then need their own reads).
+
+**Answer:** Full parse up front (Recommended)
+
+## 160 · Poll · 2026-11-15 12:21
+
+Section 02's input mechanism, with the joint questions the cross-section check set (3A.12, 3A.28).
+
+**Q1 (02.C1).** 02.C1 · How network inputs from any pathway source plug in (decision 0020). Proposed: both mechanisms. One reader interface with four built-in readers (KGML, FuSION's own network file, the legacy FuSION 1 read, and edge tables), picked from the file's content with format= to override; plus one documented exchange format, the edge table (02.C2), which any other source (SIGNOR, OmniPath, Reactome, STRING already export relation tables) produces through a converter or export. More built-in readers (SIF, GPML, BioPAX, SBML-qual) can be added later behind the same interface. Content detection replaces S2.12's trusted y/n flag. The readers cover every file the 114 batch files read.
+
+- Readers + exchange table (Recommended): Four built-in readers chosen by content, plus the edge table as the one exchange format.
+- Built-in readers only: One C++ reader per source; each new source waits for a FuSION release.
+- Run-time plugins: Shared libraries loaded by name: sources added without rebuilding, but a binary interface to keep stable on three platforms.
+
+**Answer:** Readers + exchange table (Recommended)
+
+**Q2 (02.C2).** 02.C2 · The exchange format: a headered tab-separated edge table, one row per relation, with columns source, target, type, subtypes, pathways, score, source_type and target_type. Lists are comma-joined; box members are joined by ',' and complex components by '+'; a type cell holds one type or one per component. Each row builds exactly as a KGML relation does, so a KGML and its table transcription give the same network (a test hook). add's four-field lines stay accepted unchanged (S2.30 kept one subtype per line there). Subtype lists are needed: 1,437 of 9,704 kept relations in the 167 KGMLs carry two or three subtypes.
+
+- Headered edge table (Recommended): As proposed, with inline families and complexes.
+- FuSION's network XML: Lossless and already needed, but harder for converters to write from R or a spreadsheet.
+- SIF: Cytoscape's simple format: widely written, but no subtypes, pathways, scores or families.
+- Node and edge tables: Explicit, but two files per input.
+
+**Answer:** Headered edge table (Recommended)
+
+**Q3 (Id maps).** 02.C3 with 04.C1 · Translating foreign ids. 02.C3: every id from every input passes one function at read time, deleting ':' (the coexpression CSV says 'hsa:972', LFC files 'hsa1000'), then applying the run's id map once; the map is S1.16's two-column file '<foreign id> <network id>', a later line winning, given with start or by name and recorded by hash. 04.C1: one reader for per-gene values from any modality, with S3.03's two-column file as the default and, when value_column is given, a headered table (tab, comma or space, detected) whose id and value columns are picked by name. On your probe table (22,283 rows keyed by symbol) it reproduces the EGF file: the same 3054 ids and the same 43 up and 2 down genes at ±1.01. The two sections disagreed on the map's layout and on one-to-many; the cross-section check proposes one map type and layout (02's), where a value input's id_map= names either an S1.16 file or the keyword 'symbols' (the symbol map read backwards; only 8 of 6,326 symbols are ambiguous) and replaces the run-wide map for that input.
+
+- One map + id_map=symbols (Recommended): 02's layout and one-pass rule; 04's table reader; a value input may name its own map or 'symbols'.
+- Per-input maps, 04's layout: Every reader and value input takes its own id_map in '<network id> <foreign id>' order, one-to-many allowed.
+- No mapping in the backend: Users convert files beforehand, as in FuSION 1; only ':' is removed.
+
+**Answer:** One map + id_map=symbols (Recommended), settling 02.C3, 04.C1 and cross-section item 1.12
+
+**Q4 (Saved nets).** 02.C4 with 03.C4 and 03.C7 · FuSION's saved network file and saved merges. S2.25 decided to keep wgx's XML structure and mark the file as FuSION's own; 02.C4 settles the rest: the mark is format="fusion-network" version="1" on the root (KGML's DOCTYPE dropped); members sorted with an explicit key; a header recording settings, inputs with SHA-256, the exception set and the legacy flag; and embedded sources (each input's relations and every entry a relation reaches, about 18% of the KGML bytes: 348 KB for 42 KGMLs, 2.1 MB for 273), so a saved network can be rebuilt under other settings or exceptions without its original files. That is needed because splitting an exception out of a merge must undo unions made through it (the {FOS, MAPK9, MAPK10, SP1} case). 03.C4 makes the shared store's saved base merge the same file (empty exception set, merge key, no paths). 03.C7 lets such a file stand in an mff list as if its original files were listed, refusing one without sources when a per-node split wouldn't be exact. The sections agree.
+
+- All three as proposed (Recommended): Marked network file with embedded sources; the store reuses it; network files allowed in mff lists.
+- No embedded sources: Smaller files that re-read the original KGMLs to rebuild; 03.C4 then uses separate TSV tables, and a moved KGML breaks a saved step.
+- Embed every entry: As proposed, but embed entries no relation reaches too (441 KB / 3.13 MB), so the documents also serve GSEA.
+
+**Answer:** All three as proposed (Recommended), settling 02.C4, 03.C4 and 03.C7
+
+## 161 · Poll · 2026-11-15 12:22
+
+Section 02's relation filters, memory layout and views (with 05.C1, cross-section 3A).
+
+**Q1 (02.C6).** 02.C6 · Where ECrel exclusion acts. S2.11 and S2.31 decided both relation settings (indirect effects discarded by default or kept as '1+' hops; ECrel edges kept by default, excludable by a run setting, marked in outputs). Open point: where 'exclude' acts. Proposed: at the same point as the indirect filter, when each document is built and before nodes are made, so an enzyme reached only by ECrel relations never becomes a node; the parsed document keeps every relation, so changing the setting needs no re-parse. One place and one rule for relation filters, recorded once in run.json and each saved network's header. The real 42 KGMLs hold 31 ECrel relations after the indirect discard.
+
+- At build, like indirect (Recommended): Dropped before nodes are made; enzymes reached only by ECrel aren't nodes.
+- At the corridor: As a non-traversable type: the network keeps them for display, but the enzymes stay as untraversed nodes.
+- Per command: Arguments of rgx and mff: finer, but one run could mix networks built under different rules.
+
+**Answer:** At build, like indirect (Recommended)
+
+**Q2 (02.C7).** 02.C7 · KGML maplink relations. Proposed: skip them by default, with a run setting network.maplink=keep, and count the skipped ones. None of the 167 KGMLs any run used has one, so no recorded result changes; the full KEGG human set has 723 in 24 of 273 KGMLs, mostly metabolic maps. They link genes to 'map' entries that stand for whole other pathways, with the traversable subtype 'compound', so a corridor could route through a node standing for an entire pathway. Keeping them adds 75 map nodes and 667 edges to the 273-KGML network. GSEA candidate lists drawn from the full KEGG set would meet them.
+
+- Skip by default (Recommended): Skipped and counted; network.maplink=keep reads them.
+- Read as edges: As FuSION 1 does with every relation type.
+- Drop, no setting: Always skipped.
+
+**Answer:** Skip by default (Recommended)
+
+**Q3 (02.C8).** 02.C8 · Memory layout of the network. Proposed: nodes and edges as plain arrays of fixed-size records (28 and 32 bytes), every string interned to a 32-bit handle (subtype lists and pathway sets interned once each), out- and in-adjacency as offset and index arrays, ids and keys found through hash tables in O(1), an edge found by binary search in its source's sorted out-edges, and the network immutable once built. Measured sizes run from 2,291 edges (42 KGMLs) to 82,188 (the GUI run) and about 149,000 (all 273 KGMLs uncollapsed), which this layout holds in about 7 MB. FuSION 1's object-per-edge shape costs about 400 bytes per edge, ten times as much, with pointer chasing and costly copies.
+
+- Interned arrays (Recommended): Compact, cache-friendly, immutable after building.
+- Objects per node/edge: FuSION 1's shape: simplest to write, about 10x the memory.
+- Boost.Graph: Ready-made algorithms, but a large dependency on three platforms, no interning, unstable descriptors across copies.
+
+**Answer:** Interned arrays (Recommended)
+
+**Q4 (Views).** 02.C9 with 05.C1 · Derived graphs as views. Proposed: a corridor, or any other subset, is a GraphView, the network plus one bit per node and per edge, using the network's indices and copying nothing (02.C9). 05.C1 builds the corridor as such a view plus its request, bindings, the source and target distance arrays, counts, empty reason and a digest, with no lookup of its own. EGFR then has one index in the network, the corridor and both solves, where FuSION 1 gave it 3273, 7596 and 10044 (S4.14); S4.15's single lookup, S4.20's unchanged corridor and S5.29's no shared state hold by construction, and both FSC solves share one read-only object. A view of the largest network costs about 20 KB, its distance arrays 65 KB.
+
+- Views (Recommended): 02.C9 and 05.C1 as proposed.
+- Compact copies: Copied subgraphs with their own indices and a map back: denser loops, but every output translates ids and copies can drift.
+
+**Answer:** Views (Recommended), settling 02.C9 and 05.C1
+
+## 162 · Poll · 2026-11-15 12:38
+
+Section 02's ordering, lists, binding report and unread fields.
+
+**Q1 (02.C10).** 02.C10 · Canonical order of nodes and edges. Proposed: nodes sorted by key in byte order, edges by (source index, target index, type, subtype list), and file entries numbered in that order. Sorting costs a few milliseconds at 150,000 edges, and it makes every later step and every file independent of the KGML list's order and of the platform, which turns S2.17's order independence and S2.22's split equivalence into byte comparisons Phase 3 can make. FuSION 1 keeps first-appearance order, so a merge's output depends on list order.
+
+- Sorted canonical order (Recommended): Byte-order node keys; edges by endpoints, type and subtypes.
+- First-appearance order: Files read in their own order; output depends on list order.
+- Sort only when writing: Stable files, but in-memory iteration and tie-breaks still follow input order.
+
+**Answer:** Sorted canonical order (Recommended)
+
+**Q2 (02.C12).** 02.C12 · Input lists and the KGML directory. Proposed: list entries trimmed and blank lines skipped; relative entries resolve against kgml_dir when given, else the list file's folder; a bare pathway id becomes <base>/<id>.xml; duplicates found by file identity (catching case-only duplicates on macOS and Windows); kgml_dir is a named argument of mff and gsea, filled by the frontend from your settings, with no environment variable. S8.31 ships a KGML list without KGMLs, 'resolved against the user's own KGML directory', which needs a base folder and bare names. All 167 entries of FuSION 1's list are absolute, so nothing old changes.
+
+- kgml_dir argument (Recommended): As proposed: kgml_dir, else the list's folder; bare ids become paths.
+- Launch directory: Relative entries resolve against where fusion was started, as in FuSION 1.
+- Environment variable: FUSION_KGML_DIR: convenient, but hidden state that run.json must capture separately.
+
+**Answer:** kgml_dir argument (Recommended)
+
+**Q3 (02.C13).** 02.C13 · The binding report. Proposed: one run file, bindings.tsv, with one row per (role, id) the first time it binds: the given and canonical id, a status (own, family, ambiguous, absent), the node's key, label, size and member labels, and any other holders; one summary event per role; the console prints only the summary. S2.03, S4.02 and S3.12 all asked for bindings to be shown. On the full run a third of the 702 coexpression ids land in family nodes and 109 are ambiguous; a whole run gives about 750 rows. (Its columns also take 06's line and note, as accepted in the grouped poll.)
+
+- bindings.tsv (Recommended): One TSV per run plus summary events.
+- Events only: One event per family or ambiguous binding (356 for the coexpression CSV alone); the frontend rebuilds the table.
+
+**Answer:** bindings.tsv (Recommended)
+
+**Q4 (02.C14).** 02.C14 · Edge fields nothing reads (S2.04, stage 2 open question 7). Proposed: 2.0's edge record carries none of FuSION 1's weight, weight_tuple, capacity, flow, other1 to other4, other, deleted and reaction_desc. In the live code, only an edge copy and pathz3's unused undirected copy touch weight; every other read sits in code no live command reaches (mostly the Gomory–Hu mincut routines). Nothing that changes a result reads them, and keeping them would double the edge record.
+
+- Drop them (Recommended): None of the unread fields in 2.0.
+- Keep, initialised: Unused fields kept for parity with S2.04's record.
+
+**Answer:** Drop them (Recommended), closing stage 2's open question 7
+
+## 163 · Poll · 2026-11-15 12:42
+
+Section 02's node fields, add's format with the legacy master in a list, whether start stays required, and S2.08 in the legacy reader.
+
+**Q1 (02.C16).** 02.C16 · Node fields 2.0 does not store. This amends S2.02, which kept FuSION 1's node record. Proposed:
+- display_names are not stored. Labels come from the symbol map when printed (S2.15's and S2.25's rules).
+- other_value1 (the node a copy came from) is dropped.
+- excess, read only by mincut code no live command reaches, is dropped.
+- description, compartment and pathways stay, as an optional side table.
+Within a run, derived labels equal stored ones. The difference is that a saved network no longer depends on the symbol map, so its content_hash stays the same under a newer map. FuSION 1's stored display names caused S2.25's fault: EGFR's label began 'EGFR, CSF1R, BANDDOS, …'.
+
+- Don't store them (Recommended): Labels are derived when printed; other_value1 and excess are dropped; the side table stays.
+- Keep every S2.02 field: Display names are stored at build time from the same map, so a saved network's hash changes with the map.
+
+**Answer:** Don't store them (Recommended), amending S2.02
+
+**Q2 (02.C17+03.C9).** 02.C17 with 03.C9 (cross-section row 3A.27) · add's output, and the legacy master in an mff list.
+- 02.C17 proposes that add writes FuSION 1's elements and attributes (one gene entry per id, one relation per row, pathways="KEGG", no score), with 2.0's mark on the root and without the 'Additional edges added' DOCTYPE. 2.0 then reads the file as its own: a transcription, with no build rule. This adds the mark to the format S2.30 kept.
+- 03.C9, with the change the cross-section check proposes, lets the legacy master share its mff list with edge tables and with add's marked output. Their ids bind to the master's nodes by first claim (S2.03), with no union. Any other KGML or network file beside the master is the error merge.legacy_mixed.
+The GUI's pre-merged mode with additional edges needs exactly this, because S8.08 and S8.24 keep that step in both modes. All 65 FuSION 1 batches that read the master name it alone.
+
+- Marked output, admitted (Recommended): As proposed: add writes the mark, and 03.C9 admits edge tables and add's output beside the master.
+- FuSION 1's exact layout: add writes the unmarked layout, which is read as legacy. 03.C9 then admits it, and any network merged with it is flagged legacy, in list mode too.
+- Master strictly alone: Nothing may sit beside the legacy master, so additional edges need a 2.0 network, against S8.08's 'both modes'.
+- Union like any merge: The master's entries are unioned with the other inputs. That joins HRAS's four entries and departs from S2.27's FuSION 1 read.
+
+**Answer:** Marked output, admitted (Recommended), amending S2.30; closing 02 open question 5 and cross-section row 3A.27
+
+**Q3 (2B.4 start).** Cross-section row 2B.4 · Does start stay required? Sections 01 and 02 each left it to the other. Proposed: start becomes optional.
+- Without a start line, the symbol and pathway-name maps default to the shipped ones (S8.13).
+- There is no id map, so ids are used as given.
+- The exception set holds what 2.0 adds itself (up and down genes, source, target, FSC; S1.17, S2.13), plus mff's not_merged file when one is named.
+- A start line still sets all four files, so old batches run unchanged, and run.json records each map by hash.
+This amends S1.15, which decided that a command needing what start loads fails with a clear message when it runs before start. With the shipped defaults, no command needs start any more.
+
+- Optional, shipped defaults (Recommended): A batch without start uses the shipped maps; a start line overrides them.
+- Required, as S1.15 decided: Every batch needs a start line, and the check reports a missing one before the run.
+
+**Answer:** Optional, shipped defaults (Recommended), amending S1.15; closing 01 open question 4
+
+**Q4 (02 OQ1).** 02 open question 1 · Does S2.08's fix apply to the legacy reader?
+- S2.08 decided to add every id of a box to the node the box resolves to.
+- S2.27 decided to read the old master the way FuSION 1 does, so the published runs can be re-run and compared like for like.
+FuSION 1's graph 2 includes S2.08's loss: in the old master read at threshold 1 (the published runs), 125 ids that the master's non-indirect relations reach are in no node. As designed, the legacy reader reproduces graph 2 exactly, loss included (3,100 nodes, 7,400 edges, every binding equal). The raw-KGML pipeline has the fix either way.
+
+- Keep the loss (Recommended): Legacy reads reproduce graph 2 exactly; S2.08's fix applies to the raw pipeline only.
+- Apply the fix: The 125 ids join their boxes' nodes, and legacy reads no longer match the published runs.
+
+**Answer:** Keep the loss (Recommended)
+
+## 164 · Poll · 2026-11-15 12:48
+
+Legacy reads and the FSC, getting KGMLs, starting from a saved network, and keys moved by S2.08 and S2.11. Before the poll, Claude read KEGG's REST API page (https://www.kegg.jp/kegg/rest/) for its terms, and checked that each published b10 run's FSC (hsa3725 JUN, hsa1843 DUSP1, hsa2354 FOSB) is a line of its run/exception_file.txt.
+
+**Q1 (02 OQ8).** 02 open question 8 · S2.13 against S2.27 on legacy reads.
+- S2.13 adds the FSC being tested to the exception set in every run.
+- S2.27 reads the old master the way FuSION 1 does, so published runs can be compared like for like.
+In 24 of the 58 one-file mff … y batches whose FSC and exception file are known, the FSC was not an exception id. Examples are NFKB1 (hsa4790) and ERK1 (hsa5595) in runs/egf_hela/experiment/. FuSION 1 forced the FSC's whole family node there: NFKB1 sits in the 4-gene NF-κB node, and ERK1 in a 6-gene MAPK node with MAPK9 to MAPK13.
+Unchanged FuSION 1 batches name no FSC (01.C17), so they keep their own exception file and reproduce FuSION 1 either way, with the check's note (2A.9). This question decides legacy reads whose FSC is known: a FuSION 1 batch rewritten with fsc=, or a 2.0 or frontend run on the old master. The three published b10 runs are unaffected, because each FSC (JUN, DUSP1, FOSB) was already in its exception file.
+
+- Follow S2.13 (Recommended): A known FSC gets its own node in legacy reads too; the runs that forced a non-DE FSC's family are not reproduced.
+- Legacy exception: Legacy reads use FuSION 1's exception set without the FSC, which keeps the RAS trap for a non-DE FSC.
+
+**Answer:** Follow S2.13 (Recommended)
+
+**Q2 (02 OQ6).** 02 open question 6 · Getting KGMLs. S8.31 decided not to ship KGMLs. 2.0 ships a list of bare pathway ids that resolves against the user's own KGML folder (02.C12). Nothing in 2.0 fetches KGMLs: FuSION 1's downloader is an auxiliary Python script outside the live build, and decision 0004's scope (live functionality only) leaves it out. A new user therefore needs a KGML folder before the first run. KEGG's REST API (rest.kegg.jp) is 'made available only for academic use by academic users' and asks for at most 3 calls a second.
+
+- Documentation only (Recommended): The user guide says how to get KGMLs, and the check before a run names every listed pathway missing from the folder.
+- A fetch command: For example kgml_fetch list=… out=…, downloading from rest.kegg.jp at 3 calls a second. This adds scope, network access, and KEGG's academic-only terms for users.
+
+**Answer:** Documentation only (Recommended)
+
+**Q3 (2A.4 saved).** Cross-section row 2A.4 · Starting from a saved network. Three sections design it:
+- 01.C6: load <file>;
+- 02: rgx on a FuSION network file compares the file's recorded settings and exception set with the run's, and rebuilds from embedded sources when they differ;
+- 03: an mff argument from_saved=, plus 03.C7 (a network file in an mff list).
+Proposed:
+- load restores a saved network exactly as saved (decision 0019's start from a saved step);
+- rgx keeps 02's compare-and-rebuild, which calls 03's split when the settings or exception set differ;
+- from_saved is dropped, since rgx and a network file in an mff list cover it.
+
+- load exact, rgx rebuilds (Recommended): As proposed; mff loses from_saved.
+- Keep from_saved as well: Three ways to start from a saved network, two of them in mff.
+
+**Answer:** load exact, rgx rebuilds (Recommended)
+
+**Q4 (03 OQ2).** 03 open question 2 · Keys moved by S2.08 and S2.11. Both fixes were decided on other grounds (lost genes; reachability and signs). Measured on the real runs, they also change which genes form a node:
+- recovered glutamate-receptor ids join a 7-gene node and a 4-gene node into one of 18 genes;
+- the hsa04010 NF-κB box, reached only through indirect relations, no longer joins NFKB2 and RELB to NFKB1 and RELA;
+- BAK1 and BAX become two nodes;
+- GNAL, GNAO1, HK1 to HK3, HKDC1 and VDAC1 leave the reference run's network;
+- in the 87- and 90-pathway runs, the receptor node loses TFG, TPM3, TPR, CCDC6 and NCOA4. Its key moves from hsa10342 (TFG) to hsa1436 (CSF1R), and its complex from c_s_hsa10342_c_e, which FuSION 1's solution files name, to c_s_hsa1436_c_e.
+Proposed:
+- record these as expected differences (decision 0023);
+- let S5.06 report any line of an old node or edge file that names a moved key;
+- in Phase 3, match old and new graphs by member sets, as the comparison here did.
+
+- Expected, reported (Recommended): No aliases; S5.06 reports lines that name old keys.
+- Old keys as aliases: Each node also answers to its FuSION 1 key, which needs FuSION 1's union replayed beside every merge.
+
+**Answer:** Expected, reported (Recommended)
+
+## 165 · Poll · 2026-11-15 12:51
+
+Section 03, first group: how mff learns the source, target and FSC, old batches' FSC, the overrides that reach the exception set, and the Relaxed override. Before the poll, Claude read the reference batch's pathz3 and node-file lines (runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr025/egfr_cxcl8_fsc_jun_b10_nr8_er8_gsea_fdr025.batch, lines 195-252).
+
+**Q1 (3A.1 facts).** Cross-section row 3A.1 (01.C17 against 03.C1) · How mff learns the source, target and FSC for the exception set (S1.17, S2.13, S8.22).
+- 01.C17: the check collects them for each point from the batch's own later fb_rch and pathz3 lines (BatchFacts) as defaults for mff's source=, target= and fsc=; an explicit argument wins. In the default pipeline and in an FSC sweep, each id then appears once, on the line that uses it, and each sweep point gets its own exception set.
+- 03.C1: run parameters, a header line such as 'params source=hsa1956 target=hsa3576 fsc=hsa3725' whose values default every argument of the same name in mff, fb_rch and pathz3.
+Proposed: 01.C17. 03.C1's arguments stay and default to 01's facts, and run parameters become an alternative. If 03.C2 is accepted, the look-ahead also collects the confirmed up and down lists.
+
+- 01.C17's look-ahead (Recommended): Defaults come from the batch's later lines; explicit mff arguments win.
+- Run parameters (03.C1): A new params line, stated once, whose values default every same-named argument across commands.
+- Explicit arguments only: Every mff line names source, target and fsc; the check warns when a later pathz3's FSC is not kept apart.
+- Split at the corridor: Merge without exceptions and let fb_rch split them out, which needs the FSC at fb_rch too.
+
+**Answer:** 01.C17's look-ahead (Recommended), settling 01.C17 and 03.C1
+
+**Q2 (03 OQ1).** 03 open question 1 · FuSION 1 batches never name their FSC. The reference batch writes it into node files with exec lines after mff: 'exec echo $NODE_TO_TEST_FOR_SIGNIFICANCE >> $ESSENTIAL_NODES_FILE_WITH_FSC' (and the active and non-relaxed files) for the with-FSC pathz3, and '> $AVOID_NODES_FILE_WITHOUT_FSC' for the without-FSC one. As designed, such a batch keeps its own start exception file, which reproduces FuSION 1, and the check's note (2A.9) says the FSC is unknown and that naming it (fsc=) applies S2.13. Should section 01 instead recognise this pattern, so that old batches get S2.13's fix too? Recognising it means reading shell echo lines before they run. 24 of the 58 batches with a known FSC would change, because their FSC was not an exception id.
+
+- Keep as designed (Recommended): Old batches keep their exception file; the check's note names the gap and the fix.
+- Recognise the pattern: The check reads the exec echo lines that fill the two pathz3 lines' node files, and takes the shared id as the FSC; only template-shaped batches benefit.
+
+**Answer:** Keep as designed (Recommended), closing 03 open question 1 and 01 open question 5
+
+**Q3 (3A.13 E).** Cross-section row 3A.13 (03.C2 with 04.C4 and 04 open question 4) · Which overrides reach the exception set E.
+- 03.C2: genes the solve takes as confirmed up or down (S5.07; the frontend's Above Up and Below Down overrides, S8.15) join E with the reasons confirmed_up and confirmed_down. Otherwise a confirmed gene inside a family box marks the whole box (S2.03). Since 2026-11-09, 20 candidate batches (r7 to r26) have edited the PHLDA1 copy by hand so that PHLDA1 counts as up; a confirmed-up override can replace that edit only if confirmed genes are split out. This amends S8.22, whose list of E's sources leaves them out.
+- 04.C4: Not DE is applied in cudf, before classification. The gene becomes none, so S3.08's conflict check skips it, and it stays out of the lists, the observations, E and the preview, exactly like a gene between the thresholds. This narrows S3.08's stop to genes the user has not overridden.
+
+- Both as proposed (Recommended): Confirmed genes join E (amends S8.22); Not DE applies in cudf first (narrows S3.08).
+- Confirmed genes stay merged: E stays as S8.22 lists it; Not DE as proposed. A confirmed gene in a family box marks the whole box.
+- Not DE after the check: Confirmed genes join E, but a gene whose lines conflict stops the run even when marked Not DE.
+
+**Answer:** Both as proposed (Recommended), settling 03.C2 (amending S8.22) and 04.C4 (narrowing S3.08); closing 04 open question 4
+
+**Q4 (Relaxed).** 04 open question 6 and 10 open question 5 · The Relaxed override and the relaxed-edges file have no target. S8.15 keeps the GUI's per-gene Relaxed column and passes 'every kind pathz3 accepts'. S8.16 keeps five edge files, one of them Relaxed Edges. But S5.05, decided earlier, dropped pathz3's relaxed-nodes and relaxed-edges inputs, which FuSION 1 read and ignored (every batch passed the empty file). Proposed: the frontend offers neither. The override dialog keeps Above Up, Not DE, Below Down, Active, Inactive and Non-relaxed, and the edge files are additional, essential, avoid and non-relaxed.
+
+- Drop both (Recommended): Follows S8.15's own rule, since pathz3 no longer accepts them.
+- Give them a meaning: A new solve constraint, such as forcing a node or an edge to be relaxed, designed in section 06.
+- Keep as no-ops: Shown and written as in FuSION 1, with no effect on the solve.
+
+**Answer:** Drop both (Recommended), closing 04 open question 6 and 10 open question 5
+
+## 166 · Poll · 2026-11-15 12:53
+
+Section 03, second group: the shared store, what invalidates reuse, single KGML reads, and duplicate pathway ids in a list.
+
+**Q1 (3A.2 store).** Cross-section row 3A.2 (03.C3 with 09.C13 and 03 open question 3) · A shared store for merges. S2.22 decided that runs on the same pathways share one merge. Proposed, three tiers:
+- memory, held by the batch interpreter for one process (sweeps);
+- one store per user in the platform's cache directory (~/.cache/fusion on Linux, ~/Library/Caches/FuSION on macOS, %LOCALAPPDATA%\FuSION\Cache on Windows). It is content-addressed and written once under a temporary name, then renamed. It is never evicted automatically. cache_dir or FUSION_CACHE_DIR moves it, and cache=false and builds with uncommitted changes bypass it;
+- each run's merged_graph.xml, which embeds its sources.
+Under runs/, 129 merged graphs have only 19 distinct contents. In 2.0 a hit saves only tens of milliseconds, so the case for the store is S2.22, not speed. 03 open question 3: S1.26 and S8.21 put every output of a run in its own directory. The store is read as a cache, not an output: every run keeps its own copies, so deleting the store loses nothing. If that reading is wrong, the store amends those items.
+
+- Store as a cache (Recommended): Three tiers as proposed; the store is not an output, so S1.26 and S8.21 stand.
+- No shared store: Reuse only within a process and by starting from a saved network; a new batch on the same pathways rebuilds.
+- Store in the runs root: <root>/.fusion-store, shared by everyone who uses that root, such as a lab server's users.
+
+**Answer:** Store as a cache (Recommended), settling 03.C3 and 09.C13; closing 03 open question 3
+
+**Q2 (3A.3 keys).** Cross-section row 3A.3 (03.C8 with 09.C5, 09 open question 5 and 06.C18) · What invalidates reuse across FuSION versions.
+- The merge store (03.C8) keys each entry by the SHA-256 of a rules-version line, section 02's build settings, the id map's digest and each input's SHA-256. Paths, list order, E, the label maps and FuSION's version stay out, so a release that changes no merge rule keeps its entries. A forgotten version bump is caught by the golden test, and builds with uncommitted changes never touch the store.
+- Resume (09.C5) reuses a parent run's step when its fingerprint matches: command, build id, result-changing settings and input hashes. With the build id in it, a run stopped under one build and resumed under another reuses nothing, and a 40 h solve is redone (09 open question 5). 06.C18 follows: a resumed solve always runs the same Z3 version, since the build pins Z3.
+Proposed: keep both, and state the rule once in 09: the store keys on rules versions, and resume fingerprints on the build id.
+
+- Both as proposed (Recommended): The store keys on rules versions, and resume on the build id, so a resume never mixes builds or Z3 versions.
+- Result versions for resume too: Each module raises a result version by hand, so a resume across an upgrade keeps finished steps, trusting every change to raise it.
+- Build id for the store too: Every release starts an empty store, which is safe even if a rule changes without a version bump.
+
+**Answer:** Both as proposed (Recommended), settling 03.C8, 09.C5 and 06.C18; closing 09 open question 5
+
+**Q3 (03.C5).** 03.C5 · A single KGML read is a one-file merge. This amends S2.07's 'keep' for single-file reads. Proposed: rgx on a KGML, and a one-file mff, run the same union and split as any merge. Ids that sit in two boxes of one pathway then share a node, as they already do after a merge of two or more files. FuSION 1's single-file read makes one node per box key, with the first claim winning for an id in two boxes (S2.03). In the 167 KGMLs, 309 ids sit in two different boxes of the same pathway, in 71 files. Only the two auxilliary/comparison_results batches read a single KGML (the test file mapk.xml). FuSION 1's 65 one-file mff batches read the legacy master, which the legacy reader handles apart.
+
+- One-file merge (Recommended): One rule and one code path for every graph built from KGMLs.
+- Keep FuSION 1's single read: One node per box key, with the first claim winning; a second code path.
+
+**Answer:** One-file merge (Recommended), amending S2.07
+
+**Q4 (03.C6+1.24).** 03.C6 with cross-section row 1.24 · Two KGMLs with one pathway id in a list. S7.07 decided that gsea fails on candidates that share a pathway id. Section 02's list reader proposed only a warning, for every list. 03.C6 proposes failing for mff too. Proposed: the one list reader fails before the run, naming both files, with one code, list.duplicate_pathway, for gsea and mff. The same file listed twice is still read once, with a warning. updated_pathways/xml_files/ and auxilliary/hsa_pathways_with_exp_score/ share 163 file names and ids (two with different genes), and the v12.5 copies have different scores, so a list that mixes them is almost certainly a mistake. No real list repeats an id.
+
+- Fail, one code (Recommended): As proposed, for both readers.
+- Warn and merge both in mff: The edges share one pathway id, and the provenance report cannot tell the versions apart; gsea still fails as S7.07 decided.
+
+**Answer:** Fail, one code (Recommended), settling 03.C6 and cross-section item 1.24
+
+## 167 · Poll · 2026-11-15 12:55
+
+Section 04, first group: the decimal grammar, repeated ids, what counts as a reported result, and what a reported result skips. Before the poll, Claude read 11.C5, 01.C15, 06.C3, 06.C15, 09.C14 and 09's open questions 2 and 7.
+
+**Q1 (3A.19 parse).** Cross-section row 3A.19 (04.C2 with 11.C5) · One decimal grammar. Proposed: a value or threshold counts only when the whole token matches [+-]?([0-9]+(\.[0-9]*)?|\.[0-9]+)([eE][+-]?[0-9]+)?. A value that does not match is skipped and reported (S3.04); a threshold that does not match is an error (S3.02). The same grammar serves values, thresholds, every real argument of the batch language and edge scores. It is parsed with fast_float 8.3.3 (header-only, MIT/Apache/BSL), the one locale-free, correctly rounded parser available on all three platforms; std::from_chars for doubles is missing from macOS's libc++ at the targeted version. This refines S3.02's 'finite number', so 0x1p0 is refused, and settles S3.03's prefix reading: FuSION 1's longest numeric prefix silently read '1,5' (a European spreadsheet's 1.5) as 1. No real input changes: all 6,372 value tokens of the five two-column files, and all 22,283 values of the probe table's HeLa.EGF.120 column, match.
+
+- One grammar, fast_float (Recommended): As proposed, for values, thresholds, real arguments and scores.
+- FuSION 1's readings: Values by longest numeric prefix (1,5 reads as 1), and thresholds in any spelling the C++ library takes.
+
+**Answer:** One grammar, fast_float (Recommended), settling 04.C2 (refining S3.02, settling S3.03's prefix reading) and 11.C5
+
+**Q2 (04.C3 repeats).** 04.C3 with 04 open question 5 · Repeated ids in a value file. Proposed:
+- By default, S3.08 as decided: every line is classified, and lines in different classes stop the run.
+- Where one value per gene is needed (GSEA's ranking, the suggestion, the preview, the explanation export), it is the value with the largest magnitude, the earlier line winning a tie.
+- repeats=max_abs reduces each id to that value before classification, for tables with several rows per gene (probes, transcripts, phosphosites), and reports the collapsed ids. For runs that ask for it, this amends S3.08: a gene's rows can no longer conflict.
+In the probe table, 1,359 of 3,054 genes have several rows (up to 11). With S3.08's default, 21 genes conflict at ±1.01, so cudf stops. Your pipeline's compute_lfc.py keeps the largest |LFC| per gene, and with it the probe table gives the EGF file. The first row gives 38 up genes instead of 43, the mean 31, and the last row 28; the last-row rule (FuSION 1's gsea and pex) drops JUN. Open question 5: GSEA has no thresholds, so it ranks the representative, and a batch that runs gsea without cudf only reports the repeats.
+
+- Largest magnitude + max_abs (Recommended): As proposed; the opt-in mode amends S3.08 for the runs that use it.
+- No collapse mode: Rows per gene are merged outside FuSION, and S3.08 applies everywhere; the representative is still the largest magnitude.
+- Last line, as FuSION 1: The representative is the last line's value, as FuSION 1's gsea and pex read it.
+
+**Answer:** Largest magnitude + max_abs (Recommended), settling 04.C3 (amending S3.08 for max_abs runs); closing 04 open question 5
+
+**Q3 (1.8 reported).** Cross-section row 3A.14 with item 1.8 (04.C5, 06.C3, 06.C15; 04 OQ8, 09 OQ2, 09 OQ7) · Which outcomes are 'reported results'. The sections used the word for different things. Proposed definition, stated once in 09: a reported result is a Report that skips the point's later steps and ends the run ok, with exit 0. There are three:
+- an empty corridor (S4.18);
+- an empty GSEA selection (S7.03);
+- by 04.C5, no gene past the thresholds (observations.none): cudf writes its two empty lists and succeeds. A file with no readable value stays the failure values.empty.
+Outcomes inside a solve are case statuses, not Reports, so the batch, the Pareto plot and the pages still run:
+- a case with no point (S6.21, plotted as 'no solution within bounds');
+- an infeasible case;
+- no DE gene in the corridor (06.C15, which settles S5.09's 'stop with a message');
+- an exhausted whole-solve budget (06.C3: a partial result, certified point by point and resumable).
+
+- As proposed (Recommended): Three Reports; outcomes inside a solve are case statuses, and the batch goes on.
+- No genes = failure: As proposed, except that observations.none stops the batch (S1.28), even in a threshold sweep.
+- Budget ends the run: As proposed, except that an exhausted budget ends the run like a stop request, with exit 3.
+- No DE gene = failure: As proposed, except that S5.09's stop halts the batch, even in a bound sweep.
+
+**Answer:** As proposed (Recommended), settling 04.C5, 06.C3 and 06.C15 and cross-section items 3A.14 and 1.8; closing 04 open question 8 and 09 open questions 2 and 7
+
+**Q4 (01.C15 skips).** 01.C15 with cross-section row 4A.6 · What a reported result skips. Proposed: after any reported result, every later line of that run or sweep point is skipped, each with a step_skipped event, and the run ends ok with exit 0. This follows S7.03 ('that run's later steps are skipped') for every reported result. For the empty corridor it goes beyond S4.18's words ('its solve is skipped'). Skipping only the steps that need the empty value would still run exec lines, which declare no inputs: in FuSION 1 batches, the 165 Pareto-plot lines read .dat files that the skipped solve never wrote. Their failures would turn a reported result into a failed run (S1.14, S1.28). In every corpus batch, the lines after fb_rch serve the solve and its plots.
+
+- Skip every later line (Recommended): One rule for every reported result; widens S4.18's wording.
+- Skip only dependent steps: S4.18's letter; exec lines still run and fail on the missing files.
+- Different rules: Only the solve is skipped after an empty corridor; every later step after an empty selection.
+
+**Answer:** Skip every later line (Recommended), settling 01.C15 (widening S4.18's wording) and cross-section item 4A.6
+
+## 168 · Poll · 2026-11-15 12:57
+
+Section 04, second group: threshold suggestion and number format, the histogram, the query mode, and value inputs. Before the poll, Claude read 10.C15, 01.C14 and 08's open question 3.
+
+**Q1 (04.C6 sth).** 04.C6 with 04 open question 2, 08 open question 3 and cross-section row 4A.7 · Threshold suggestion and its numbers. Proposed:
+- suggest_thresholds (short name sth) is a batch command that also answers the query mode. It prints S3.15's report, writes thresholds.tsv and thresholds.json, and draws the histogram when plot is given.
+- Its table gains a conflicts column (an addition to S3.15): the repeated ids that straddle a row's cut, where cudf would stop (S3.08). In the TNFα file, MAD k=2 and k=3 have one each; in the other real files every row has 0.
+- A suggestion reaches cudf as numbers, copied by the user or by the frontend's 'use this row' (S8.06).
+- Number format, between S1.27 and the later S3.15 and S7.17: numbers a user may copy into a batch (thresholds, suggestion rows) are printed exactly, so a copied row gives that row's counts. The batches rounded 3·SD = 1.0091697613825117 to 1.01 by hand. S7.17's GSEA statistics table keeps its three decimals, as a recorded exception.
+
+- As proposed (Recommended): An sth command with the conflicts column; copyable numbers exact; the GSEA table at three decimals.
+- cudf takes a criterion too: For example thresholds=sd0:3, computed per value file and recorded in run.json: a new feature with its own checks.
+- Fixed decimals as S3.15: The report keeps FuSION 1's fixed decimals, amending S1.27 for it.
+- No conflicts column: The table exactly as S3.15 printed it.
+
+**Answer:** As proposed (Recommended), settling 04.C6 (adding a column to S3.15) and cross-section item 4A.7; closing 04 open question 2 and 08 open question 3
+
+**Q2 (04.C7 hist).** 04.C7 · The threshold histogram. Proposed:
+- The 80 bins of S3.19 always go into thresholds.json.
+- gnuplot draws the PNG only when plot is given, in S3.19's style, through the shared gnuplot runner in core (2B.13).
+- A file whose values are all equal gets one bin over [v − 0.5, v + 0.5], so the plot is always written. FuSION 1 gave gnuplot an empty x range there and wrote a 0-byte PNG.
+- The frontend draws its own chart from the bins (Phase 5) and never waits for gnuplot.
+F1 kept gnuplot for plots, at about 0.06 s per PNG.
+
+- gnuplot on request (Recommended): The bins are always data; the PNG is drawn only with plot.
+- SVG written in C++: No gnuplot for this plot, but a second plotting path to keep in the same look.
+- Frontend only: Batches get no image.
+
+**Answer:** gnuplot on request (Recommended)
+
+**Q3 (3A.8 query).** Cross-section row 3A.8 with items 1.10 and 4A.2 (04.C8, 10.C15, 01.C14's --query; 04 open question 3) · The preview and other short queries. Proposed:
+- fusion --query reads one batch line on standard input and writes one JSON answer to standard output. The line is the exact cudf or suggest_thresholds line the frontend will put in the batch, or 2B.6's labels line for gene lookups (10.C15).
+- It runs the same library functions as the batch command, writes no files, makes no run directory and emits no events; log lines go to standard error. Only commands that need no run directory may run this way.
+- A1 is read as governing how runs are executed. Read-only calls that make no run directory (--check, --commands, --version, --stop, --query) are outside it, so 04.C8 no longer says it amends A1.
+The preview is then exact by construction (S8.14). A run per preview would leave a run directory for every pause in typing (S8.21). A process start costs about 1 ms, and a line on standard input is not re-split as a Windows command line.
+
+- Batch line on stdin (Recommended): As proposed; A1 is read as covering runs only.
+- JSON request on stdin: A second input format beside the batch language, as 01's draft had it.
+- One-line batch per preview: A1 read strictly: each preview is a run with its own directory, and dozens pile up per session.
+- Classify in Java: The frontend fetches the values once and classifies them itself: a second implementation of S3.06 to S3.08 and Not DE.
+
+**Answer:** Batch line on stdin (Recommended), settling 04.C8 and 10.C15 and cross-section items 3A.8, 1.10 and 4A.2; closing 04 open question 3
+
+**Q4 (04.C9 values).** 04.C9 with cross-section row 4A.13 · Reading value inputs. Proposed:
+- A value input is a file plus its reading arguments (id_column, value_column, id_map, repeats). Every command that reads per-gene values (cudf, suggest_thresholds, gsea) takes the same arguments.
+- The check before the run reads each distinct input once, and every command that names it shares the result (D1).
+- One file read with different arguments is two inputs. That is allowed, so two time points of one table can both be used; the warning values.read_two_ways names the arguments that differ.
+The r7 and r8 batches give gsea the original EGF file while cudf classifies the PHLDA1 copy, and that stays possible. On 4A.13 (S6.12, 'reuse the run's one LFC reader'): the explanation export uses the values the solve used (07.C12's reading) instead of re-reading its file, so it leaves 04.C9's list.
+
+- Keyed by file + arguments (Recommended): As proposed, with the read-two-ways warning.
+- One argument set per file: A mismatch stops the run before it starts, so two columns of one table cannot be used in one run.
+- A values command: Each input is declared once and named by later commands: new syntax that old batches do not follow.
+
+**Answer:** Keyed by file + arguments (Recommended), settling 04.C9 and cross-section item 4A.13
+
+## 169 · Poll · 2026-11-15 12:58
+
+Section 04, third group: encodings, cudf's optional outputs, and where output paths land. Before the poll, Claude read the decisions of S1.26, S8.21 and S3.01, and 01.C2.
+
+**Q1 (04.C10 enc).** 04.C10 · Encodings and line ends in value files. Proposed: the reader also accepts a lone CR as a line end and drops a UTF-8 byte-order mark at the start of the file. A UTF-16 byte-order mark or a NUL byte is the failure values.encoding, with a message naming the cause. This extends S3.03 (LF or CRLF line ends, ids taken verbatim, a lone CR read as whitespace). No real file is affected: the five real two-column files have LF (3) or CRLF (2) and no byte-order mark or NUL, and neither does the probe table. Windows and Mac tools produce all three cases: Excel's 'CSV UTF-8' starts with a byte-order mark, its 'Unicode Text' export is UTF-16, an .xlsx file is a ZIP archive with a NUL as its sixth byte, and classic Mac text uses lone CRs. Under S3.03 as written, each of these fails without a message: a lone-CR file reads as one line and one gene, a byte-order mark makes the first id match nothing, and UTF-16 reads as garbage.
+
+- Extend S3.03 (Recommended): Lone CR and UTF-8 byte-order mark accepted; UTF-16 and binary files refused with a named cause.
+- S3.03 as written: LF or CRLF only, ids verbatim, as in FuSION 1.
+
+**Answer:** Extend S3.03 (Recommended), extending S3.03
+
+**Q2 (04.C11 outs).** 04.C11 · cudf's outputs in the named form. Proposed: in the named form, up_out and down_out may be left out; the lists are then up_reg and down_reg in the step directory. The positional form keeps its five required arguments. This extends S3.01, which has all five required (decision 0018 added the named form). FuSION 1 batches name the list paths only to keep runs apart in the launch directory, and with this the frontend's generated batches need no paths for the lists.
+
+- Optional when named (Recommended): Omitted outputs land in the step directory; explicit paths still work.
+- Always required: Both outputs named in every form, as S3.01 has them.
+
+**Answer:** Optional when named (Recommended), extending S3.01
+
+**Q3 (2B.3 outputs).** Cross-section rows 2B.3 and 4A.11 (04 OQ7, 08 OQ8, 01.C2) · Where an output path argument lands: cudf's up_out and down_out, gsea's shortlist, wgx's file, add's output, a report, a pathz3 prefix. S1.26 and S8.21 put every output of a run in its own directory. But FuSION 1 batches name outputs by absolute paths into their own folders ($WRITE_DIR/up_reg), and later exec lines read them there: the reference batch cats cudf's $UP_REG_FILE and $DOWN_REG_FILE from $WRITE_DIR. 01.C2 resolved relative output paths against the batch file's directory, which is outside the run directory for command-line runs. Proposed, owned by 09:
+- a relative or omitted output path lands in the step's directory;
+- an explicit absolute path is honoured as well: the file is also kept in the step directory, and both are recorded in run.json;
+- 07's site export is the one other write outside the run directory, as an explicit exception;
+- 01.C2's relative-path rule then covers inputs only.
+
+- Step dir, absolute also (Recommended): Every output is in the run directory; an absolute path also gets the file, so old exec lines keep working.
+- Redirect everything: Absolute output paths are rewritten into the step directory, so old batches whose exec lines read them there break.
+- Paths as given: Outputs go where the batch says, relative to the batch file, so the run directory may lack them (against S1.26 and S8.21).
+
+**Answer:** Step dir, absolute also (Recommended), settling cross-section items 2B.3 and 4A.11 as the reading of S1.26 and S8.21; closing 04 open question 7 and 08 open question 8
+
+## 170 · Poll · 2026-11-15 13:01
+
+Section 05, first group: when trimming happens, simple-path pruning, complexes of an excluded or avoided gene, and the id checks. Before the poll, Claude checked runs/egfr_cxcl8_jun_b10_nr8_er8/run/temp_wo_solutions.txt for complexes containing hsa3725 (none) and the reference run's merged graph (one, c_s_hsa2099_hsa3725_hsa8202_c_e), and read 06's avoid encoding (the node only).
+
+**Q1 (05.C2 trim).** 05.C2 · When the corridor trims self-loops, edges into the source and edges out of the target (S4.11, as S5.13 settled it). Proposed: the searches never follow those edges, and S4.09's keep rule runs on what remains. The corridor is then exactly the edges on walks of at most b edges that never re-enter the source and never leave the target.
+The literal reading of S4.11 (keep, then delete the three edge classes) leaves nodes that were kept only through those edges. They can never be present, yet an observed gene among them costs a node relaxation at every point. Measured: AREG in the full run (all 6 with-FSC and all 7 without-FSC points), HBEGF in egfr_cxcl8_jun_b7_nr8_er8, and DUSP1 and JUNB in experiment5.0 (with '1+' only). Trimming first moves every point of those curves down in n by 1 (by 2 for DUSP1 and JUNB). The shapes and the FSC comparison do not change (decision 0023). The corridor then equals the set the solve encodes in all 29 configurations measured. Keep-then-trim would show the user 112 nodes and 363 edges for the reference run, where the solve considers 108 and 358.
+
+- Trim during the search (Recommended): One corridor, equal to what the solve encodes; a reading of S4.11's 'trim'.
+- Keep, then trim: S4.11's literal order, with FuSION 1's counts; the unreachable relaxations stay.
+
+**Answer:** Trim during the search (Recommended), settling 05.C2 as the reading of S4.11's 'trim' (cross-section item 4B.25)
+
+**Q2 (05 OQ2).** 05 open question 2 · Nodes that lie on walks but on no simple path. After 05.C2, IRS2 in the reference corridor lies on no simple path from EGFR to CXCL8 within b = 10, and neither do PTK2B, IRS1 and PTK2. IRS2 is up-regulated and is the one relaxed gene of the with-FSC point (n 1, e 0), so pruning to simple paths would move that point to (n 0, e 0). But deciding whether a node lies on a simple path between two others is NP-complete in directed graphs. An exhaustive search took 0.3 s on the reference corridor and did not finish on the full run's corridor in 120 s. Pruning goes beyond S4.11's decision. Proposed: Phase 3 measures a capped exact pruning in C++ that keeps a node whenever the cap is hit, and the decision comes back to you with the numbers.
+
+- Measure in Phase 3 (Recommended): The walk rule for now; a capped pruning is measured, then you decide.
+- Walk rule, settled: No simple-path pruning; such nodes keep costing relaxations.
+- Prune now, capped: Design the capped pruning into 05 now, before any measurement.
+
+**Answer:** Measure in Phase 3 (Recommended)
+
+**Q3 (05 OQ3 cplx).** 05 open question 3 · Excluding a gene, and the complexes that contain it. As decided (S4.06, S4.12), exclusion works on nodes. fb_rch's exclude removes the gene's node but keeps every complex that contains it, so routes through, say, an AP-1 complex survive excluding JUN. The solve's avoid list (the without-FSC case) acts the same way: it constrains the FSC's node, not the complexes that contain it. The reference run's network holds one JUN complex, [ESR1 + JUN + NCOA3]. The full run's recorded without-JUN solutions use no JUN complex. If a knocked-out gene should also remove its complexes, that is a new rule, and it would apply both to exclusion (05) and to the avoided FSC (06). This is a biological judgement.
+
+- Also remove its complexes (Recommended): A complex cannot form without a member, so excluding or avoiding a gene removes or forbids every complex that contains it.
+- Nodes only, as decided: Complexes survive a member's exclusion or avoidance.
+
+**Answer:** Also remove its complexes (Recommended), a new rule for 05 (exclusion) and 06 (the avoided FSC), extending S4.06 and S5.17
+
+**Q4 (05.C3 ids).** 05.C3 · Checking fb_rch's ids. Proposed, two checks:
+- Before the first step, every source, target and excluded id of every fb_rch line must appear among the entry ids of the network inputs the batch names: the KGML candidate list, a merged-graph or legacy file, an edge table, or a saved network it loads. This uses 02's pre-run parse. An id found in none of them fails as corridor.id_not_in_inputs before anything runs (decision 0021).
+- When the step runs, S4.02's binding check runs again against the built network. An id can sit in a pathway that GSEA does not select, in an entry that no relation reaches, or only behind discarded indirect relations.
+Otherwise a mistyped target, such as hsa35766 for hsa3576, surfaces only after GSEA and the merge.
+
+- Both checks (Recommended): A typo fails before the run; the binding check still runs at the step.
+- Only at the step: As in FuSION 1; a typo surfaces after GSEA and the merge.
+
+**Answer:** Both checks (Recommended)
+
+## 171 · Poll · 2026-11-15 13:24
+
+Section 05, second group: corridor reuse, id failures, the saved form, and the bound.
+
+**Q1 (05.C4 reuse).** 05.C4 · A repeated fb_rch with the same arguments. Proposed: when an fb_rch has the same network (by content hash) and the same normalised request as an earlier corridor of the run, it registers that corridor again under the new graph id and prints 'Corridor, graph 4: same as graph 3'. It writes no files, and its run.json entry points at the first call's files. 93 of the 113 FuSION 1 batch files that call fb_rch call it twice with the same arguments, and S4.20 decided that the corridor is computed once and both solves use it. Time does not decide it, since a corridor costs milliseconds. Reuse gives one object and one set of files, so the two solves provably read the same corridor.
+
+- Reuse (Recommended): Same network and request: the earlier corridor is registered again.
+- Recompute: An equal but separate corridor, with identical files in fb_rch-2/.
+
+**Answer:** Reuse (Recommended)
+
+**Q2 (05.C5 ids).** 05.C5 · Id problems that stop the corridor step. Proposed: three failures (S1.28), reported before any search:
+- an excluded id that binds to no node;
+- a source or target that is also excluded;
+- a source and a target that bind to the same node.
+FuSION 1 warns and drops an unknown excluded id. For an excluded endpoint it fails later, with a message that blames the edge types. Decision 0021's reasoning applies: a typo must not silently change a run that may take hours. No batch excludes anything yet, so nothing old breaks. A source equal to the target is always a mistake, and an empty result in a sweep would hide it.
+
+- Fail on all three (Recommended): Each is a failure before any search.
+- Warn on unknown exclusions: As FuSION 1 for the first case: warn and drop. The other two fail.
+- Source = target is empty: That case becomes an empty corridor, a reported result, so a sweep carries on; the others fail.
+
+**Answer:** Fail on all three (Recommended)
+
+**Q3 (05.C6 saved).** 05.C6 · The corridor's saved form. Proposed:
+- A call that computes a corridor writes corridor.json and corridor_nodes.tsv (for people), beside 04's observations_match.tsv. corridor.json holds the request, the bindings, the network's content hash, counts, nodes with their distances ds and dt, edges with their attributes, and a digest.
+- Loading needs the network the corridor was cut from. That network is always the step before, saved in the same or an earlier run directory. The loader checks the content hash, maps keys back to indices and re-binds the given ids, without rerunning the search.
+This keeps one source of node and edge attributes and one id binding per run (S4.15). A resumed solve runs on the identical corridor (decision 0019), which the digest guarantees; recomputing would not, once a later version changes the search. Sizes: 60 KB, 348 KB and 586 KB for the reference run, the full run and the 82k graph's corridor.
+
+- corridor.json + node table (Recommended): As proposed; loading needs its network.
+- Self-contained file: Also embeds the members and the network's id lookup (53 to 116 KB more), so a solve could start from the corridor alone.
+- Request + digest only: Recomputed on load (at most 41 ms), which breaks once a later version changes the search.
+
+**Answer:** corridor.json + node table (Recommended)
+
+**Q4 (05.C7 bound).** 05.C7 · The solve's bound and the corridor's. Proposed: the solve takes its path bound from the corridor. A bound given to the solve, as FuSION 1's positional pathz3 line always gives one, must equal the corridor's, or the solve fails naming both (S4.21). 06's draft proposes the same check. Off-path edges count (S5.13): a corridor cut at b holds edges and observed genes that lie only on walks longer than b′. So solving at b′ on it differs from solving on a corridor cut at b′, which is what a user means by 'bound b′'. All 206 batch lines pass one $REACH_PATH_BOUND to fb_rch and pathz3, so no old batch fails. A larger solve bound cannot be met; FuSION 1 silently caps it. A bound sweep reruns fb_rch, which costs milliseconds.
+
+- Must be equal (Recommended): A different solve bound is a failure naming both.
+- Smaller b′ on the b corridor: As FuSION 1; results differ from a corridor cut at b′.
+- Smaller b′ cuts a sub-corridor: Correct, but a second way to cut a corridor that nothing needs.
+
+**Answer:** Must be equal (Recommended), settling 05.C7 and 06's matching check
+
+## 172 · Poll · 2026-11-16 04:26
+
+Section 05's last two choices, and section 06's first group: the cache and certification.
+
+**Q1 (05.C8 names).** 05.C8 · Names for fb_rch and its arguments. Proposed: the command keeps fb_rch, with corridor as its long name. Its arguments are graph, source, target, exclude, bound, edges_to_target (any, activation or expression, or 0, 1 or 2), skip_subtypes and observations.
+- edges_to_target is FuSION 1's own name: the help line's <edges_to_tgt>, and $EDGES_TO_TARGET in 111 batch files.
+- 'any' says what 0 does: every edge passes, subtype-less ones included.
+- The frontend's three labels ('No restriction', 'Activation edges only', 'Expression edges only', S8.09) map one to one.
+- Positional FuSION 1 lines keep working whatever the names (decision 0017).
+This also fixes the names in 01's table and in 09's and 10's examples.
+
+- As proposed (Recommended): fb_rch, long name corridor; edges_to_target with any, activation, expression.
+- to_target and both: The first draft's to_target, and 'both' for value 0, after $BOTH_ACT_EXPR_EDGES_TO_TARGET.
+- fb_rch only: The proposed arguments, with no long name for the command.
+
+**Answer:** As proposed (Recommended)
+
+**Q2 (05.C9 match).** 05.C9 · Where every observed gene falls. Proposed:
+- fb_rch takes the run's observations, by default the latest cudf result (01.C16's rule for value arguments), and calls 04's match_observations with the network and the new corridor.
+- It writes observations_match.tsv in its step directory. Each observed gene is in the corridor, in the network but outside the corridor, or not in the network (S3.12, S4.16). The corridor's parameters go in corridor.json, and the three counts also go on the console.
+- Observations never change the corridor.
+After a run that stops after the corridor (0019), a user sees which observations a bound or a pathway list leaves out, before a solve of hours. FuSION 1 printed only 'Up: 3 Down: 0' for the reference run's 45 listed genes. 2.0 prints 3 in the corridor, 28 outside it and 14 not in the network; for the full run, 20, 24 and 1.
+
+- At the corridor step (Recommended): fb_rch matches the observations and writes the report.
+- In the solve: The solve matches and reports; fb_rch takes no observations.
+
+**Answer:** At the corridor step (Recommended)
+
+**Q3 (06.C5 cache).** 06.C5 · Answering solver queries without calling Z3. Proposed: besides exact hits, the cache answers a query SAT when some model already found has counts ≤ the query on both axes, and UNSAT when the query is ≤ a proven-UNSAT point. The search's steps are unchanged; some queries just need no Z3 call.
+A SAT model proves its own counts. At the reference run's first check, (n 1, e 4), seed 42 gave a model with counts (1, 3), seed 7 gave (1, 1), and the non-incremental solver gave (1, 0), which answers all three of that solve's smallest-e checks. FuSION 1's own witnesses had lower counts than their point for 12 of 591 points. Monotone inference from exact answers alone would have answered 25 of the snapshot's 2,540 checks (13 s). Any larger gain comes from model counts and is unmeasured; Phase 3 can measure it on the reference corridors. The cache never changes an answer, but it changes which checks run, and so the solver's later history.
+
+- Monotone + model counts (Recommended): Answers inferred from proven points and from models' own counts.
+- Exact-point cache: FuSION 1's cache, with unknown answers added (S5.20).
+
+**Answer:** Monotone + model counts (Recommended)
+
+**Q4 (06.C6 certify).** 06.C6 with 06 open question 9 · Certifying frontier points. Proposed: a frontier point is certified when both of its lower neighbours inside the box are proven UNSAT, directly or by monotonicity. That is S5.19's 'depends on an unknown answer'. undecided_below names what blocks a point, and the box's undecided cells (at most 336) are listed.
+On FuSION 1's answers, this marks 23 of 154 frontier points in 8 of 34 bound-10 solves as uncertified, naming the blocker. For example, (8, 0) and (7, 1) of the full run are blocked by (7, 0). By this rule r0's without-JUN frontier has no certified point, and neither does any of the 7 points of r6's without-CREB1 frontier. That bears on conclusions already drawn from those runs.
+
+- Per point, blocker named (Recommended): As proposed: S5.19's rule, with undecided cells listed.
+- Per window: Flag a point when any unknown answer occurred in its window; this misses dependencies across windows.
+- Whole frontier: Flag the frontier when any answer was unknown; this says nothing about which point to re-check.
+
+**Answer:** Per point, blocker named (Recommended), settling 06.C6; 06 open question 9 surfaced to the user in the question
+
+## 173 · Poll · 2026-11-16 04:59
+
+Section 06, second group: the Z3 version and configuration, defaults and the TIMEOUT label, and parallel cases. Before the poll, Claude read 11.C2, 12.C15, 12.C16, 10.C13, 01.C4, 10.C20, 10.C21, 10's open question 6 and the cross-section check's dependency table (3B).
+
+**Q1 (11.C2 Z3).** Cross-section row 3A.26 (11.C2, with 12.C15's X11 and 12.C16's XD-15) · The Z3 version. Proposed: pin Z3 5.3.3 (2026-10-29, the last 5.3 release), record it in run.json, and change it only by a new decision. The pin is gated: before Phase 4, Phase 3's experiment X11 runs the real dumps through 4.8.12, 4.16.0 and 5.3.3 in both modes (about 5 h on 16 workers), and you re-decide if 5.3.3 is slower than 4.8.12 at the median.
+- Speed favours the old version so far. 4.15.3 took 1.48 times as long as 4.8.12 at the median on the tactic path and 1.24 times on the incremental path. On fdr050's harder dumps, 4.8.12 finished 10 of 14 within 600 s and 4.15.3 none. 5.x was not measured.
+- Answers agreed wherever both versions finished, but every SAT model differed, so witnesses change with any version.
+- Only the 5.x line claims identical output across platforms (5.1.0, 5.3.0), which G3 needs, and 4.8.12 has no Apple silicon build.
+
+- 5.3.3, gated on X11 (Recommended): As proposed; you re-decide if X11 finds it slower than 4.8.12.
+- 4.8.12: The fastest measured, as FuSION 1 links on Linux; it needs a source build for Apple silicon and lacks the cross-platform claim.
+- 4.16.0: The last 4.x release; FuSION 1's macOS build was tested with 4.15.4.
+- 5.4.1: The newest release (2026-11-11), one day after 5.4.0.
+
+**Answer:** 5.3.3, gated on X11 (Recommended), settling 11.C2 and cross-section item 3A.26
+
+**Q2 (06.C1 config).** 06.C1 · Z3's configuration. Proposed: keep FuSION 1's. Each case gets one QF_BV combined solver: an incremental solver first, then the non-incremental QF_BV tactic after the incremental phase limit. Bounds are pushed and popped as FuSION 1's search does, and base assertions are added once. Incremental state is worth up to six orders of magnitude here: from scratch, the reference run's without-FSC (n 2, e 6) took 258.0 s, against FuSION 1's 0.000127 s. The fallback matters too: in the b10 set, 53 checks (7 sat, 46 unsat) finished between 1 h and 4 h, after the 1 h incremental phase gave up. Bounds as assumption literals replayed the reference run in 53.5 s against 47.9 s, but never fall back to the tactic.
+
+- FuSION 1's configuration (Recommended): One combined solver per case, with push and pop.
+- Assumption literals: Bounds as check(assumptions): unsat cores over the two bounds, but no tactic fallback.
+- Fresh solver per check: Each check depends only on the formula, point and seed, but starts cold (258 s against 0.0001 s).
+
+**Answer:** FuSION 1's configuration (Recommended)
+
+**Q3 (3A.10 deflt).** Cross-section row 3A.10 with 4A.4 (06.C2, 06.C17, 10.C13; 10 open question 6) · Defaults for the box and the timeouts, and the TIMEOUT label.
+- 06 proposes backend defaults from the b10 runs: per-query timeout 4 h, incremental phase 1 h, and upper bounds 8 and 8 (06.C2, 06.C17). Your S8.06 poll (entry 091) declined exactly these values as frontend defaults.
+- Proposed: the backend keeps 06's defaults for the command line, and 06's 'why' stops citing S8.06, which decides the frontend's session defaults only. The frontend's default pipeline requires the three values, with no default, and offers 06's as a one-click suggestion (10.C13). The incremental timeout stays an advanced argument.
+- 06.C2's label: TIMEOUT when Z3's reason, read before pop, contains 'timeout'; stopped when this solve interrupted the check; UNDEFINED otherwise. FuSION 1 read the reason after pop, and so logged 'unknown' for real timeouts (06 open question 8).
+
+- As proposed (Recommended): Backend defaults 4 h, 1 h, 8 and 8; the frontend requires them, with a suggestion.
+- No backend defaults: The timeouts and bounds are required on every pathz3 line too.
+- Census defaults: 600,000 and 3,000,000 ms, the commonest pair (102 of 170 lines).
+- Frontend pre-fills: The frontend fills in 06's values, which makes them its defaults after all.
+
+**Answer:** As proposed (Recommended), settling 06.C2, 06.C17 and 10.C13 and cross-section items 3A.10 and 4A.4; closing 10 open question 6
+
+**Q4 (06.C4 cores).** 06.C4 with cross-section row 3A.9 (01.C4, 10.C20) · Parallel cases, and how many runs at once.
+- 06.C4: one thread and one Z3 context per case, all cases at once (threads=0; threads=1 restores FuSION 1's order). Within a case the search stays sequential.
+- On the b10 logs, overlapping the cases cuts 823,498 s to 640,102 s: the full run from 43,205 to 40,162 s, and fdr050 from 95,436 to 68,304 s. The cost is a second core and a second Z3 heap; FuSION 1's processes peaked at 0.3 to 1.9 GiB.
+- A run with an FSC then uses two cores (three with free), so both load formulas count cases, not runs: 01.C4's --jobs auto and 10.C20's queue limit of min(⌊logical CPUs / 2⌋, ⌊memory / 3 GiB⌋) cores, each case taking one.
+Per-query timeouts are wall-clock, so oversubscribed cores can turn a finished check into a timeout and change a frontier.
+
+- Parallel cases, count cases (Recommended): Cases at once; the job and queue limits count one core per case.
+- Sequential cases: As in FuSION 1; the formulas count runs.
+- Parallel windows too: The two binary searches and the child windows each get their own context, which loses incremental state (258 s against 0.0001 s per check).
+
+**Answer:** Parallel cases, count cases (Recommended), settling 06.C4 and cross-section item 3A.9 (01.C4's and 10.C20's formulas count cases)
+
+## 174 · Poll · 2026-11-16 05:00
+
+Section 06, third group: resume by journal, re-asking unknowns, resuming after a kill, and witness-dominated points. Before the poll, Claude read 09.C6, 09's open question 1, the decisions of S5.20 and S5.25, and A1's text in the skeleton.
+
+**Q1 (06.C7 resume).** 06.C7 with 09.C6 · How a solve resumes. Proposed:
+- The solve's state is journal.jsonl (every Z3 answer, with witnesses) plus case.json.
+- 09.C6 makes each record durable before the next check starts (fflush, then fsync or FlushFileBuffers), and a torn last line is ignored.
+- A resume imports the answers and reruns the search from the start, served from the cache, until the first unanswered query.
+The search is deterministic given its answers, so the answers are the whole state. Replay costs microseconds per answer, and a b10 case averages 18 checks. Nothing has to be written at the moment of a Stop, and the same file lets a run start from a saved solve without Z3 (D1, 0019). An fsync per check adds at most a few tenths of a second to a solve: the median check takes 1.40 s, and a solve has at most 28 checks.
+
+- Journal replay (Recommended): Durable per-check answers, replayed through the cache.
+- Serialise the search stack: Written at Stop: a second format that must match the algorithm exactly, and nothing survives a kill.
+- Pin windows by hand: As the resolve_wo_* batches do.
+
+**Answer:** Journal replay (Recommended), settling 06.C7 and 09.C6
+
+**Q2 (06.C8 retry).** 06.C8 · Re-asking unknown answers on resume. This would amend S5.20, which keeps cached TIMEOUT and UNDEFINED answers across a resume. Proposed: retry=automatic by default, under which a TIMEOUT answer is asked again when the resumed per-query timeout is longer than the one it timed out under. retry=unknown re-asks every unknown, and retry=none keeps them all (S5.20 as decided).
+S5.20 stops futile repeats: 13 of the b10 set's 17 re-checks timed out again, costing 187,161 s. But a timeout under 4 h says nothing about 24 h, which is how you re-solved r6's (2, 8). The other 4 re-checks settled their points (3 unsat, 1 sat). Among them were r2, r3 and r4's (n 2, e 6), unsat after 11,327 to 13,527 s.
+
+- retry=automatic default (Recommended): Re-ask a TIMEOUT only under a longer timeout; amends S5.20.
+- S5.20 as decided: Unknowns always stand on resume; only a new solve without the journal re-asks them.
+- Explicit retry only: No automatic re-ask, but retry=unknown on request.
+
+**Answer:** retry=automatic default (Recommended), amending S5.20; closing 06 open question 1
+
+**Q3 (06.C19 kill).** 06.C19 with cross-section rows 3A.4 and 4A.1 (09.C6, 09 open question 1) · Resuming after a kill. A1 says: 'Killing the process stays the last resort, with no saved state.' With 09.C6's durable journal, a killed or crashed run's finished checks are on disk anyway. Proposed: amend A1. A killed or crashed run's journal is used on resume like a stopped run's, and only the check in progress is lost; 09 and 10's Resume of killed runs then cite this choice. On 2026-11-12, the eight FSC tests r9 to r16 were all ended by SIGTERM at 18:06:28 (exit=143), 61 min after they started, with 1 to 8 checks done each, and nothing was resumable. FuSION 1's single solves ran for up to 15.9 h and 34.5 h, which a restart would repeat.
+
+- Amend A1: use the journal (Recommended): A kill loses only the check in progress.
+- A1 as decided: A killed run's solve restarts from the start, and so does 10's Resume of a killed run.
+
+**Answer:** Amend A1: use the journal (Recommended), amending skeleton A1; settling cross-section items 3A.4 and 4A.1; closing 06 open question 2 and 09 open question 1
+
+**Q4 (06.C20 dom).** 06.C20 · A frontier point dominated by its own witness. This would amend S5.25, which dropped the dominance filter because the search yields a non-dominated set. That holds with exact answers but not with unknowns. FuSION 1's witnesses dominated their own points 12 times in 591, all in runs/real_experiments/. For example, experiment_2_old without the FSC reported (n 15, e 1) with a witness whose counts are (7, 1). Proposed: the reported frontier is the set of Pareto-minimal counts among the witnesses of all SAT answers, so such a point is replaced by its witness's counts, with that witness. With exact answers this equals the search's points. A replaced point is proven SAT by its witness and is certified by 06.C6's rule like any other.
+
+- Replace by the witness (Recommended): The frontier is the Pareto-minimal witness counts; amends S5.25.
+- S5.25 as decided: Report the search's points and mark a dominated one dominated_by_witness, as 07's draft does.
+
+**Answer:** Replace by the witness (Recommended), amending S5.25; closing 06 open question 3
+
+## 175 · Poll · 2026-11-16 05:08
+
+Section 06, fourth group: partial solves, the FSC set and case names, extra solutions, and reuse. Before the poll, Claude read 06's free-case transfer rules (06-solve.md:340-362) and rows 1.5 to 1.7 of the cross-section check.
+
+**Q1 (06.C9 partial).** 06.C9 · Partial solves; decision 0019 asks for chosen points and single cases. Proposed:
+- cases= picks the cases;
+- the box restricts the search;
+- points=n,e;… asks only the listed points, in one context, with up to 'solutions' witnesses each and no search. This covers single-point re-solves such as your resolve_wo_n7_e0 and resolve_wo_n2_e8.
+Several pinned boxes would each build a context and start cold, while points= keeps one warm context and one cache.
+
+- cases, box and points= (Recommended): All three in the one solve command.
+- Box only: One solve command per pinned point, as in FuSION 1 batches, each starting cold.
+- A solve_points command: A separate command, which duplicates the solve's inputs and settings.
+
+**Answer:** cases, box and points= (Recommended)
+
+**Q2 (06.C10 FSC).** 06.C10 with cross-section rows 1.6 and 4B.29 · The FSC as a set, the free case, and the case names. Proposed: fsc= takes one or more ids, forced in or out together. The cases are in, out and free. The default is in,out with an FSC, and free without one (S8.12's 'single solve'). This extends S5.17's single FSC.
+The candidate runs use all three shapes: r3 and r4 avoid 2 and 4 nodes as one arm, r2 names two ids, r4's first phase is unconstrained, and r7 and r8 are the free arms against which r9 to r16 are read. With free in the same solve, 06.C12's transfers apply automatically.
+Names (1.6): in, out and free in arguments, file names and JSON (in_n1_e0.html, in.dat), with 07's labels ('with FSC (JUN)') for display only. 'both' leaves the named form (cases=in,out) and stays only as FuSION 1's positional pex token.
+
+- Set + free; in/out/free (Recommended): As proposed; extends S5.17.
+- One FSC id, in and out: S5.17 as decided; knockout sets and unconstrained arms are written as single-case solves with lists.
+- 07's with/without names: The set and free as proposed, but with, without and single in files and JSON.
+
+**Answer:** Set + free; in/out/free (Recommended), settling 06.C10 (extending S5.17) and cross-section items 1.6 and 4B.29
+
+**Q3 (06.C11 solns).** 06.C11 · Extra solutions. Proposed: solutions = k (default 1) keeps k distinct witnesses per frontier point. FuSION 1's 'explore' argument maps to it, and its 'count' argument is accepted and ignored with a warning. 166 of 170 census lines pass 1 and 1, which costs FuSION 1 two extra checks per point and prints an empty 'Solution 2'. With k = 1, the search's own model costs nothing. FuSION 1 never reported a count, only headers, so dropping count loses no output a batch reads.
+
+- One setting, solutions (Recommended): k witnesses per point; count is ignored with a warning.
+- Keep both: solutions, plus count_solutions to count up to c without keeping them.
+
+**Answer:** One setting, solutions (Recommended)
+
+**Q4 (06.C12 reuse).** 06.C12 · Reuse, for roadmap objective 4 (SMT-dump reuse to cut SAT/UNSAT calls). Proposed: no dump is ever read back. Reuse goes through answers and witnesses:
+- resume;
+- answers_from, for any earlier solve with the same fingerprint;
+- inside one solve with a free case, sound transfers to in and out. For example, UNSAT in free implies UNSAT in in at the same point, and a free witness with the FSC absent is an out witness at n − δ. With 05's new complex rule, that witness also needs the FSC's complexes absent.
+A dump answers only its own point, at the cost of parsing up to 2.9 MB (26.9 MB under runs/) and a cold solve (258 s against 0.0001 s). Answers are a few hundred bytes, and witnesses about 6 KB. The transfers are what you already do by hand: r7 and r8's witnesses settled six node tests (forcing PI3K, FAK, JUN, FOSB or CXCL1, and avoiding RAF), which were then not run.
+
+- Answers and witnesses (Recommended): Resume, answers_from and the free transfers; no dump is read back.
+- Read dumps of nearby points: Each dump answers only its own point, with a parse and a cold solve.
+- Unsat cores: Needs 06.C1's assumption alternative, which loses the tactic fallback.
+
+**Answer:** Answers and witnesses (Recommended), settling 06.C12 for roadmap objective 4; the free-to-out witness transfer also requires the FSC's complexes absent (poll 170's rule)
+
+## 176 · Poll · 2026-11-16 05:10
+
+Section 06, fifth group: debug dumps, the edge-bound clamp, the endpoints, and a deterministic budget. Before the poll, Claude read 12.C12, 10's open question 4, 01.C1, and 09's run.json example (platform fields).
+
+**Q1 (06.C13 dumps).** 06.C13 · Debug dumps. Proposed:
+- per-point dumps, as decided (S5.23);
+- variables named by case index, with a names.tsv that maps them to stable keys;
+- base.smt2 and session.smt2 per case, which replay the incremental solve.
+A per-point dump solved alone does not reproduce the in-process check (258 s against 0.0001 s). The session script does: a replay built this way reproduced FuSION 1's pattern of millisecond follow-up checks. Index names keep the dumps near FuSION 1's size, where key names would repeat 40-byte edge keys at every use.
+
+- Index names + session (Recommended): Per-point dumps, names.tsv, and a replayable session per case.
+- Key names, per-point only: Variables named by stable keys such as |p hsa1956|; the dumps grow, and there is no session replay.
+
+**Answer:** Index names + session (Recommended)
+
+**Q2 (06.C14 clamp).** 06.C14 · An edge bound above the number of counted edges. S5.09 left 'clamp or reject' open. Proposed: clamp both edge bounds to R_e, the number of counted edges, with a warning, as S5.07 does for nodes. Any point with e ≥ R_e is equivalent to e = R_e, so clamping loses nothing. Rejecting would stop a sweep whose fixed box of 8 meets a small corridor, such as S5.09's three-edge example.
+
+- Clamp with a warning (Recommended): As S5.07 does for nodes.
+- Reject: The solve fails with a message.
+
+**Answer:** Clamp with a warning (Recommended), settling S5.09's 'clamp or reject'
+
+**Q3 (06.C16 ends).** 06.C16 · The source and the target. Proposed: in the named form, the source and the target are present and active without being listed. Positional lines pass their lists as written, with the source still forced active, as in FuSION 1. Every FSC case of the batches lists both endpoints as essential and active (S5.17), and the default pipeline writes them (S8.25). Without presence, the empty assignment satisfies every path rule. The endpoints are exempt from node relaxation (S5.12), so forcing them active costs no node relaxation; it only fixes which edge signs at them are honoured.
+
+- Present and active (Recommended): Implied in the named form; positional lines as written.
+- Present only: Their activity is left to the solver.
+- Nothing implied: The batch or the frontend lists them, as FuSION 1's batches do.
+
+**Answer:** Present and active (Recommended)
+
+**Q4 (2B.8 rlimit).** Cross-section row 2B.8 with 12.C12 and 10 open question 4 · A deterministic per-check budget. Per-query timeouts are wall-clock (S5.21), so the same batch can give a different frontier on a busier machine, and tests cannot assert on them. Proposed:
+- 06 adds rlimit, Z3's resource limit per check: an unsigned count of Z3's own steps, where 0, the default, means none. It may change on resume, like the timeouts, and is recorded in run.json.
+- Tests that need unknown answers use it or the scripted oracle, never wall-clock timeouts, and Phase 3 checks that one limit gives the same answers on all three platforms.
+- Wall-clock timeouts stay the default for real runs.
+run.json already records the OS, the CPU model and the thread count, which answers the rest of 10 open question 4.
+
+- Add rlimit (Recommended): An optional deterministic budget beside the wall-clock timeouts.
+- No rlimit: Tests use small wall-clock timeouts, or keep unknown answers out of end-to-end tests.
+
+**Answer:** Add rlimit (Recommended), settling cross-section item 2B.8 and 12.C12; closing 10 open question 4
+
+## 177 · Poll · 2026-11-16 05:12
+
+Section 07, first group: result types, the run directory's layout, explanation pages, and the drawing library. Before the poll, Claude read rows 1.4, 1.20 and 1.21 of the cross-section check, 09.C2 with 09's directory layout, and 11.C11.
+
+**Q1 (1.5 types).** Cross-section row 1.5 · The solve's result types, case statuses and observation vocabulary. Sections 06 and 07 each defined:
+- result types: 06's Witness, FrontierPoint and Results, and 07's SolveResult, Witness and FrontierPoint;
+- case statuses: 06's complete, no_point, infeasible, no_de_gene, stopped and budget_exhausted, and 07's found, none_in_box, none_uncertified, partial and not_solved;
+- two vocabularies for an observed gene's role.
+Proposed:
+- 06 owns solve::Results and the case status, adding not_requested.
+- 07 builds results::SolveResult from it and maps 06's statuses to its display words.
+- One observation vocabulary: 07's seven words (counted, forced, exempt_endpoint, removed_with_fsc, outside_encoding, outside_corridor, not_in_network), which 06 writes into observations.tsv.
+- The batch layer calls publish_solve after the solve step returns or stops.
+
+- As proposed (Recommended): 06 owns the solve's types and statuses; 07 publishes from them; one vocabulary.
+- 06's types only: 07 publishes straight from solve::Results, with its display fields added there: one set of types, but the solve carries display fields.
+
+**Answer:** As proposed (Recommended), settling cross-section items 1.5 and 2A.3
+
+**Q2 (1.4 layout).** Cross-section rows 3A.15, 1.4 and 4A.12 (09.C2, 07.C1; 07 open questions 6 and 9) · The run directory's layout and the solve's results file. Proposed:
+- 09.C2: one directory per step, named by its command (fb_rch/, pathz3/), with -2, -3 for repeats. The top level holds run.json, events.jsonl, the run log, run.lock, inputs/ and debug/. A sweep's points are run directories of their own, in points/<NN>-<label>/.
+- 07.C1: one normalised results.json per solve, holding all its cases, with one table of every node and edge that a witness, an observation or the header refers to. Witnesses are sorted lists of keys and edge ids. The full JUN run's file is 137,225 bytes; per-point records would take 530,032, and one file per case 33 % more.
+- 1.4's placement: pathz3/results.json, with in.dat and out.dat beside it and 06's case directories (pathz3/in/, pathz3/out/) for journals and per-case files; plot_pareto/pareto.png; pex/explain/… with the library in pex/lib/; FuSION 1 text in pathz3/legacy/; debug files only in debug/<step>/. The run page, index.html, sits at the top level and is written once, when the run ends, so no committed output is ever rewritten.
+S5.30 asks for outputs 'named by solve case', which the case labels inside results.json and the per-case file names meet (4A.12).
+
+- As proposed (Recommended): Step directories, one results.json per solve, and the run page written once.
+- One results file per case: S5.30 read literally: pathz3/in/results.json and out/results.json, 33 % larger, and the FSC comparison needs its own file.
+- 07's results/ subtree: results/<solve>/…, with a run page rewritten after each pex and plot, which breaks 09's never-rewrite rule.
+- Flat directory: FuSION 1's flat run/, with prefixed names.
+
+**Answer:** As proposed (Recommended), settling 09.C2 and 07.C1 and cross-section items 3A.15, 1.4 and 4A.12; closing 07 open questions 6 and 9
+
+**Q3 (07.C2 pages).** 07.C2 · Explanation pages. Proposed: for each point, a view file <case>_n<n>_e<e>.json and a page shell of about 1 KB with the same JSON inline, plus one run page that lists every point. Pages fetch nothing, so they work from file://; Chrome and Edge block fetch of file:// URLs from a file:// page, and Firefox does by default. FuSION 1 users know one page per point (pex_incl_n2_e6.html), and each page loads only its own 40 to 64 KB. The inline copy costs 656 KB per run in the largest case measured, against FuSION 1's 9.6 MB of pages for the same run. The separate JSON is what Phase 5's display draws directly (decision 0027).
+
+- Page per point + JSON (Recommended): As proposed; pages work offline from file://.
+- One viewer page per run: Every point inline, with a picker: one file, but 656 KB loaded to show one point, and links become fragments.
+- HTML only: Half the bytes, but the Phase 5 display would parse JSON out of HTML or derive its own draw rules.
+
+**Answer:** Page per point + JSON (Recommended)
+
+**Q4 (07.C3 library).** 07.C3 with cross-section row 3A.22 (11.C11) and 07 open question 7 · The drawing library for the static page, and how it ships. Proposed:
+- vis-network's standalone build, pinned by section 11 (10.1.5 today: 653,713 bytes, Apache-2.0 OR MIT), one copy per results directory and one per site (S6.18), with its licence in LICENSES.txt. pex drew with vis-network, so S6.13 to S6.16's layout and drawing carry over with no porting risk. The view JSON does not depend on the library, so Phase 5 may choose another for the frontend.
+- 11.C11 compiles the page assets (vis-network.min.js, fusion-explain.js and .css, LICENSES.txt) into libfusion as byte arrays with their SHA-256, so they cannot go missing. The maps, the default pipeline, the fonts and the licences stay as files.
+Open question 7: S6.13's options were tuned on 9.1.2. If Phase 3's check of the full JUN run's 13 points shows a visible change under 10.x, 9.1.2 applies. The standalone build also injects its stylesheet through a <style> element, which a strict style-src in Phase 5 would have to allow.
+
+- vis-network 10.x, compiled in (Recommended): As proposed, with 9.1.2 as the fallback if Phase 3 sees a change.
+- Cytoscape.js: Richer styling and complexes as compound nodes, but S6.13's layout rebuilt on another engine.
+- Own SVG layout: No third-party code, but crossing reduction and layering written from scratch.
+- Assets as files: vis-network as proposed, but its files sit in the home and can be patched without a rebuild.
+
+**Answer:** vis-network 10.x, compiled in (Recommended), settling 07.C3 and 11.C11 and cross-section item 3A.22; 07 open question 7 goes to Phase 3
+
+## 178 · Poll · 2026-11-16 05:14
+
+Section 07, second group: the inactive-node cue, Graphviz, uncertified points on the plot, and the FSC verdict.
+
+**Q1 (07.C4 inactive).** 07.C4 with 07 open question 5 · A visual cue for inactive nodes on the static page. This would amend S6.16 and decision 0027, which leave how activity is drawn to Phase 5's display design, while S6.06 asks the page to show each node's activity now. Proposed, for the static page only:
+- keep the observation fill (S6.16), and draw a present, inactive node faded, at 45 % opacity through RGBA fill and border colours;
+- add 'inactive in this explanation' to the hover and to the legend;
+- the DOT export uses the same colours, and the frontend's display stays Phase 5's.
+Inactive present nodes are rare: a median of 1, and at most 6, per witness. Fading keeps the fill's meaning and the layout, so a down-regulated gene switched off through an inhibition shows as a faded orange node at the end of a red T-bar. With a hover-only cue, the 302 present nodes that S6.06 found missing from 569 FuSION 1 renders would now be drawn, but would look active until hovered.
+
+- Faded inactive nodes (Recommended): Amends S6.16 and 0027 for the static page only.
+- Hover only, as decided: Activity shows in the hover, as in FuSION 1, until Phase 5.
+- Inverted node: White fill, with the observation colour moved to a thick border.
+- Text badge: For example 'CDK2 (off)' in the label.
+
+**Answer:** Faded inactive nodes (Recommended), amending S6.16 and decision 0027 for the static page; closing 07 open question 5
+
+**Q2 (07.C5 dot).** 07.C5 with cross-section row 3A.23 · Static images through Graphviz. Proposed: static=svg on pex (or any psp line) writes DOT and SVG per point through Graphviz dot. It is off by default, dot is checked before the run only when a batch asks for it, and section 11 does not bundle Graphviz. S6.07 keeps the static export through dot; you turned down a Graphviz-free export (entry 076). No batch has ever called psp, and the interactive page plus its view file cover viewing. Graphviz is EPL-1.0 and its environment here is 312 MB, so bundling and signing it on three platforms for a rarely used feature is out of proportion. When it is used, it costs about 0.04 s per point of 86 nodes.
+
+- On request, not bundled (Recommended): Graphviz needed only when a batch asks for static images.
+- On by default: Every run needs Graphviz, and 11 bundles it on three platforms.
+
+**Answer:** On request, not bundled (Recommended), settling 07.C5 and cross-section item 3A.23
+
+**Q3 (07.C6 open).** 07.C6 · Uncertified points on the Pareto plot. Proposed: draw every uncertified point (06.C6) with an open marker of its curve's shape and colour, on the same halo, plus one key entry, 'open marker: not certified'. The plot is the run's headline figure, and S5.19 makes provisional points a result to show. The published site's hand-written takeaway for the JUN run had to explain in prose that its (n 7, e 0) corner was 'not machine-certified'. The gnuplot 6.0 prototype draws it in the same 0.15 to 0.18 s, and the rest of S6.23's look is unchanged.
+
+- Open markers (Recommended): Uncertified points visible on the plot itself.
+- FuSION 1's markers: Certification only in results.json, the console and the pages.
+
+**Answer:** Open markers (Recommended)
+
+**Q4 (07.C7 verdict).** 07.C7 · The FSC comparison. Proposed: when both FSC cases are solved, results.json, the console, the run page and the site card carry a verdict (identical, with_cheaper, with_costlier, mixed, essential, with_impossible, no_points), delta_n_at_e0, and whether the verdict is certified. S5.17 calls the comparison of the two curves the scientific result, and FuSION 1 knows nothing of it. Your compare_sweep.py and compare_candidates.py each recompute it, and the FDR sweep was summarised in exactly these terms: forcing JUN 'costs 1' at FDR 0.4, 'saves 1' in the full graph, is 'identical' at 0.3 and 0.5, and essential at 0.25. It costs O(P + E) on at most about 20 points, and the certification flag stops a provisional verdict from passing as settled.
+
+- Verdict in the results (Recommended): Computed once, with its certification.
+- Leave it to scripts: As now, with your own scripts.
+
+**Answer:** Verdict in the results (Recommended)
+
+## 179 · Poll · 2026-11-16 05:16
+
+Section 07, third group: the plot font, binding positional pex lines, FuSION 1's text outputs, and FuSION 1's moves of fixed-name files. Before the poll, Claude read 01.C11, 01.C12 and 01.C13.
+
+**Q1 (3A.21 font).** Cross-section row 3A.21 (07.C8 with 11.C10) · The plot font.
+- 11.C10: ship Liberation Sans 2.1.5, Regular and Bold (825,388 bytes, OFL 1.1), fetched at packaging by pinned SHA-256, with a fonts.conf that lists only the bundled fonts. Every gnuplot plot runs with FONTCONFIG_FILE pointing at that file and PANGOCAIRO_BACKEND=fc, so the same font files draw the plot on every platform. Liberation Sans is not installed by default on macOS or Windows, and fontconfig substitutes silently: fc-match returns Noto Sans for an unknown family here.
+- 07.C8: if the font is still not available (with a system gnuplot), print a warning before the first step and let gnuplot substitute. Fail only when gnuplot or its pngcairo terminal is missing, since a substitute changes only the look, and a 50-hour solve should not fail over a font.
+Whether the official Windows gnuplot build includes pango's fontconfig back end is confirmed in Phase 4 (11 open question 5).
+
+- Bundle font; warn if missing (Recommended): Same font files on every platform; a warning, not a failure, without them.
+- System font, warn: Use whatever 'Liberation Sans' resolves to (usually Arial on Windows and macOS, with the same metrics), and warn on substitution.
+- Missing font fails: The run fails before it starts.
+
+**Answer:** Bundle font; warn if missing (Recommended), settling 07.C8 and 11.C10 (cross-section item 3A.21; 11.C9 is polled with section 11)
+
+**Q2 (07.C9 bind).** 07.C9 with cross-section row 3A.30 (01.C12, 01.C13) · How positional pex and psp lines reach a solve's results. FuSION 1's pex reads temp_w_solutions.txt and the other text dumps that its pathz3 wrote. Proposed:
+- Each solve has a name: solve by default, or the prefix of a positional pathz3 line ($WRITE_DIR/temp_w).
+- A positional file argument such as $WRITE_DIR/temp_w_solutions.txt binds to the solve with that prefix, in memory or loaded from the run's saved step.
+- A file argument that matches no solve of the batch is an error before the run.
+All 51 pex lines in the batch census name files whose prefix is that of an earlier pathz3 line in the same batch, and no batch calls psp. 01.C13's reuse of files written earlier in the run then keeps only its other cases, such as wgx→rgx and cudf→pathz3, and pex needs no legacy reader (S6.02's one documented reader).
+
+- Bind by prefix (Recommended): No text dumps parsed back; an unmatched file is an error before the run.
+- Write and re-read dumps: Every positional pathz3 writes FuSION 1's text dumps, and pex parses them with a second, legacy reader; this would also re-render old FuSION 1 run directories.
+
+**Answer:** Bind by prefix (Recommended), settling 07.C9 and cross-section item 3A.30
+
+**Q3 (1.21 legacy).** Cross-section rows 1.21 and 4A.9 · FuSION 1's text outputs. E1 decided that FuSION 1's text formats are written only when a run setting asks for them. The sections differed: 07 used legacy_text=true, while 01 wrote them whenever a positional pathz3 names a prefix. Proposed: one setting, legacy_prefix, is the run setting E1 asks for. A positional pathz3 sets it from its prefix, and a named line sets it by name. It writes the prefix's text files (<prefix>_solutions.txt, <prefix>_relaxations.txt and the others) in pathz3/legacy/, and also at the prefix's own path when that path is absolute, by 2B.3's rule. 07's legacy_text merges into it. The real batch reads those files only through pex, at its line 269, which 07.C9 binds by prefix, so the files serve people and your own scripts.
+
+- One setting, legacy_prefix (Recommended): Positional lines set it implicitly; named lines set it by name.
+- Explicit setting only: 07's version: positional lines write the files only with legacy_text=true.
+
+**Answer:** One setting, legacy_prefix (Recommended), settling cross-section items 1.21 and 4A.9 as the reading of E1
+
+**Q4 (01.C11 moves).** 01.C11 with cross-section row 3A.29 and 07 open question 2 · FuSION 1's moves of fixed-name outputs. 879 of the corpus's 3,917 exec lines (22 %, in all 119 files) are exactly 'mv <name> <dest>' for PO.dat, limits_timefile.txt, edges_merged_filename, fb_rch, fb_rch_back or mylog.txt. 2.0 writes none of those names to the launch directory (S5.30), so under S1.14 and S1.28 every old batch would stop at its first move. Proposed: the interpreter recognises exactly these six moves before the shell and writes 2.0's matching output to <dest> instead, with a note, keeping its own copy in the run directory. This amends S1.14 for these six moves only.
+- limits_timefile.txt: the destination gets FuSION 1's rendering, through 07's write_legacy, not the new structured log, because your compare_sweep.py and compare_candidates.py parse that format there.
+- PO.dat gets the frontier, and edges_merged_filename the merge report (nothing, with a note, after a one-file mff over the old master).
+- fb_rch, fb_rch_back and mylog.txt are written only under --debug.
+
+- Recognise the six moves (Recommended): Amends S1.14 for these lines; the limits file in FuSION 1's format.
+- Fixed names for the shell: Written into exec's working directory, which would have to become the run directory, with the debug files written on every run.
+- Skip with a warning: The 136 inline gnuplot lines and 29 plot_po.sh lines then read files that were never written, and fail.
+
+**Answer:** Recognise the six moves (Recommended), settling 01.C11 (amending S1.14 for six moves) and cross-section item 3A.29; closing 07 open question 2
+
+## 180 · Poll · 2026-11-16 05:19
+
+Section 07's last group: family-size labels, pex's src and tgt, TSV for the pathway-source table, and how numbers are written in tables.
+
+**Q1 (07.C10 labels).** 07.C10 · Labels show family size. Proposed: wherever a node is named (pages, routes, plot titles, tables, console), a merged box shows its representative symbol plus the number of other members, such as MAP2K1+1 or RRAS2+5. A complex lists its members, as in [STAT1+6], and the hover lists every member with its LFC value. A merged box's label is its lexically smallest member (S2.03, S2.07), so FuSION 1 printed the 36-gene receptor-tyrosine-kinase box as TFG and the RAS family as RRAS2. Your candidate-run report had to add a hand-made relabelling table for this. In the reference run's one witness, 3 of 9 present nodes are boxes (RRAS2+5, MAP2K7+1, SOS1+1).
+
+- Symbol + count (Recommended): Boxes read as families everywhere; members in the hover.
+- Symbol alone: As in FuSION 1.
+
+**Answer:** Symbol + count (Recommended)
+
+**Q2 (07.C12 pex).** 07.C12 · Positional pex arguments that 2.0 already knows. The LFC part was settled in poll 168 (4A.13): the page draws the values the solve used. Proposed:
+- The positional pex form's src and tgt must name the solve's source and target; anything else is an error before the run.
+- lfc_file and pathmap_file are checked as readable (S6.12, decision 0021), and a warning names both files when the given LFC file differs from the run's by path and SHA-256.
+- Pathway names come from the run's one map, as S6.12 decided.
+All 51 census pex lines pass a src and tgt equal to their batch's connect pair, so the check costs no real batch anything. A typo would otherwise relabel the drawing: S6.13's one-column collapse comes from a src that names no drawn node. psp keeps free endpoints, since there src and tgt only set the path filter.
+
+- Check src and tgt (Recommended): A mismatch with the solve's endpoints is an error before the run.
+- Take them as given: As FuSION 1: src and tgt mark the source and target and root the levels.
+- Ignore with a warning: The four tokens are ignored.
+
+**Answer:** Check src and tgt (Recommended), settling 07.C12; closing 07 open question 8
+
+**Q3 (07 OQ1 TSV).** 07 open question 1 (cross-section row 4B.33) · S6.08's CSV against E1's TSV. S6.08 decided a pathway-source table as CSV with standard quoting. E1, decided later, lists the edge sources among its TSV tables. Proposed: follow E1 and write TSV, keeping S6.08's intent: fields never hold a tab or a line break, and lists use ';'.
+
+- TSV per E1 (Recommended): Like every other 2.0 table.
+- CSV per S6.08: Standard quoting, as S6.08 decided: one table in a different format.
+
+**Answer:** TSV per E1 (Recommended), settling cross-section item 4B.33 (S6.08 read through E1)
+
+**Q4 (1.20 numbers).** Cross-section row 1.20 with 08 open question 5 · How numbers are written in tables. 09's format_number wrote the shortest exact text from std::to_chars, which gives 0 and 1e-04. 08 proposed Python's repr layout (0.0, 1e-05, 0.0001) for every section's tables, as its examples use. Proposed: format_number writes the shortest exact digits in Python's repr layout. That is still exact, and it keeps 2.0's tables reading like FuSION 1's. JSON stays as nlohmann/json writes it.
+
+- Python repr layout (Recommended): Shortest exact digits: 0.0, 1e-05, 0.0001.
+- to_chars layout: Shortest exact text as std::to_chars writes it: 0 and 1e-04.
+
+**Answer:** Python repr layout (Recommended), settling cross-section item 1.20; closing 08 open question 5
+
+## 181 · Poll · 2026-11-16 05:21
+
+Section 08, first group: tie order, gene sets, and the relation share. Section 08's choices 08.C2 to 08.C12 had been left out of the planned polling order by mistake; Claude found them while checking each section's ledger rows and polled them next.
+
+**Q1 (08.C2 ties).** 08.C2 · How gene ids compare when values tie in GSEA's ranking. S7.05 decided 'by gene id, ascending' without naming the comparison. Proposed: byte order, as std::string's < compares: hsa1000 < hsa10000 < hsa999. S7.05's measured row (44, 79, 86 and 91 pathways at FDR 0.25, 0.4, 0.44 and 0.5) used the file's own order, which is byte order. The choice changes results. Against byte order, numeric ('natural') order:
+- puts 2,735 of the 3,054 genes at a different rank;
+- changes 159 of the 166 ES values, and moves NES by up to 1.231;
+- selects 45, 75, 87 and 90 pathways instead of 44, 79, 86 and 91, with 8 different at FDR 0.4.
+Byte order needs no rules for other id forms (symbols, Ensembl ids; decision 0020) and no locale.
+
+- Byte order (Recommended): Matches S7.05's measured row; no special rules.
+- Numeric-aware order: hsa999 < hsa1000 < hsa10000: reads more naturally for Entrez ids, but needs rules for leading zeros and for several digit runs.
+
+**Answer:** Byte order (Recommended), settling 08.C2 as the reading of S7.05
+
+**Q2 (08.C3 sets).** 08.C3 · Gene sets for other pathway sources. Proposed: a GSEA candidate is one network file in any format section 02 reads. Its gene set is every gene id the reader finds in that file: every type='gene' entry of a KGML (S7.08), or every gene endpoint of an edge list, in the run's id space after 02's id mapping. GSEA reads gene sets from nowhere else. S7.08 kept file-derived sets because every tested set is exactly one file that mff can merge, which holds for every format 02 reads. A GMT file of named sets (MSigDB or Reactome exports) would be a second input to keep in step with the network files; the old script's docstring says MSigDB's KEGG sets match only 90 of the 167 KGMLs.
+
+- Network files only (Recommended): Each candidate's genes come from its own file.
+- Also GMT files: Named gene sets, each paired with a network file to merge.
+- KGML only: As in FuSION 1, with other sources later.
+
+**Answer:** Network files only (Recommended)
+
+**Q3 (08.C4 share).** 08.C4 · Relation share: which relations count. The shortlist table's relation-share column (S7.08) shows how many of a pathway's genes sit on its relations, because GSEA scores membership while mff takes relations. Proposed: a gene counts when it is an endpoint, or a component of a group endpoint, of a relation that the merge keeps under the run's settings: S2.11 (indirect relations discarded by default) and S2.31 (ECrel kept by default).
+Of the 21,205 memberships, 17,904 are on some relation and 17,396 on a relation that the default merge keeps. The share changes for 76 of the 167 candidates, 21 of them among the 42 that FuSION 1 shortlisted at FDR 0.25. Chagas disease (hsa05142) has 102 of its 103 genes on some relation but 80 on kept ones; Amoebiasis (hsa05146) has 43 and 27 of 103.
+
+- Kept relations (Recommended): Relations the merge keeps under the run's settings.
+- Every relation in the file: As S7.08 measured; needs nothing from 02's settings.
+
+**Answer:** Kept relations (Recommended), settling 08.C4 as the reading of S7.08
+
+**Q4 (08.C5 column).** 08.C5 · Relation share: the column's form and place. Proposed: one column, relation_share, right after genes, written <genes on relations>/<set size> like the table's Tag % column ('80/103', '6/205'). The set size counts all the file's genes, ranked or not, as S7.08 counted them (21 of 143 for systemic lupus erythematosus). The a/b form keeps both counts visible, and size matters when reading a share: 2 of 3 is not 66 of 100. Nothing reads the table by position (S7.16), so a new middle column breaks no script.
+
+- a/b after genes (Recommended): Like Tag %; set size counts every gene in the file.
+- Decimal share: 0.777, which sorts more easily in a spreadsheet.
+- Two integer columns: Genes on relations, and set size, apart.
+- Ranked genes only: The set size counts only the genes GSEA scores.
+
+**Answer:** a/b after genes (Recommended)
+
+## 182 · Poll · 2026-11-16 05:25
+
+Section 08, second group: threads, all-zero draws, the permutation limit, and ties in |NES|.
+
+**Q1 (08.C6 threads).** 08.C6 · GSEA's threads. Proposed: one thread. The estimate for the real inputs is about 0.2 s on one thread, against 1.3 s for gseapy on 4 threads and 3.7 s on 1 (S7.19). Parallel walks would save about 0.1 s on 4 threads, and the random chain stays sequential either way. At 10,000 permutations, one thread takes an estimated 1.5 s, against gseapy's 11.6 s. One thread needs no pool, no thread-count setting and no test that thread counts agree.
+
+- One thread (Recommended): About 0.2 s on the real inputs.
+- Parallel blocks: Permutations split into blocks scored in parallel, with the same output bytes for any thread count.
+
+**Answer:** One thread (Recommended)
+
+**Q2 (08.C7 zeros).** 08.C7 · Draws whose hits all have value 0. Proposed:
+- When every hit of a draw has value 0, give each hit the step 1/m and log a warning with the number of such draws. This is fgsea's rule, which gseapy's own port of fgsea's calcGseaStat also uses.
+- When the FWER of a negative NES has no negative per-permutation minimum to compare with (0 of 0), write 1.0, as gseapy does for an undefined nominal p.
+These cases never occur on the real inputs: 145 of 3,054 values are 0.00, so a 15-gene draw of only zeros has a probability of about 10⁻²⁰. They can occur with other modalities where most values are exactly 0: at 80 % zeros, about 3.5 % of 15-gene draws. Copying gseapy's arithmetic gives an infinite step 1/W, a NaN walk at the first hit, and a NaN FWER written as an empty field. Phase 3's exact comparison with gseapy keeps such inputs out of its fixtures.
+
+- Define the cases (Recommended): fgsea's rule for all-zero draws, and 1.0 for an undefined FWER.
+- Copy gseapy's arithmetic: Byte-for-byte with gseapy even here, NaNs included.
+
+**Answer:** Define the cases (Recommended)
+
+**Q3 (08.C8 perms).** 08.C8 · Permutation count limits. Proposed: gsea.permutations accepts 1 to 100,000, and anything else fails as gsea.setting in the check. The null matrix takes 8·S·P bytes: 1.3 MB at the default, 133 MB at 100,000 for 166 sets, and 1.3 GB at a million. The cap turns a typo, such as an extra zero or two, into a message instead of a long run or a failed allocation. 100,000 is ten times the largest count S7.11 measured, and takes an estimated 15 s on one thread.
+
+- 1 to 100,000 (Recommended): A typo becomes a message in the check.
+- Any positive count: Limited only by memory.
+
+**Answer:** 1 to 100,000 (Recommended)
+
+**Q4 (08.C9 order).** 08.C9 · Order of pathways with equal |NES|. Proposed: pathway id, ascending, compared as 08.C2 compares gene ids, in the table, in the report and for top:N. FuSION 1 sorted with pandas' default, unstable sort, so equal |NES| had no defined order. Equal values need two candidates with the same ranked genes. None of the 167 candidates has such a twin, and the two closest |NES| on the real inputs differ by 4.2 × 10⁻⁶. Id order mirrors S7.05's gene-id rule and does not change when the list is reordered.
+
+- Pathway id (Recommended): Stable whatever the list's order.
+- Candidate list order: Changes when the list is reordered.
+
+**Answer:** Pathway id (Recommended)
+
+## 183 · Poll · 2026-11-16 05:27
+
+Section 08's last group: the tie warning, argument names, outputs that name an input, and two spec-text items.
+
+**Q1 (08.C10 warn).** 08.C10 with 08 open question 9 · GSEA's tie warning. S7.17 kept the report, and gseapy's tie warning with it: 'Duplicated values found in the ranking: 93.78% of genes. The order of those genes will be arbitrary, which may produce unexpected results.' S7.05 now orders ties by gene id, which makes the second sentence untrue. Proposed: keep the warning at warning level (stderr in the CLI), with gseapy's count (genes whose value occurs earlier: 2,864 of 3,054), and replace its second sentence with 'Tied genes are ordered by gene id.' This amends the wording S7.17 kept. The count still matters: the tie order alone moved NES by up to 1.37, and the FDR 0.4 shortlist by up to 9 pathways (S7.05).
+
+- Reworded warning (Recommended): Same count, true second sentence; amends S7.17's wording.
+- Events only: Dropped from the console; the count stays in events.jsonl (distinct_values).
+- gseapy's text as kept: Word for word, as S7.17 kept it, though its second sentence is now untrue.
+
+**Answer:** Reworded warning (Recommended), amending S7.17's wording; closing 08 open question 9
+
+**Q2 (08.C11 names).** 08.C11 · Names of gsea's arguments. Proposed: values, candidates, selector, shortlist and keep at positions 1 to 5 (S7.01), with seed and permutations by name only. These are also GseaArgs's field names. 'values' stays true when the values are not log-fold changes (decision 0020), and it is the name sections 01, 04 and 06 also use for the value file. 'candidates' and 'shortlist' are the terms S7.06 and S7.15 use. No batch file uses names yet; FuSION 1's names appear only in its help text.
+
+- values, candidates, … (Recommended): values, candidates, selector, shortlist, keep; seed and permutations by name.
+- FuSION 1's help names: log_fold_change_file, kgml_list_file, the selector, out_kgml_list_file and keep_gene_ids.
+- Shorter names: lfc, list, select, out and keep.
+
+**Answer:** values, candidates, … (Recommended)
+
+**Q3 (08.C12 clash).** 08.C12 · gsea outputs that name an input. Proposed: the check refuses a shortlist or table path that names the value file, the candidate list or a candidate file (gsea.output). This is the rule S3.10 set for cudf, extended to gsea, and it is what 2A.7's pre-run clash check by file identity (accepted in poll 158) does for every command. FuSION 1's script reads its inputs first and writes its outputs last, so 'gsea values.tsv list.txt fdr:0.25 values.tsv' replaces the value file with the shortlist, and an output path equal to the list replaces the candidate list, with no message.
+
+- Refuse in the check (Recommended): One comparison of resolved paths per input.
+- Allow it: As in FuSION 1.
+
+**Answer:** Refuse in the check (Recommended), settling 08.C12 through 2A.7's check
+
+**Q4 (08 text).** Two spec-text items from section 08, grouped:
+- 08 open question 2: reading gseapy's Rust core showed that two statements in S7.11 came from gseapy's Python reference code, not the core that made FuSION 1's numbers. For ES < 0 the nominal p counts null scores ≤ ES, not < ES, and NES uses ES itself as the mean when no null score has the needed sign. The FWER formula that stage 7 could not read is now known. Proposed: add a correction note to S7.11 (a correction of its text, not of its decision).
+- 08 open question 7: the report's second line says 'log-fold change', while decision 0020 allows values from other modalities. Proposed: keep the line as S7.17 decided, since every real run ranks log-fold changes, and let another modality's wording come with that modality.
+
+- Both as proposed (Recommended): A correction note on S7.11; S7.17's line unchanged.
+- Discuss separately: Name the item to take up on its own (via Other).
+
+**Answer:** Both as proposed (Recommended), closing 08 open questions 2 and 7
+
+## 184 · Poll · 2026-11-16 05:45
+
+Section 09, first group: run directory names, copying inputs, saving every step, and the stop file. Before the poll, Claude read 09.C1, C3, C4, C7 to C12 and C14 to C16, rows 1.13, 1.15, 1.18 and 1.19, and the Proposed lines of 01.C7, 01.C8, 01.C9, 10.C16, 10.C17, 10.C18, 11.C7, 11.C18, 12.C9 and 12.C11.
+
+**Q1 (09.C1 names).** 09.C1 with cross-section row 3A.24 (01.C7, 10.C18) · Run directory names. Proposed:
+- <label>_<YYYYMMDD-HHMMSS> in local time, claimed with one atomic mkdir, with -2, -3 on a collision. The label is reduced by 1.26's rule (accepted). A separate run id, r-<UTC time>-<8 hex digits>, goes in run.json, and the frontend keys on it.
+- 01.C7: the label and the root come from a 'run root=… label=…' line before the first step, overridden by --root and --label, and default to the batch file's stem and directory. --run-dir adopts a directory that the frontend made.
+- 10.C18: the frontend's label is the session's name, with the swept value appended for a sweep, and the session id goes in run.json through --tag session=<id>.
+FuSION 1 run directories are named by experiment, and the GUI's rerun under the same name deleted the earlier results (S8.21). Label first keeps an experiment's runs together, and the timestamp makes every name new. mkdir is atomic on all three platforms; the candidate set started nine runs in the same second.
+
+- Label + local timestamp (Recommended): As proposed, for 09.C1, 01.C7 and 10.C18.
+- Timestamp first: 20261112-184400_<label>, which sorts by time instead of by experiment.
+- Nested label/timestamp: One directory per experiment, one level deeper, against Windows' 260-character paths.
+- Label alone, -2, -3: Names that say nothing about when each run ran.
+
+**Answer:** Label + local timestamp (Recommended), settling 09.C1, 01.C7 and 10.C18 (cross-section item 3A.24)
+
+**Q2 (09.C3 inputs).** 09.C3 with cross-section row 1.13 · Inputs are copied into the run directory, and read once. Proposed:
+- Every input file outside the run directory is copied into inputs/ and hashed in the same read: the batch file, every named file and every member of a list such as the KGML list. Files the frontend put in the run directory are hashed where they lie. An input the batch makes itself (01.C12) is copied and hashed just before its step. Steps read only the copies, and run.json records each input's original path, size, SHA-256 and copy.
+- 1.13: copy and hash first, then the check parses the copy, and the step uses that parse, so the recorded hash is of the bytes parsed. The check-only mode still reads the originals.
+A run is then reproducible from its own directory after an input moves or changes, and immune to an edit during a run of up to 52 h. Cost: FuSION 1's inputs/ directories are 0.45 MB median and 15.2 MB at most, plus 6.85 MB for the 167 KGMLs; 15.2 MB is copied and hashed in 0.10 s. Against it: duplication across runs (16-fold in FuSION 1's runs/), and a run directory then holds KEGG files, so sharing a whole run directory shares KEGG data (S8.31's licence concern).
+
+- Copy, then check the copy (Recommended): Self-contained runs; each input read once.
+- Record only: Path, size and SHA-256, re-checked at every open; an old run cannot be redone once its inputs move.
+- Shared copy by hash: One copy of each distinct file in the store; a run then depends on a directory outside it.
+
+**Answer:** Copy, then check the copy (Recommended), settling 09.C3 and cross-section item 1.13
+
+**Q3 (09.C4 saves).** 09.C4 · Every step saves its output. Proposed: every step that produces a value (network, observations, shortlist, corridor, solve results) writes it to its step directory as it ends, and run.json records it with its SHA-256. There is no switch. The sizes are small next to the run times: merged networks are 1.44 MB median and 13.4 MB at most; a corridor about 0.3 MB; solve results 95 to 99 KB per case; GSEA's shortlist and table 75 KB. That is about 2 to 15 MB per run, against runs of 11 min to 52 h. Saving everything lets a failed run restart from its last good step (S1.28) and a stopped run resume (0019), without anyone having planned for it.
+
+- Save every step (Recommended): No switch; a few MB per run.
+- Save on request: A save argument or command, with the rest kept in memory.
+- Corridor and solve only: The two values that cost most to recompute.
+
+**Answer:** Save every step (Recommended)
+
+**Q4 (09.C7 stop).** 09.C7 · Stop through a stop file. Proposed:
+- A stop is requested by creating 'stop' in the run directory. A watcher thread checks for it every 0.5 s, and a batch run never reads stdin.
+- A stopped run ends with status stopped and exit status 3.
+- If the main thread has not ended 30 s after the request, the watcher writes run.json and calls the grace hook, through which the fusion executable ends the process. Nothing is lost, because the journal already holds every finished check.
+The file works however a run was started. None of the twelve launcher scripts under runs/ keeps a pipe to FuSION 1's stdin, a restarted frontend has lost any pipe, and section 10 uses none. Anyone can create the file: the frontend, touch, 'type nul >' on Windows, or 01's fusion --stop. It works the same on every platform (G3).
+
+- Stop file (Recommended): Polled every 0.5 s; exit status 3.
+- Stop line on stdin: Read by a watcher thread; it needs a pipe that the launchers and a restarted frontend lack.
+- Both channels: The file and a stdin line.
+
+**Answer:** Stop file (Recommended), settling 09.C7 (of A1's two channels, the file only; 10 open question 2)
+
+## 185 · Poll · 2026-11-16 05:47
+
+Section 09, second group: signals, liveness, events, and the run log.
+
+**Q1 (09.C8 signals).** 09.C8 with cross-section rows 3A.5, 4A.3 and 2B.19 (09 open questions 9 and 10; 11.C18) · Ctrl-C, termination signals and SIGHUP. Proposed:
+- The fusion executable, not the library, turns Ctrl-C and SIGTERM on Linux and macOS, and Ctrl-C, Ctrl-Break and the closing of its console on Windows, into the same stop request as the stop file. The handlers only set a flag that the watcher reads. A second Ctrl-C ends the process at once, with status 130.
+- SIGHUP is ignored on Linux and macOS, so a run outlives a closed terminal or a frontend that exits (10.C12). Console writes that then fail are dropped, since the run log keeps every line.
+- 11.C18: every Z3 solver gets ctrl_c=false, so a Ctrl-C during a check reaches only fusion's handler.
+Reading of A1: entry 107 chose the platform-neutral stop request over 'signals, plus a Windows path'. The stop file stays the one Stop mechanism, and the handlers are only another way to make the request. Command-line users press Ctrl-C, and kill, timeout and Java's Process.destroy() send SIGTERM; the eight candidate-set runs were ended by SIGTERM. A clean stop shows the run as stopped, not died, and 01's sweep coordinator relays a Ctrl-C by writing each point's stop file. The cost is about 40 lines of platform code.
+
+- Handlers request a stop (Recommended): A reading of A1, not an amendment; SIGHUP ignored.
+- OS defaults (strict reading): Ctrl-C and SIGTERM end the process at once: the journal survives, but the run shows as died, and the coordinator cannot relay a stop.
+
+**Answer:** Handlers request a stop (Recommended), settling 09.C8 and 11.C18 as a reading of A1 (cross-section items 3A.5, 4A.3 and 2B.19); closing 09 open questions 9 and 10
+
+**Q2 (09.C9 alive).** 09.C9 with cross-section row 3A.6 (10.C16) and 09 open question 6 · Knowing whether a run is alive. Proposed:
+- When fusion claims its directory, it creates run.lock exclusively, writes one line with its process id and run id, and holds an OS lock until it exits: fcntl on POSIX and LockFileEx on Windows, on one byte past that line. The OS drops the lock when the process ends for any reason, so a reader that can take the lock knows the process is gone.
+- The frontend tests it with FileChannel.tryLock() and reattaches to running runs after a restart (10.C16). A resume refuses a parent whose lock is held.
+Probed here: Java's tryLock() sees an fcntl lock but not an flock one. A heartbeat would misjudge a sleeping laptop or a slow network disk, and process ids are reused. Open question 6: on NFS without lock support, liveness falls back to run.json alone. Proposed: such a run root stays usable, with a warning at the start of the run that liveness cannot be shown.
+
+- Lock; NFS with a warning (Recommended): OS lock for liveness; a lock-less filesystem still runs, with a warning.
+- Lock; refuse such roots: A run root where the lock cannot be taken is an error.
+- Heartbeat file: Touched every 10 s, and a run is dead once it is a minute old.
+
+**Answer:** Lock; NFS with a warning (Recommended), settling 09.C9 and 10.C16 (cross-section item 3A.6); closing 09 open question 6
+
+**Q3 (09.C10 events).** 09.C10 · The event set (A2). Proposed: the lifecycle events in 09's table, a solve_check_started event before each solver check as well as 06's event after it, and progress events inside long steps, at most one a second per step. No heartbeat. Single checks run for up to 4 h, and once 34 h. With a start event the frontend can show which point is being checked and for how long, where FuSION 1's GUI showed only 'solving' for hours (S8.28). The file stays small: at most 28 checks per solve, so about 112 check events for two cases, and 150 to 200 lines (30 to 40 KB) per run. A heartbeat every 10 s would add 18,720 lines to a 52 h run and say nothing that the lock does not.
+
+- Start and end events (Recommended): Check start and end, rate-limited progress, no heartbeat.
+- A2's minimum: One event per finished check, and none when a check starts.
+- Add a heartbeat: An event every few seconds.
+
+**Answer:** Start and end events (Recommended)
+
+**Q4 (09.C11 log).** 09.C11 with cross-section rows 3A.16 and 1.15 (10.C17, 01.C8) · One run log, and the output of exec lines. Proposed:
+- <run name>.log in the run directory is always written. It holds every console line, warnings and errors included, each with its UTC time and level. Under the debug option (01.C8's --debug) it also holds the debug records, which never reach the console. The log setting renames it before the first step (S1.25).
+- 1.15: fusion captures each exec child's output and passes every line through its log, so the run log holds that too.
+- 10.C17: the frontend starts fusion with stdin, stdout and stderr on the null device, and the run log is the record of the console. 01's sweep coordinator discards its children's consoles the same way.
+All twelve FuSION 1 launchers capture the console by shell redirection (105 logs, median 22.9 KB). A frontend reading the child's pipe loses it on a restart, and a Windows user who starts fusion from a shortcut has no redirection.
+
+- One run log, exec captured (Recommended): As proposed, for 09.C11, 10.C17 and 01.C8.
+- Debug log only: The caller captures the console, as FuSION 1's launchers do.
+- Two files: console.log always, and a debug log under the debug option.
+
+**Answer:** One run log, exec captured (Recommended), settling 09.C11, 10.C17 and 01.C8 and cross-section items 3A.16 and 1.15
+
+## 186 · Poll · 2026-11-16 05:48
+
+Section 09's last group: the check mode and table rules, failures in code, random numbers, and floating point.
+
+**Q1 (09.C12 rules).** 09.C12 with cross-section row 3A.7 (01.C9) · How the frontend gets the backend's rules. Decision 0021 has both sides validate, with one set of rules. Proposed:
+- 09.C12: fusion --check --json reads the batch and runs every check a real run makes, without a run directory and without copying or recording inputs, and prints the problems as JSON (1.9's format, accepted). It hashes only what a check compares: saved steps and a parent run that the batch loads. The frontend calls it before Submit and to validate a form. Checking the reference run's 174 input files took 17 ms.
+- 01.C9: the command table lives in batch, one entry per command with its handler and checker. An argument's default is a settings-registry key, not a copy. Each entry declares its cross-argument rules, such as less(down, up) (S3.07) and less_or_equal(node_min, node_max) (S8.11), which fusion enforces and the frontend evaluates as the user types. fusion --commands prints the table as JSON, rules included, and the frontend builds its block library from it (S8.19).
+A Java copy of the rules would drift. A rules file can state types and ranges, but not checks such as 'every member of this KGML list exists'.
+
+- Check mode + table rules (Recommended): One implementation of every check; the frontend reads the table.
+- Rules in Java: The frontend re-implements the checks.
+- A shared rules file: JSON Schema plus a list of file checks, read by both sides; it cannot express checks on file contents.
+
+**Answer:** Check mode + table rules (Recommended), settling 09.C12 and 01.C9 (cross-section item 3A.7)
+
+**Q2 (09.C14 errors).** 09.C14 · Failures and reported results in code. Proposed:
+- A failure is a core::Failure exception with a stable code, a message and where it happened. The interpreter catches it once per command, reports it with the batch line and stops the batch (S1.28).
+- A reported result (poll 167's three) is part of a step's return value, core::Outcome<T>, never an exception.
+- A stop is core::Stopped.
+FuSION 1's live commands parse numbers with stoi, stof or stoul 24 times, with only pathz3's 4 optional arguments inside a try, so a blank value aborts with status 134; GraphManagerNew.cc has 27 live exit(1) calls (S1.28). Z3's C++ API, std::filesystem and the standard containers already throw, so an expected style would still need a catch around each of them, plus a wrapper at every call. Exceptions cost nothing on paths that do not throw.
+
+- Exceptions + Outcome<T> (Recommended): One catch per command; reported results visible in signatures.
+- expected<T, Failure>: Return values throughout, from tl::expected, since std::expected is C++23.
+- Error codes: Status codes returned and checked at every call.
+
+**Answer:** Exceptions + Outcome<T> (Recommended)
+
+**Q3 (09.C15 Rng).** 09.C15 with cross-section row 3A.17 (12.C9) · Random numbers outside GSEA. 08.C1 (poll 159) gave GSEA its own exact port of gseapy's generator. Proposed for everything else: core::Rng wraps std::mt19937_64, whose output the C++ standard fixes bit for bit, and implements its own bounded integers (Lemire's method), uniform doubles (53 bits) and Fisher–Yates shuffle. Independent streams are seeded from (seed, stream id) through SplitMix64, so split work draws the same numbers whatever the thread count. 12.C9's property tests use it, with a fixed default seed and FUSION_TEST_SEED for the weekly runs. The standard fixes the engines but not the distributions: libstdc++, libc++ and MSVC draw different numbers from std::uniform_int_distribution or std::shuffle with the same seed. Checked here: the 10,000th output of a default-constructed std::mt19937_64 is 9981545732273789042, as the standard requires.
+
+- mt19937_64 + own distributions (Recommended): Same numbers on every platform and thread count.
+- Standard distributions: std::uniform_int_distribution and std::shuffle, which differ between libstdc++, libc++ and MSVC.
+- Another engine in core: PCG64 or xoshiro256**, written into core.
+
+**Answer:** mt19937_64 + own distributions (Recommended), settling 09.C15 and 12.C9 (cross-section item 3A.17)
+
+**Q4 (09.C16 floats).** 09.C16 with cross-section rows 3A.18 and 1.18 (11.C7, 12.C11; 09 open question 4) · Floating point across platforms. Proposed:
+- No build fuses a*b+c into one fused multiply-add: -ffp-contract=off on GCC and Clang, and MSVC without /fp:contract. 11.C7 adds -O2 with link-time optimisation, /fp:precise on MSVC, no -ffast-math, -Ofast or -march=native, and the baseline x86-64 and arm64 instruction sets, with the same flags for Z3 where it is built from source. Apple silicon always has FMA, while x86-64 builds use it only when the target is raised, so the defaults would round GSEA's running sums differently on a Mac and on Linux.
+- 1.18, one promise: byte-identical canonical outputs on Linux, macOS and Windows. 12.C11 covers every deterministic stage, every query's SMT-LIB text and frontiers, with witnesses and times excluded. That needs every result path to avoid the platform's exp, log and pow, or to use one correctly rounded implementation, since maths libraries differ in the last bit and a pathway exactly at the FDR cut-off could otherwise flip.
+The other promise is agreement within a tolerance, which changes 11's identity test and 12.C11.
+
+- Contraction off, byte-identical (Recommended): One golden set for all three platforms.
+- Contraction off, tolerance: Cross-platform results agree to rounding; 11's identity test and 12.C11 change.
+- Compiler defaults: FMA wherever the target has it, so Macs and Linux round differently.
+
+**Answer:** Contraction off, byte-identical (Recommended), settling 09.C16, 11.C7 and 12.C11 and cross-section items 3A.18 and 1.18; closing 09 open question 4
+
+## 187 · Poll · 2026-11-16 05:50
+
+Section 01, first group: argument binding and pathz3's names, quoting and relative paths, sweep syntax, and how sweep points run. Before the poll, Claude read rows 1.2 and 1.3 of the cross-section check and 01.C2 to 01.C5, 01.C10, 01.C16, 01.C18 and 01.C19.
+
+**Q1 (01.C1 args).** 01.C1 with cross-section row 1.7 · How arguments bind, and pathz3's argument names. Proposed:
+- A token is named when it starts, unquoted, with one of the command's argument names ([a-z][a-z0-9_]*) and '='. The name is literal; the value is expanded and may be quoted or empty.
+- Positional tokens come first, in the positional form's order, then named ones in any order. A positional token after a named one, a repeated name, a name already filled by position, or an unknown name is an error; the last lists the command's argument names. An empty value means 'not given'. Lists are comma-separated in named form, and FuSION 1's positional lists keep their -1 terminators.
+- A duration takes a unit in named form (timeout=4h, 90s, 500ms); positional FuSION 1 slots keep bare milliseconds. Corpus timeouts run from 15,000 to 86,400,000 ms, and timeout=3600 would look like an hour but mean 3.6 s.
+- 1.7: one set of pathz3 names, owned by 06. They are 01's box names (node_min, node_max, edge_min, edge_max); the durations timeout, incremental_timeout and budget, with no _ms; and 06's coexpression_csv, coexpression_threshold and frozen_threshold, since a _min suffix would misstate S5.15's and S5.16's strict '>'.
+No non-exec token of the form name=…, and no let value containing '=', occurs in the 119 corpus files, so the rule cannot misread a FuSION 1 line.
+
+- As proposed (Recommended): Positional then named; durations with units; one pathz3 name set.
+- Any order: Positional and named tokens mixed, with unnamed ones filling slots from left to right.
+- Bare milliseconds: Durations in ms everywhere, as in FuSION 1.
+- 06's draft names: node_relax_lb to edge_relax_ub, and timeout_ms, as 06's draft had them.
+
+**Answer:** As proposed (Recommended), settling 01.C1 and cross-section item 1.7
+
+**Q2 (01.C2 quoting).** 01.C2 · Quoting, escapes and relative paths. Proposed:
+- Double quotes anywhere in a token, "" for a literal quote, $$ for a literal $ outside exec lines, the backslash never special, $ expanded inside quotes, and a quoted = never making a name. $$ amends S1.07, under which a $ that matches no key passes through unchanged; no corpus line contains $$.
+- Relative input paths resolve against the batch file's directory (a resumed run uses its parent's), and exec lines run there too; $FUSION_BATCH_DIR names it. Outputs follow 2B.3 (the step directory). On Windows both separators work.
+Windows paths with spaces then need only quotes, as in "C:\Users\Arjun Jeewan\lfc.tsv", and an exported batch with its overrides/ folder runs anywhere. The rule matters only for relative paths, and the corpus has 12, all in the two auxilliary/comparison_results batches.
+
+- As proposed (Recommended): Double quotes, "" and $$; paths relative to the batch file; amends S1.07.
+- Shell-style quoting: Backslash escapes and single quotes, so every Windows path needs doubled backslashes.
+- Launch directory: Relative paths, and exec's working directory, in the launch directory, as in FuSION 1.
+
+**Answer:** As proposed (Recommended), settling 01.C2 (amending S1.07; relative paths for inputs only, by 2B.3)
+
+**Q3 (01.C3 sweeps).** 01.C3 · Sweep syntax (decision 0018). Proposed:
+- 'sweep <$var> <value>…' is one dimension, one run per value, as in 'sweep $REACH_PATH_BOUND 6 7 10', with an optional label=<prefix>.
+- 'sweep <$var>=<value>… [label=<text>]' is one row. All row lines together form one dimension, so several variables vary together.
+- Dimensions multiply, the first line outermost. Names are literal, like let keys, and values are expanded at their line. A sweep variable may not also be set by let (S1.08), and sweep lines come before the first step line.
+- Labels come from label=, or else from the variable and value (reach_path_bound-6), reduced by 1.26's rule and cut to 32 characters. A point runs in points/<NN>-<label>/.
+The FDR sweep's four files differ in 2 of their 77 let values: one list line. The b6, b7 and b10 runs vary the bound and both timeouts together, and so does the JUN b10, JUN b6, DUSP1 b10, FOSB b10 set: rows. The nine candidate runs differ in 15 let values and were written by a 364-line Python generator: rows. The *_string125 copies are the seven rows times a two-value list.
+
+- Lists and rows (Recommended): Both forms; dimensions multiply.
+- Lists only: Every combination; the bound-and-FSC and candidate sets would still need cloned files.
+- A table file: sweep table=points.tsv, one column per variable: a second file, where decision 0018 asked for one.
+- A sweep … end block: Multi-line, which breaks the one-command-per-line rule.
+
+**Answer:** Lists and rows (Recommended)
+
+**Q4 (01.C4 points).** 01.C4 with 10.C21 · How sweep points run. Proposed:
+- 01.C4: the fusion that reads a sweep becomes a coordinator. It checks every point, creates the sweep's directory, and runs each point as a child fusion on the same batch copy, with --point and the point's run directory, at most --jobs at a time, in point order. --jobs auto counts cases, as poll 173 decided, bounded by half the logical CPUs and memory / 3 GiB. A batch without sweep lines runs in the process itself. Child processes keep A1's property that a crash ends one run, and reuse a single run's stop and resume.
+- 10.C21: the frontend never uses the coordinator. Submit makes one run per swept value, each the plain batch that the exported sweep file would run for that value, queued under 10.C20's limit. Gen Script exports the whole sweep as one batch with sweep lines. There is one scheduler, and a Phase 3 test keeps the two forms in step.
+The nine candidate runs took 245.4 h added up, but 52.1 h in parallel, peaking at 1.89 GiB for one run.
+
+- Coordinator + run per value (Recommended): Child processes on the command line; one run per value in the frontend.
+- Threads in one process: The merged graph is shared, but one crash ends every point and memory is not returned.
+- Frontend submits the sweep: One batch, one run; the coordinator's points then hold slots that the frontend's limit cannot see.
+
+**Answer:** Coordinator + run per value (Recommended), settling 01.C4 and 10.C21
+
+## 188 · Poll · 2026-11-16 05:51
+
+Section 01, second group: failing sweep points, partial runs, exec's shell, and inputs the batch makes.
+
+**Q1 (01.C5 failure).** 01.C5 · What a failing sweep point does to the others. Proposed: a failure stops only its own point, which ends failed with exit status 1, as S1.28 says for a run. The other points run to their end, and the sweep exits 1. --resume on the sweep later re-runs the failed and stopped points from their last good step. Points do not depend on each other, and the check finds input errors for every point before any point starts, so a failure while running belongs to one point. Fail-fast would cost the other points' hours: r6_mcl1_creb1 alone ran 52.1 h. This reads S1.28's 'the batch stops at the first failure' as applying per point.
+
+- Point only (Recommended): The others run on; the sweep exits 1.
+- Fail fast: The first failure stops every running point, with resumable state, and starts no more.
+
+**Answer:** Point only (Recommended), settling 01.C5 as the reading of S1.28 for sweeps (cross-section item 4B.5)
+
+**Q2 (01.C6 partial).** 01.C6 with cross-section row 2A.4 · The commands for partial runs (decision 0019). Proposed:
+- exit to stop after a step, with every step saved as it finishes (09.C4);
+- load <file>, which restores a saved value exactly (poll 164), and load run=<dir> step=<step>, which restores everything that was current after that step of an earlier run (maps, observations, graphs, corridors, shortlist, results), through 09's Registry, which verifies each artefact's SHA-256;
+- fusion --resume <dir> for a new run with that run as its parent, on the parent's batch, or with -b on a corrected one; 09's fingerprints decide which steps are loaded (S1.28's restart from the last good step);
+- pathz3's cases, points and window arguments for part of a frontier (06.C9).
+The 2026-11-11 re-solve of one point (r5_mcl1_stat3/resolve_wo_n7_e0) needed 91 command and let lines and rebuilt the merge and two corridors. With load run=… step=fb_rch it needs three lines.
+
+- As proposed (Recommended): exit, load, --resume and partial solves.
+- Resume in place: Replay by line number in the same directory, so a run directory changes after its run has ended.
+- Per-kind load commands: load_graph, load_corridor and so on, with every dependency reloaded by hand.
+- --stop-after <command>: In place of exit, which saves editing the file.
+
+**Answer:** As proposed (Recommended)
+
+**Q3 (01.C10 shell).** 01.C10 with 01 open question 6 · The shell that exec uses. Proposed: exec always means a POSIX shell. That is /bin/sh -c <text> on Linux and macOS, and on Windows the busybox-w32 that FuSION installs with itself: a single executable, run as 'busybox.exe sh -c <text>' and found through the install directory (S1.20). The shell's path and version go into run.json, and a batch with exec lines on a machine without a usable shell fails the check.
+- 3,192 of the corpus's 3,917 exec lines need a POSIX shell (cat, mv, touch, awk, date, printf, if [ … ], $(…), single quotes, mkdir -p), and 120 of the rest chain commands with ';'.
+- FuSION 1's lines ran under dash here, and busybox's shell is of the same Almquist family.
+- 2.0's own batches need no exec, so on Windows the shell serves mostly hand-written batches. busybox is GPL-2.0, shipped as a separate executable with its source offer (section 11).
+Open question 6: section 11 confirms on a Windows build whether its date supports %N, and whether a bash applet exists for the 29 'exec bash …/plot_po.sh' lines.
+
+- POSIX sh; busybox on Windows (Recommended): One shell language on every platform.
+- cmd.exe on Windows: Always present, but batches with exec stop being portable, and FuSION 1's lines do not run.
+- PowerShell 5.1: Its > writes UTF-16 with a byte-order mark, and mkdir -p, touch, awk and date +%s.%N are missing or differ.
+- Git for Windows' sh: No bundling, but few biologists will have it installed.
+
+**Answer:** POSIX sh; busybox on Windows (Recommended), settling 01.C10; 01 open question 6 goes to section 11's Windows build check
+
+**Q4 (01.C12 made).** 01.C12 · Checking inputs that the batch itself produces. This amends decision 0021 ('all inputs are checked before the first step'), S1.15 (an unreadable named start file stops the run before it starts) and S2.16 (every listed path is checked before the run), for inputs that the batch makes. Proposed:
+- An input path is produced in the batch when an earlier line declares it as an output, or when its text occurs in an earlier exec line. A command's checker declares every file it will write, derived names included, such as a positional pathz3's <prefix>_solutions.txt.
+- Such an input is checked again just before its step runs, and copied and hashed then (09.C3); every other input is checked before anything runs.
+- A produced input still missing at its step is a failure that names the line expected to make it.
+In the real batch, all 15 list files of each pathz3 line are made earlier in the same batch (2 by cudf, 13 by exec lines), and so are start's exception file, mff's list and the files pex reads. Checked before the run, every FuSION 1 batch would fail. The textual rule never rejects a valid batch; it can only move a check from before the run to just before the step.
+
+- Recheck before the step (Recommended): Amends 0021, S1.15 and S2.16 for produced inputs only.
+- All inputs before the run: As 0021 reads, so every FuSION 1 batch fails.
+- Parse exec redirections: Tighter, but it needs a shell parser, and 'cd X; echo … > f' writes relative to X.
+
+**Answer:** Recheck before the step (Recommended), amending decision 0021, S1.15 and S2.16 for inputs the batch makes
+
+## 189 · Poll · 2026-11-16 05:52
+
+Section 01, third group: reusing files written in the run, the command line and exit statuses, latest-value defaults, and predefined variables.
+
+**Q1 (01.C13 reuse).** 01.C13 · Reusing files written earlier in the same run. Proposed: when a step writes a file that a later line may read, the interpreter keeps the value with the file's identity and SHA-256. A later input naming the same, unchanged file gets the value from memory. rgx of the merged graph that wgx just wrote applies 02's re-read normalisation to the in-memory graph (S2.26). A changed file is read from disk, with a note. Positional pex lines bind by prefix instead (poll 179). S2.26's decision asks for the in-memory graph: 114 corpus files run wgx and then rgx, and the real run wrote and parsed 539,688 bytes, the GUI run 13,375,038. The hash costs one read and no parse. Trusting the path alone would miss r7 and r8, which append a curated KGML to gsea's shortlist with 'exec echo … >>' between gsea and mff.
+
+- By identity + hash (Recommended): Unchanged files come from memory; changed ones are re-read with a note.
+- Only wgx→rgx: Smaller; cudf→pathz3 and gsea→mff keep their file round trips.
+- Trust the path: No hash, so r7 and r8's appended KGML would be silently missed.
+
+**Answer:** By identity + hash (Recommended)
+
+**Q2 (01.C14 CLI).** 01.C14 with 01 open question 8 · The command line and exit statuses. Proposed: keep -b and -h (S1.01, S1.02), and add --check, --json, --root, --label, --log, --run-dir, --tag, --resume, --stop, --point, --jobs, --debug, --query, --commands and --version, whose JSON section 11 describes. Exit statuses:
+- 0 when the run ran to its end, reported results included;
+- 1 on a failure, as 09.C14 defines it, check errors included; run.json's error code tells the cases apart;
+- 2 on a usage error;
+- 3 when stopped;
+- 130 after a second Ctrl-C (09.C8).
+The GUI ignored the exit status (S1.28), so the statuses must say exactly what happened.
+
+- Flags; 0, 1, 2, 3, 130 (Recommended): As proposed.
+- Subcommands: fusion run, check, resume, stop and commands, with -b kept as an alias: two ways to run a batch.
+- Status 2 for check errors: And 4 for internal errors, so the status alone tells 'nothing ran' and 'a bug' apart.
+- sysexits.h codes: 64 for usage, 65 for data, 70 for software: unfamiliar, and Windows has no such convention.
+
+**Answer:** Flags; 0, 1, 2, 3, 130 (Recommended), settling 01.C14; closing 01 open question 8
+
+**Q3 (01.C16 latest).** 01.C16 · Steps take the latest value of each kind by default. Proposed: an argument that takes a graph, a corridor, observations, a shortlist or results defaults to the latest value of that kind in the run: 0 for graphs (S2.01), the latest cudf observations, the latest gsea shortlist and the latest pathz3 results. A name or a path overrides it. The check resolves every default before the run, so a line whose value does not exist yet is an error. This extends S2.01's 0, which every graph argument in the corpus uses, to the other kinds, and in the corpus each consumer uses the value made just before it. It answers how fb_rch gets the observations (05.C9) and how mff gets the up and down genes (03.C1).
+
+- Latest value by default (Recommended): S2.01's rule for every kind of value.
+- Explicit references only: Each producing line names its result (gsea … as=$SL), and each consumer names it.
+- Files only: Values pass through paths, as in FuSION 1: the round trip that D1 replaced.
+
+**Answer:** Latest value by default (Recommended)
+
+**Q4 (01.C18 vars).** 01.C18 · Predefined variables. Proposed: four, $FUSION_RUN_DIR, $FUSION_BATCH_DIR, $FUSION_POINT and $FUSION_HOME, holding paths with '/' on every platform, since busybox sh treats '\' as an escape. The $FUSION_ prefix is reserved, so a let or sweep of such a key is an error; no corpus file defines one.
+- $FUSION_RUN_DIR lets exec lines and FuSION 1-style output paths write into the run directory without absolute paths.
+- $FUSION_HOME replaces the absolute path to FuSION's own files that 29 'exec bash …/plot_po.sh' lines carry.
+- $FUSION_POINT lets a sweep point name what it writes.
+
+- Four reserved variables (Recommended): Paths with '/', prefix reserved.
+- None: Batches name every path themselves, and a batch cannot name its own run directory.
+- Environment variables too: $HOME and $USER in expansion, so the environment could change a result unseen.
+
+**Answer:** Four reserved variables (Recommended)
+
+## 190 · Poll · 2026-11-16 14:29
+
+Section 01's last choice and open question, and the cross-section rows on setting names and event names.
+
+**Q1 (01.C19 UTF-8).** 01.C19 · The encoding of batch files. Proposed: a batch file is read as UTF-8. A leading byte-order mark is skipped, and an invalid byte sequence is an error that names the line. Paths must become UTF-16 on Windows, and UTF-8 converts exactly. Reading bytes as they are, as FuSION 1 does, would use Windows' ANSI code page, so a path with other characters could not be named and one file could name different paths on two machines. The corpus is ASCII except two files with a '—' in a comment, which are valid UTF-8. Section 10's generator writes UTF-8 without a byte-order mark, and section 04 reads value files the same way.
+
+- UTF-8 (Recommended): Byte-order mark skipped; invalid bytes are an error naming the line.
+- Bytes as they are: As in FuSION 1, with the platform's own conversion of paths.
+- UTF-8 or UTF-16: Told apart by the byte-order mark, though no other FuSION input is UTF-16.
+
+**Answer:** UTF-8 (Recommended)
+
+**Q2 (01 OQ9 plots).** 01 open question 9 · Window plots without a display. S6.25 keeps FuSION 1's inline gnuplot lines working through exec. Of them, 56 lines in 56 corpus files open a window ('gnuplot -p' without 'set term'). With no display, gnuplot 6.0 here waited until killed, so a headless run, or a frontend run on a server, would wait at such a line until stopped. 2.0 draws the Pareto plot itself (plot_pareto), so these lines only open viewing windows. Proposed, as a new rule outside the decisions (it amends S1.14 and S6.25 for these lines): when no display is available (no DISPLAY or WAYLAND_DISPLAY on Linux, an SSH session on macOS), skip such a line with a note in the run log.
+
+- Skip when headless (Recommended): With a display they run as in FuSION 1; without one they are skipped with a note.
+- Run as written: A headless run waits at the line until stopped.
+- Always skip window plots: Skipped with a note even when a display exists, since plot_pareto draws the plot.
+
+**Answer:** Skip when headless (Recommended), a new rule amending S1.14 and S6.25 for window-plot lines; closing 01 open question 9 (cross-section item 4B.6)
+
+**Q3 (1.16 settings).** Cross-section rows 1.16 and 2B.2 · Setting names, and how a batch sets run-level settings. The sections named settings differently: 02, 08 and 12 prefix the module (network.indirect, gsea.seed, solve.check_rlimit), 09 and 06 do not, 06 and 08 both have a 'seed', and 03's store (on/off) is what 09 calls cache. Nothing lets a batch set network.indirect, network.ecrel, network.maplink, legacy_prefix, cache or cache_dir: 01's run line takes only root, label and log. Proposed:
+- the registry's key is <module>.<name> (solve.seed, gsea.seed, network.indirect, run.cache); on a command line the bare name is the argument;
+- 03 drops store for 09's cache;
+- the run line takes any run-level setting by name (run network.indirect=keep), fusion --set name=value overrides it, and --commands exports the settings so the frontend can bind them.
+
+- Module-prefixed keys; run line (Recommended): One naming rule, and one batch syntax for run-level settings.
+- Bare names everywhere: No module prefix; clashes such as the two seeds get distinct names by hand.
+- Command-line only: Run-level settings only through --set, so a batch file cannot carry them.
+
+**Answer:** Module-prefixed keys; run line (Recommended), settling cross-section items 1.16 and 2B.2
+
+**Q4 (1.3 events).** Cross-section row 1.3 · Event names, the envelope and the key. 09's table used underscore names (run_started, step_finished, solve_check_started), while 02, 03, 05, 06, 07, 08, 10 and 12 used dotted names (network.read, solve.check, run.started). The name field was 'type' in some sections and 'event' in others, and the envelopes differed. Proposed:
+- dotted <area>.<event> names, matching 09's dotted error codes: run.started, inputs.checked, step.started, step.progress, step.finished, step.skipped, stop.requested, run.finished, solve.check.started;
+- the key is 'type' everywhere;
+- the envelope is v, seq, t, type, and core::Events adds step, line and point to every event emitted inside a step; 'run' is not needed, because each run has its own file;
+- 06 renames its counter to 'check'; warnings go only through 'warning', with dotted codes and a message; reported results go only through step.finished's report{code, message}.
+
+- Dotted names (Recommended): 09, 01, 04 and 11 rename their events; most sections already match.
+- Underscore names: 02, 03, 05, 06, 07, 08, 10 and 12 change instead.
+
+**Answer:** Dotted names (Recommended), settling cross-section item 1.3
+
+## 191 · Poll · 2026-11-16 14:33
+
+Section 10, first group: delivery, access, exec in lab mode, and desktop integration. The user answered 10.C1 with a question and left the three dependent questions without a preference; nothing in this group is decided.
+
+**Q1 (10.C1 deliver).** 10.C1 · How the frontend is delivered. G2 made it Spring Boot. Proposed: the Spring Boot application runs as a local server on the user's machine, and the user works in their usual browser. Section 11's installer adds a launcher that starts the server and opens the browser: one instance, on a fixed port, with nothing else to install.
+- Phase 5's graph display may draw corridors of up to 793 nodes and 3,328 edges, and merged graphs of 8,237 entries and 82,188 relations (decision 0022). Current browsers draw such graphs on hardware-accelerated canvas and WebGL. JavaFX's WebView is a separate WebKit, updated only with JavaFX, which probably lacks WebGL (to be checked if it is chosen).
+- Electron adds Chromium and Node.js, at about 100 MB or more, and Tauri adds Rust, a third runtime.
+- FuSION's explanations are already browser pages (423 pex pages under runs/, the public site, 07's pages), and the same pages serve a lab server (10.C2).
+
+- Local web app (Recommended): A local Spring Boot server, used in the system browser.
+- JavaFX desktop shell: The same server in a WebView window, with native file dialogs; WebGL is doubtful.
+- Electron or Tauri shell: A bundled browser engine of 100 MB or more, or a Rust runtime.
+
+**Answer:** why does it have to be a web app? the first fusion was a standalone app to interact w the front end, free text: a question back; 10.C1 stays open
+
+**Q2 (10.C2 access).** 10.C2 with 10 open question 10 · Who can reach the frontend. Proposed:
+- Local mode binds to 127.0.0.1 only.
+- A lab-server mode, switched on by configuration, binds to a network address. It then requires TLS, accepts uploads, and limits the file browser and paths to configured roots.
+- In both modes, the first account needs the setup token from the data directory, and later accounts are created by an owner. There is no open sign-up, where FuSION 1 let 'anyone sign up' (S8.02).
+A loopback port is open to every local OS user and, through the browser, to any web page. The setup token, owner-created accounts and CSRF, Origin and Host checks close those doors. Open question 10: in lab mode every user's runs execute as the server's one OS account, so users can read each other's run directories through the OS, though not through the frontend; per-user isolation would need one instance per user. Is a lab mode wanted in 2.0 at all? This machine (36 logical CPUs, 124 GiB) ran 18 solves at once: the kind of machine a lab would share.
+
+- Local + lab mode (Recommended): Loopback by default; a configured lab-server mode with TLS.
+- Loopback only: No lab mode in 2.0; lab use goes through SSH tunnels.
+- Lab server first: Designed as a shared server, with local use as the special case.
+
+**Answer:** [No preference], left open; depends on 10.C1
+
+**Q3 (10.C3 lab exec).** 10.C3 with 10 open question 7 · exec blocks in lab-server mode (this applies only if lab mode exists). Proposed: in lab mode the frontend refuses exec blocks and any batch with an exec line, and the catalog marks shell commands. Local mode offers them, as S8.27 asks. This amends S8.27's 'every live step is available from the frontend as a pipeline-editor block' for lab mode only. In lab mode every account's runs execute as the one OS account that runs the server, so an exec block would let any lab user run any shell command as that account, and read or change every other user's runs. In local mode the user can already run commands as themselves. The default pipeline has no exec line, and FuSION 1's exec lines did file plumbing that 2.0's commands do themselves.
+
+- Refuse exec in lab mode (Recommended): Amends S8.27 for lab mode only.
+- Offer exec everywhere: As S8.27 is written.
+
+**Answer:** [No preference], left open; depends on 10.C1
+
+**Q4 (10.C4 desktop).** 10.C4 · Desktop integration. Proposed:
+- The server stays headless (Spring Boot's default) and uses no AWT.
+- The browser is opened by the OS's own opener on a local redirect file, open.html.
+- The macOS bundle is a background agent (LSUIElement), with no Dock icon, and Quit is in the screens.
+Without AWT, the bundled runtime can leave out java.desktop, whose jmod is 12.5 MB, half the size of java.base's. Either way the session token goes through open.html. The alternative, non-headless on macOS and Windows with java.awt.Desktop.browse and a Dock Quit handler, is what section 11's draft assumes; it needs a display, which lab servers lack. This decides 11.C12's packaging text: no Dock quit handler, and a runtime without java.desktop.
+
+- Headless, OS opener (Recommended): No AWT; a smaller runtime; Quit in the screens.
+- AWT desktop integration: A Dock icon with Quit on macOS; the runtime keeps java.desktop.
+
+**Answer:** [No preference], left open; depends on 10.C1
+
+## 192 · Poll · 2026-11-16 14:36
+
+Re-poll of 10.C1 after the user's question in entry 191, with a process question for section 10. Before the poll, Claude searched the web for JavaFX WebView's WebGL support (openjfx-dev threads of 2015 to 2018: JDK-8091035, not targeted to a release) and for JavaFX Canvas performance with many lines (batched drawLine calls become one vertex upload; very large line counts per frame are slow).
+
+**Q1 (10.C1 again).** 10.C1 again, after your question. It does not have to be a web app: the drafter proposed one, and no earlier decision chose that form. A standalone desktop app keeps G2, with Spring Boot as the application framework and no web server.
+- Desktop app with JavaFX: a window like FuSION 1's, with screens written in Java. Native file dialogs give real paths, where a browser never reveals one. No local port needs securing, so 10.C2's setup token, 10.C6's capability links and the CSRF checks disappear. 07's HTML explanation pages open in an embedded WebView (vis-network draws on 2D canvas, which WebView has) or in the system browser. Costs: Phase 5's interactive display is drawn on JavaFX's canvas. That is easy for corridors (at most 793 nodes and 3,328 edges), but the 82,188-relation merged graph needs batching and culling. OpenJFX is added to the bundle, and there is no lab-server mode.
+- Local web app in the browser (the draft): browsers draw large graphs with WebGL, and the same pages serve a lab server. Costs: it opens in a browser tab, needs the local-port security above and a server-side file browser, and its screens are written in HTML and JavaScript.
+JavaFX's WebView has long lacked WebGL (OpenJFX issue JDK-8091035, untargeted in the last discussions found), which limits a WebView-based display.
+
+- JavaFX desktop app (Recommended): Standalone window, Java screens, native dialogs, no local server port.
+- Window over web pages: A JavaFX WebView showing the local server's HTML screens: standalone look and native dialogs, but no WebGL and still a local port.
+- Local web app (as drafted): Spring Boot server, used in the system browser.
+- Swing desktop app: As FuSION 1: Swing is in the JDK, so no extra toolkit, but an older look and Java2D drawing.
+
+**Answer:** JavaFX desktop app (Recommended), settling 10.C1; 10.C2 to 10.C7 and 11.C12 to be redrafted for it
+
+**Q2 (Section 10).** If a desktop form is chosen, much of section 10 changes: 10.C2 (who can reach it), 10.C3 (exec in lab mode), 10.C4 (desktop integration), 10.C5 (JSON API and event stream), 10.C6 (serving run files) and 10.C7 (choosing files), plus 11.C12's packaging. The other choices (store, password hashing, account fields, modules, default pipeline, generated batches, kill, quick Submit) hold either way. How should I proceed?
+
+- Revise 10 now (Recommended): Send the drafter the decision now, spot-check its revision, and poll section 10's revised choices before moving on to 11 and 12.
+- Poll the rest first: Poll the choices that hold either way now, and have section 10 revised with all the other approved changes at the end.
+
+**Answer:** Revise 10 now (Recommended)
+
+## 193 · Subagent prompt · Desktop revision sent for section 10 · 2026-11-16 14:37
+
+Sent to the section 10 drafter after poll 192, which decided 10.C1 (a JavaFX desktop application) and asked for section 10 to be revised before its remaining choices are polled. The message as sent:
+
+```text
+The user has decided how the frontend is delivered, and section 10 must be revised for it before its remaining choices are polled. Revise docs/architecture/10-frontend.md as follows.
+
+1. 10.C1 is decided: a JavaFX desktop application (prompt log entries 191 and 192). The user's question, word for word: "why does it have to be a web app? the first fusion was a standalone app to interact w the front end". The option the user then chose: "JavaFX desktop app: Standalone window, Java screens, native dialogs, no local server port." For the design this means:
+   - A standalone window like FuSION 1's, with the screens written in Java on JavaFX (OpenJFX). Spring Boot (G2) stays as the application framework, for wiring, configuration and the services, with no embedded web server and no HTTP API.
+   - Files are chosen with native dialogs (JavaFX's FileChooser and DirectoryChooser), which give real paths.
+   - There is no local server port. The setup token sent over a port, the CSRF, Origin and Host checks, and the capability links all go. Per-user accounts with salted hashes stay (S8.02), as a sign-in screen in the application.
+   - There is no lab-server mode in 2.0. Drop 10.C2's lab mode, 10.C3 (exec refused in lab mode) and open question 10, and keep S8.27 as decided.
+   - Section 07's HTML explanation pages and run page open in an embedded WebView or in the system browser. Their vis-network draws on 2D canvas. JavaFX's WebView has long lacked WebGL (OpenJFX issue JDK-8091035). From documentation, check what the WebView of the OpenJFX version you propose supports that 07's pages need (JavaScript level, canvas); do not install anything.
+   - Phase 5 still designs the graph display (decision 0027). Say only what the delivery implies for it: it is drawn in JavaFX, for example on a Canvas; corridors are small (at most 793 nodes and 3,328 edges); and the 82,188-relation merged graph needs batching and culling. Do not design the display.
+   - Desktop integration replaces 10.C4: a normal application with its own window, a Dock or taskbar entry and Quit, and one instance per data directory (frontend.lock stays).
+   - Replace 10.C5's JSON API and Server-Sent Events with in-process services between the screens and the runner, and say how the screens follow a run (events.jsonl and the run log, 09.C10 and 09.C11).
+   - Replace 10.C6 (serving run files) and 10.C7 (the server-side file browser) with what a desktop application needs.
+   - Revisit every other part that assumed a browser or a server, such as 10.C11's web package, the threat model, the design's component list, the interfaces with sections 07 and 11, and section 11's launcher, and say what changes.
+   - State the OpenJFX version you propose, one that supports Java 21, with its licence (GPL-2.0 with the Classpath Exception) and its size per platform from published artefacts, for section 11.
+   List each new or changed choice under Choices with Proposed, Alternatives, Why and "- **Decision:** pending". Leave every Decision line pending, 10.C1's included; Claude fills them in after the polls.
+
+2. Apply these accepted answers, which touch section 10 (prompt log entries 158 to 190). The cross-section items' resolutions are in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/xcheck/conflicts.md, by item number.
+   - 1.26 (the label rule), 1.27 (gnuplot 5.4 or later, its lookup order, plot_pareto), 1.29 (examples use the owners' names), 1.31 and 1.32 (stale cross-references).
+   - The Relaxed override and the relaxed-edges file are dropped from the frontend (entry 165). The override dialog keeps Above Up, Not DE, Below Down, Active, Inactive and Non-relaxed, and the edge files are additional, essential, avoid and non-relaxed.
+   - Confirmed overrides reach mff through section 01's look-ahead and join the exception set (03.C2, entry 165).
+   - The reported results are exactly corridor.empty, gsea.empty_selection and observations.none. A case with no point, an infeasible case, no DE gene and an exhausted budget are case statuses, and the batch goes on (entry 167). Fix the exit table to match.
+   - fusion --query takes one batch line on standard input and answers in JSON. Read-only calls that make no run directory are outside A1, so section 10 no longer calls them amendments (entry 168). 10.C15 uses section 02's labels line through --query (2B.6).
+   - 10.C13 is accepted: the frontend requires the two upper bounds and the per-query timeout, with section 06's values as a one-click suggestion (entry 173). 10.C15, 10.C16, 10.C17, 10.C18, 10.C20 and 10.C21 are accepted as drafted (entries 168, 173, 184, 185 and 187), with the queue limit counting one core per FSC case (entry 173).
+   - Resume of a killed or crashed run uses its journal (06.C19, which amends A1; entry 174).
+   - The FSC cases are named in, out and free in arguments, files and JSON, and with no FSC the solve runs free (entry 175).
+   - Names follow their owners: fb_rch (long name corridor) with edges_to_target any, activation or expression (05.C8); pathz3's node_min, node_max, edge_min, edge_max, timeout, incremental_timeout and budget (durations with units in the named form), coexpression_csv, coexpression_threshold and frozen_threshold (01.C1 and 1.7, entry 187); setting keys <module>.<name>, with the run line taking run-level settings and --commands exporting them (1.16 and 2B.2, entry 190).
+   - Dotted event names, with the envelope v, seq, t and type, plus step, line and point inside a step. Section 10 reads t, not time or run (1.3, entry 190).
+   - Stop goes through the stop file only; Ctrl-C and SIGTERM handlers make the same request, and SIGHUP is ignored (09.C7 and 09.C8, entries 184 and 185). Liveness goes through run.lock, and a filesystem without locks stays usable with a warning (09.C9, entry 185).
+   - rlimit exists as a deterministic per-check budget (2B.8, entry 176), which closes open question 4.
+   - Open questions 2, 3, 4, 5, 6 and 8 are closed by these answers.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 300 words: what you changed, any point you could not apply and why, and every new or changed choice and open question.
+```
+
+## 194 · Subagent prompt · Desktop revision sent for section 11 · 2026-11-16 14:37
+
+Sent to the section 11 drafter at the same time, since poll 192 named 11.C12's packaging among the changes. The message as sent:
+
+```text
+The user has decided that the frontend is a JavaFX desktop application, not a local web application in the browser (prompt log entries 191 and 192). Section 10's drafter is revising section 10 for it. Revise docs/architecture/11-build.md for what packaging and installation then need:
+- 11.C12 and the rest of the packaging text: jpackage per platform with a bundled runtime that includes OpenJFX (javafx.base, javafx.graphics and javafx.controls, plus javafx.web if section 07's pages open in a WebView) and whatever JavaFX itself needs, such as java.desktop. The application is a normal one, with its own window and a Dock or taskbar entry, not a background agent. There is no launcher that opens a browser and no fixed port. Signing and notarisation stay as designed.
+- Remove what only a local web server needed (the port, open.html, LSUIElement, a headless runtime without java.desktop), and say so.
+- Add OpenJFX's licence (GPL-2.0 with the Classpath Exception) to the licence rows, and its size per platform from published artefacts.
+- Section 10 will propose an OpenJFX version. Use one that supports Java 21 and say which you would pin and why; Claude checks that the two sections agree.
+List each new or changed choice under Choices with Proposed, Alternatives, Why and "- **Decision:** pending", and leave every Decision line pending. Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 200 words: what you changed, and any new choices or open questions.
+```
+
+## 195 · Poll · 2026-11-16 14:39
+
+Section 10's choices that hold under either delivery form, polled while the section 10 and 11 drafters revise for the desktop application: the store, password hashing, the default pipeline, and the quick Submit.
+
+**Q1 (10.C8 store).** 10.C8 · Where the frontend keeps its data (this holds for the desktop app too). Proposed: one accounts.json for the accounts, one folder per session and one file per run record. Each file is written by atomic replace, and sessions carry a version number for conflicts. They live in a per-user data directory, outside the installation and any repository.
+- FuSION 1's sessions are 814 to 1,468 bytes and its account file 304 bytes. 1,000 sessions of 10 KB make 10 MB, read at start in well under a second.
+- Files need no driver, pool or schema migration, the user can read and back them up, and they hold no native code (G3). One file per id removes S8.05's faults by construction: no list positions, no whole-array rewrite, no dropped keys.
+- H2 changed its file format between major versions. SQLite's driver extracts a native library at run time, which a signed and notarised macOS app must be allowed to load.
+Costs: uniqueness and conflicts are checked in code under one lock per store, and frontend.lock enforces a single instance per data directory.
+
+- JSON files (Recommended): One file per account store, session and run record.
+- Embedded H2: Pure Java, with transactions and unique constraints, but an opaque file whose format changes between majors.
+- Embedded SQLite: Through the xerial driver, which loads a native library at run time.
+
+**Answer:** JSON files (Recommended)
+
+**Q2 (10.C9 hashing).** 10.C9 · Password hashing. S8.02 kept per-user accounts with salted hashes; FuSION 1 used one unsalted SHA-256. Proposed: bcrypt at strength 12 through Spring Security's DelegatingPasswordEncoder, which stores the scheme with each hash ({bcrypt}…) and re-hashes at the next sign-in if the scheme changes. The threat S8.02 names is offline cracking of a copied account file, which any salted, slow hash answers. bcrypt is already in Spring Security. Strength 12 took 0.252 s per hash here in C; Spring's pure-Java version is slower, and Phase 3 measures it. Argon2id is stronger against GPUs, but brings in BouncyCastle (about 8 MB). PBKDF2 at OWASP's 600,000 iterations took 0.842 s and is not memory-hard.
+
+- bcrypt 12 (Recommended): No extra library; the scheme is stored with each hash.
+- Argon2id: Memory-hard, through BouncyCastle (about 8 MB).
+- PBKDF2-SHA256: 600,000 iterations with the JDK alone; not memory-hard.
+
+**Answer:** bcrypt 12 (Recommended)
+
+**Q3 (10.C12 pipeline).** 10.C12 · The default pipeline (S8.18's standard run). Proposed: a JSON pipeline document kept in the backend's source tree, tested there against the command table, and installed with fusion. The frontend opens it as the editor's default pipeline. Its inputs carry S8.06's defaults and declare which inputs each user's sessions remember. GSEA shortlisting is on, with fdr:0.25, whenever the source is a KGML list. Section 11 writes standard.batch from it at build time for command-line users. FuSION 1 kept three templates and read only one (S8.20), left three placeholders unfilled (S8.17), and defaulted to values no batch used (S8.06), because its template lived apart from the commands. A document keeps what a batch file cannot: each input's label, unit, range and group for the screens, the remembered inputs, the block layout, and the conditions that switch GSEA and the network source (S8.08).
+
+- JSON document with the backend (Recommended): Tested against the command table; standard.batch generated from it.
+- Batch file with typed parameters: Opened in the editor through fusion's parser; the batch language would need parameter declarations.
+- Built into the frontend's Java: As FuSION 1's ScriptFile and template.
+
+**Answer:** JSON document with the backend (Recommended)
+
+**Q4 (10 OQ1 Submit).** 10 open question 1 · Which pipeline the quick Submit runs. S8.32 decided: '2.0's frontend has a Submit that runs the default pipeline at once, without opening the editor'. For a session that was never edited, the session's pipeline is the default pipeline, so both readings below agree. They differ for a session whose pipeline was edited:
+- as written, quick Submit runs the default pipeline and ignores the session's edits, while the editor's Submit runs them;
+- or quick Submit runs the session's current pipeline (the default unless edited), without opening the editor.
+Either way, the screens say which pipeline a Submit will run (Phase 5).
+
+- Session's current pipeline (Recommended): Edits are never silently ignored; unedited sessions run the default.
+- Always the default pipeline: S8.32's words; an edited session's quick Submit ignores the edits.
+
+**Answer:** Session's current pipeline (Recommended), settling S8.32's reading; closing 10 open question 1
+
+## 196 · Poll · 2026-11-16 14:41
+
+Section 10's other choices that hold under either delivery form: account fields, generated batches, and Kill.
+
+**Q1 (10.C10 email).** 10.C10 · Account fields. Proposed: an account holds a username, a display name, a role, a password hash and preferences, with no email address. FuSION 1's sign-up requires an email address, and nothing reads it (getEmail has no caller). It was the personal data that fusion_users.dat put into git (S8.02). Nothing in 2.0 sends mail, and password resets go through the command line.
+
+- No email (Recommended): No personal data beyond a display name.
+- Keep the email field: As in FuSION 1, though nothing reads it.
+
+**Answer:** No email (Recommended)
+
+**Q2 (10.C14 batches).** 10.C14 · What a generated batch writes. Proposed: a generated batch writes each argument that the pipeline binds to a session input or a literal, and leaves the others out. fusion then applies its defaults and records them as defaults in run.json; E1 records each setting's value and whether it came from a default. With every argument written, every value would read as chosen by the user, and solve lines would carry 28 to 34 named arguments when the user set only a few. Writing every argument would keep a run.batch's meaning fixed under a later FuSION whose defaults changed; with the proposal, run.json still holds every value used.
+
+- Only bound arguments (Recommended): Defaults applied and recorded as defaults by fusion.
+- Every argument: Unbound ones filled with the catalog's current defaults, so the batch alone fixes every value.
+
+**Answer:** Only bound arguments (Recommended)
+
+**Q3 (10.C19 kill).** 10.C19 · Kill. Proposed: once 60 s have passed since a stop request without an exit, the screens offer Kill, which ends the process and every descendant with destroyForcibly. On Linux and macOS, Process.destroy() sends SIGTERM, which 09.C8 turns into another stop request, so it cannot end a run that a stop request has not ended. fusion already ends itself 30 s after a stop request (09.C7), so a run still alive at 60 s is stuck beyond its own watcher. On Windows the children of a killed process survive it, so a running gnuplot or exec shell must be ended separately. The journal keeps every finished check (06.C19), so a kill loses only the check in progress.
+
+- Kill the tree after 60 s (Recommended): destroyForcibly on the process and its descendants.
+- destroy() after 30 s: As section 09 suggested; SIGTERM becomes another stop request and may not end a stuck run.
+
+**Answer:** Kill the tree after 60 s (Recommended)
+
+## 197 · Poll · 2026-11-16 15:29
+
+Section 10's redesigned choices for the desktop application, first group: accounts, the OpenJFX version (with 11.C24), desktop integration, and the services. Before the poll, Claude spot-checked the section 10 and section 11 revisions (reports saved in the scratchpad), confirmed on Maven Central that OpenJFX 21.0.13 was published on 2026-10-20, and confirmed through JDK-8321603 and its CSR JDK-8325993 that JavaFX 22 requires JDK 17 and JavaFX 23 JDK 21; this corrects one sentence of 11.C24.
+
+**Q1 (10.C2 accounts).** 10.C2, revised for the desktop app · Accounts on a shared machine. S8.02 kept per-user sign-in and sessions with salted, slow hashes, validated usernames, and an account file kept out of the repository. Proposed: the sign-in screen also offers 'Create a new account', as FuSION 1's did, and opens there at first start. Every account is equal, with no owner role.
+- With no port and no lab mode, only people at the machine's own OS login can reach the application. Accounts keep apart the sessions of people who share that login.
+- An owner could not really control who has an account, since anyone at the login can edit the data directory, so gatekeeping would add friction without protection.
+- S8.02 lists 'anyone can sign up' among the problems of a login that 'guards nothing', but its decision fixes the hashes, the store, the usernames and the committed file, not sign-up.
+
+- Open sign-up (Recommended): Anyone at the login can create an account; all accounts equal.
+- Owner-created accounts: The first account becomes the owner and creates the others, so accounts carry a role.
+- No accounts: One implicit user, which amends S8.02, whose poll turned down 'Drop the login'.
+
+**Answer:** Open sign-up (Recommended)
+
+**Q2 (10.C3 OpenJFX).** 10.C3 with 11.C24 · The OpenJFX version. Proposed, in both sections: OpenJFX 21.0.13 (published 2026-10-20), the current update of the JavaFX 21 long-term line. It comes from Maven Central for compiling and testing, and as Gluon's jmods for the runtime image, under GPL-2.0 with the Classpath Exception.
+- The application uses javafx.base, javafx.graphics and javafx.controls, 8.0 to 9.2 MB of jars per platform. javafx.web joins only if 10.C6's WebView is chosen; with javafx.media it adds about 38 to 45 MB.
+- Updates follow 21.0.x, and moving to another line is a new decision. 21.0.13 also brought WebView's WebKit to 625.1.
+- OpenJFX 24 and later need JDK 22 or later, so G2's Java 21 runs the lines up to 23. Of those, only 21 still gets updates: 22 stopped at 22.0.2, and 23 at 23.0.2.
+A correction to 11.C24's text is queued: it says only 21.x and 23.x run on Java 21, but 22.x does too, since JavaFX 22 needs only JDK 17.
+
+- OpenJFX 21.0.13 (Recommended): The JavaFX 21 long-term line, on G2's Java 21.
+- OpenJFX 25.0.5 LTS: It needs JDK 23 or later, so G2's Java 21 would become Java 25 (amends G2).
+- OpenJFX 23.0.2: Runs on Java 21, but has had no update since 2025-01-21.
+
+**Answer:** OpenJFX 21.0.13 (Recommended), settling 10.C3 and 11.C24
+
+**Q3 (10.C4 desktop).** 10.C4, revised · Desktop integration. Proposed:
+- A normal application: one main window, a Dock or taskbar entry, and Quit in the application menu (macOS) or the File menu. Closing the main window quits, and runs continue after a quit (10.C16).
+- One instance per data directory through frontend.lock. A second launch writes frontend.focus, so the running instance brings its window forward, and then exits.
+On macOS, LaunchServices already activates a running bundle. On Windows and Linux a second launch starts a second JVM, which only the lock can tell apart. The file hand-off needs no port, and costs the running instance one size check per 250 ms poll. JavaFX has no tray API, so keeping the app alive after its window closes would need AWT's SystemTray, which many Linux desktops lack.
+
+- Normal app, focus hand-off (Recommended): A second launch brings the running window forward.
+- Second launch just exits: It shows 'FuSION is already running' without bringing the window forward.
+- Tray icon: Keeps the app alive after its window closes, through AWT's SystemTray.
+
+**Answer:** Normal app, focus hand-off (Recommended)
+
+**Q4 (10.C5 services).** 10.C5, new · Screens and services. Proposed:
+- The screens call the Spring-managed services directly, in the same process, on virtual threads, and receive results on the FX Application Thread.
+- The runner's poller tails events.jsonl and the run log of every active run (09.C10, 09.C11), and hands the screens one batch of updates per 250 ms tick, through one Platform.runLater.
+JavaFX allows changes to the scene only on its own thread, and blocking that thread freezes the window. Coalescing per tick bounds the hand-overs at 4 a second, whether 1 run is followed or 18. The volume is small: 150 to 200 events per run, and run logs of 20 to 52 KB.
+
+- In-process, per-tick batches (Recommended): No serialisation, no port, no API versioning.
+- Keep an internal HTTP API: With Server-Sent Events, so a web frontend could be added later; this brings back a port and its security.
+- One event per message: Through Spring's ApplicationEventPublisher, waking the FX thread for every line of every run.
+
+**Answer:** In-process, per-tick batches (Recommended)
+
+## 198 · Poll · 2026-11-16 15:31
+
+Section 10's redesigned choices, second group: result views, file choosing, the account record after 10.C2, and module boundaries.
+
+**Q1 (10.C6 results).** 10.C6, new · Showing run results. Proposed:
+- The run's state, reports, case statuses, log, frontier table (from results.json) and Pareto plot (pareto.png) are native views in the window.
+- Section 07's run page and explanation pages open in the system browser, through HostServices.showDocument. No WebView is used, and javafx-web is not bundled.
+Section 07's pages fetch nothing and work from file: in any browser (07.C2). Phase 5's display is drawn in JavaFX in the window, so the static pages serve export and sharing. javafx-web is 37.6 to 45.2 MB of jars per platform, more than four times the other three modules together, and it brings javafx-media; section 11 estimates the runtime image at about 60 to 75 MB without it and 165 to 200 MB with it. WebView's WebKit is updated only with JavaFX, while the system browser updates itself. A WebView would show 07's pages (WebKit 625.1, 2D canvas, no WebGL), with navigation confined to the run directory; the cost of the proposal is that a page opens outside the window.
+
+- System browser (Recommended): Native views in the window; 07's pages in the user's browser; no javafx-web.
+- Embedded WebView: 07's pages inside the window, confined to the run directory; about 100 MB more in the runtime image.
+
+**Answer:** System browser (Recommended)
+
+**Q2 (10.C7 files).** 10.C7, new · Choosing input files. Proposed: inputs are chosen with JavaFX's FileChooser and DirectoryChooser. A dialog opens in the folder of the input's current value, or else in the last folder used for that input. A path may also be typed or pasted, and both pass the same checks (S8.30). Native dialogs give real paths, with the platform's recent places and network locations. A typed path serves a path copied from a terminal, from FuSION 1's batch files (all 123 under runs/ name absolute paths), or from a colleague, and checking it like a chosen one costs nothing extra.
+
+- Dialogs + typed paths (Recommended): Both checked the same way.
+- Dialogs only: Path fields cannot be edited; typing errors are impossible, but copied paths cannot be pasted.
+
+**Answer:** Dialogs + typed paths (Recommended)
+
+**Q3 (10.C10 again).** 10.C10 again, after 10.C2 · Account fields. Poll 196 accepted an account record with no email, holding a username, a display name, a role, a password hash and preferences. The role came from the earlier draft, where an owner created the other accounts. With open sign-up (10.C2, just accepted), every account is equal, so the revised record drops the role: a username, a display name, a password hash and preferences.
+
+- No role, no email (Recommended): Follows open sign-up.
+- Keep a role field: Unused now, kept for a later owner or admin feature.
+
+**Answer:** Keep a role field, not the recommended option: the account record keeps a role field, unused by 2.0's features (every account is equal under 10.C2), with no email
+
+**Q4 (10.C11 ui).** 10.C11, revised, with 10 open question 11 · Module boundaries. Proposed:
+- One Gradle project and one Spring Boot application, with C1's five modules as top-level packages: fusion.frontend.ui, .accounts, .sessions, .pipeline and .runner.
+- C1's 'web' module ('pages') becomes 'ui', the JavaFX screens and the launcher, and JavaFX types appear only in ui, so the other four modules can be tested without a display.
+- A Spring Modulith test, ApplicationModules.of(…).verify(), fails the build if one module reaches into another's internals or the dependencies form a cycle. Lower modules declare interfaces that runner implements (pipeline's CatalogProvider, sessions' SessionUse).
+- Open question 11: the rename changes the skeleton's wording, not its structure. C1 names the module 'web', and A1 says a crash 'ends one run, not the web server'. Wording notes go on both.
+
+- Rename to ui, note C1 and A1 (Recommended): Five packages checked by a test; wording notes on the skeleton.
+- Keep the name web: C1's wording unchanged, though the package holds JavaFX screens.
+- Five Gradle subprojects: One jar each, with dependencies enforced by the compiler.
+
+**Answer:** Rename to ui, note C1 and A1 (Recommended), settling 10.C11; closing 10 open question 11 with wording notes on skeleton C1 and A1
+
+## 199 · Poll · 2026-11-16 15:35
+
+Section 10's last items: the display's graph queries, and four mechanical follow-ups from the desktop revision.
+
+**Q1 (10 OQ9 display).** 10 open question 9 · Graph queries for the display (Phase 5). For corridors and frontier points, section 07's view JSON and results.json already hold the data, which the frontend reads in its own process. To draw a whole merged network, the display needs the network itself. That means either section 02's saved network file, which is a FuSION input format the frontend would then have to parse (against the rule that the frontend reads no FuSION input format), or a JSON view from a new read-only --query command of section 02. A1 still rules out a backend service. Proposed: leave it to Phase 5's display design, with section 02, as decision 0027 placed the display there.
+
+- Decide in Phase 5 (Recommended): Phase 5 designs the display and asks section 02 for what it needs.
+- Add a network JSON query now: Section 02 adds a read-only --query command that returns a saved network as JSON.
+
+**Answer:** Decide in Phase 5 (Recommended), 10 open question 9 deferred to Phase 5
+
+**Q2 (10 loose ends).** Four mechanical follow-ups from section 10's revision, grouped:
+- 2B.15's mark for shell commands is dropped. It existed so that lab mode could refuse exec blocks, and with no lab mode S8.27 offers them as decided. 2B.15's tool requirements in the command table stay.
+- Section 11 adds a console launcher on Windows for 'fusion-frontend --reset-password <username>', for example a second jpackage launcher with a console. Password resets go through the command line (10.C10), and the windowed launcher has no console there.
+- Section 01's Windows example drops its start line, now redundant because the shipped maps are the default (2B.4), and takes 1.7's pathz3 names (coexpression_csv, coexpression_threshold, frozen_threshold).
+- Section 10's example pex line relies on pex's default, every solved case, instead of writing cases=in,out, so sessions without an FSC work unchanged.
+
+- All four (Recommended): Applied by the owning sections' drafters.
+- Discuss some first: Name the items to take up separately (via Other).
+
+**Answer:** All four (Recommended)
+
+## 200 · Poll · 2026-11-16 15:37
+
+Section 11, first group: Spring Boot 4.1 and the compiler minimums (both amend the skeleton), target platforms, and where Z3 comes from.
+
+**Q1 (11.C21 Spring).** 11.C21 with 11 open question 1 · Spring Boot 4.1 instead of Spring Boot 3 (amends G2). G2 chose Java 21, Spring Boot 3 and Gradle. Support dates (endoflife.date, checked 2026-11-12):
+- Spring Boot 3.5, the last 3.x line, stopped receiving open-source releases on 2026-06-30; 3.5.16 (2026-06-25) is the last, and commercial support runs to 2032.
+- 4.0's free support ends on 2026-12-31.
+- 4.1, released on 2026-06-30, is supported until 2027-07-31.
+Proposed: amend G2 to Spring Boot 4.1 (4.1.2 today), with the Gradle 9.9.1 wrapper, before Phase 5 starts. Spring Boot 4.1.2 runs on Java 17 to 27, so G2's Java 21 stands. Phase 5 builds the frontend months from now, and a Spring Boot 3 frontend would ship without free security fixes. With the desktop app (10.C1), Spring Boot is the application framework, with no web server. The price is the move to Spring Framework 7 and Jakarta EE 11, before any frontend code exists.
+
+- Spring Boot 4.1 (Recommended): Amends G2; Gradle 9.9.1.
+- Keep Spring Boot 3.5.16: G2 as decided, with Gradle 8.14.7; fixes after 2026-06-30 only with commercial support.
+- Spring Boot 4.0: Free support ends on 2026-12-31.
+
+**Answer:** Spring Boot 4.1 (Recommended), amending skeleton G2; closing 11 open question 1
+
+**Q2 (11.C22 compilers).** 11.C22 with 11 open question 2 · Compiler minimums GCC 13 and Clang 17 (amends G1). G1 set C++20 with GCC 12 and Clang 15 as the oldest compilers. std::format arrives in libstdc++ with GCC 13, and in libc++ without the experimental flag with LLVM 17, so under G1 the design avoids it. Proposed: raise G1's minimums to GCC 13 and Clang 17, so the code may use std::format. Every release compiler proposed here already qualifies (GCC 14 in manylinux_2_28, Apple Clang from Xcode 16.4, MSVC 19.44), and so does this machine's GCC 13.3. GCC 12 remains only on older distributions such as Debian 12 and Ubuntu 22.04, and releases are built in manylinux_2_28 anyway. The backend formats messages everywhere: errors, console milestones and file headers.
+
+- GCC 13, Clang 17 (Recommended): Amends G1; std::format allowed.
+- Keep G1, avoid std::format: As the design does now.
+- Keep G1, add {fmt}: The {fmt} library (MIT) for formatting.
+
+**Answer:** GCC 13, Clang 17 (Recommended), amending skeleton G1; closing 11 open question 2
+
+**Q3 (11.C1 targets).** 11.C1 · Target platforms and oldest supported versions. Proposed:
+- Linux x86-64 with glibc 2.28 or later, built in the manylinux_2_28 image (AlmaLinux 8). That covers RHEL, Rocky and Alma 8 to 10, Debian 10 and later, and Ubuntu 20.04 and later.
+- macOS 13.3 or later, as two builds, arm64 and x86-64. The x86-64 build continues while GitHub offers Intel runners (macos-15-intel, announced until about August 2027).
+- Windows 10 22H2 and Windows 11, x86-64. Windows on Arm runs it under emulation.
+- No Linux arm64 or native Windows arm64 builds at first.
+Labs and clusters commonly run RHEL-family 8 or 9 (glibc 2.28, 2.34), Debian 12 (2.36) and Ubuntu 22.04 (2.35), while the official Z3 Linux archives, FuSION 1's binary and Ubuntu 24.04's libz3 all need glibc 2.38. macOS 13.3 is the oldest whose system libc++ has std::to_chars for doubles, which S1.27's exact numbers need. Whether OpenJFX 21.0.13's Linux libraries meet glibc 2.28 is checked in Phase 4 (11 open question 9).
+
+- As proposed (Recommended): glibc 2.28, macOS 13.3 (both architectures), Windows 10 22H2 and 11.
+- Linux floor glibc 2.39: Ubuntu 24.04, Debian 13 and RHEL 10, so the official Z3 archives serve every platform.
+- Add arm64 builds now: Native Linux arm64 and Windows arm64 builds.
+- macOS arm64 only: No Intel macOS build.
+
+**Answer:** As proposed (Recommended)
+
+**Q4 (11.C3 Z3 source).** 11.C3 · Where each platform's Z3 comes from. Proposed:
+- On macOS and Windows: the official release archives, checked against the release page's SHA-256 digests.
+- On Linux: the official source archive, built once per toolchain in the manylinux_2_28 image and cached, since the official Linux archives need glibc 2.38.
+- FUSION_Z3_PROVIDER=SYSTEM accepts an installed Z3 only if its version equals the pin. This is how section 11 reads G1's 'from the system or a pinned download'.
+The official macOS and Windows builds are the ones that Z3's own cross-platform determinism checks run on. A source build costs CI time once per Z3 version and toolchain, because the result is cached.
+
+- As proposed (Recommended): Official archives on macOS and Windows; a cached source build on Linux.
+- Build from source everywhere: One set of flags everywhere, with more CI time, dearest on macOS.
+- Official archives on Linux too: With C1's glibc 2.39 floor.
+- Linux library from Z3's wheel: The manylinux_2_27 libz3.so from Z3's Python wheel.
+
+**Answer:** As proposed (Recommended), settling 11.C3 as the reading of G1
+
+## 201 · Poll · 2026-11-16 15:39
+
+Section 11, second group: pinning, CMake targets with the module dependency edges, compilers, and gnuplot. Before the poll, Claude checked how a tool is looked for (11-build.md:476) and found that the design does not say whether exec lines see the bundled tools on PATH; that is asked with 11.C20.
+
+**Q1 (11.C4 pinning).** 11.C4 · Pinning and verifying fetched dependencies. Proposed: every artefact is pinned by version and SHA-256 in one file per build.
+- C++: CMake FetchContent with URL and URL_HASH SHA256 in cmake/FusionVersions.cmake, and FETCHCONTENT_TRY_FIND_PACKAGE_MODE NEVER.
+- Java: the version catalog plus Gradle's dependency verification (verification-metadata.xml, with SHA-256 for every jar and plugin), and the wrapper's distributionSha256Sum.
+FuSION 1 pinned nothing ('pip install pyvis gseapy', with no versions). S7.02 and S7.04 found the cost: pandas 3 removed an argument that gseapy 1.3.1 still passes, so an inf in the LFC file now crashes the GSEA step. The four C++ libraries are small, have no dependencies and build with CMake, so FetchContent needs no extra tool. Dependency verification makes a changed or substituted jar fail the build; its cost is regenerating the file whenever a version changes.
+
+- FetchContent + verification (Recommended): Pinned by version and SHA-256 on both sides.
+- vcpkg manifest mode: A pinned baseline that could also build gnuplot's cairo and pango stack, but another tool and long first builds.
+- Conan 2 with lockfiles: A package manager for the C++ side.
+- Vendor the C++ sources: Into third_party/, which amends G1's 'fetched at pinned versions by the build'.
+
+**Answer:** FetchContent + verification (Recommended)
+
+**Q2 (11.C6 targets).** 11.C6 with cross-section row 1.2 · CMake targets and module dependencies. Proposed:
+- One static library per backend module, each with its own include directory, joined in an INTERFACE target fusion::libfusion; fusion is main.cpp alone. Z3 is linked privately to solve only, and pugixml to network only. Module dependencies are link edges, so an include that breaks the layering fails to compile. Parsing z3++.h costs 0.84 to 0.96 s and 125 to 134 MB per translation unit, paid only in solve.
+- 1.2: the sections' needs formed three cycles (corridor and expression; expression and batch; expression and results). The resolution: 11's edges stand, with expression gaining network and merge gaining expression. 04's matcher takes a network::GraphView (05 passes corridor.view()), and 04's cudf handler moves to batch (01.C9). The gnuplot runner sits in core (2B.13, accepted). results depends on solve, and batch calls publish_solve after the solve step (1.5, accepted).
+
+- Per-module libraries (Recommended): Link edges enforce the layering, with 1.2's edges.
+- One static libfusion: Every module's sources in one target, with layering kept by review.
+- A shared libfusion: A DLL on Windows needs export annotations on every public symbol.
+
+**Answer:** Per-module libraries (Recommended), settling 11.C6 and cross-section item 1.2
+
+**Q3 (11.C8 compilers).** 11.C8 · Compilers per platform. Proposed:
+- Linux releases: GCC 14 (gcc-toolset-14 in manylinux_2_28). CI also builds with Clang 18 every time and with the oldest accepted GCC weekly; the draft says GCC 12, which becomes GCC 13 after 11.C22.
+- macOS: Apple Clang from Xcode 16.4 or later.
+- Windows: MSVC 19.44 (Visual Studio 2022 17.14) or Visual Studio 2026, with MSVC 19.40 (2022 17.10) as the oldest accepted. G1 names no MSVC minimum, since Windows joined only with G3.
+manylinux_2_28's toolset links the newer parts of libstdc++ statically, so the binary keeps the glibc 2.28 floor. A Clang build on Linux catches what Apple Clang would reject before a macOS job is paid for. MSVC matches the ABI of Z3's official Windows archive.
+
+- As proposed (Recommended): GCC 14 releases, Clang 18 and GCC 13 in CI, Apple Clang, MSVC 19.40 or later.
+- clang-cl on Windows: Every platform on a Clang front end.
+- MinGW-w64 GCC on Windows: Linux and Windows share GCC, but Z3 must then be built from source on Windows.
+
+**Answer:** As proposed (Recommended), settling 11.C8, with the weekly oldest-GCC build at GCC 13 after 11.C22
+
+**Q4 (11.C9 gnuplot).** 11.C9 with cross-section row 3A.21 · gnuplot on each platform. Proposed: bundle gnuplot 6.0.5 everywhere.
+- Windows: the official gp605-win64-mingw.7z (43.9 MB), checked by its published SHA-256 and trimmed to gnuplot.exe and the libraries it loads.
+- macOS: built in CI from the 6.0.5 source with only the cairo terminals (no Qt, wxWidgets or X11), against Homebrew's cairo and pango, with the libraries copied into the bundle.
+- Linux: built the same way in manylinux_2_28, with its libraries collected.
+G3 asks that a biologist install one thing. No official macOS binary exists, and 6.0.6 has no Windows binary yet, so 6.0.5 is the newest available on all three. On Linux, cairo and pango with everything they load come to 37 libraries and 12.9 MB, while Ubuntu's gnuplot package pulls in 110 libraries (105.5 MB) for its Qt and wxWidgets terminals. conda-forge's gnuplot skips Windows.
+
+- Bundle 6.0.5 (Recommended): One gnuplot, cairo terminals only, on all three platforms.
+- Distribution gnuplot on Linux: The .deb and .rpm depend on gnuplot-nox or gnuplot; versions differ (6.0.0 on Ubuntu 24.04, 5.4.2 on 22.04).
+- Build all from source: gnuplot with its whole cairo and pango stack on all three platforms, for example through vcpkg.
+
+**Answer:** Bundle 6.0.5 (Recommended), settling 11.C9 (completing cross-section item 3A.21)
+
+## 202 · Poll · 2026-11-16 15:44
+
+Section 11, third group: installers, how JavaFX enters the bundle, the Gradle build, and the repository layout.
+
+**Q1 (11.C12 install).** 11.C12, revised for the desktop app · Installers. Proposed:
+- jpackage builds one installer per platform: a per-user .msi, one .dmg per macOS architecture, and a .deb and an .rpm.
+- Each holds a jlink'd runtime with the JDK modules needed and OpenJFX's base, graphics and controls (no javafx.web, per 10.C6), the frontend's jars on the class path, and the backend tree.
+- The launcher starts a normal windowed application. On Windows, a second launcher with a console runs 'fusion-frontend --reset-password' (poll 199).
+- Signing and notarisation stay as designed (open question 3).
+- Each release also has a backend-only archive per platform, for command-line and server use, the way FuSION 1 is actually used.
+jpackage is part of the JDK, makes native installers, and supports per-user Windows installs that need no administrator rights. The estimated installed size without WebView is about 120 to 210 MB.
+
+- jpackage + backend archive (Recommended): Native installers from the JDK's own packager.
+- A commercial packager: Conveyor or install4j: every platform from one machine, plus automatic updates.
+- Separate downloads: The backend archive, the frontend's jars, and a Java with JavaFX that the user installs.
+
+**Answer:** jpackage + backend archive (Recommended), settling 11.C12 for the desktop application
+
+**Q2 (11.C25 JavaFX).** 11.C25, new · How JavaFX and the frontend's jars enter the bundle. Proposed:
+- jlink puts OpenJFX's modules into the runtime image as named modules, from Gluon's jmods archive for each platform, pinned by version and SHA-256 in cmake/FusionVersions.cmake.
+- The frontend's own plain jar and its Spring Boot and other dependency jars go into jpackage's input directory and run on the class path.
+- The build compiles and tests against the same OpenJFX version's jars from Maven Central, declared directly with the platform classifier and covered by dependency verification (C4).
+Named JavaFX modules in the runtime image are the configuration OpenJFX supports. JavaFX classes loaded from the unnamed module have been unsupported since JavaFX 16, and warn at start-up. jlink also drops what is not used, so javafx.web never enters the image.
+
+- jlink jmods; jars on class path (Recommended): OpenJFX as named modules in the runtime image.
+- A JDK with JavaFX inside: Liberica Full or Zulu with JavaFX: one download, but the vendor and the JavaFX version come together.
+- Spring Boot's executable jar: bootJar, with nested jars and its own launcher, as the main jar.
+
+**Answer:** jlink jmods; jars on class path (Recommended)
+
+**Q3 (11.C13 Gradle).** 11.C13 · Gradle build script and Java toolchain. Proposed:
+- Kotlin DSL build scripts, a version catalog (gradle/libs.versions.toml) and the Gradle wrapper. The wrapper is now 9.9.1, with Spring Boot 4.1 (poll 200); the draft's 8.14.7 was for 3.5.
+- The Java toolchain asks only for language version 21, any vendor, and downloads Temurin 21 when no JDK 21 is installed.
+- The shipped runtime is pinned apart from it: the packaging step downloads the Temurin 21.0.13+9 JDK by URL and SHA-256, and runs jlink and jpackage from it.
+A Gradle toolchain cannot name an update release such as 21.0.13+9, so the exact runtime that users get is pinned where the image is made. That keeps the installers of one release identical, whatever JDK compiled the jar. This machine has OpenJDK 21.0.13, so builds here download nothing.
+
+- As proposed (Recommended): Kotlin DSL, Gradle 9.9.1, any JDK 21 to compile, pinned Temurin to package.
+- Groovy DSL: The older script language.
+- Temurin-only toolchain: Compiling also uses Temurin, so it refuses this machine's Ubuntu OpenJDK and downloads Temurin.
+- Installed JDK only: Never download one, and build the runtime image from whatever JDK is installed.
+
+**Answer:** As proposed (Recommended), settling 11.C13, with the Gradle 9.9.1 wrapper after 11.C21
+
+**Q4 (11.C14 layout).** 11.C14 with 10.C12 · Repository layout. Proposed:
+- backend/ (modules with their assets, the CLI, tests);
+- frontend/ (one Gradle project);
+- share/fusion/ (the data, the default pipeline and the font configuration that go into the home); 10.C12's default pipeline is share/fusion/pipelines/standard.json, and the build writes standard.batch from it;
+- packaging/, third_party/ (licence texts only), cmake/, .github/workflows/ and the existing docs/, with one version in VERSION.
+Two build systems live side by side without nesting, and packaging spans both, so it has its own directory. Per-module directories mirror the CMake targets and C1's modules. Nothing generated is tracked (S8.01, S8.31), and CLAUDE.md stays at the root (decision 0005).
+
+- As proposed (Recommended): backend/, frontend/, share/fusion/, packaging/ and the rest.
+- C++ at the top level: src/, include/ and tests/ at the root, with the frontend beside them.
+- Two repositories: Backend and frontend apart, which needs a new decision beside 0001.
+
+**Answer:** As proposed (Recommended), settling 11.C14 with 10.C12's place in the layout
+
+## 203 · Poll · 2026-11-16 15:46
+
+Section 11, fourth group: continuous integration, code signing, the version number, and linking Z3.
+
+**Q1 (11.C15 CI).** 11.C15 · Continuous integration. Proposed: GitHub Actions with three workflows.
+- Linux on every push.
+- macOS, Windows, the cross-platform identity test, the oldest-GCC build and the reproducibility check on pull requests into main, weekly and on demand, with section 12's ThreadSanitizer build weekly.
+- Packaging on version tags.
+Actions are pinned by commit SHA, the Z3 prefix and compiler caches are cached, and no secret exists until signing is decided. The repository is private, so minutes are billed: a macOS minute costs 10.3 times a Linux minute, and a full platform run about 12 times a Linux run. A self-hosted runner on this workstation would need a GitHub registration token here, against decision 0006's 'no credentials here', and would compete with solves that run for days (fdr050 took 50.7 h).
+
+- Three workflows (Recommended): Linux per push; other platforms on pull requests, weekly and on demand; packaging on tags.
+- Full matrix on every push: Every platform for every push, at about 12 times the Linux cost.
+- Self-hosted runner here: Needs a registration token on this machine, and competes with long solves.
+- No CI until public: Standard runners are free for public repositories; until then, Windows and macOS only by hand.
+
+**Answer:** Three workflows (Recommended)
+
+**Q2 (11 OQ3 signing).** 11 open question 3 · Code signing. Without an Apple Developer ID ($99 a year) and notarisation, the .dmg is blocked at first launch until the user allows it under System Settings, Privacy & Security. Without a Windows code-signing certificate or a signing service, the .msi meets a SmartScreen warning. Both need an account that you own, and a secret stored in GitHub, not on this machine (decision 0006). Nothing in Phases 3 to 5 needs signing. Proposed: build unsigned during development, and decide before the first public release, when you would create the accounts and add the secrets yourself.
+
+- Decide before release (Recommended): Unsigned development builds; signing settled before the first public release.
+- Set up signing now: You create the Apple and Windows signing accounts now, so CI signs from the start.
+- Ship unsigned: Users click past Gatekeeper and SmartScreen warnings, with instructions in the user guide.
+
+**Answer:** Decide before release (Recommended), 11 open question 3 deferred to before the first public release
+
+**Q3 (11.C16 version).** 11.C16 with 09.C5 (cross-section 3A) · One version number for the repository. Proposed: a top-level VERSION file (for example 2.0.0-dev), read by CMake and Gradle. The commit and a dirty flag are stamped at configure time, releases are tagged v2.y.z, and the frontend refuses a backend whose version differs from its own. 09.C5's build id, which goes into every resume fingerprint, is this version plus the commit, plus the executable's SHA-256 for a build with uncommitted changes (poll 166). The frontend and backend share the batch language, events.jsonl and run.json (A1, A2, E1), so they change together and ship in one installer (C12). A version taken from git alone is lost in a source archive without .git; a file is not.
+
+- One VERSION file (Recommended): Shared by backend and frontend; build id from it.
+- Separate versions: Backend and frontend versioned apart, with a compatibility table.
+- Versions from git tags: git describe only, which a source archive without .git loses.
+
+**Answer:** One VERSION file (Recommended), settling 11.C16 with 09.C5's build id
+
+**Q4 (11.C17 Z3 link).** 11.C17 · Linking Z3. Proposed: link Z3 as a shared library on every platform, ship it beside fusion (lib/, or bin\ on Windows), find it through the run path, and check its version at start-up (solve::verify_z3()). The official macOS and Windows archives that 11.C3 uses ship shared libraries, so one way of linking serves all three platforms. A static fusion would be one file fewer and could never meet a mismatched library, but it would need Z3 source builds on macOS and Windows too; the official Windows archive has only libz3.dll and its import library. The start-up check turns a mismatched library into a clear error before any work.
+
+- Shared, checked at start (Recommended): One way of linking on all three platforms.
+- Static Z3: One file fewer, but Z3 source builds on macOS and Windows too.
+
+**Answer:** Shared, checked at start (Recommended)
+
+## 204 · Poll · 2026-11-16 15:47
+
+Section 11, fifth group: core's components, environment overrides and exec's PATH, the Windows C++ runtime, and the shipped KGML list. Before the poll, Claude counted the exec gnuplot lines in the run batches (59 files; 71 lines with 'set term png'; plot_po.sh uses pngcairo).
+
+**Q1 (11.C19 core).** 11.C19 with 11 open question 8 · Where four platform components live. This amends C1's description of core, which lists 'ids, errors, logging and events, the settings registry, … seeded random numbers and stable orderings'. Proposed: put build information, the install directory, the platform layer (processes, paths, CPU time) and the dependency registry in core as well, beside 09's run-level parts. Every module and the executable need them: batch runs exec and the checks, results and expression start gnuplot, solve needs per-check CPU time, and run records the versions. core is the only module that every other links. Section 09 already puts path conversion, process CPU time, peak memory and build_id() in core. A separate platform module would add a target and a layer for four small headers, and would amend C1's module list instead.
+
+- In core (Recommended): Amends C1's description of core.
+- A new platform module: An eleventh backend module, which amends C1's module list.
+- Split between run and batch: Build information and the install directory in run; the process layer and the dependency registry in batch.
+
+**Answer:** In core (Recommended), amending skeleton C1's description of core; closing 11 open question 8
+
+**Q2 (11.C20 tools).** 11.C20, with a gap found while checking it · Environment overrides, and how exec lines find gnuplot. Proposed: three environment variables, each recorded in run.json under environment: FUSION_HOME (the home), and FUSION_GNUPLOT and FUSION_DOT (those programs' paths). They reach fusion however it is started, and tests need a fake home and fake tools without changing batch files. FuSION 1's launchers steered the tools through PATH, with no record.
+The gap: the design does not say whether exec lines find the bundled gnuplot. 59 corpus batch files run gnuplot inside exec lines, 71 of those lines use 'set term png', and S6.25 keeps them working, so on a machine without a system gnuplot they would fail. Proposed: exec lines get FuSION's bundled tools directory appended to PATH, so a system gnuplot, as FuSION 1 used, still comes first. Phase 4 checks that the cairo-only bundled build accepts 'set term png'.
+
+- Overrides; bundled tools last (Recommended): Env overrides recorded; exec's PATH ends with the bundled tools.
+- Overrides; PATH untouched: exec lines use only the user's own tools, as in FuSION 1.
+- Overrides; bundled tools first: Every exec gnuplot line uses the bundled build, like plot_pareto.
+- Command-line options: --home and --gnuplot in section 01's table instead of environment variables, with bundled tools last.
+
+**Answer:** Overrides; bundled tools last (Recommended), settling 11.C20 and the exec PATH gap
+
+**Q3 (11.C23 VC++).** 11.C23 · The Visual C++ runtime on Windows. Proposed: copy the Visual C++ runtime DLLs that fusion.exe and libz3.dll import, from the Visual Studio used for the build, next to fusion.exe in bin\. The official 5.3.3 Windows archive itself carries nine runtime DLLs beside libz3.dll (1,523,592 bytes: msvcp140*.dll, vcruntime140*.dll, vcomp140.dll), so libz3.dll needs them, and a clean Windows machine may have none. Microsoft's terms for these redistributable files allow copies beside the program that uses them. The cost is that each FuSION release must carry runtime fixes itself. Microsoft's Redistributable installer would let Windows Update service the runtime, but it needs administrator rights, against 11.C12's per-user install.
+
+- DLLs beside fusion.exe (Recommended): Per-user install with no administrator rights.
+- Run the Redistributable installer: Windows Update services the runtime, but the install needs administrator rights.
+- Static C runtime (/MT): Needs a Z3 source build on Windows with /MT too.
+
+**Answer:** DLLs beside fusion.exe (Recommended)
+
+**Q4 (2B.5 KGML list).** Cross-section rows 2B.5, 4A.10 and 4B.41 · The shipped KGML list. S8.31 decided to ship 'a KGML list resolved against the user's own KGML directory' (with no KGMLs). Section 10 needs it in share/fusion/data/, but section 11's layout shipped only the two maps, an unflagged departure from S8.31. Proposed: section 11 ships data/kegg_pathways.txt, the 167 candidate pathways of FuSION 1's list (auxilliary/list_of_kegg_xml_files.txt) as bare pathway ids, which 02.C12 resolves against each user's kgml_dir, and lists it in fusion-data.json. A list of pathway ids carries no KEGG content.
+
+- Ship the 167 ids (Recommended): As S8.31 decided; bare ids resolved against the user's KGML folder.
+- Ship no list: Users bring their own list, which amends S8.31.
+
+**Answer:** Ship the 167 ids (Recommended), settling cross-section items 2B.5, 4A.10 and 4B.41
+
+## 205 · Poll · 2026-11-16 15:49
+
+Section 11's last items: the reference maps, and the Phase 3 and 4 checks with one text correction.
+
+**Q1 (11 OQ4 maps).** 11 open question 4 · May the two reference maps be shipped? S8.31 and S8.13 ship them, with their source and date, as the default maps. But their source is unknown: they entered FuSION 1 in commit ba2700c (2025-08-12, 'Add files via upload').
+- The pathway-name map has 479 rows with KEGG pathway ids and 2,341 rows with Reactome-style pathway_ ids. Reactome's data are CC BY 4.0, which requires attribution. KEGG's terms restrict redistribution of KEGG data, which is why no KGML is shipped.
+- The symbol map pairs NCBI Gene ids with symbols. NCBI Gene and HGNC data are free to redistribute.
+Proposed: rebuild both from sources with clear terms, recorded in data/SOURCES.md: the symbol map from NCBI Gene; the Reactome names from Reactome, with attribution. KEGG pathway names are not shipped. They come at run time from the title attribute that every KGML's root element carries ('MAPK signaling pathway'), read from the user's own KGMLs. That last part is my suggestion, beyond the section's text.
+
+- Rebuild; KEGG names from KGMLs (Recommended): Clear sources recorded; no KEGG data shipped.
+- Rebuild both, KEGG names included: Ship KEGG pathway names too, from KEGG's own list, under its terms.
+- Ship FuSION 1's maps as they are: Unknown source and unclear terms for the KEGG and Reactome rows.
+- Ship no maps: Users supply them, which amends S8.13 and S8.31.
+
+**Answer:** Rebuild; KEGG names from KGMLs (Recommended), closing 11 open question 4; a new rule for 02 (KEGG pathway names from each KGML's root title) and 11 (data/SOURCES.md)
+
+**Q2 (11 remaining).** Section 11's remaining items, grouped. Each is checked on a real machine in Phase 3 or 4, or is a text correction:
+- open question 5: whether the official Windows gnuplot honours PANGOCAIRO_BACKEND=fc and FONTCONFIG_FILE, which 11.C10 depends on (one plot on Windows in Phase 4; the fallback is to install the font per user);
+- open question 6: Z3 5.3.3's speed on FuSION's dumps, which is X11, the gate on the Z3 pin (poll 173);
+- open question 7: busybox-w32's date %N and bash applet (01 open question 6), run once on Windows in Phase 4;
+- open question 9: whether OpenJFX 21.0.13's Linux libraries meet the glibc 2.28 floor (objdump -T on the jmods' libraries in Phase 4);
+- poll 204's check that the cairo-only bundled gnuplot accepts 'set term png';
+- the correction of 11.C24's sentence about which OpenJFX lines run on Java 21 (22.x does too).
+
+- Record all (Recommended): Phase 3 and 4 checks recorded in 11 and 12; the correction sent to 11's drafter.
+- Discuss some first: Name the items to take up separately (via Other).
+
+**Answer:** Record all (Recommended)
+
+## 206 · Poll · 2026-11-16 15:52
+
+Section 12, first group: test tiers, layout, test data under the KEGG licence, and the reference outputs.
+
+**Q1 (12.C1 tiers).** 12.C1 · Test tiers, their budgets and where they run. Proposed, five tiers:
+- T0 unit and T1 end to end: repository data only, on every local build. In CI they run on Linux for every push, and on macOS (arm64 and x86-64) and Windows weekly and before merges into main (11.C15). Budgets of 1 and 5 min per platform.
+- T2 fast reference: the data root, on the workstation, before committing a change to merge, corridor, solve or enrichment. 15 min.
+- T3 full reference by verification: before a release and after encoding, corridor or merge changes. About 24 h (12 h on 16 workers).
+- B benchmarks: on demand.
+Plus a once-off golden search at the end of Phase 4, and a weekly ThreadSanitizer run beside 11's per-push AddressSanitizer and UndefinedBehaviorSanitizer build. FuSION 1's solve times over the 24 valid runs range from 0.75 s to 187,623 s, fourteen of them above 11,000 s. KEGG data exists only on the workstation (12.C3), so T2 and T3 cannot run in hosted CI.
+
+- Five tiers (Recommended): T0, T1, T2, T3 and B, with the golden search once.
+- One suite before every commit: Everything every time, which would stall work for a day.
+- Reference tests at phase ends: A merge or encoding regression could then go unseen for weeks.
+
+**Answer:** Five tiers (Recommended)
+
+**Q2 (12.C2 layout).** 12.C2 with cross-section row 2A.10 · Test layout and conventions. Proposed:
+- a backend/tests/ tree (11's layout), with a test-only fusion_testkit library;
+- one Catch2 executable per module, registered with catch_discover_tests;
+- tags turned into CTest labels for tiers, plus spec-item tags ([S2.22]) and a traceability test over the 209 spec items (12.C17);
+- one fusion-test driver with data, e2e, ref and bench subcommands;
+- fake-fusion in tools/, for the frontend's runner tests;
+- one copy of the JSON Schemas in schemas/, each written by its format's owner and read by the frontend's tests too (2A.10, accepted).
+catch_discover_tests runs each test case in its own process, and per-module executables mean that editing merge's tests relinks only test_merge. A separate tree keeps test-only code, and the independent oracles that must not share code with the modules, out of the module sources.
+
+- As proposed (Recommended): Per-module executables, spec tags, one driver, one schema copy.
+- One test executable: Everything in one binary.
+- Tests beside their sources: For example backend/modules/merge/src/merge_test.cpp.
+
+**Answer:** As proposed (Recommended), settling 12.C2; closing 12 open question 2 with 2A.10
+
+**Q3 (12.C3 data).** 12.C3 with 12 open question 4 · Test data under the KEGG licence. Proposed:
+- The repository holds only synthetic data and files without KEGG content: fixtures (including FuSION 1's toy network, relabelled), FuSION 1's outputs on synthetic inputs, and the batch corpus (1.30 MB).
+- Everything derived from KEGG lives in a data root outside the repository, found through FUSION_TEST_DATA and hash-checked against backend/tests/reference/data-manifest.json. That covers the KGMLs, the old master, FuSION 1's outputs on KEGG data, and the model example's reduced master. That file, dummy_master_graph.xml, holds 125 entries and 479 relations taken from KEGG, and open question 4 treats it as KGML data under S8.31.
+- Tests that need the root are skipped, with the reason, when it is missing or differs.
+The root is an estimated 150 to 200 MB, built in one command from the FuSION 1 tree. Downloads cannot reproduce FuSION 1's inputs: its KGMLs carry an experiment_score stamped by add_experiment_score.py, and KEGG's current files differ from the 2026-03-17 copies.
+
+- Data root outside the repo (Recommended): Hash-checked, with skipped tests when it is absent.
+- Download KGMLs at test time: From KEGG's REST service, which cannot reproduce FuSION 1's stamped inputs.
+- A private repository: Still a hosted copy of KEGG data.
+
+**Answer:** Data root outside the repo (Recommended), settling 12.C3; closing 12 open question 4 (the reduced master is KGML data)
+
+**Q4 (12.C4 refs).** 12.C4 · Where FuSION 1's reference outputs come from. Proposed, a hybrid:
+- reuse the 24 runs recorded on or after 2026-07-16;
+- regenerate the toy cases, the 15 EGF-HeLa b6 cases and the model example with the frozen snapshot's binary (decision 0024);
+- add capture batches (no pathz3) that write each case's re-read graph and corridors with wgx.
+The 24 runs hold 344.9 h of solve time, which regenerating would cost again (at least 52.1 h of wall time, even in parallel). Their builds match the snapshot in results, per FuSION 1's changelog, and five reruns in Phase 3 confirm it. Older recorded runs differ: indirect relations were kept before 2026-06-23, and experiment_score was lost before 2026-07-09. Recorded outputs alone lack corridors, which the pinned solve and the checker need; a capture takes at most about a minute per case.
+
+- Hybrid (Recommended): Reuse 24 runs, regenerate the cheap cases, capture corridors.
+- Regenerate every case: With the snapshot binary: 344.9 h of solving again.
+- Recorded outputs only: No corridors for the pinned solve and the checker.
+
+**Answer:** Hybrid (Recommended)
+
+## 207 · Poll · 2026-11-16 15:53
+
+Section 12, second group: comparing with FuSION 1, the expected-differences list, the slow tier, and the runner's language.
+
+**Q1 (12.C5 compare).** 12.C5 · How results are compared with FuSION 1. Proposed:
+- canonical fact sets per stage;
+- two modes: chained (the batch run through fusion) and pinned (each stage at library level on FuSION 1's recorded input);
+- frontiers compared exactly on definite answers;
+- witnesses judged by an independent checker under fusion1 and fusion2 semantics, with rules R1 to R4;
+- unknown answers reported as inconclusive.
+E1 changes every output format, so textual diffs fail on every case. Witness equality fails on correct runs: one point of r5 was answered in 0.76 s, timed out at 4 h, and took 442.6 s, depending on the solver's history. Frontier-only comparison accepts invalid witnesses and cannot explain a moved point. Pinning localises cascades, such as a GSEA difference changing every later stage of the 18 GSEA cases. The checker is validated on real data: all 177 witnessed FuSION 1 points have counts equal to their point.
+
+- Fact sets, two modes, checker (Recommended): Exact frontiers on definite answers; witnesses checked, not compared.
+- Textual diffs: Of output files, which fail on every case after E1.
+- Frontier-only: Accepts invalid witnesses and cannot explain a moved point.
+- Witness equality: Fails on correct runs whose solver history differs.
+
+**Answer:** Fact sets, two modes, checker (Recommended)
+
+**Q2 (12.C6 diffs).** 12.C6 · The recorded list of expected differences (decision 0023). Proposed: backend/tests/reference/expected-differences.json in the repository. Each entry has an id, the spec items, a reason, an applicability predicate, the facts it allows, an optional prediction, and the cases where it is seen. The runner fails on a difference that no applicable entry allows, on a failed prediction, and on a stale entry. The draft had 17 initial entries; XD-02 went with 08.C1's exact gseapy port, and the changes accepted in these polls (05.C2's trimming, the complex rule of poll 170, 06.C20's witness replacement and others) add entries of their own. A machine-checked list stops one entry from masking an unrelated regression in another case, and stale detection keeps the list true as 2.0 changes. JSON uses nlohmann/json, already a dependency (G1).
+
+- Machine-checked JSON list (Recommended): Fails on unexplained, mispredicted or stale differences.
+- Free-text list: Checked by hand.
+- Per-case overrides: Golden overrides with no stated reason.
+- TOML or YAML: The same structure, with a second parser for the sake of comments.
+
+**Answer:** Machine-checked JSON list (Recommended), settling 12.C6; the drafter adds entries for the changes accepted in polls 158 to 205
+
+**Q3 (12.C7 verify).** 12.C7 · The slow tier by frontier verification. Proposed: verify each slow case's reference frontier of k points with at most 2k + 1 independent single-point checks, run in parallel worker processes. A full search runs only when verification finds a difference, and once to record 2.0's own frontiers. Over the 24 valid runs, verification needs 360 checks against the search's 703, and 702,742 s of check time against 1,057,265 s. The checks are independent, so the wall time falls from the 41.6 h of the slowest sequential search to about 12 h on 16 workers, never below the 4 h cap. It uses decision 0019's single-point check (06.C9's points=).
+
+- Verify, search on difference (Recommended): At most 2k + 1 parallel checks per case.
+- Full search every time: Re-run each case's whole Pareto search.
+
+**Answer:** Verify, search on difference (Recommended)
+
+**Q4 (12.C8 runner).** 12.C8 · The language of the reference runner and drivers. Proposed: C++, in fusion-test, linking libfusion and the test kit. gseapy's values are recorded once in Phase 3, so no Python runs at test time. Pinned runs must call the library stage by stage (B1), and Python would need bindings to libfusion or a command-line path for every pinned input. One C++ toolchain already exists on all three platforms (G3), while F1 removed Python from the product. CMake scripts cannot compare canonical graphs or run the checker.
+
+- C++ (Recommended): fusion-test linking libfusion; no Python at test time.
+- Python scripts: Need bindings to libfusion or a CLI path per pinned input.
+- CMake scripts: Driving CTest; cannot compare canonical graphs or run the checker.
+
+**Answer:** C++ (Recommended)
+
+## 208 · Poll · 2026-11-16 15:55
+
+Section 12, third group: benchmarks, oracles for S2.22, Phase 3 experiments, and the golden frontiers.
+
+**Q1 (12.C13 bench).** 12.C13 · Benchmark harness. Proposed: fusion-test bench, with
+- real-size cases from the data root, plus synthetic-scale cases in CI;
+- each case in its own child process, the median of 5 runs after a warm-up;
+- wall time, CPU time and peak memory recorded;
+- a JSON-lines history per machine, flagged at 1.25 times the median of the last 5 entries;
+- the budgets the module sections state, checked separately.
+The costs that matter are whole steps on real inputs: merges of 3 to 126 s, GSEA at 318 MB, 23.8 s of closure, and 1.1 to 2.0 GB per slow b10 run. Peak memory per step needs a separate process. Google Benchmark is a further dependency built for micro-benchmarks in one process, and Catch2's BENCHMARK keeps neither history nor memory.
+
+- fusion-test bench (Recommended): Child process per case, median of 5, history per machine.
+- Google Benchmark: A micro-benchmark library: a further dependency, one process.
+- Catch2 BENCHMARK alone: No history and no memory figures.
+
+**Answer:** fusion-test bench (Recommended)
+
+**Q2 (12.C14 oracles).** 12.C14 with 12 open question 5 · Oracles for S2.22's equivalence. S2.22 decided that each pathway list is merged once without the run's exceptions and the exception ids are split out afterwards, and asked Phase 3 to show the split equals 'merging with the exceptions'. Proposed: two oracles. Section 03's merge_direct is the first. The test kit adds a second, exception_merge, written from S2.07 to S2.21 with its own KGML reading and no code shared with merge or network (about 300 lines). Both are checked against every exception subset of small synthetic sets, against 1,000 random cases per run (100,000 weekly), and on the 7 real merges. They are cross-checked against FuSION 1's merge under the recorded expected differences. A bug in the code that split and merge_direct share would make both wrong the same way, which the independent oracle catches. Open question 5: this reads 'merging with the exceptions' as 2.0's own exception-aware semantics, not FuSION 1's merge alone.
+
+- Two oracles; 2.0's semantics (Recommended): merge_direct plus an independent exception_merge, with FuSION 1 as a cross-check.
+- merge_direct alone: As section 03 proposes.
+- FuSION 1's merge as oracle: It can check only the inputs it is run on, and differs from 2.0 by five fixes.
+
+**Answer:** Two oracles; 2.0's semantics (Recommended), settling 12.C14; closing 12 open question 5 as the reading of S2.22
+
+**Q3 (12.C15 Phase 3).** 12.C15 · Which Phase 3 experiments to run. Proposed: run X02, X03, X05, X06, X07, X08 and X11, which inform 2.0's design, certify the references or gate the Z3 pin: about 30 h of wall time on the workstation.
+- X07 decides the 26 undecided queries of the 24 valid runs fresh, under a 24 h cap and with up to 26 threads, which turns up to 23 inconclusive verification points into decided ones.
+- X11 is the Z3 gate (poll 173), about 5 h on 16 workers, and must finish before Phase 4.
+- X07's second pass runs with the pinned Z3 once installed.
+X01, X04, X09 and X10 (about 30 min in all) only document FuSION 1's behaviour, so they run only if you want that. The Phase 3 measurements added in these polls are planned beside these: 05's capped simple-path pruning, 06.C5's cache gains, 07's layout check under vis-network 10, and the Phase 4 checks of poll 205.
+
+- The seven, ~30 h (Recommended): Design, certification and the Z3 gate; FuSION 1-only experiments skipped.
+- All eleven: Also document FuSION 1's behaviour (about 30 min more).
+- Cheap ones and X11 only: Skip X07's 24 h run, leaving up to 23 points inconclusive.
+
+**Answer:** The seven, ~30 h (Recommended), settling 12.C15, with the Phase 3 measurements added in polls 170, 172, 177 and 205 planned beside them
+
+**Q4 (12.C16 golden).** 12.C16 · What the slow tier verifies against after the golden search. Proposed: once the golden search at the end of Phase 4 has run and you have reviewed its frontiers, T3 verifies each case against 2.0's own reviewed frontier. The comparison with FuSION 1 (R1 to R4, under the expected-differences list) then runs before each release, and whenever the list changes. Against FuSION 1's frontiers, every case where a point moved fails verification at that point: 3 cases for XD-07 alone, and with Z3 5.3.3 possibly more. Each failure triggers a full search, 41.6 h for the slowest case. 2.0's reviewed frontiers make verification a plain pass or fail. The risk is a wrong frontier accepted in review, which the release-time FuSION 1 comparison would still catch.
+
+- 2.0's reviewed frontiers (Recommended): With the FuSION 1 comparison before each release.
+- Always FuSION 1's frontiers: Under the expected-differences list; every moved point triggers a full search.
+- Switch case by case: As each case's differences are explained.
+
+**Answer:** 2.0's reviewed frontiers (Recommended)
+
+## 209 · Poll · 2026-11-16 15:56
+
+Section 12's last choice and open questions. This completes the polls of decision 0031 for all twelve sections and the cross-section items.
+
+**Q1 (12.C17 trace).** 12.C17 · When the traceability test starts to fail. Proposed: during Phase 4 the traceability test only reports. From the end of Phase 4 it fails for any spec item without a tagged test, except items listed with a reason in backend/tests/traceability-exempt.txt, at first the pure drops. Phase 4 builds one module at a time (decision 0003), so failing earlier would keep the suite red for weeks and hide real failures. By the end of Phase 4 every module exists, and an untested decision is then a gap rather than work in progress. Of the 209 items, 16 have decisions that begin with 'drop', and most leave nothing to test. Report-only for ever would let gaps stay unnoticed.
+
+- Fail from the end of Phase 4 (Recommended): Report-only while modules are built; exempt list for drops.
+- Fail from Phase 3: Every item needs a test before its code exists.
+- Never fail: Report only.
+
+**Answer:** Fail from the end of Phase 4 (Recommended)
+
+**Q2 (12 remaining).** Section 12's remaining open questions, grouped:
+- open question 6, the workstation: T3 needs 16 to 32 threads for about a day, X07 and X11 about 30 h between them, and benchmarks need a quiet machine, while up to 18 FuSION 1 jobs ran on it at once. Proposed: Phase 3's long experiments and the benchmarks are scheduled with you, on a quiet machine, and never started alongside your own runs without asking (as your earlier guidance on side runs asks).
+- open question 8 is closed by 10.C16 (runs outlive the frontend): the test checks that a run continues and stays resumable when the frontend exits.
+- open questions 1, 3, 7 and 9 are closed by 01.C11, 2B.8 (rlimit), 11.C2 (XD-15 for Z3 5.3.3) and 08.C1.
+- Section 12's frontend tests follow 10's desktop design: the runner tested with fake-fusion, the four service modules without a display, and screen tests under Xvfb on Linux CI (section 11).
+
+- All as proposed (Recommended): Recorded in section 12.
+- Discuss some first: Name the items to take up separately (via Other).
+
+**Answer:** All as proposed (Recommended), closing 12 open questions 1, 3, 6, 7, 8 and 9
+
+## 210 · Poll · 2026-11-16 16:00
+
+Mop-up poll after Claude cross-checked the ledger against every choice heading in the twelve sections, every cross-section item, and every section's open questions: 10.C20 had been settled only through 3A.9's formula, and section 06's open questions 5 and 6 had not been put to the user. Every other item was found decided.
+
+**Q1 (10.C20 queue).** 10.C20 · Runs at once in the frontend. Poll 173 settled only its formula, counting cores per FSC case (3A.9). The choice itself: one first-in, first-out queue for all of an instance's runs. At most min(⌊logical CPUs / 2⌋, ⌊physical memory / 3 GiB⌋) cores are in use, and at least 1: 18 on this machine, and 4 on an 8-thread laptop with 15.5 GiB. A run needs one core per FSC case of its solve (06.C4), and the user can change the limit. Per-query timeouts are wall-clock (S5.21), so two cases sharing a core both run slower, and a check that finishes in time alone can time out and change a frontier. You ran 4, 9 and 18 solves at once on this machine. One run at a time would have turned the 9 candidate runs' 52.1 h into 245.4 h.
+
+- Queue counted in cores (Recommended): First in, first out, within the core and memory limit; the user can change it.
+- No limit: Every Submit starts at once, as your launch scripts do.
+- One run at a time: The simplest queue; the 9 candidate runs would take 245.4 h.
+
+**Answer:** Queue counted in cores (Recommended)
+
+**Q2 (06 OQ5, OQ6).** Section 06's last two open questions, grouped:
+- Open question 5, resume is cold: a resumed case starts without the learned clauses of the solve it continues, so its first checks can be far slower (258 s against 0.0001 s for one measured point). Z3 offers no way to save that state. Proposed: record it as a known cost of resuming, with no design change.
+- Open question 6, the counter encoding: both relaxation sums stay linear adder chains at full width (S5.09 keeps the bit-vector encoding). A balanced adder tree or a sorting network could speed the hard checks, but this was not measured. Proposed: Phase 3 compares them on the real dumps, beside X11, and any change comes back to you as a decision.
+
+- Both as proposed (Recommended): A known cost noted; the encoding comparison added to Phase 3.
+- Skip the encoding comparison: Keep FuSION 1's adder chains without measuring alternatives.
+
+**Answer:** Both as proposed (Recommended), closing 06 open questions 5 and 6
+
+## 211 · Subagent prompt · Approved changes sent for section 01 · 2026-11-16 16:02
+
+Sent to the section 01 drafter after the last poll (entry 210), under decision 0031's step 1. The message as sent:
+
+```text
+Every poll on the architecture sections is now done (prompt log entries 158 to 210 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/01-batch-language.md to apply every answer that touches it:
+
+1. The answers below come from Claude's ledger, one line each: the item, the answer and the log entry. For the exact wording, read the entry. For a cross-section item (numbers such as 1.4, 2A.6, 2B.3, 3A.15 or 4A.11), also read its resolution in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/xcheck/conflicts.md; its "Text changes" line says which sections change.
+2. Where the user accepted your proposal, keep the choice, adjusted for the other answers. Where the user chose an alternative or a changed version (marked in the line), make the chosen option the proposal, move the old proposal under Alternatives, and rewrite the design to match.
+3. Where an answer amends a decided spec item or a skeleton Choice, name it in the choice ("amends S5.20; accepted in prompt log entry 174"). Notes in the spec and the skeleton are Claude's to write; do not edit those files.
+4. Close each open question that an answer settles, with a one-line note naming the entry.
+5. Keep every "- **Decision:** pending" line; Claude fills them in from the ledger after your revision.
+6. Make names, events, settings, paths and examples agree with the answers throughout the section, not only in the choice an answer names.
+
+The answers that touch your section:
+- 1.1 core vocabulary (09's names) (entry 158)
+- 1.9 --check --json (01 diagnostics + 09 fields) (entry 158)
+- 1.31 small mismatches follow owner (entry 158)
+- 1.32 stale cross-references updated (entry 158)
+- 2A.1 tool check owned by 11 (entry 158)
+- 2B.6 labels query command (entry 158)
+- 2B.9 answers_from, free in 01's pathz3 row (entry 158)
+- 2B.11/12/14/18 02 builder calls, line text, Maps, normalise_subtype; 08 Shortlist (entry 158)
+- 2B.15 command table: tool needs + shell mark (entry 158)
+- 2B.16 install/deps errors via 09 error event; exit 1 (entry 158)
+- 2B.4 start optional, shipped maps by default (amends S1.15; closes 01 OQ4) (entry 163)
+- 2A.4 load restores exactly; rgx compares and rebuilds; mff from_saved dropped (entry 164)
+- 3A.1 01.C17 look-ahead (BatchFacts) wins; 03.C1 args default to 01's facts; run params = alternative; look-ahead also collects confirmed lists (3B) (entry 165)
+- 03 OQ1 old batches keep their start set; 01's check note (closes 01 OQ5) (entry 165)
+- 3A.13 03.C2 confirmed genes join E (amends S8.22) + 04.C4 Not DE in cudf first (narrows S3.08); closes 04 OQ4 (entry 165)
+- 3A.19 04.C2 one decimal grammar via fast_float (11.C5) for values, thresholds, real args, scores (refines S3.02; settles S3.03) (entry 167)
+- 3A.14 + 1.8 Reports = corridor.empty, gsea.empty_selection, observations.none (04.C5); solve outcomes are case statuses (06.C3, 06.C15); closes 04 OQ8, 09 OQ2, 09 OQ7 (entry 167)
+- 01.C15 + 4A.6 a Report skips every later line of the point (widens S4.18's wording) (entry 167)
+- 3A.8 + 1.10 + 4A.2 --query: one batch line on stdin, JSON out; A1 covers runs only (04.C8 drops "amends A1"); 10.C15 via labels line; closes 04 OQ3 (entry 168)
+- 2B.3 + 4A.11 outputs: relative/omitted -> step dir; absolute honoured too (kept in step dir, both in run.json); 07 site export the one exception; 01.C2 relative rule inputs only; closes 04 OQ7, 08 OQ8 (entry 169)
+- 05.C8 fb_rch / corridor; edges_to_target any/activation/expression; names freeze 01, 09, 10 examples (entry 172)
+- 06.C4 + 3A.9 parallel cases; --jobs auto and queue limit count one core per case (entry 173)
+- 06.C10 + 1.6 + 4B.29 FSC as a set; cases in/out/free (default in,out with FSC, free without); names in/out/free in args, files, JSON; 07 labels display only; 'both' only positional pex (extends S5.17) (entry 175)
+- 1.5 (+2A.3) 06 owns solve::Results + case status (adds not_requested); 07 builds SolveResult and maps statuses; one 7-word observation vocabulary; batch layer calls publish_solve (entry 177)
+- 07.C9 + 3A.30 positional pex/psp bind by prefix; unmatched file = error before run; 01.C13 keeps wgx->rgx, cudf->pathz3 (entry 179)
+- 1.21 + 4A.9 one setting legacy_prefix (E1's run setting): pathz3/legacy/ + absolute prefix path; legacy_text merged (entry 179)
+- 01.C11 + 3A.29 six exec mv moves recognised (amends S1.14 for them); limits file in FuSION 1 rendering via write_legacy; closes 07 OQ2 (entry 179)
+- 08.C11 gsea args values, candidates, selector, shortlist, keep; seed, permutations by name (entry 183)
+- 09.C1 + 3A.24 <label>_<YYYYMMDD-HHMMSS> + run id; 01.C7 run root/label line; 10.C18 session label + --tag session (entry 184)
+- 09.C7 stop file polled every 0.5 s; exit 3; 30 s grace hook (file only, of A1's two channels) (entry 184)
+- 09.C8 + 11.C18 + 3A.5/4A.3/2B.19 signal handlers only request the stop (reading of A1); SIGHUP ignored; Z3 ctrl_c=false; closes 09 OQ9, OQ10 (entry 185)
+- 09.C11 + 10.C17 + 01.C8 + 3A.16 + 1.15 one run log always; exec output captured into it; frontend/coordinator discard consoles (entry 185)
+- 09.C12 + 01.C9 + 3A.7 --check --json runs every check; command table with registry defaults and cross-argument rules in --commands (entry 186)
+- 09.C14 core::Failure exceptions, Outcome<T> for Reports, core::Stopped (entry 186)
+- 01.C1 + 1.7 binding rules; durations with units in named form; pathz3 names node_min..edge_max, timeout/incremental_timeout/budget, coexpression_csv/_threshold, frozen_threshold (entry 187)
+- 01.C2 quoting, "" and $$ (amends S1.07); relative input paths vs batch dir; outputs per 2B.3 (entry 187)
+- 01.C3 sweep lists and rows; dimensions multiply; labels per 1.26 (entry 187)
+- 01.C4 + 10.C21 sweep coordinator with child processes, --jobs auto counting cases; frontend one run per value (entry 187)
+- 01.C5 a failing sweep point stops only itself; sweep exits 1 (reading of S1.28, 4B.5) (entry 188)
+- 01.C6 exit, load <file> / load run= step=, --resume, partial solves (entry 188)
+- 01.C10 exec = POSIX sh; busybox-w32 on Windows; 01 OQ6 to 11's Windows build check (entry 188)
+- 01.C12 produced inputs rechecked (and copied) before their step (AMENDS 0021, S1.15, S2.16) (entry 188)
+- 01.C13 files written in the run reused from memory by identity + SHA-256 (entry 189)
+- 01.C14 flags (-b, -h + 15 new); exit 0/1/2/3/130; closes 01 OQ8 (entry 189)
+- 01.C16 arguments default to the latest value of their kind (entry 189)
+- 01.C18 $FUSION_RUN_DIR, _BATCH_DIR, _POINT, _HOME with '/'; prefix reserved (entry 189)
+- 01.C19 batch files UTF-8, BOM skipped, invalid bytes an error (entry 190)
+- 01 OQ9 NEW RULE: window-plot exec lines (gnuplot -p, no set term) skipped with a note when headless (amends S1.14, S6.25 for them; 4B.6) (entry 190)
+- 1.16 + 2B.2 registry key <module>.<name>; bare name on command line; 03 store -> 09 cache; run line takes run-level settings; --set overrides; --commands exports (entry 190)
+- 1.3 dotted event names; key 'type'; envelope v/seq/t/type + step/line/point; 06 counter 'check'; warnings via 'warning'; reports via step.finished (entry 190)
+- Loose ends: drop 2B.15's shell mark; 11 adds a Windows console launcher for --reset-password; 01's example drops start line + 1.7 names; 10's example pex relies on default cases (entry 199)
+- 11.C20 FUSION_HOME/GNUPLOT/DOT overrides recorded; NEW: exec lines get bundled tools dir APPENDED to PATH; Phase 4 checks 'set term png' on cairo-only build (entry 204)
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 200 words: what you changed, and any answer you could not apply and why.
+```
+
+## 212 · Subagent prompt · Approved changes sent for section 02 · 2026-11-16 16:02
+
+Sent to the section 02 drafter after the last poll (entry 210), under decision 0031's step 1. The message as sent:
+
+```text
+Every poll on the architecture sections is now done (prompt log entries 158 to 210 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/02-network.md to apply every answer that touches it:
+
+1. The answers below come from Claude's ledger, one line each: the item, the answer and the log entry. For the exact wording, read the entry. For a cross-section item (numbers such as 1.4, 2A.6, 2B.3, 3A.15 or 4A.11), also read its resolution in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/xcheck/conflicts.md; its "Text changes" line says which sections change.
+2. Where the user accepted your proposal, keep the choice, adjusted for the other answers. Where the user chose an alternative or a changed version (marked in the line), make the chosen option the proposal, move the old proposal under Alternatives, and rewrite the design to match.
+3. Where an answer amends a decided spec item or a skeleton Choice, name it in the choice ("amends S5.20; accepted in prompt log entry 174"). Notes in the spec and the skeleton are Claude's to write; do not edit those files.
+4. Close each open question that an answer settles, with a one-line note naming the entry.
+5. Keep every "- **Decision:** pending" line; Claude fills them in from the ledger after your revision.
+6. Make names, events, settings, paths and examples agree with the answers throughout the section, not only in the choice an answer names.
+
+The answers that touch your section:
+- 1.1 core vocabulary (09's names) (entry 158)
+- 1.17 error codes (generic 09/01; one network.flag_mismatch) (entry 158)
+- 1.25 unscored edge flag (entry 158)
+- 1.32 stale cross-references updated (entry 158)
+- 2A.6/2A.7 OutputFile + clash check by identity (settles 08.C13) (entry 158)
+- 4A.5 no shared parse gsea/mff (S7.19) (entry 158)
+- 2B.1 02 adds polarity rule fns, NodeKey, NodeKind (entry 158)
+- 2B.6 labels query command (entry 158)
+- 2B.10 step-written list records its base (entry 158)
+- 2B.11/12/14/18 02 builder calls, line text, Maps, normalise_subtype; 08 Shortlist (entry 158)
+- 02.C11 edge key with type (settles S4.14); 07.C11 lapses; 1.11 (entry 159)
+- 02.C5 legacy reader: every unmarked FuSION 1-written file, graph 2 exactly, duplicates merged at read (widens S2.27; moves S4.13) (entry 159)
+- 02.C15 full pre-run parse, per-step documents, no gsea/mff sharing (entry 159)
+- 02.C1 readers + exchange table (entry 160)
+- 02.C2 headered edge table (entry 160)
+- 02.C3 + 04.C1 + 1.12 one IdMap (02 layout), id_map=symbols per value input (entry 160)
+- 02.C4 + 03.C4 + 03.C7 marked network file w/ embedded sources; store reuses; network files in mff lists (entry 160)
+- 02.C6 ECrel exclusion at build, like indirect (entry 161)
+- 02.C7 maplink skipped by default, network.maplink=keep (entry 161)
+- 02.C8 interned arrays (entry 161)
+- 02.C9 + 05.C1 views (entry 161)
+- 02.C10 sorted canonical order (entry 162)
+- 02.C12 kgml_dir argument (entry 162)
+- 02.C13 bindings.tsv (entry 162)
+- 02.C14 drop unread edge fields (closes stage 2 OQ7) (entry 162)
+- 02.C16 node fields not stored (amends S2.02; closes 02 OQ9) (entry 163)
+- 02.C17 add writes the marked format (amends S2.30; closes 02 OQ5) + 03.C9 admits edge tables and add's marked output beside the legacy master (3A.27) (entry 163)
+- 2B.4 start optional, shipped maps by default (amends S1.15; closes 01 OQ4) (entry 163)
+- 02 OQ1 legacy reader keeps S2.08's loss (exact graph 2) (entry 163)
+- 02 OQ8 legacy reads follow S2.13 when the FSC is known (entry 164)
+- 02 OQ6 KGMLs: documentation only, check names missing pathways (entry 164)
+- 03.C5 single KGML read is a one-file merge (amends S2.07) (entry 166)
+- 03.C6 + 1.24 duplicate pathway id fails, list.duplicate_pathway for gsea and mff (entry 166)
+- 3A.19 04.C2 one decimal grammar via fast_float (11.C5) for values, thresholds, real args, scores (refines S3.02; settles S3.03) (entry 167)
+- 07.C10 labels show symbol + count of other members; complexes list members (entry 180)
+- 09.C3 + 1.13 inputs copied + hashed first; check parses the copy; step uses that parse (entry 184)
+- 09.C14 core::Failure exceptions, Outcome<T> for Reports, core::Stopped (entry 186)
+- 01.C13 files written in the run reused from memory by identity + SHA-256 (entry 189)
+- 1.16 + 2B.2 registry key <module>.<name>; bare name on command line; 03 store -> 09 cache; run line takes run-level settings; --set overrides; --commands exports (entry 190)
+- 11 OQ4 rebuild maps from clear sources (NCBI Gene symbols; Reactome names with attribution) in data/SOURCES.md; KEGG pathway names NOT shipped, read at run time from each KGML root's title (NEW RULE for 02/04/07/08 labels) (entry 205)
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 200 words: what you changed, and any answer you could not apply and why.
+```
+
+## 213 · Subagent prompt · Approved changes sent for section 03 · 2026-11-16 16:02
+
+Sent to the section 03 drafter after the last poll (entry 210), under decision 0031's step 1. The message as sent:
+
+```text
+Every poll on the architecture sections is now done (prompt log entries 158 to 210 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/03-merge.md to apply every answer that touches it:
+
+1. The answers below come from Claude's ledger, one line each: the item, the answer and the log entry. For the exact wording, read the entry. For a cross-section item (numbers such as 1.4, 2A.6, 2B.3, 3A.15 or 4A.11), also read its resolution in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/xcheck/conflicts.md; its "Text changes" line says which sections change.
+2. Where the user accepted your proposal, keep the choice, adjusted for the other answers. Where the user chose an alternative or a changed version (marked in the line), make the chosen option the proposal, move the old proposal under Alternatives, and rewrite the design to match.
+3. Where an answer amends a decided spec item or a skeleton Choice, name it in the choice ("amends S5.20; accepted in prompt log entry 174"). Notes in the spec and the skeleton are Claude's to write; do not edit those files.
+4. Close each open question that an answer settles, with a one-line note naming the entry.
+5. Keep every "- **Decision:** pending" line; Claude fills them in from the ledger after your revision.
+6. Make names, events, settings, paths and examples agree with the answers throughout the section, not only in the choice an answer names.
+
+The answers that touch your section:
+- 1.1 core vocabulary (09's names) (entry 158)
+- 1.17 error codes (generic 09/01; one network.flag_mismatch) (entry 158)
+- 2A.9 one no-FSC diagnostic (01's) (entry 158)
+- 02.C4 + 03.C4 + 03.C7 marked network file w/ embedded sources; store reuses; network files in mff lists (entry 160)
+- 02.C17 add writes the marked format (amends S2.30; closes 02 OQ5) + 03.C9 admits edge tables and add's marked output beside the legacy master (3A.27) (entry 163)
+- 2A.4 load restores exactly; rgx compares and rebuilds; mff from_saved dropped (entry 164)
+- 03 OQ2 moved keys expected (0023); S5.06 reports; Phase 3 matches by member sets (entry 164)
+- 3A.1 01.C17 look-ahead (BatchFacts) wins; 03.C1 args default to 01's facts; run params = alternative; look-ahead also collects confirmed lists (3B) (entry 165)
+- 03 OQ1 old batches keep their start set; 01's check note (closes 01 OQ5) (entry 165)
+- 3A.13 03.C2 confirmed genes join E (amends S8.22) + 04.C4 Not DE in cudf first (narrows S3.08); closes 04 OQ4 (entry 165)
+- 3A.2 03.C3 + 09.C13 three tiers, per-user cache dir store read as a cache (closes 03 OQ3; S1.26/S8.21 stand) (entry 166)
+- 3A.3 03.C8 store keys on rules versions; 09.C5 resume fingerprints on build id; 06.C18 follows (closes 09 OQ5); rule stated once in 09 (entry 166)
+- 03.C5 single KGML read is a one-file merge (amends S2.07) (entry 166)
+- 03.C6 + 1.24 duplicate pathway id fails, list.duplicate_pathway for gsea and mff (entry 166)
+- 09.C14 core::Failure exceptions, Outcome<T> for Reports, core::Stopped (entry 186)
+- 01.C16 arguments default to the latest value of their kind (entry 189)
+- 1.16 + 2B.2 registry key <module>.<name>; bare name on command line; 03 store -> 09 cache; run line takes run-level settings; --set overrides; --commands exports (entry 190)
+- 1.3 dotted event names; key 'type'; envelope v/seq/t/type + step/line/point; 06 counter 'check'; warnings via 'warning'; reports via step.finished (entry 190)
+- 11.C6 + 1.2 per-module static libs + fusion::libfusion; edges: expression+network, merge+expression; 04 matcher takes GraphView; cudf handler in batch; gnuplot runner in core; batch calls publish_solve (entry 201)
+- 12.C14 two oracles (merge_direct + independent exception_merge), FuSION 1 cross-check; closes 12 OQ5 (2.0 semantics) (entry 208)
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 200 words: what you changed, and any answer you could not apply and why.
+```
+
+## 214 · Subagent prompt · Approved changes sent for section 04 · 2026-11-16 16:02
+
+Sent to the section 04 drafter after the last poll (entry 210), under decision 0031's step 1. The message as sent:
+
+```text
+Every poll on the architecture sections is now done (prompt log entries 158 to 210 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/04-expression.md to apply every answer that touches it:
+
+1. The answers below come from Claude's ledger, one line each: the item, the answer and the log entry. For the exact wording, read the entry. For a cross-section item (numbers such as 1.4, 2A.6, 2B.3, 3A.15 or 4A.11), also read its resolution in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/xcheck/conflicts.md; its "Text changes" line says which sections change.
+2. Where the user accepted your proposal, keep the choice, adjusted for the other answers. Where the user chose an alternative or a changed version (marked in the line), make the chosen option the proposal, move the old proposal under Alternatives, and rewrite the design to match.
+3. Where an answer amends a decided spec item or a skeleton Choice, name it in the choice ("amends S5.20; accepted in prompt log entry 174"). Notes in the spec and the skeleton are Claude's to write; do not edit those files.
+4. Close each open question that an answer settles, with a one-line note naming the entry.
+5. Keep every "- **Decision:** pending" line; Claude fills them in from the ledger after your revision.
+6. Make names, events, settings, paths and examples agree with the answers throughout the section, not only in the choice an answer names.
+
+The answers that touch your section:
+- 1.1 core vocabulary (09's names) (entry 158)
+- 1.17 error codes (generic 09/01; one network.flag_mismatch) (entry 158)
+- 1.27 gnuplot 5.4+, lookup order, plot_pareto (entry 158)
+- 2A.6/2A.7 OutputFile + clash check by identity (settles 08.C13) (entry 158)
+- 2B.1 02 adds polarity rule fns, NodeKey, NodeKind (entry 158)
+- 2B.13 gnuplot runner + palette in core (entry 158)
+- 02.C3 + 04.C1 + 1.12 one IdMap (02 layout), id_map=symbols per value input (entry 160)
+- 3A.13 03.C2 confirmed genes join E (amends S8.22) + 04.C4 Not DE in cudf first (narrows S3.08); closes 04 OQ4 (entry 165)
+- Relaxed override + relaxed-edges file dropped from the frontend (04 OQ6, 10 OQ5; S8.15/S8.16 vs S5.05) (entry 165)
+- 3A.19 04.C2 one decimal grammar via fast_float (11.C5) for values, thresholds, real args, scores (refines S3.02; settles S3.03) (entry 167)
+- 04.C3 largest-magnitude representative + repeats=max_abs (amends S3.08 for those runs); closes 04 OQ5 (entry 167)
+- 3A.14 + 1.8 Reports = corridor.empty, gsea.empty_selection, observations.none (04.C5); solve outcomes are case statuses (06.C3, 06.C15); closes 04 OQ8, 09 OQ2, 09 OQ7 (entry 167)
+- 04.C6 + 4A.7 sth command, conflicts column (adds to S3.15), copyable numbers exact, GSEA table 3 decimals; closes 04 OQ2, 08 OQ3 (entry 168)
+- 04.C7 histogram: bins always in thresholds.json, PNG via core gnuplot runner on plot (entry 168)
+- 3A.8 + 1.10 + 4A.2 --query: one batch line on stdin, JSON out; A1 covers runs only (04.C8 drops "amends A1"); 10.C15 via labels line; closes 04 OQ3 (entry 168)
+- 04.C9 + 4A.13 value input keyed by file + reading args; read once at check; explanation export uses the solve's values (07.C12) (entry 168)
+- 04.C10 lone CR + UTF-8 BOM accepted; UTF-16/NUL refused values.encoding (extends S3.03) (entry 169)
+- 04.C11 up_out/down_out optional in named form (extends S3.01) (entry 169)
+- 2B.3 + 4A.11 outputs: relative/omitted -> step dir; absolute honoured too (kept in step dir, both in run.json); 07 site export the one exception; 01.C2 relative rule inputs only; closes 04 OQ7, 08 OQ8 (entry 169)
+- 05.C9 fb_rch matches observations (default latest cudf, 01.C16), writes observations_match.tsv (entry 172)
+- 3A.15 + 1.4 + 4A.12 09.C2 step dirs; 07.C1 one results.json per solve; placement per 1.4; run page written once at run end; closes 07 OQ6, OQ9 (entry 177)
+- 09.C3 + 1.13 inputs copied + hashed first; check parses the copy; step uses that parse (entry 184)
+- 09.C14 core::Failure exceptions, Outcome<T> for Reports, core::Stopped (entry 186)
+- 1.16 + 2B.2 registry key <module>.<name>; bare name on command line; 03 store -> 09 cache; run line takes run-level settings; --set overrides; --commands exports (entry 190)
+- 1.3 dotted event names; key 'type'; envelope v/seq/t/type + step/line/point; 06 counter 'check'; warnings via 'warning'; reports via step.finished (entry 190)
+- 11.C6 + 1.2 per-module static libs + fusion::libfusion; edges: expression+network, merge+expression; 04 matcher takes GraphView; cudf handler in batch; gnuplot runner in core; batch calls publish_solve (entry 201)
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 200 words: what you changed, and any answer you could not apply and why.
+```
+
+## 215 · Subagent prompt · Approved changes sent for section 05 · 2026-11-16 16:02
+
+Sent to the section 05 drafter after the last poll (entry 210), under decision 0031's step 1. The message as sent:
+
+```text
+Every poll on the architecture sections is now done (prompt log entries 158 to 210 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/05-corridor.md to apply every answer that touches it:
+
+1. The answers below come from Claude's ledger, one line each: the item, the answer and the log entry. For the exact wording, read the entry. For a cross-section item (numbers such as 1.4, 2A.6, 2B.3, 3A.15 or 4A.11), also read its resolution in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/xcheck/conflicts.md; its "Text changes" line says which sections change.
+2. Where the user accepted your proposal, keep the choice, adjusted for the other answers. Where the user chose an alternative or a changed version (marked in the line), make the chosen option the proposal, move the old proposal under Alternatives, and rewrite the design to match.
+3. Where an answer amends a decided spec item or a skeleton Choice, name it in the choice ("amends S5.20; accepted in prompt log entry 174"). Notes in the spec and the skeleton are Claude's to write; do not edit those files.
+4. Close each open question that an answer settles, with a one-line note naming the entry.
+5. Keep every "- **Decision:** pending" line; Claude fills them in from the ledger after your revision.
+6. Make names, events, settings, paths and examples agree with the answers throughout the section, not only in the choice an answer names.
+
+The answers that touch your section:
+- 1.17 error codes (generic 09/01; one network.flag_mismatch) (entry 158)
+- 2A.5 core ids by 09 (02's outline) (entry 158)
+- 02.C5 legacy reader: every unmarked FuSION 1-written file, graph 2 exactly, duplicates merged at read (widens S2.27; moves S4.13) (entry 159)
+- 02.C9 + 05.C1 views (entry 161)
+- 01.C15 + 4A.6 a Report skips every later line of the point (widens S4.18's wording) (entry 167)
+- 05.C2 trim during the search (reading of S4.11's trim; 4B.25) (entry 170)
+- 05 OQ2 simple-path pruning: walk rule now, capped exact pruning measured in Phase 3, then user decides (entry 170)
+- 05 OQ3 NEW RULE: excluding (05) or avoiding (06, without-FSC) a gene also removes/forbids every complex containing it (entry 170)
+- 05.C3 ids checked before first step (corridor.id_not_in_inputs) and at the step (entry 170)
+- 05.C4 repeated fb_rch with same network + request reuses the corridor (entry 171)
+- 05.C5 three id problems fail before the search (entry 171)
+- 05.C6 corridor.json (with network hash, digest) + corridor_nodes.tsv; loader needs the network (entry 171)
+- 05.C7 solve bound must equal the corridor's (06 same check) (entry 171)
+- 05.C8 fb_rch / corridor; edges_to_target any/activation/expression; names freeze 01, 09, 10 examples (entry 172)
+- 05.C9 fb_rch matches observations (default latest cudf, 01.C16), writes observations_match.tsv (entry 172)
+- 09.C14 core::Failure exceptions, Outcome<T> for Reports, core::Stopped (entry 186)
+- 01.C16 arguments default to the latest value of their kind (entry 189)
+- 1.16 + 2B.2 registry key <module>.<name>; bare name on command line; 03 store -> 09 cache; run line takes run-level settings; --set overrides; --commands exports (entry 190)
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 200 words: what you changed, and any answer you could not apply and why.
+```
+
+## 216 · Subagent prompt · Approved changes sent for section 06 · 2026-11-16 16:02
+
+Sent to the section 06 drafter after the last poll (entry 210), under decision 0031's step 1. The message as sent:
+
+```text
+Every poll on the architecture sections is now done (prompt log entries 158 to 210 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/06-solve.md to apply every answer that touches it:
+
+1. The answers below come from Claude's ledger, one line each: the item, the answer and the log entry. For the exact wording, read the entry. For a cross-section item (numbers such as 1.4, 2A.6, 2B.3, 3A.15 or 4A.11), also read its resolution in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/xcheck/conflicts.md; its "Text changes" line says which sections change.
+2. Where the user accepted your proposal, keep the choice, adjusted for the other answers. Where the user chose an alternative or a changed version (marked in the line), make the chosen option the proposal, move the old proposal under Alternatives, and rewrite the design to match.
+3. Where an answer amends a decided spec item or a skeleton Choice, name it in the choice ("amends S5.20; accepted in prompt log entry 174"). Notes in the spec and the skeleton are Claude's to write; do not edit those files.
+4. Close each open question that an answer settles, with a one-line note naming the entry.
+5. Keep every "- **Decision:** pending" line; Claude fills them in from the ledger after your revision.
+6. Make names, events, settings, paths and examples agree with the answers throughout the section, not only in the choice an answer names.
+
+The answers that touch your section:
+- 1.1 core vocabulary (09's names) (entry 158)
+- 1.22 bindings.tsv (02's table + 06's line, note; top level) (entry 158)
+- 2A.6/2A.7 OutputFile + clash check by identity (settles 08.C13) (entry 158)
+- 02.C11 edge key with type (settles S4.14); 07.C11 lapses; 1.11 (entry 159)
+- 3A.3 03.C8 store keys on rules versions; 09.C5 resume fingerprints on build id; 06.C18 follows (closes 09 OQ5); rule stated once in 09 (entry 166)
+- 3A.14 + 1.8 Reports = corridor.empty, gsea.empty_selection, observations.none (04.C5); solve outcomes are case statuses (06.C3, 06.C15); closes 04 OQ8, 09 OQ2, 09 OQ7 (entry 167)
+- 05 OQ3 NEW RULE: excluding (05) or avoiding (06, without-FSC) a gene also removes/forbids every complex containing it (entry 170)
+- 05.C7 solve bound must equal the corridor's (06 same check) (entry 171)
+- 06.C5 cache answers by monotonicity and model counts (entry 172)
+- 06.C6 per-point certification, blocker named, undecided cells listed (06 OQ9 surfaced) (entry 172)
+- 11.C2 + 3A.26 Z3 5.3.3 pinned, gated on X11 (user re-decides if slower than 4.8.12 at median) (entry 173)
+- 06.C1 FuSION 1's QF_BV combined solver, push/pop (entry 173)
+- 3A.10 + 4A.4 backend defaults 4 h/1 h/8/8 (06.C2, 06.C17); frontend requires them with suggestion (10.C13); 06 stops citing S8.06; TIMEOUT read before pop; closes 10 OQ6 (entry 173)
+- 06.C4 + 3A.9 parallel cases; --jobs auto and queue limit count one core per case (entry 173)
+- 06.C7 + 09.C6 journal.jsonl + case.json, durable per check, replay through the cache (entry 174)
+- 06.C8 retry=automatic default (amends S5.20); closes 06 OQ1 (entry 174)
+- 06.C19 + 3A.4 + 4A.1 killed/crashed run's journal used on resume (AMENDS A1); closes 06 OQ2, 09 OQ1 (entry 174)
+- 06.C20 frontier = Pareto-minimal witness counts (amends S5.25); closes 06 OQ3 (entry 174)
+- 06.C9 partial solves: cases=, box, points= in one context (entry 175)
+- 06.C10 + 1.6 + 4B.29 FSC as a set; cases in/out/free (default in,out with FSC, free without); names in/out/free in args, files, JSON; 07 labels display only; 'both' only positional pex (extends S5.17) (entry 175)
+- 06.C11 one setting solutions=k; count ignored with warning (entry 175)
+- 06.C12 reuse via answers/witnesses (resume, answers_from, free transfers); free->out witness also needs FSC's complexes absent (poll 170 rule) (entry 175)
+- 06.C13 index-named dumps + names.tsv + base/session.smt2 per case (entry 176)
+- 06.C14 edge bounds clamped to R_e with a warning (settles S5.09) (entry 176)
+- 06.C16 source and target present + active implied in named form (entry 176)
+- 2B.8 + 12.C12 rlimit (solve.rlimit per check, 0 = none, in run.json); closes 10 OQ4 (entry 176)
+- 1.5 (+2A.3) 06 owns solve::Results + case status (adds not_requested); 07 builds SolveResult and maps statuses; one 7-word observation vocabulary; batch layer calls publish_solve (entry 177)
+- 3A.15 + 1.4 + 4A.12 09.C2 step dirs; 07.C1 one results.json per solve; placement per 1.4; run page written once at run end; closes 07 OQ6, OQ9 (entry 177)
+- 1.21 + 4A.9 one setting legacy_prefix (E1's run setting): pathz3/legacy/ + absolute prefix path; legacy_text merged (entry 179)
+- 09.C10 lifecycle + solve_check_started + rate-limited progress, no heartbeat (entry 185)
+- 09.C14 core::Failure exceptions, Outcome<T> for Reports, core::Stopped (entry 186)
+- 01.C1 + 1.7 binding rules; durations with units in named form; pathz3 names node_min..edge_max, timeout/incremental_timeout/budget, coexpression_csv/_threshold, frozen_threshold (entry 187)
+- 1.16 + 2B.2 registry key <module>.<name>; bare name on command line; 03 store -> 09 cache; run line takes run-level settings; --set overrides; --commands exports (entry 190)
+- 1.3 dotted event names; key 'type'; envelope v/seq/t/type + step/line/point; 06 counter 'check'; warnings via 'warning'; reports via step.finished (entry 190)
+- 11.C17 Z3 shared on every platform, run path, version check at start (entry 203)
+- 06 OQ5 resume is cold: recorded as a known cost; 06 OQ6 counter encoding compared in Phase 3 beside X11 (entry 210)
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 200 words: what you changed, and any answer you could not apply and why.
+```
+
+## 217 · Subagent prompt · Approved changes sent for section 07 · 2026-11-16 16:02
+
+Sent to the section 07 drafter after the last poll (entry 210), under decision 0031's step 1. The message as sent:
+
+```text
+Every poll on the architecture sections is now done (prompt log entries 158 to 210 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/07-results.md to apply every answer that touches it:
+
+1. The answers below come from Claude's ledger, one line each: the item, the answer and the log entry. For the exact wording, read the entry. For a cross-section item (numbers such as 1.4, 2A.6, 2B.3, 3A.15 or 4A.11), also read its resolution in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/xcheck/conflicts.md; its "Text changes" line says which sections change.
+2. Where the user accepted your proposal, keep the choice, adjusted for the other answers. Where the user chose an alternative or a changed version (marked in the line), make the chosen option the proposal, move the old proposal under Alternatives, and rewrite the design to match.
+3. Where an answer amends a decided spec item or a skeleton Choice, name it in the choice ("amends S5.20; accepted in prompt log entry 174"). Notes in the spec and the skeleton are Claude's to write; do not edit those files.
+4. Close each open question that an answer settles, with a one-line note naming the entry.
+5. Keep every "- **Decision:** pending" line; Claude fills them in from the ledger after your revision.
+6. Make names, events, settings, paths and examples agree with the answers throughout the section, not only in the choice an answer names.
+
+The answers that touch your section:
+- 1.1 core vocabulary (09's names) (entry 158)
+- 1.17 error codes (generic 09/01; one network.flag_mismatch) (entry 158)
+- 1.28 Windows replace via 09's OutputFile (entry 158)
+- 2A.1 tool check owned by 11 (entry 158)
+- 2A.2 solve saved artefact = 06 journal + case.json (entry 158)
+- 2A.6/2A.7 OutputFile + clash check by identity (settles 08.C13) (entry 158)
+- 2A.11 process helper = 11's core::Process (entry 158)
+- 2B.7 results summary in run.json (entry 158)
+- 2B.13 gnuplot runner + palette in core (entry 158)
+- 1.23 gsea kgml_dir + reading args; pex solve values (entry 158)
+- 02.C11 edge key with type (settles S4.14); 07.C11 lapses; 1.11 (entry 159)
+- 3A.14 + 1.8 Reports = corridor.empty, gsea.empty_selection, observations.none (04.C5); solve outcomes are case statuses (06.C3, 06.C15); closes 04 OQ8, 09 OQ2, 09 OQ7 (entry 167)
+- 04.C9 + 4A.13 value input keyed by file + reading args; read once at check; explanation export uses the solve's values (07.C12) (entry 168)
+- 2B.3 + 4A.11 outputs: relative/omitted -> step dir; absolute honoured too (kept in step dir, both in run.json); 07 site export the one exception; 01.C2 relative rule inputs only; closes 04 OQ7, 08 OQ8 (entry 169)
+- 06.C6 per-point certification, blocker named, undecided cells listed (06 OQ9 surfaced) (entry 172)
+- 06.C20 frontier = Pareto-minimal witness counts (amends S5.25); closes 06 OQ3 (entry 174)
+- 06.C10 + 1.6 + 4B.29 FSC as a set; cases in/out/free (default in,out with FSC, free without); names in/out/free in args, files, JSON; 07 labels display only; 'both' only positional pex (extends S5.17) (entry 175)
+- 1.5 (+2A.3) 06 owns solve::Results + case status (adds not_requested); 07 builds SolveResult and maps statuses; one 7-word observation vocabulary; batch layer calls publish_solve (entry 177)
+- 3A.15 + 1.4 + 4A.12 09.C2 step dirs; 07.C1 one results.json per solve; placement per 1.4; run page written once at run end; closes 07 OQ6, OQ9 (entry 177)
+- 07.C2 page per point + view JSON beside and inline; run page (entry 177)
+- 07.C3 + 3A.22 + 11.C11 vis-network 10.x pinned, compiled into libfusion; 9.1.2 fallback per Phase 3 (07 OQ7) (entry 177)
+- 07.C4 faded inactive nodes on the static page (amends S6.16 + decision 0027 for static page); closes 07 OQ5 (entry 178)
+- 07.C5 + 3A.23 Graphviz on request (static=svg), not bundled (entry 178)
+- 07.C6 open markers for uncertified points on the plot (entry 178)
+- 07.C7 FSC verdict + delta_n_at_e0 + certification in results (entry 178)
+- 3A.21 07.C8 font warning + 11.C10 bundled Liberation Sans via fonts.conf (11.C9 polled with 11) (entry 179)
+- 07.C9 + 3A.30 positional pex/psp bind by prefix; unmatched file = error before run; 01.C13 keeps wgx->rgx, cudf->pathz3 (entry 179)
+- 1.21 + 4A.9 one setting legacy_prefix (E1's run setting): pathz3/legacy/ + absolute prefix path; legacy_text merged (entry 179)
+- 01.C11 + 3A.29 six exec mv moves recognised (amends S1.14 for them); limits file in FuSION 1 rendering via write_legacy; closes 07 OQ2 (entry 179)
+- 07.C10 labels show symbol + count of other members; complexes list members (entry 180)
+- 07.C12 positional pex src/tgt must equal solve's endpoints; files checked; LFC per 4A.13; closes 07 OQ8 (entry 180)
+- 07 OQ1 + 4B.33 pathway-source table TSV per E1 (no tab/newline in fields, ';' lists) (entry 180)
+- 09.C14 core::Failure exceptions, Outcome<T> for Reports, core::Stopped (entry 186)
+- 1.16 + 2B.2 registry key <module>.<name>; bare name on command line; 03 store -> 09 cache; run line takes run-level settings; --set overrides; --commands exports (entry 190)
+- 1.3 dotted event names; key 'type'; envelope v/seq/t/type + step/line/point; 06 counter 'check'; warnings via 'warning'; reports via step.finished (entry 190)
+- 11.C6 + 1.2 per-module static libs + fusion::libfusion; edges: expression+network, merge+expression; 04 matcher takes GraphView; cudf handler in batch; gnuplot runner in core; batch calls publish_solve (entry 201)
+- 11 OQ4 rebuild maps from clear sources (NCBI Gene symbols; Reactome names with attribution) in data/SOURCES.md; KEGG pathway names NOT shipped, read at run time from each KGML root's title (NEW RULE for 02/04/07/08 labels) (entry 205)
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 200 words: what you changed, and any answer you could not apply and why.
+```
+
+## 218 · Subagent prompt · Approved changes sent for section 08 · 2026-11-16 16:02
+
+Sent to the section 08 drafter after the last poll (entry 210), under decision 0031's step 1. The message as sent:
+
+```text
+Every poll on the architecture sections is now done (prompt log entries 158 to 210 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/08-enrichment.md to apply every answer that touches it:
+
+1. The answers below come from Claude's ledger, one line each: the item, the answer and the log entry. For the exact wording, read the entry. For a cross-section item (numbers such as 1.4, 2A.6, 2B.3, 3A.15 or 4A.11), also read its resolution in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/xcheck/conflicts.md; its "Text changes" line says which sections change.
+2. Where the user accepted your proposal, keep the choice, adjusted for the other answers. Where the user chose an alternative or a changed version (marked in the line), make the chosen option the proposal, move the old proposal under Alternatives, and rewrite the design to match.
+3. Where an answer amends a decided spec item or a skeleton Choice, name it in the choice ("amends S5.20; accepted in prompt log entry 174"). Notes in the spec and the skeleton are Claude's to write; do not edit those files.
+4. Close each open question that an answer settles, with a one-line note naming the entry.
+5. Keep every "- **Decision:** pending" line; Claude fills them in from the ledger after your revision.
+6. Make names, events, settings, paths and examples agree with the answers throughout the section, not only in the choice an answer names.
+
+The answers that touch your section:
+- 1.1 core vocabulary (09's names) (entry 158)
+- 1.17 error codes (generic 09/01; one network.flag_mismatch) (entry 158)
+- 2A.6/2A.7 OutputFile + clash check by identity (settles 08.C13) (entry 158)
+- 2B.10 step-written list records its base (entry 158)
+- 2B.11/12/14/18 02 builder calls, line text, Maps, normalise_subtype; 08 Shortlist (entry 158)
+- 1.23 gsea kgml_dir + reading args; pex solve values (entry 158)
+- 08.C1 exact gseapy port (AMENDS F1); 1.19 core holds GSEA generator + 09's Rng; 12.C10 lapses; XD-02 goes; gseapy BSD + rand MIT notices ship (entry 159)
+- 03.C6 + 1.24 duplicate pathway id fails, list.duplicate_pathway for gsea and mff (entry 166)
+- 3A.14 + 1.8 Reports = corridor.empty, gsea.empty_selection, observations.none (04.C5); solve outcomes are case statuses (06.C3, 06.C15); closes 04 OQ8, 09 OQ2, 09 OQ7 (entry 167)
+- 04.C6 + 4A.7 sth command, conflicts column (adds to S3.15), copyable numbers exact, GSEA table 3 decimals; closes 04 OQ2, 08 OQ3 (entry 168)
+- 2B.3 + 4A.11 outputs: relative/omitted -> step dir; absolute honoured too (kept in step dir, both in run.json); 07 site export the one exception; 01.C2 relative rule inputs only; closes 04 OQ7, 08 OQ8 (entry 169)
+- 1.20 format_number = shortest exact digits in Python repr layout; JSON nlohmann; closes 08 OQ5 (entry 180)
+- 08.C2 tie ids in byte order (reading of S7.05) (entry 181)
+- 08.C3 gene sets only from network files 02 reads (entry 181)
+- 08.C4 relation share counts relations the merge keeps (S2.11, S2.31 settings) (entry 181)
+- 08.C5 relation_share a/b column after genes; set size = all file genes (entry 181)
+- 08.C6 GSEA on one thread (entry 182)
+- 08.C7 all-zero draws: step 1/m + warning; undefined FWER = 1.0 (entry 182)
+- 08.C8 permutations 1..100,000, else gsea.setting (entry 182)
+- 08.C10 tie warning reworded: 'Tied genes are ordered by gene id.' (amends S7.17 wording); closes 08 OQ9 (entry 183)
+- 08.C11 gsea args values, candidates, selector, shortlist, keep; seed, permutations by name (entry 183)
+- 08.C12 gsea outputs naming an input refused in the check (via 2A.7) (entry 183)
+- 08 OQ2 correction note on S7.11's text; 08 OQ7 report line kept as S7.17 decided (entry 183)
+- 09.C14 core::Failure exceptions, Outcome<T> for Reports, core::Stopped (entry 186)
+- 09.C16 + 11.C7 + 12.C11 + 3A.18 + 1.18 contraction off; BYTE-IDENTICAL promise (result paths avoid platform exp/log/pow or use one correctly rounded impl); closes 09 OQ4 (entry 186)
+- 1.16 + 2B.2 registry key <module>.<name>; bare name on command line; 03 store -> 09 cache; run line takes run-level settings; --set overrides; --commands exports (entry 190)
+- 1.3 dotted event names; key 'type'; envelope v/seq/t/type + step/line/point; 06 counter 'check'; warnings via 'warning'; reports via step.finished (entry 190)
+- 11.C6 + 1.2 per-module static libs + fusion::libfusion; edges: expression+network, merge+expression; 04 matcher takes GraphView; cudf handler in batch; gnuplot runner in core; batch calls publish_solve (entry 201)
+- 11 OQ4 rebuild maps from clear sources (NCBI Gene symbols; Reactome names with attribution) in data/SOURCES.md; KEGG pathway names NOT shipped, read at run time from each KGML root's title (NEW RULE for 02/04/07/08 labels) (entry 205)
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 200 words: what you changed, and any answer you could not apply and why.
+```
+
+## 219 · Subagent prompt · Approved changes sent for section 09 · 2026-11-16 16:02
+
+Sent to the section 09 drafter after the last poll (entry 210), under decision 0031's step 1. The message as sent:
+
+```text
+Every poll on the architecture sections is now done (prompt log entries 158 to 210 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/09-runs.md to apply every answer that touches it:
+
+1. The answers below come from Claude's ledger, one line each: the item, the answer and the log entry. For the exact wording, read the entry. For a cross-section item (numbers such as 1.4, 2A.6, 2B.3, 3A.15 or 4A.11), also read its resolution in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/xcheck/conflicts.md; its "Text changes" line says which sections change.
+2. Where the user accepted your proposal, keep the choice, adjusted for the other answers. Where the user chose an alternative or a changed version (marked in the line), make the chosen option the proposal, move the old proposal under Alternatives, and rewrite the design to match.
+3. Where an answer amends a decided spec item or a skeleton Choice, name it in the choice ("amends S5.20; accepted in prompt log entry 174"). Notes in the spec and the skeleton are Claude's to write; do not edit those files.
+4. Close each open question that an answer settles, with a one-line note naming the entry.
+5. Keep every "- **Decision:** pending" line; Claude fills them in from the ledger after your revision.
+6. Make names, events, settings, paths and examples agree with the answers throughout the section, not only in the choice an answer names.
+
+The answers that touch your section:
+- 1.1 core vocabulary (09's names) (entry 158)
+- 1.9 --check --json (01 diagnostics + 09 fields) (entry 158)
+- 1.14 run.json schema (09 + 11 blocks + 01 variables) (entry 158)
+- 1.22 bindings.tsv (02's table + 06's line, note; top level) (entry 158)
+- 1.26 label rule (code points, runs -> '-', trimmed, shared test) (entry 158)
+- 1.29 examples follow owners (entry 158)
+- 1.32 stale cross-references updated (entry 158)
+- 2A.1 tool check owned by 11 (entry 158)
+- 2A.5 core ids by 09 (02's outline) (entry 158)
+- 2A.10 schemas kept by 12, written by owners (entry 158)
+- 2B.17 09 lock any file (entry 158)
+- 08.C1 exact gseapy port (AMENDS F1); 1.19 core holds GSEA generator + 09's Rng; 12.C10 lapses; XD-02 goes; gseapy BSD + rand MIT notices ship (entry 159)
+- 3A.2 03.C3 + 09.C13 three tiers, per-user cache dir store read as a cache (closes 03 OQ3; S1.26/S8.21 stand) (entry 166)
+- 3A.3 03.C8 store keys on rules versions; 09.C5 resume fingerprints on build id; 06.C18 follows (closes 09 OQ5); rule stated once in 09 (entry 166)
+- 3A.14 + 1.8 Reports = corridor.empty, gsea.empty_selection, observations.none (04.C5); solve outcomes are case statuses (06.C3, 06.C15); closes 04 OQ8, 09 OQ2, 09 OQ7 (entry 167)
+- 01.C15 + 4A.6 a Report skips every later line of the point (widens S4.18's wording) (entry 167)
+- 2B.3 + 4A.11 outputs: relative/omitted -> step dir; absolute honoured too (kept in step dir, both in run.json); 07 site export the one exception; 01.C2 relative rule inputs only; closes 04 OQ7, 08 OQ8 (entry 169)
+- 05.C8 fb_rch / corridor; edges_to_target any/activation/expression; names freeze 01, 09, 10 examples (entry 172)
+- 06.C7 + 09.C6 journal.jsonl + case.json, durable per check, replay through the cache (entry 174)
+- 06.C19 + 3A.4 + 4A.1 killed/crashed run's journal used on resume (AMENDS A1); closes 06 OQ2, 09 OQ1 (entry 174)
+- 3A.15 + 1.4 + 4A.12 09.C2 step dirs; 07.C1 one results.json per solve; placement per 1.4; run page written once at run end; closes 07 OQ6, OQ9 (entry 177)
+- 1.20 format_number = shortest exact digits in Python repr layout; JSON nlohmann; closes 08 OQ5 (entry 180)
+- 09.C1 + 3A.24 <label>_<YYYYMMDD-HHMMSS> + run id; 01.C7 run root/label line; 10.C18 session label + --tag session (entry 184)
+- 09.C3 + 1.13 inputs copied + hashed first; check parses the copy; step uses that parse (entry 184)
+- 09.C4 every step saves its output, no switch (entry 184)
+- 09.C7 stop file polled every 0.5 s; exit 3; 30 s grace hook (file only, of A1's two channels) (entry 184)
+- 09.C8 + 11.C18 + 3A.5/4A.3/2B.19 signal handlers only request the stop (reading of A1); SIGHUP ignored; Z3 ctrl_c=false; closes 09 OQ9, OQ10 (entry 185)
+- 09.C9 + 10.C16 + 3A.6 run.lock with OS lock; lock-less NFS root usable with a warning (closes 09 OQ6) (entry 185)
+- 09.C10 lifecycle + solve_check_started + rate-limited progress, no heartbeat (entry 185)
+- 09.C11 + 10.C17 + 01.C8 + 3A.16 + 1.15 one run log always; exec output captured into it; frontend/coordinator discard consoles (entry 185)
+- 09.C12 + 01.C9 + 3A.7 --check --json runs every check; command table with registry defaults and cross-argument rules in --commands (entry 186)
+- 09.C14 core::Failure exceptions, Outcome<T> for Reports, core::Stopped (entry 186)
+- 09.C15 + 12.C9 + 3A.17 core::Rng mt19937_64 + own distributions + SplitMix64 streams (GSEA keeps 08's generator) (entry 186)
+- 09.C16 + 11.C7 + 12.C11 + 3A.18 + 1.18 contraction off; BYTE-IDENTICAL promise (result paths avoid platform exp/log/pow or use one correctly rounded impl); closes 09 OQ4 (entry 186)
+- 01.C1 + 1.7 binding rules; durations with units in named form; pathz3 names node_min..edge_max, timeout/incremental_timeout/budget, coexpression_csv/_threshold, frozen_threshold (entry 187)
+- 01.C6 exit, load <file> / load run= step=, --resume, partial solves (entry 188)
+- 01.C12 produced inputs rechecked (and copied) before their step (AMENDS 0021, S1.15, S2.16) (entry 188)
+- 01.C14 flags (-b, -h + 15 new); exit 0/1/2/3/130; closes 01 OQ8 (entry 189)
+- 1.16 + 2B.2 registry key <module>.<name>; bare name on command line; 03 store -> 09 cache; run line takes run-level settings; --set overrides; --commands exports (entry 190)
+- 1.3 dotted event names; key 'type'; envelope v/seq/t/type + step/line/point; 06 counter 'check'; warnings via 'warning'; reports via step.finished (entry 190)
+- 11.C22 GCC 13 + Clang 17 minimums, std::format allowed (AMENDS G1); closes 11 OQ2 (entry 200)
+- 11.C16 one VERSION file; build id = version + commit (+ exe SHA-256 if dirty); frontend refuses mismatched backend (entry 203)
+- 11.C19 build info, install dir, platform layer, dependency registry in core (AMENDS C1's description of core); closes 11 OQ8 (entry 204)
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 200 words: what you changed, and any answer you could not apply and why.
+```
+
+## 220 · Subagent prompt · Approved changes sent for section 10 · 2026-11-16 16:02
+
+Sent to the section 10 drafter after the last poll (entry 210), under decision 0031's step 1. The message as sent:
+
+```text
+Every poll on the architecture sections is now done (prompt log entries 158 to 210 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/10-frontend.md to apply every answer that touches it:
+
+1. The answers below come from Claude's ledger, one line each: the item, the answer and the log entry. For the exact wording, read the entry. For a cross-section item (numbers such as 1.4, 2A.6, 2B.3, 3A.15 or 4A.11), also read its resolution in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/xcheck/conflicts.md; its "Text changes" line says which sections change.
+2. Where the user accepted your proposal, keep the choice, adjusted for the other answers. Where the user chose an alternative or a changed version (marked in the line), make the chosen option the proposal, move the old proposal under Alternatives, and rewrite the design to match.
+3. Where an answer amends a decided spec item or a skeleton Choice, name it in the choice ("amends S5.20; accepted in prompt log entry 174"). Notes in the spec and the skeleton are Claude's to write; do not edit those files.
+4. Close each open question that an answer settles, with a one-line note naming the entry.
+5. Keep every "- **Decision:** pending" line; Claude fills them in from the ledger after your revision.
+6. Make names, events, settings, paths and examples agree with the answers throughout the section, not only in the choice an answer names.
+
+Your desktop revision (prompt log entry 193) already applied many of these. Check those, and apply the rest, notably entries 195 to 199 and 210.
+
+The answers that touch your section:
+- 1.26 label rule (code points, runs -> '-', trimmed, shared test) (entry 158)
+- 1.27 gnuplot 5.4+, lookup order, plot_pareto (entry 158)
+- 1.29 examples follow owners (entry 158)
+- 1.31 small mismatches follow owner (entry 158)
+- 1.32 stale cross-references updated (entry 158)
+- 3A.13 03.C2 confirmed genes join E (amends S8.22) + 04.C4 Not DE in cudf first (narrows S3.08); closes 04 OQ4 (entry 165)
+- Relaxed override + relaxed-edges file dropped from the frontend (04 OQ6, 10 OQ5; S8.15/S8.16 vs S5.05) (entry 165)
+- 3A.14 + 1.8 Reports = corridor.empty, gsea.empty_selection, observations.none (04.C5); solve outcomes are case statuses (06.C3, 06.C15); closes 04 OQ8, 09 OQ2, 09 OQ7 (entry 167)
+- 3A.8 + 1.10 + 4A.2 --query: one batch line on stdin, JSON out; A1 covers runs only (04.C8 drops "amends A1"); 10.C15 via labels line; closes 04 OQ3 (entry 168)
+- 05.C8 fb_rch / corridor; edges_to_target any/activation/expression; names freeze 01, 09, 10 examples (entry 172)
+- 3A.10 + 4A.4 backend defaults 4 h/1 h/8/8 (06.C2, 06.C17); frontend requires them with suggestion (10.C13); 06 stops citing S8.06; TIMEOUT read before pop; closes 10 OQ6 (entry 173)
+- 06.C4 + 3A.9 parallel cases; --jobs auto and queue limit count one core per case (entry 173)
+- 06.C19 + 3A.4 + 4A.1 killed/crashed run's journal used on resume (AMENDS A1); closes 06 OQ2, 09 OQ1 (entry 174)
+- 06.C10 + 1.6 + 4B.29 FSC as a set; cases in/out/free (default in,out with FSC, free without); names in/out/free in args, files, JSON; 07 labels display only; 'both' only positional pex (extends S5.17) (entry 175)
+- 2B.8 + 12.C12 rlimit (solve.rlimit per check, 0 = none, in run.json); closes 10 OQ4 (entry 176)
+- 09.C1 + 3A.24 <label>_<YYYYMMDD-HHMMSS> + run id; 01.C7 run root/label line; 10.C18 session label + --tag session (entry 184)
+- 09.C7 stop file polled every 0.5 s; exit 3; 30 s grace hook (file only, of A1's two channels) (entry 184)
+- 09.C8 + 11.C18 + 3A.5/4A.3/2B.19 signal handlers only request the stop (reading of A1); SIGHUP ignored; Z3 ctrl_c=false; closes 09 OQ9, OQ10 (entry 185)
+- 09.C9 + 10.C16 + 3A.6 run.lock with OS lock; lock-less NFS root usable with a warning (closes 09 OQ6) (entry 185)
+- 09.C10 lifecycle + solve_check_started + rate-limited progress, no heartbeat (entry 185)
+- 09.C11 + 10.C17 + 01.C8 + 3A.16 + 1.15 one run log always; exec output captured into it; frontend/coordinator discard consoles (entry 185)
+- 09.C12 + 01.C9 + 3A.7 --check --json runs every check; command table with registry defaults and cross-argument rules in --commands (entry 186)
+- 09.C14 core::Failure exceptions, Outcome<T> for Reports, core::Stopped (entry 186)
+- 01.C1 + 1.7 binding rules; durations with units in named form; pathz3 names node_min..edge_max, timeout/incremental_timeout/budget, coexpression_csv/_threshold, frozen_threshold (entry 187)
+- 01.C4 + 10.C21 sweep coordinator with child processes, --jobs auto counting cases; frontend one run per value (entry 187)
+- 01.C14 flags (-b, -h + 15 new); exit 0/1/2/3/130; closes 01 OQ8 (entry 189)
+- 1.16 + 2B.2 registry key <module>.<name>; bare name on command line; 03 store -> 09 cache; run line takes run-level settings; --set overrides; --commands exports (entry 190)
+- 1.3 dotted event names; key 'type'; envelope v/seq/t/type + step/line/point; 06 counter 'check'; warnings via 'warning'; reports via step.finished (entry 190)
+- 10.C1 JAVAFX DESKTOP APP (standalone window, Java screens, Spring Boot as app framework without a web server, native dialogs, no local port; 07 pages in WebView or system browser; Phase 5 display on JavaFX canvas; no lab mode) (entry 192)
+- 10.C8 JSON files in a per-user data directory; frontend.lock single instance (entry 195)
+- 10.C9 bcrypt strength 12 via DelegatingPasswordEncoder (entry 195)
+- 10.C12 default pipeline = JSON document in the backend tree, tested, installed; standard.batch generated by 11 (entry 195)
+- 10 OQ1 quick Submit runs the session's current pipeline (default unless edited) (reading of S8.32) (entry 195)
+- 10.C10 accounts without email (entry 196)
+- 10.C14 generated batches write only bound arguments (entry 196)
+- 10.C19 Kill = destroyForcibly of the process tree 60 s after a stop request (entry 196)
+- 10.C2 open sign-up, all accounts equal, no roles (entry 197)
+- 10.C3 + 11.C24 OpenJFX 21.0.13 (21 LTS line), base/graphics/controls; web only with WebView (entry 197)
+- 10.C4 normal app; one instance per data dir via frontend.lock + frontend.focus hand-off (entry 197)
+- 10.C5 in-process services on virtual threads; per-250-ms tick batch to FX thread (entry 197)
+- 10.C6 native result views; 07's pages in the system browser; no WebView, no javafx-web (entry 198)
+- 10.C7 native dialogs + typed/pasted paths, same checks (entry 198)
+- 10.C10 re-poll: user chose KEEP A ROLE FIELD (not recommended): record = username, display name, role (unused, all accounts equal), password hash, preferences; no email [accepted (alt)] (entry 198)
+- 10.C11 packages ui/accounts/sessions/pipeline/runner + Modulith test; closes 10 OQ11 with wording notes on skeleton C1 ('web') and A1 ('web server') (entry 198)
+- 10 OQ9 graph queries for the display: decided in Phase 5 with 02 (entry 199)
+- Loose ends: drop 2B.15's shell mark; 11 adds a Windows console launcher for --reset-password; 01's example drops start line + 1.7 names; 10's example pex relies on default cases (entry 199)
+- 11.C21 Spring Boot 4.1 (4.1.2) + Gradle 9.9.1 (AMENDS G2); closes 11 OQ1 (entry 200)
+- 11.C14 repository layout backend/ frontend/ share/fusion/ (pipelines/standard.json) packaging/ third_party/ cmake/ .github/ docs/ VERSION (entry 202)
+- 11.C16 one VERSION file; build id = version + commit (+ exe SHA-256 if dirty); frontend refuses mismatched backend (entry 203)
+- 2B.5 + 4A.10 + 4B.41 ship data/kegg_pathways.txt: 167 bare pathway ids, listed in fusion-data.json (entry 204)
+- 12.C2 backend/tests tree, per-module Catch2, spec tags, fusion-test driver, fake-fusion, one schema copy; closes 12 OQ2 (entry 206)
+- 10.C20 FIFO queue counted in cores (one per FSC case), min(CPUs/2, mem/3 GiB), user-adjustable (entry 210)
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 200 words: what you changed, and any answer you could not apply and why.
+```
+
+## 221 · Subagent prompt · Approved changes sent for section 11 · 2026-11-16 16:02
+
+Sent to the section 11 drafter after the last poll (entry 210), under decision 0031's step 1. The message as sent:
+
+```text
+Every poll on the architecture sections is now done (prompt log entries 158 to 210 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/11-build.md to apply every answer that touches it:
+
+1. The answers below come from Claude's ledger, one line each: the item, the answer and the log entry. For the exact wording, read the entry. For a cross-section item (numbers such as 1.4, 2A.6, 2B.3, 3A.15 or 4A.11), also read its resolution in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/xcheck/conflicts.md; its "Text changes" line says which sections change.
+2. Where the user accepted your proposal, keep the choice, adjusted for the other answers. Where the user chose an alternative or a changed version (marked in the line), make the chosen option the proposal, move the old proposal under Alternatives, and rewrite the design to match.
+3. Where an answer amends a decided spec item or a skeleton Choice, name it in the choice ("amends S5.20; accepted in prompt log entry 174"). Notes in the spec and the skeleton are Claude's to write; do not edit those files.
+4. Close each open question that an answer settles, with a one-line note naming the entry.
+5. Keep every "- **Decision:** pending" line; Claude fills them in from the ledger after your revision.
+6. Make names, events, settings, paths and examples agree with the answers throughout the section, not only in the choice an answer names.
+
+Your desktop revision (prompt log entry 194) applied 10.C1's packaging. Apply the rest, and this correction from Claude's check of that revision: 11.C24's Why says that only 21.x and 23.x run on Java 21, but JavaFX 22 requires JDK 17 (its CSR, JDK-8325993; the JDK 21 minimum came with JavaFX 23 through JDK-8321603), so 22.x runs on Java 21 too, and that line stopped at 22.0.2. The conclusion, 21.0.13, stands.
+
+The answers that touch your section:
+- 1.1 core vocabulary (09's names) (entry 158)
+- 1.14 run.json schema (09 + 11 blocks + 01 variables) (entry 158)
+- 1.17 error codes (generic 09/01; one network.flag_mismatch) (entry 158)
+- 1.27 gnuplot 5.4+, lookup order, plot_pareto (entry 158)
+- 2B.13 gnuplot runner + palette in core (entry 158)
+- 2B.16 install/deps errors via 09 error event; exit 1 (entry 158)
+- 08.C1 exact gseapy port (AMENDS F1); 1.19 core holds GSEA generator + 09's Rng; 12.C10 lapses; XD-02 goes; gseapy BSD + rand MIT notices ship (entry 159)
+- 02 OQ6 KGMLs: documentation only, check names missing pathways (entry 164)
+- 3A.19 04.C2 one decimal grammar via fast_float (11.C5) for values, thresholds, real args, scores (refines S3.02; settles S3.03) (entry 167)
+- 11.C2 + 3A.26 Z3 5.3.3 pinned, gated on X11 (user re-decides if slower than 4.8.12 at median) (entry 173)
+- 07.C3 + 3A.22 + 11.C11 vis-network 10.x pinned, compiled into libfusion; 9.1.2 fallback per Phase 3 (07 OQ7) (entry 177)
+- 07.C5 + 3A.23 Graphviz on request (static=svg), not bundled (entry 178)
+- 3A.21 07.C8 font warning + 11.C10 bundled Liberation Sans via fonts.conf (11.C9 polled with 11) (entry 179)
+- 09.C8 + 11.C18 + 3A.5/4A.3/2B.19 signal handlers only request the stop (reading of A1); SIGHUP ignored; Z3 ctrl_c=false; closes 09 OQ9, OQ10 (entry 185)
+- 09.C14 core::Failure exceptions, Outcome<T> for Reports, core::Stopped (entry 186)
+- 09.C16 + 11.C7 + 12.C11 + 3A.18 + 1.18 contraction off; BYTE-IDENTICAL promise (result paths avoid platform exp/log/pow or use one correctly rounded impl); closes 09 OQ4 (entry 186)
+- 01.C10 exec = POSIX sh; busybox-w32 on Windows; 01 OQ6 to 11's Windows build check (entry 188)
+- 01.C14 flags (-b, -h + 15 new); exit 0/1/2/3/130; closes 01 OQ8 (entry 189)
+- 1.3 dotted event names; key 'type'; envelope v/seq/t/type + step/line/point; 06 counter 'check'; warnings via 'warning'; reports via step.finished (entry 190)
+- 10.C1 JAVAFX DESKTOP APP (standalone window, Java screens, Spring Boot as app framework without a web server, native dialogs, no local port; 07 pages in WebView or system browser; Phase 5 display on JavaFX canvas; no lab mode) (entry 192)
+- 10.C12 default pipeline = JSON document in the backend tree, tested, installed; standard.batch generated by 11 (entry 195)
+- 10.C3 + 11.C24 OpenJFX 21.0.13 (21 LTS line), base/graphics/controls; web only with WebView (entry 197)
+- 10.C6 native result views; 07's pages in the system browser; no WebView, no javafx-web (entry 198)
+- Loose ends: drop 2B.15's shell mark; 11 adds a Windows console launcher for --reset-password; 01's example drops start line + 1.7 names; 10's example pex relies on default cases (entry 199)
+- 11.C21 Spring Boot 4.1 (4.1.2) + Gradle 9.9.1 (AMENDS G2); closes 11 OQ1 (entry 200)
+- 11.C22 GCC 13 + Clang 17 minimums, std::format allowed (AMENDS G1); closes 11 OQ2 (entry 200)
+- 11.C1 glibc 2.28 (manylinux_2_28), macOS 13.3 arm64+x86-64, Windows 10 22H2/11 x86-64 (entry 200)
+- 11.C3 Z3: official archives on macOS/Windows; cached source build on Linux; SYSTEM only at the pin (entry 200)
+- 11.C4 FetchContent with URL_HASH; Gradle dependency verification; wrapper checksum (entry 201)
+- 11.C6 + 1.2 per-module static libs + fusion::libfusion; edges: expression+network, merge+expression; 04 matcher takes GraphView; cudf handler in batch; gnuplot runner in core; batch calls publish_solve (entry 201)
+- 11.C8 GCC 14 releases; CI Clang 18 every push + GCC 13 weekly (after C22); Apple Clang Xcode 16.4+; MSVC 19.40+ (entry 201)
+- 11.C9 bundle gnuplot 6.0.5 everywhere (cairo terminals only) (entry 201)
+- 11.C12 jpackage installers (.msi per user, .dmg per arch, .deb, .rpm), no javafx.web, Windows console launcher for reset; backend-only archive (entry 202)
+- 11.C25 OpenJFX jmods jlinked as named modules (Gluon, pinned); app jars on class path (entry 202)
+- 11.C13 Kotlin DSL, version catalog, Gradle 9.9.1 wrapper (after C21); toolchain Java 21; Temurin 21.0.13+9 pinned for jlink/jpackage (entry 202)
+- 11.C14 repository layout backend/ frontend/ share/fusion/ (pipelines/standard.json) packaging/ third_party/ cmake/ .github/ docs/ VERSION (entry 202)
+- 11.C15 GitHub Actions: Linux per push; macOS/Windows/identity/oldest-GCC/repro on PRs, weekly, on demand; packaging on tags; actions pinned by SHA (entry 203)
+- 11 OQ3 code signing: unsigned during development; decide before first public release (user creates accounts, adds secrets) (entry 203)
+- 11.C16 one VERSION file; build id = version + commit (+ exe SHA-256 if dirty); frontend refuses mismatched backend (entry 203)
+- 11.C17 Z3 shared on every platform, run path, version check at start (entry 203)
+- 11.C19 build info, install dir, platform layer, dependency registry in core (AMENDS C1's description of core); closes 11 OQ8 (entry 204)
+- 11.C20 FUSION_HOME/GNUPLOT/DOT overrides recorded; NEW: exec lines get bundled tools dir APPENDED to PATH; Phase 4 checks 'set term png' on cairo-only build (entry 204)
+- 11.C23 VC++ runtime DLLs beside fusion.exe (entry 204)
+- 2B.5 + 4A.10 + 4B.41 ship data/kegg_pathways.txt: 167 bare pathway ids, listed in fusion-data.json (entry 204)
+- 11 OQ4 rebuild maps from clear sources (NCBI Gene symbols; Reactome names with attribution) in data/SOURCES.md; KEGG pathway names NOT shipped, read at run time from each KGML root's title (NEW RULE for 02/04/07/08 labels) (entry 205)
+- 11 OQ5/6/7/9 + 'set term png' check recorded as Phase 3/4 checks; 11.C24 correction to send (entry 205)
+- 12.C1 five tiers T0/T1/T2/T3/B + golden search + weekly TSan (entry 206)
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 200 words: what you changed, and any answer you could not apply and why.
+```
+
+## 222 · Subagent prompt · Approved changes sent for section 12 · 2026-11-16 16:02
+
+Sent to the section 12 drafter after the last poll (entry 210), under decision 0031's step 1. The message as sent:
+
+```text
+Every poll on the architecture sections is now done (prompt log entries 158 to 210 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/12-tests.md to apply every answer that touches it:
+
+1. The answers below come from Claude's ledger, one line each: the item, the answer and the log entry. For the exact wording, read the entry. For a cross-section item (numbers such as 1.4, 2A.6, 2B.3, 3A.15 or 4A.11), also read its resolution in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/xcheck/conflicts.md; its "Text changes" line says which sections change.
+2. Where the user accepted your proposal, keep the choice, adjusted for the other answers. Where the user chose an alternative or a changed version (marked in the line), make the chosen option the proposal, move the old proposal under Alternatives, and rewrite the design to match.
+3. Where an answer amends a decided spec item or a skeleton Choice, name it in the choice ("amends S5.20; accepted in prompt log entry 174"). Notes in the spec and the skeleton are Claude's to write; do not edit those files.
+4. Close each open question that an answer settles, with a one-line note naming the entry.
+5. Keep every "- **Decision:** pending" line; Claude fills them in from the ledger after your revision.
+6. Make names, events, settings, paths and examples agree with the answers throughout the section, not only in the choice an answer names.
+
+The answers that touch your section:
+- 1.9 --check --json (01 diagnostics + 09 fields) (entry 158)
+- 1.30 legacy counts graph 2 (entry 158)
+- 1.31 small mismatches follow owner (entry 158)
+- 2A.10 schemas kept by 12, written by owners (entry 158)
+- 08.C1 exact gseapy port (AMENDS F1); 1.19 core holds GSEA generator + 09's Rng; 12.C10 lapses; XD-02 goes; gseapy BSD + rand MIT notices ship (entry 159)
+- 05 OQ2 simple-path pruning: walk rule now, capped exact pruning measured in Phase 3, then user decides (entry 170)
+- 11.C2 + 3A.26 Z3 5.3.3 pinned, gated on X11 (user re-decides if slower than 4.8.12 at median) (entry 173)
+- 06.C10 + 1.6 + 4B.29 FSC as a set; cases in/out/free (default in,out with FSC, free without); names in/out/free in args, files, JSON; 07 labels display only; 'both' only positional pex (extends S5.17) (entry 175)
+- 2B.8 + 12.C12 rlimit (solve.rlimit per check, 0 = none, in run.json); closes 10 OQ4 (entry 176)
+- 3A.15 + 1.4 + 4A.12 09.C2 step dirs; 07.C1 one results.json per solve; placement per 1.4; run page written once at run end; closes 07 OQ6, OQ9 (entry 177)
+- 07.C3 + 3A.22 + 11.C11 vis-network 10.x pinned, compiled into libfusion; 9.1.2 fallback per Phase 3 (07 OQ7) (entry 177)
+- 08.C7 all-zero draws: step 1/m + warning; undefined FWER = 1.0 (entry 182)
+- 09.C14 core::Failure exceptions, Outcome<T> for Reports, core::Stopped (entry 186)
+- 09.C15 + 12.C9 + 3A.17 core::Rng mt19937_64 + own distributions + SplitMix64 streams (GSEA keeps 08's generator) (entry 186)
+- 09.C16 + 11.C7 + 12.C11 + 3A.18 + 1.18 contraction off; BYTE-IDENTICAL promise (result paths avoid platform exp/log/pow or use one correctly rounded impl); closes 09 OQ4 (entry 186)
+- 11.C15 GitHub Actions: Linux per push; macOS/Windows/identity/oldest-GCC/repro on PRs, weekly, on demand; packaging on tags; actions pinned by SHA (entry 203)
+- 11.C20 FUSION_HOME/GNUPLOT/DOT overrides recorded; NEW: exec lines get bundled tools dir APPENDED to PATH; Phase 4 checks 'set term png' on cairo-only build (entry 204)
+- 11 OQ5/6/7/9 + 'set term png' check recorded as Phase 3/4 checks; 11.C24 correction to send (entry 205)
+- 12.C1 five tiers T0/T1/T2/T3/B + golden search + weekly TSan (entry 206)
+- 12.C2 backend/tests tree, per-module Catch2, spec tags, fusion-test driver, fake-fusion, one schema copy; closes 12 OQ2 (entry 206)
+- 12.C3 KEGG-derived data in an external hash-checked data root; reduced master counts as KGML data (closes 12 OQ4) (entry 206)
+- 12.C4 hybrid references: reuse 24 runs, regenerate cheap cases with snapshot binary, capture corridors (entry 206)
+- 12.C5 canonical fact sets; chained + pinned; exact frontiers on definite answers; independent witness checker R1-R4; unknowns inconclusive (entry 207)
+- 12.C6 machine-checked expected-differences.json (XD-02 gone; add entries for changes accepted in polls 158-205) (entry 207)
+- 12.C7 slow tier by verification (<= 2k+1 parallel checks); full search on difference (entry 207)
+- 12.C8 C++ reference runner in fusion-test; gseapy values recorded once (entry 207)
+- 12.C13 fusion-test bench: child per case, median of 5, JSON-lines history, 1.25x flag (entry 208)
+- 12.C14 two oracles (merge_direct + independent exception_merge), FuSION 1 cross-check; closes 12 OQ5 (2.0 semantics) (entry 208)
+- 12.C15 Phase 3: X02, X03, X05, X06, X07, X08, X11 (~30 h); X01/X04/X09/X10 skipped; plus measurements from polls 170/172/177/205 (entry 208)
+- 12.C16 after the golden search, T3 verifies against 2.0's reviewed frontiers; FuSION 1 comparison before each release (entry 208)
+- 12.C17 traceability report-only in Phase 4, fails from its end (exempt list) (entry 209)
+- 12 OQ6 long experiments/benchmarks scheduled with the user on a quiet machine; OQ8 closed by 10.C16; OQ1/3/7/9 closed; 12's frontend tests follow the desktop design (fake-fusion, headless services, Xvfb screen tests) (entry 209)
+- 06 OQ5 resume is cold: recorded as a known cost; 06 OQ6 counter encoding compared in Phase 3 beside X11 (entry 210)
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 200 words: what you changed, and any answer you could not apply and why.
+```
+
+## 223 · Note · How entries 211 to 222 were delivered · 2026-11-16 16:02
+
+Each of the twelve messages was saved as a file in Claude's scratchpad (`phase2/briefs/apply_NN.txt`, whose text is the text logged in entries 211 to 222), and each drafter was sent one line pointing to its own file: "Your instructions for this revision are in <file>. Read the whole file and follow it exactly." This avoids retyping twelve long messages, so what each drafter reads is byte for byte what is logged.
+
+## 224 · User prompt · 2026-11-16 16:50
+
+> /load-context continue the agents
+
+Sent at the start of a new Claude session, started in FuSION2, after the old session wrote its handoff at 16:30. The `/load-context` skill reads `.claude/context-handoff.md`; "continue the agents" asks Claude to resume the six drafters that the usage limit stopped at 16:18 to 16:19 while they applied the approved changes: sections 01, 02, 03, 04, 11 and 12 (entries 211 to 214, 221 and 222). By then, 01, 02, 03 and 04 had each written their whole revised section and were checking it; 11 and 12 were part way through their edits.
+
+## 225 · Subagent prompt · Resume message to the six stopped drafters · 2026-11-16 16:50
+
+Sent word for word to the drafters of sections 01, 02, 03, 04, 11 and 12, with `NN` replaced by the drafter's own section number.
+
+```text
+Continue your revision from where you stopped; your instructions are in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION/542fdce7-1f24-4eb5-9dd5-2d360919cc30/scratchpad/phase2/briefs/apply_NN.txt.
+```
+
+## 226 · Note · The resume in entry 225 did not reach the drafters · 2026-11-16 16:51
+
+Correction to entry 225: the message was not delivered. Claude sent it first to the section 01 drafter (agent a2226e48e2180cd6d), and the send failed with "No transcript found for agent ID: a2226e48e2180cd6d". A new session cannot resume subagents that the old session launched, because their saved transcripts are kept in the old session's folder. The other five sends were not attempted. Entry 227 asks the user how to continue.
+
+## 227 · Poll · 2026-11-16 16:52
+
+Asked after the failed send in entry 226.
+
+**Q1 (Resume).** This new session cannot resume the six stopped drafters (sections 01, 02, 03, 04, 11 and 12). Sending the resume message to drafter 01 failed with "No transcript found for agent ID", because their saved transcripts are in the old session's folder. Drafters 01 to 04 had already written their whole revised sections and were checking them; 11 and 12 were part way through their edits. How should they continue?
+
+- Copy transcripts here (Recommended): Copy each drafter's saved transcript and meta file from the old session's folder into this session's folder, then resume the same six agents with entry 225's message. The originals stay as they are, and the old session must not resume these agents as well. This relies on how Claude Code stores subagents and may fail; if it does, I come back to you.
+- Resume in the old session: You reopen the old session (claude --resume 542fdce7-1f24-4eb5-9dd5-2d360919cc30, from the FuSION folder) and tell it to continue the agents. This session waits for their reports.
+- Fresh agents: Six new agents, one per section, each given its apply_NN.txt and told that its section is already partly revised. They lack the old agents' context, so each re-reads its section, the polls and the conflicts list. This sets aside the rule to resume the same agent.
+- Claude finishes them: My spot-check of 01 to 04 becomes their final check, and I finish the remaining edits to 11 and 12 myself. This sets aside decision 0030 (each drafter revises its own section) for this round.
+
+**Answer:** Copy transcripts here (Recommended)
+
+## 228 · Note · Entry 225's message delivered to the six drafters · 2026-11-16 16:53
+
+Following the answer in entry 227, Claude copied each of the six drafters' saved transcripts and meta files, unchanged (checked byte for byte), from the old session's folder into this session's folder; the originals stay where they were. Entry 225's message was then sent to the section 01 drafter, and then to the drafters of sections 02, 03, 04, 11 and 12. All six sends succeeded, and each drafter resumed with its own transcript.
+
+## 229 · Poll · 2026-11-16 17:22
+
+First of two polls on the loose ends from the drafters' reports on the approved changes (entries 211 to 222, resumed in entry 225). These four are the open decisions; entry 230 holds the corrections, section 02's readings, the code names and the mechanical fixes.
+
+**Q1 (Avoid lists).** 06 open question 10 · Avoid lists and complexes. Poll 170 made excluding a gene remove every complex that contains it, and made a named FSC's out case forbid them. FuSION 1's batches, and positional lines in 2.0, avoid the FSC through an avoid list instead, which still means the node only. A real case: in r5 without STAT3, FuSION 1's witness at (4, 4) goes STAT1 → [STAT1+STAT3] → MYC. With STAT3 named as the FSC, 2.0 forbids that complex; through r5's own avoid list it would not, so the same question would get two answers. No other out witness of the 24 valid runs uses a complex of an avoided gene. Should a gene on an avoid list also forbid every complex that contains it?
+
+- Yes, avoid lists too (Recommended): Every avoided gene forbids its complexes, as poll 170's option text said. Old batches then agree with a named FSC's out case, and r5's point at (4, 4) may change (decision 0023 allows it).
+- No, node only: Avoid lists keep FuSION 1's meaning; only a named FSC's out case forbids complexes, so old batches reproduce FuSION 1 exactly.
+
+**Answer:** Yes, avoid lists too (Recommended), closing 06 open question 10 (sets XD-19's applies_when in section 12)
+
+**Q2 (Precedence).** Setting precedence (01 open question 11, asked by section 05). Poll 190 made the run line set run-level settings and fusion --set override the run line. A step can also give the same setting itself, for example fb_rch skip_subtypes=… beside run corridor.skip_subtypes=…. Which wins?
+
+- Step, then --set, then run (Recommended): A step's own argument wins for that step; --set overrides the run line; the registry default applies last. The narrowest statement wins, so a batch that sets two fb_rch lines differently keeps both.
+- --set over everything: --set overrides even a step's own argument, so a command-line change always takes effect without editing the batch.
+
+**Answer:** Step, then --set, then run (Recommended), closing 01 open question 11
+
+**Q3 (Run debug).** 01 open question 10 · debug on the run line. Poll 190 lets the run line take any run-level setting, while poll 185 (01.C8) kept debugging on the command line and rejected a batch line for it. Section 01 reads the two answers together: debug is the one run-level setting the run line does not take. Do you confirm that reading?
+
+- Command line only (Recommended): Debugging stays a command-line option (01.C8); the run line does not take it.
+- Run line takes it too: A batch can turn debugging on from its run line, like any other run-level setting.
+
+**Answer:** Command line only (Recommended), closing 01 open question 10
+
+**Q4 (Unmapped ids).** 04 open question 9 · Ids that a value input's own map lacks. Section 02's id rule passes an id the run's map lacks through unchanged, which suits a run-wide synonym map. Section 04 drops such ids, and reports them, when a value input names its own map (id_map=<file> or symbols), because that input is keyed by foreign ids. With pass-through, your probe table would bring 9,989 unmapped symbols into GSEA's ranking and the threshold suggestion's statistics, and the EGF file would no longer be reproduced. What should happen to them?
+
+- Drop for own maps (Recommended): A value input's own map drops and reports the ids it lacks; the run-wide map passes them through; 02's IdMap gains a lookup that says whether an id was mapped.
+- Pass through everywhere: One behaviour for every map; unmapped symbols enter GSEA's ranking and the suggestion.
+- Drop everywhere: The run-wide map also drops ids it lacks, so a network or list id missing from a synonym map disappears.
+
+**Answer:** Drop for own maps (Recommended), closing 04 open question 9
+
+## 230 · Poll · 2026-11-16 17:36
+
+Second of the two loose-ends polls (see entry 229).
+
+**Q1 (Corrections).** Three numbers in earlier polls were off; the drafters found them. (1) Entry 160 said your probe table "reproduces the EGF file: the same 3054 ids". Under the one-to-one map you chose, it gives 3,050: the earlier ids of ICOS, CSNK1E, ATG4B and PDE6G are lost, because a later map line wins. The ±1.01 lists are unchanged (43 up, 2 down). At ±0.67 it gives 74 up genes against the file's 77: one lost through the map (CSNK1E's earlier id), two through the file's rounding to two decimals. (2) Entry 190's window plots are 59 lines in 59 files over the 119-file corpus, not 56: the poll left out three GUI scripts. (3) Entry 189's new command-line flags are 16 with --set, not 15. Do your answers stand?
+
+- All answers stand (Recommended): Keep entry 160's one-to-one map, entry 190's rule and entry 189's flags; the corrected numbers go into the sections.
+- One-to-many for symbols: id_map=symbols gives an ambiguous symbol's value to every id it names, as compute_lfc.py does, restoring all 3,054 ids; other maps stay one-to-one.
+
+**Answer:** All answers stand (Recommended)
+
+**Q2 (02 readings).** Section 02 settled four points by its own reading, where the answers left room. Which do you accept? I recommend all four; any you leave unticked I will come back to. (Multiple choice.)
+
+- Pathway names: A KGML pathway is named by its root title (entry 205); any other pathway id by the pathway-name map; otherwise by the id itself.
+- Complex labels: A complex with no symbol of its own prints its components' labels joined by + in brackets, a box as symbol plus count (07.C10): [MAX+MYC], or [STAT1+6] for a complex of the 7-gene STAT box.
+- Unparseable scores: A score that does not fit the one decimal grammar (04.C2) leaves its relation unscored, 0 in comparisons, with a warning, rather than failing the read.
+- bindings.tsv at run end: Written once when the run ends, whatever its status; section 09 adds a way to write a file at the run directory's top level.
+
+**Answer:** Pathway names, Complex labels, Unparseable scores, bindings.tsv at run end (all four)
+
+**Q3 (Codes).** Names left open across sections. Every check diagnostic carries a code (01's --check --json), and cross-section item 1.17 gives problems found by the check or the binder generic codes. Proposed: batch.bad_argument (an unknown, duplicate or missing argument, a positional after a named one, or a wrong number of positional tokens); batch.unmatched_file (a positional pex or psp file that matches no solve, 07.C9); batch.no_fsc (the note that a positional batch names no FSC, 2A.9); batch.mff_before_cudf (the check's warning for mff before any cudf); deps.font_missing (the missing plot font warning from 11's dependency check, 07.C8); expression.gnuplot_failed (a histogram gnuplot did not write, like 07's results.gnuplot_failed); batch.bad_value for gsea permutations outside 1 to 100,000, in place of entry 182's gsea.setting, as 07 already does for its value checks; and 08's placeholder network::ListEntry becomes 02's network::ListLine.
+
+- All as listed (Recommended): One generic code per kind of check problem; module codes only for a module's own faults.
+- Separate argument-count code: As listed, plus batch.argument_count for a wrong number of positional tokens.
+- Keep gsea.setting: As listed, but the permutations range keeps entry 182's gsea.setting.
+
+**Answer:** All as listed (Recommended), amending entry 182's gsea.setting naming for the permutations range
+
+**Q4 (Fixes).** Mechanical fixes found in the spot-checks, each following a rule you already approved. Section 09: a way to write a run-level file (bindings.tsv sits at the top level, 1.22); its journal example uses 06's field name "check", not "seq" (1.29); its store example shows 03's current key 0e91f9a9… (1.29). Section 02: its example header writes network.split_threshold (1.16). Section 10: its argument-type mirror follows 01's new type table, and its gsea example adds 08's required shortlist. Sections 01 and 07: the recognised limits_timefile.txt move calls 07's legacy_limits, not write_legacy, as 07's outline defines. With them go your answers in these two polls, to the sections they touch. Send them to the drafters?
+
+- Send all (Recommended): Each drafter gets its items in one logged message; I spot-check the results.
+- Show me each first: I show you each drafter's message before sending it.
+
+**Answer:** Send all (Recommended)
+
+## 231 · Subagent prompt · Follow-up changes sent for section 01 · 2026-11-16 17:39
+
+Sent to the section 01 drafter after the loose-ends polls (entries 229 and 230), as entry 230's last answer approved. The message as sent:
+
+```text
+Two more polls settled the loose ends from the drafters' reports on the last revision (prompt log entries 229 and 230 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/01-batch-language.md to apply the items below, and make names, codes and examples agree with them throughout the section. Keep every "- **Decision:** pending" line.
+
+Items for your section:
+1. Entry 229, "Run debug": close open question 10 as you read it. `debug` is the one run-level setting the `run` line does not take, and debugging stays on the command line (01.C8). Like any argument a line does not take, a `run` line that names it is an error (`batch.bad_argument`, below).
+2. Entry 229, "Precedence": close open question 11 as you proposed. A step's own argument wins for that step, then `fusion --set`, then the `run` line, then the registry default. State it where arguments bind and where the `run` line is described.
+3. Entry 230, "Codes": add these codes to your codes list and error table: `batch.bad_argument` (an unknown, duplicate or missing argument, a positional after a named one, or a wrong number of positional tokens); `batch.unmatched_file` (a positional `pex` or `psp` file that matches no solve's prefix, 07.C9); `batch.no_fsc` (the check's note that a positional batch names no FSC, row 2A.9); `batch.mff_before_cudf` (the check's warning for `mff` before any `cudf`). Every check diagnostic then has a code. The run-log note for a skipped window plot (01.C20) needs none.
+4. Entry 230, "Fixes": the recognised move of `limits_timefile.txt` calls section 07's `legacy_limits`, and the move of `PO.dat` its `two_column` (07-results.md:814 and :1029), not `write_legacy` (your lines 777 and 1082).
+5. Entry 230, "Corrections": your corrected counts stand (59 window-plot lines in 59 files; 16 new flags with `--set`), and the answers in entries 189 and 190 are unchanged.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 150 words: what you changed, and any item you could not apply and why.
+```
+
+## 232 · Subagent prompt · Follow-up changes sent for section 02 · 2026-11-16 17:39
+
+Sent to the section 02 drafter after the loose-ends polls (entries 229 and 230), as entry 230's last answer approved. The message as sent:
+
+```text
+Two more polls settled the loose ends from the drafters' reports on the last revision (prompt log entries 229 and 230 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/02-network.md to apply the items below, and make names, codes and examples agree with them throughout the section. Keep every "- **Decision:** pending" line.
+
+Items for your section:
+1. Entry 229, "Unmapped ids": `IdMap` gains a lookup that says whether an id was mapped; name it in your outline. The run-wide map passes an id it lacks through unchanged, as 02.C3 says. A value input's own map (`id_map=<file>` or `symbols`) drops the ids it lacks, and section 04 reports them. State both in 02.C3's design and in the `IdMap` outline.
+2. Entry 230, "02 readings": all four of your readings are accepted: pathway names (KGML root title, then the pathway-name map, then the id); complex labels (`[MAX+MYC]`, `[STAT1+6]`); unparseable scores (unscored, with `network.bad_score`); and `bindings.tsv` written once at the run's end. Section 09 adds a way to write a file at the run directory's top level; describe the write as going through it.
+3. Entry 230, "Fixes": your example header at line 414 writes `split_threshold` without its prefix. Make it `network.split_threshold`, as your settings table (line 483) and section 03's example have it.
+4. Entry 230, "Codes": section 08 renames its placeholder `network::ListEntry` to your `network::ListLine`; nothing changes in your section for it.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 150 words: what you changed, and any item you could not apply and why.
+```
+
+## 233 · Subagent prompt · Follow-up changes sent for section 03 · 2026-11-16 17:39
+
+Sent to the section 03 drafter after the loose-ends polls (entries 229 and 230), as entry 230's last answer approved. The message as sent:
+
+```text
+Two more polls settled the loose ends from the drafters' reports on the last revision (prompt log entries 229 and 230 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/03-merge.md to apply the items below, and make names, codes and examples agree with them throughout the section. Keep every "- **Decision:** pending" line.
+
+Items for your section:
+1. Entry 230, "Codes": section 01's note that a positional batch names no FSC (row 2A.9) has the code `batch.no_fsc`. Cite it with that code.
+2. Your two notes for other sections are being sent to them: section 09's store example key and section 02's `split_threshold` prefix.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 150 words: what you changed, and any item you could not apply and why.
+```
+
+## 234 · Subagent prompt · Follow-up changes sent for section 04 · 2026-11-16 17:39
+
+Sent to the section 04 drafter after the loose-ends polls (entries 229 and 230), as entry 230's last answer approved. The message as sent:
+
+```text
+Two more polls settled the loose ends from the drafters' reports on the last revision (prompt log entries 229 and 230 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/04-expression.md to apply the items below, and make names, codes and examples agree with them throughout the section. Keep every "- **Decision:** pending" line.
+
+Items for your section:
+1. Entry 229, "Unmapped ids": close open question 9 as you proposed. A value input's own map (`id_map=<file>` or `symbols`) drops the ids it lacks and reports them; the run-wide map passes them through (02.C3). Section 02's `IdMap` gains a lookup that says whether an id was mapped; section 02 names it in its own revision, so refer to it without a name.
+2. Entry 230, "Corrections": the answers stand. Keep your corrected numbers (3,050 of the EGF file's 3,054 ids; 74 up genes against 77 at ±0.67).
+3. Entry 230, "Codes": a requested histogram that gnuplot did not write (S3.19) fails with `expression.gnuplot_failed`, raised by the step, as section 07 raises `results.gnuplot_failed`; core's runner returns a result and raises nothing. Put the code in your error table's row for core's runner.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 150 words: what you changed, and any item you could not apply and why.
+```
+
+## 235 · Subagent prompt · Follow-up changes sent for section 05 · 2026-11-16 17:39
+
+Sent to the section 05 drafter after the loose-ends polls (entries 229 and 230), as entry 230's last answer approved. The message as sent:
+
+```text
+Two more polls settled the loose ends from the drafters' reports on the last revision (prompt log entries 229 and 230 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/05-corridor.md to apply the items below, and make names, codes and examples agree with them throughout the section. Keep every "- **Decision:** pending" line.
+
+Items for your section:
+1. Entry 229, "Precedence": a `fb_rch` line's own `skip_subtypes=` wins for that line, then `fusion --set`, then the `run` line, then the default. State it where `corridor.skip_subtypes` is described (line 265) and in the settings table.
+2. Entry 229, "Avoid lists": every gene on an avoid list now forbids every complex that contains it, not only the out case's FSC. Update the places that say section 06 forbids such complexes for the avoided FSC only, for example open question 3 and the S4.06 line in Requirements.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 150 words: what you changed, and any item you could not apply and why.
+```
+
+## 236 · Subagent prompt · Follow-up changes sent for section 06 · 2026-11-16 17:39
+
+Sent to the section 06 drafter after the loose-ends polls (entries 229 and 230), as entry 230's last answer approved. The message as sent:
+
+```text
+Two more polls settled the loose ends from the drafters' reports on the last revision (prompt log entries 229 and 230 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/06-solve.md to apply the items below, and make names, codes and examples agree with them throughout the section. Keep every "- **Decision:** pending" line.
+
+Items for your section:
+1. Entry 229, "Avoid lists": close open question 10: yes. Every gene on an avoid list (`avoid_nodes`, and the avoid lists of FuSION 1's positional lines) forbids every complex that contains it, as the named FSC's out case does, and the free-to-out witness transfer (06.C12) requires those complexes absent too. The avoid lists lose their node-only meaning; say so where lists are bound (Building a case), in the encoding, in the settings table, where positional lines are read, and in the test hooks. Old results change where an avoided gene sits in a complex, which decision 0023 allows; section 12's XD-19 records the one known case, r5's out case at (4, 4).
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 150 words: what you changed, and any item you could not apply and why.
+```
+
+## 237 · Subagent prompt · Follow-up changes sent for section 07 · 2026-11-16 17:39
+
+Sent to the section 07 drafter after the loose-ends polls (entries 229 and 230), as entry 230's last answer approved. The message as sent:
+
+```text
+Two more polls settled the loose ends from the drafters' reports on the last revision (prompt log entries 229 and 230 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/07-results.md to apply the items below, and make names, codes and examples agree with them throughout the section. Keep every "- **Decision:** pending" line.
+
+Items for your section:
+1. Entry 230, "Codes": the missing plot font's warning has the code `deps.font_missing`, from section 11's dependency check; cite it wherever you mention the warning (07.C8, and lines 469 and 874). A positional `pex` or `psp` file that matches no solve is section 01's `batch.unmatched_file`; cite it in 07.C9 and in your error table.
+2. Entry 230, "Fixes": lines 95 and 1073 say the moved `limits_timefile.txt` gets FuSION 1's rendering "through `write_legacy`". Make them agree with your line 1029: the recognised moves call `legacy_limits` for `limits_timefile.txt` and `two_column` for `PO.dat`.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 150 words: what you changed, and any item you could not apply and why.
+```
+
+## 238 · Subagent prompt · Follow-up changes sent for section 08 · 2026-11-16 17:39
+
+Sent to the section 08 drafter after the loose-ends polls (entries 229 and 230), as entry 230's last answer approved. The message as sent:
+
+```text
+Two more polls settled the loose ends from the drafters' reports on the last revision (prompt log entries 229 and 230 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/08-enrichment.md to apply the items below, and make names, codes and examples agree with them throughout the section. Keep every "- **Decision:** pending" line.
+
+Items for your section:
+1. Entry 230, "Codes": permutations outside 1 to 100,000 fail with section 01's generic `batch.bad_value`, in place of `gsea.setting`; this amends entry 182's naming. Change 08.C8, the error table and `check_settings`'s comment. A wrong number of arguments is `batch.bad_argument`, where you cite "01's `batch.*` codes". `network::ListEntry` becomes section 02's `network::ListLine` (02-network.md:828).
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 150 words: what you changed, and any item you could not apply and why.
+```
+
+## 239 · Subagent prompt · Follow-up changes sent for section 09 · 2026-11-16 17:39
+
+Sent to the section 09 drafter after the loose-ends polls (entries 229 and 230), as entry 230's last answer approved. The message as sent:
+
+```text
+Two more polls settled the loose ends from the drafters' reports on the last revision (prompt log entries 229 and 230 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/09-runs.md to apply the items below, and make names, codes and examples agree with them throughout the section. Keep every "- **Decision:** pending" line.
+
+Items for your section:
+1. Entry 230, "02 readings" and "Fixes": add a way to create an `OutputFile` at the run directory's top level, for section 02's `bindings.tsv`, which is written once when the run ends, whatever its status (cross-section item 1.22). `Files` now creates files only in the step directory and in `debug/<step>/`.
+2. Entry 230, "Fixes": your journal example (line 405) uses `"seq"`. Section 06, which owns the journal, names the field `"check"` (06-solve.md:681-682); use its name.
+3. Entry 230, "Fixes": your store example (lines 450-451) shows the old key `2a7ca3a6…`. Section 03's key is now `0e91f9a911c19a7f98fd415ffd56bc95ae6fd52128c70bc586557d35978c74d5` (03-merge.md:284).
+4. Entry 229, "Precedence": the settings registry resolves a setting in this order: a step's own argument, for that step; then `fusion --set`; then the `run` line; then the registry default. `run.json`'s `source` names the one that applied, beside today's `default`, `positional` and `named`.
+5. Entry 229, "Run debug": `run.debug` is set only from the command line (01.C8); the `run` line does not take it.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 150 words: what you changed, and any item you could not apply and why.
+```
+
+## 240 · Subagent prompt · Follow-up changes sent for section 10 · 2026-11-16 17:39
+
+Sent to the section 10 drafter after the loose-ends polls (entries 229 and 230), as entry 230's last answer approved. The message as sent:
+
+```text
+Two more polls settled the loose ends from the drafters' reports on the last revision (prompt log entries 229 and 230 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/10-frontend.md to apply the items below, and make names, codes and examples agree with them throughout the section. Keep every "- **Decision:** pending" line.
+
+Items for your section:
+1. Entry 230, "Fixes": your `ArgType` mirror (line 619) follows section 01's new type table, which uses 09's `core::Type` with `list` and `takes` marks. Your `gsea` example (line 916) gives section 08's required `shortlist` argument.
+2. Entry 229, "Precedence": a step's own argument wins for that step, then `fusion --set`, then the `run` line, then the default. If section 10 states any order among these, make it this one; otherwise nothing changes.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 150 words: what you changed, and any item you could not apply and why.
+```
+
+## 241 · Subagent prompt · Follow-up changes sent for section 11 · 2026-11-16 17:39
+
+Sent to the section 11 drafter after the loose-ends polls (entries 229 and 230), as entry 230's last answer approved. The message as sent:
+
+```text
+Two more polls settled the loose ends from the drafters' reports on the last revision (prompt log entries 229 and 230 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/11-build.md to apply the items below, and make names, codes and examples agree with them throughout the section. Keep every "- **Decision:** pending" line.
+
+Items for your section:
+1. Entry 230, "Codes": the missing plot font is a warning with the code `deps.font_missing`, raised by your dependency check; name it at line 724 and wherever the font is probed. Your note on section 04's histogram code is settled: section 04 raises `expression.gnuplot_failed`, and your runner keeps returning a result.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 150 words: what you changed, and any item you could not apply and why.
+```
+
+## 242 · Subagent prompt · Follow-up changes sent for section 12 · 2026-11-16 17:39
+
+Sent to the section 12 drafter after the loose-ends polls (entries 229 and 230), as entry 230's last answer approved. The message as sent:
+
+```text
+Two more polls settled the loose ends from the drafters' reports on the last revision (prompt log entries 229 and 230 in docs/process/PROMPTS.md, which quote each question, its options and the answer word for word). Revise docs/architecture/12-tests.md to apply the items below, and make names, codes and examples agree with them throughout the section. Keep every "- **Decision:** pending" line.
+
+Items for your section:
+1. Entry 229, "Avoid lists": yes, every gene on an avoid list forbids every complex that contains it. So XD-19 applies in both modes: chained, r5's positional avoid list now forbids [STAT1+STAT3] too, so its out witness at (4, 4) is invalid there as well. Update XD-19's row, the R2 and R3 note (line 616), the line on section 06's open question 10 (line 1173) and the checker test (line 1206).
+2. Entry 230, "Codes": line 385's `gsea.setting` becomes `batch.bad_value`. Where your tests name any of the other new codes, use them: `batch.bad_argument`, `batch.unmatched_file`, `batch.no_fsc`, `batch.mff_before_cudf`, `deps.font_missing` and `expression.gnuplot_failed`.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 150 words: what you changed, and any item you could not apply and why.
+```
+
+## 243 · Note · How entries 231 to 242 were delivered · 2026-11-16 17:39
+
+As in entry 223, each message was saved in Claude's scratchpad (`phase2/briefs/followup_NN.txt`, whose text is the text logged in entries 231 to 242), and each drafter was sent one line pointing to its own file: "Your instructions for this revision are in <file>. Read the whole file and follow it exactly." The drafters of sections 05 to 10 had finished in the old session, so, by the means the user approved for the other six in entry 227, Claude first copied their saved transcripts and meta files, unchanged (checked byte for byte), into this session's folder; the originals stay where they were.
+
+## 244 · Poll · 2026-11-17 03:15
+
+Asked after the twelve follow-up reports (entries 231 to 242) and Claude's cross-section consistency check (handoff task 4).
+
+**Q1 (Placements).** Error codes the sections placed themselves. Poll 230 named no code for five of section 01's error rows, so 01 filed them under existing codes and asks you to confirm: invalid UTF-8 or an unterminated quote → batch.bad_value; a let key that is not $name, or is reserved → batch.bad_value; #LASTGRAPHNUM with no graph yet → batch.bad_value; a line needing a value that no earlier line makes → batch.bad_argument; a load of a run, step or artefact that is missing, unfinished or changed → input.missing or artefact.changed. Section 04 likewise put a broken less(down, up) threshold rule (S3.07) under batch.bad_value. They fit 01's definitions: batch.bad_value is 'a token that cannot be read or used', and batch.bad_argument includes 'an argument no earlier line can supply'.
+
+- Confirm all six (Recommended): The codes stay as sections 01 and 04 have them; no new code.
+- Add batch.syntax: Invalid UTF-8 and an unterminated quote get their own code, batch.syntax; the other four stay.
+
+**Answer:** Confirm all six (Recommended)
+
+**Q2 (Consistency).** The cross-section consistency check found five small mismatches. Under rows 1.29 and 1.31 the owner's form wins: (1) 08 says kept_relations runs under BuildSettings, but 02 declares it with RelationFilters; (2) 02 and (3) 04 refer, without a name, to two functions now named Run::create_run_file (09) and IdMap::lookup (02); (4) 10 lists an output.written event that 07 does not have, since 07 lists files in step.finished; (5) 09's run.* settings table lacks the four run-level settings 01 adds (run.label, run.root, run.jobs, run.points). Everything else agrees: every code, event and type name that one section takes from another, and the OpenJFX sizes in 10 and 11. Send these five fixes to their drafters?
+
+- Send all (Recommended): Drafters 08, 02, 04, 10 and 09 each get their item in one logged message; I spot-check the results.
+- Show me each first: I show you each drafter's message before sending it.
+
+**Answer:** Send all (Recommended)
+
+## 245 · Subagent prompt · Consistency fix sent for section 02 · 2026-11-17 03:16
+
+Sent to the section 02 drafter after poll 244. The message as sent:
+
+```text
+Claude's cross-section consistency check found one small mismatch in your section, and the user approved the fix in prompt log entry 244 (in docs/process/PROMPTS.md). Under cross-section rows 1.29 and 1.31 the owner's form wins. Revise docs/architecture/02-network.md as below, and keep every "- **Decision:** pending" line.
+
+1. Section 09 now names its top-level file writer `Run::create_run_file(name)` (09-runs.md), through which `bindings.tsv` is written once when the run ends. Where your section says `bindings.tsv` is written through "09's top-level file writer", name it.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 100 words: what you changed.
+```
+
+## 246 · Subagent prompt · Consistency fix sent for section 04 · 2026-11-17 03:16
+
+Sent to the section 04 drafter after poll 244. The message as sent:
+
+```text
+Claude's cross-section consistency check found one small mismatch in your section, and the user approved the fix in prompt log entry 244 (in docs/process/PROMPTS.md). Under cross-section rows 1.29 and 1.31 the owner's form wins. Revise docs/architecture/04-expression.md as below, and keep every "- **Decision:** pending" line.
+
+1. Section 02 now names the lookup that says whether an id was mapped `IdMap::lookup` (it returns the mapped id, or nothing when the map lacks it; 02-network.md). Where your section refers to that lookup without a name, name it.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 100 words: what you changed.
+```
+
+## 247 · Subagent prompt · Consistency fix sent for section 08 · 2026-11-17 03:16
+
+Sent to the section 08 drafter after poll 244. The message as sent:
+
+```text
+Claude's cross-section consistency check found one small mismatch in your section, and the user approved the fix in prompt log entry 244 (in docs/process/PROMPTS.md). Under cross-section rows 1.29 and 1.31 the owner's form wins. Revise docs/architecture/08-enrichment.md as below, and keep every "- **Decision:** pending" line.
+
+1. Section 02 declares `kept_relations(const PathwayDoc&, const RelationFilters&)` (02-network.md:826, `RelationFilters` at :657). Your line 662 says `kept_relations` runs "under the run's `BuildSettings`". Use `RelationFilters` there and wherever else your section passes it.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 100 words: what you changed.
+```
+
+## 248 · Subagent prompt · Consistency fix sent for section 09 · 2026-11-17 03:16
+
+Sent to the section 09 drafter after poll 244. The message as sent:
+
+```text
+Claude's cross-section consistency check found one small mismatch in your section, and the user approved the fix in prompt log entry 244 (in docs/process/PROMPTS.md). Under cross-section rows 1.29 and 1.31 the owner's form wins. Revise docs/architecture/09-runs.md as below, and keep every "- **Decision:** pending" line.
+
+1. Section 01 adds four run-level settings with `run.` keys (01-batch-language.md:899-902): `run.label`, `run.root`, `run.jobs` and `run.points`. Your `run.*` settings table (lines 484-487) lists only `run.debug`, `run.log`, `run.cache` and `run.cache_dir`. List the four there, or point to section 01 for them, so that the `run.*` settings are all found from your table.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 100 words: what you changed.
+```
+
+## 249 · Subagent prompt · Consistency fix sent for section 10 · 2026-11-17 03:16
+
+Sent to the section 10 drafter after poll 244. The message as sent:
+
+```text
+Claude's cross-section consistency check found one small mismatch in your section, and the user approved the fix in prompt log entry 244 (in docs/process/PROMPTS.md). Under cross-section rows 1.29 and 1.31 the owner's form wins. Revise docs/architecture/10-frontend.md as below, and keep every "- **Decision:** pending" line.
+
+1. Your line 794 lists `output.written` among section 07's result events. Section 07 has no such event: "Files need no event of their own: `OutputFile::commit()` records each in `run.json`, and `step.finished` lists them" (07-results.md:469). Drop it there, and anywhere else your section expects a per-file event, read the files from `step.finished`.
+
+Edit only your own section file. Do not edit any other file in either repository, do not build or install anything, and do not commit. When you finish, reply in at most 100 words: what you changed.
+```
+
+## 250 · Note · How entries 245 to 249 were delivered · 2026-11-17 03:16
+
+As in entries 223 and 243: each message was saved as `phase2/briefs/consistency_NN.txt` in Claude's scratchpad, whose text is the text logged above, and each drafter was sent one line pointing to its file: "Your instructions for this revision are in <file>. Read the whole file and follow it exactly."
+
+## 251 · Poll · 2026-11-17 06:38
+
+Commit approval for the Phase 2 work (handoff task 6), shown with the four diffs and messages.
+
+**Q1 (Commits).** Ready to commit the Phase 2 work locally, in four commits split by concern, staged by name (.claude/ stays untracked; you push). (1) "Draft Phase 2 architecture sections 01 to 12": the 12 new section files, 13,039 lines, all 190 Decision lines filled from the ledger. Three automatic co-citations were dropped, because the entry only mentioned the choice: 11.C9 no longer cites 179, 01.C16 no longer cites 172, and 10.C16 no longer cites 209. (2) "Record decisions 0029 to 0032": four records plus README rows; 0032 is new this session and records your poll-227 answer (copy saved transcripts to resume an old session's subagents). (3) "Add Phase 2 notes to the spec, the skeleton and decisions 0021 and 0027": notes on 40 spec items, skeleton A1, C1, E1, F1, G1 and G2, and 0021 and 0027. One note is new this session: S5.05 now says an avoided gene also forbids every complex that contains it (entry 229). (4) "Log prompt entries 108 to 251": the prompt log, including this poll's entry. The diffs and messages are in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/commits/ (1_sections.diff, 2_decisions.diff, 3_notes.diff, 4_log.diff, msg1.txt to msg4.txt). Commit?
+
+- Commit all four (Recommended): Four local commits in this order; nothing is pushed.
+- Let me review first: I wait while you read the diffs and messages; tell me when to commit or what to change.
+
+**Answer:** Commit all four (Recommended)
