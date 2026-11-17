@@ -36,3 +36,6 @@ One file per decision, numbered in the order the decisions were made. Each recor
 | [0030](0030-verifier-findings-to-drafters.md) | Verifier findings go back to each section's drafter; Claude checks the revision | Accepted | 2026-11-12 |
 | [0031](0031-polling-the-architecture-sections.md) | Architecture polls: substantive items and choices one per question, mechanical alignments grouped | Accepted | 2026-11-13 |
 | [0032](0032-resuming-subagents-across-sessions.md) | A new session resumes the old session's subagents by copying their saved transcripts | Accepted | 2026-11-16 |
+| [0033](0033-de-claude-on-all-commits.md) | Plain de-claude strips the Claude co-author lines from every commit, replacing GitHub's initial commit | Accepted | 2026-11-17 |
+| [0034](0034-co-author-line-kept-until-push.md) | Commits keep the Claude co-author line; de-claude runs before each push | Accepted | 2026-11-17 |
+| [0035](0035-claude-pushes-over-ssh.md) | Claude pushes when the user asks, over this machine's SSH key (amends 0006) | Accepted | 2026-11-17 |

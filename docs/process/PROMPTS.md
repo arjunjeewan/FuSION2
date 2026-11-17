@@ -7115,3 +7115,94 @@ Commit approval for the Phase 2 work (handoff task 6), shown with the four diffs
 - Let me review first: I wait while you read the diffs and messages; tell me when to commit or what to change.
 
 **Answer:** Commit all four (Recommended)
+
+## 252 · User prompt · 2026-11-17 13:05
+
+> what's the status?
+
+Sent after Claude reported that the four commits approved in entry 251 were made (17c4c26, fbc9ba8, d2db5e4 and a78ac38), and that the push and the Phase 2 review were the user's next steps.
+
+## 253 · User prompt · 2026-11-17 13:08
+
+> use de-claude on the fusion repo, and push it to github
+
+Sent after Claude's status report: the four Phase 2 commits were local only, this clone had never pushed, and local main was 18 commits ahead of its copy of GitHub's main (9914fe2, fetched 2026-10-27).
+
+## 254 · Note · Correction to the time of entry 253 · 2026-11-17 15:56
+
+Entry 253 gives its time as 13:08. Claude wrote that time before running `date`, which then gave 15:55. Entry 253 was logged at 15:55, and the user sent the prompt shortly before that.
+
+## 255 · Poll · 2026-11-17 16:09
+
+Asked after entry 253's request, once Claude had read de-claude's source (/usr/local/bin/de-claude, version 2.2.1) and tested it on two throwaway clones of FuSION2 in its scratchpad. Claude took "the fusion repo" to mean FuSION2, because FuSION 1's checked-out branch (dev-arjun) has no unpushed commits and no Claude lines: its only attributed commits are two of Arpit's, already on origin/Fusion_Frontend, and e6e005d, which is on no branch.
+
+**Q1 (Method).** Running de-claude on FuSION2: plain de-claude also rewrites GitHub's signed "Initial commit" 9914fe2, the only commit on GitHub, so the push would then need a force. In tests on throwaway clones, both ways below strip only the 18 "Co-Authored-By: Claude Opus 5.5" lines. Files, authors and dates stay the same, and all 18 local commits get new hashes. Which way?
+
+- Local commits only (Recommended): Use de-claude's own filter script through git filter-branch, as de-claude does, but start after 9914fe2 (range 9914fe2..HEAD). GitHub's commit stays, so the push is a plain fast-forward. The old history is kept under a local backup ref, never pushed.
+- Plain de-claude, force-push: Run de-claude unchanged. GitHub's Initial commit is replaced by an unsigned copy, and the push needs --force-with-lease. The old history is kept under a local backup ref.
+
+**Answer:** Plain de-claude, force-push
+
+**Q2 (Future line).** Every FuSION2 commit so far ends with "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>". After this clean-up, should new commits still carry that line?
+
+- Drop it from now on (Recommended): New commits have no co-author line, so later pushes need no clean-up and no hashes change again. Recorded as a decision and in memory.
+- Keep it, clean before pushes: Commits keep the line locally. Each push first needs another de-claude run, which changes the hashes again.
+
+**Answer:** Keep it, clean before pushes
+
+**Q3 (Push).** Pushing FuSION2: HTTPS can't push from this machine because it has no stored credentials. Its SSH key does reach arjunjeewan/FuSION2: a read-only check showed GitHub's main is still 9914fe2, the LICENSE commit only. Decision 0006 says you run every push. How should this push go?
+
+- I push over SSH (Recommended): Switch origin to git@github.com:arjunjeewan/FuSION2.git and run git push -u origin main. That is a plain push with the local-only method, or --force-with-lease with plain de-claude. A new decision amends 0006: Claude pushes when you ask, with this machine's SSH key.
+- You push: I stop once everything is committed and give you the command. Decision 0006 stands.
+
+**Answer:** I push over SSH (Recommended)
+
+**Q4 (Records).** After the rewrite, the old hashes go stale: 12 are cited in the prompt log and 289b0bc in decision 0015. Before pushing, I would write decision records for these answers (0033 onward, with README rows), append a log note mapping the 18 old hashes to the new ones, and add a note to 0015. All of that goes in one commit, after you see its diff. OK?
+
+- Records, commit, then push (Recommended): One commit, made after you approve its diff. The push then carries everything.
+- Push first, records later: Push the 18 rewritten commits now. The records and the log note follow in a later commit and push.
+
+**Answer:** Records, commit, then push (Recommended)
+
+## 256 · Note · The de-claude run, and old hashes mapped to new · 2026-11-17 16:12
+
+After poll 255, Claude saved the old `main` as the local ref `refs/backup/main-before-de-claude` (`a78ac38`), set the uncommitted entries 252 to 255 aside with `git stash`, ran `de-claude --dry-run` and then `de-claude -y` in FuSION2, and restored the entries. de-claude reported "Done! 18 commits cleaned." Checked against the backup: the tree is identical; each of the 18 local messages lost only the line "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" and the blank line before it; authors, dates and subjects are unchanged on all 19 commits; and GitHub's `9914fe2` is now `8ae909d`, the same commit without GitHub's signature. Decisions 0033 to 0035 record the answers to poll 255.
+
+The hashes cited earlier in this log, and in decision 0015, name the old commits. Old to new, oldest first:
+
+| Old | New | Commit |
+|---|---|---|
+| 289b0bc | 5da771a | Start FuSION 2.0: prompt log and decision records |
+| 9914fe2 | 8ae909d | Initial commit (GitHub's, now unsigned) |
+| 91377eb | 8fdc5de | Merge GitHub's initial commit (LICENSE) |
+| 829b927 | a4ec0b9 | Set up Phase 1 and correct decision 0004 |
+| 8fbb836 | d393054 | Review spec stage 1: batch language |
+| ce347a4 | 2a5e01d | Point stage 1's FuSION 1 citations at the reference snapshot |
+| 901a2f3 | 4dd9500 | Review spec stage 2: graph input and merging |
+| d53e5f5 | adfa39b | Review spec stage 3: expression data |
+| fa4bcd1 | 29a7f36 | Review spec stage 4: reachability corridor |
+| 5448bf4 | dd0196d | Review spec stage 5: encoding and Pareto solve |
+| ba62454 | 20fe1d9 | Review spec stage 6: results and plots |
+| 4192226 | e67bc56 | Review spec stage 7: GSEA shortlisting |
+| 460eaf0 | cce6049 | Review spec stage 8: frontend workflow |
+| 64e88bc | 98fc02d | Correct spec stages 1 to 4 after the stage 7 and 8 reviews |
+| 2320528 | 2c97374 | Set up Phase 2: architecture skeleton and decisions 0027 and 0028 |
+| 17c4c26 | d1568d1 | Draft Phase 2 architecture sections 01 to 12 |
+| fbc9ba8 | 5694703 | Record decisions 0029 to 0032 |
+| d2db5e4 | f21aa10 | Add Phase 2 notes to the spec, the skeleton and decisions 0021 and 0027 |
+| a78ac38 | 377b467 | Log prompt entries 108 to 251 |
+
+## 257 · Poll · 2026-11-17 16:15
+
+Commit approval for the poll-255 records, shown with the diff and the message.
+
+**Q1 (Commit).** Ready to commit the poll-255 records locally as one commit, "Record decisions 0033 to 0035 and log prompt entries 252 to 257". It holds:
+(1) decisions 0033 (plain de-claude), 0034 (keep the line, clean before each push) and 0035 (Claude pushes over SSH, amends 0006), with their README rows;
+(2) a note on decision 0015 giving its new hashes;
+(3) prompt log entries 252 to 257: your two prompts, the time correction, poll 255, the de-claude note with the 19-row old-to-new hash map, and this poll.
+The message ends with the co-author line, per 0034. Then de-claude strips that line from this one commit, and I push main over SSH with --force-with-lease=main:9914fe2, replacing GitHub's initial commit. The diff and the message are in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/commits/ (5_records.diff, msg5.txt). Commit and push?
+
+- Commit, clean, push (Recommended): One local commit, staged by name. de-claude strips its co-author line, then I force-push over SSH with a lease on 9914fe2 and check that GitHub matches.
+- Let me review first: I wait while you read the diff and message. Tell me when to go on or what to change.
+
+**Answer:** Commit, clean, push (Recommended)

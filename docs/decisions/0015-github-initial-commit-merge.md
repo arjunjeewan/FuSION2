@@ -21,3 +21,7 @@ Option 1, as the merge commit "Merge GitHub's initial commit (LICENSE)". The use
 ## Consequences
 
 - FuSION 2.0 is MIT-licensed, like FuSION 1 ("Copyright (c) 2023 Supratik Chakraborty"). If FuSION 2.0 ever copies FuSION 1 files, the MIT license asks that FuSION 1's notice travel with them.
+
+## Note on decision 0033
+
+Amended on 2026-11-17 by [decision 0033](0033-de-claude-on-all-commits.md) (prompt log entry 255): de-claude rewrote every commit's message, so the hashes above changed. `289b0bc` is now `5da771a`, the merge commit is now `8fdc5de`, and GitHub's `9914fe2` is now `8ae909d`, an unsigned copy that replaces it on GitHub. Prompt log entry 256 maps every old hash to its new one.
