@@ -1,0 +1,15 @@
+;; merge_and_write.batch: X03's FuSION 1 batch (Phase 3 plan, experiment X03).
+;; It merges one list of KGMLs with mff and writes the merged graph with wgx.
+;; run_x03.py runs it through run_fusion1.py for case jun-b10-fdr025. That case's path map
+;; turns the run folder named on the let line into the run's scratch folder, and the list's
+;; KGML paths into the data root's kegg/ folders. run_x03.py adds two files to the scratch
+;; folder's inputs/ with --extra-inputs: x03_kgml_list.txt, the list, and
+;; x03_exception_file.txt, the reference run's own exception file (S2.13).
+;; The start and mff lines are the reference batch's (S1.15, S2.16): split threshold 1,
+;; a raw KGML read (n), and the empty inter-database map ended by -1.
+let $WORK_DIR /home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr025
+start $WORK_DIR/inputs/inter_db_mapping_file $WORK_DIR/inputs/x03_exception_file.txt $WORK_DIR/inputs/hsa_to_gene_symbol_map.txt $WORK_DIR/inputs/hsa_path_to_path_name_map.txt
+mff $WORK_DIR/inputs/x03_kgml_list.txt xml 1 n $WORK_DIR/inputs/inter_db_mapping_file -1
+size 0
+wgx 0 $WORK_DIR/merged_graph.xml KEGG
+exit

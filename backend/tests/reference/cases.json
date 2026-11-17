@@ -1,0 +1,2630 @@
+{
+  "schema": 1,
+  "generated_by": "backend/tests/experiments/capture/make_cases.py",
+  "cases": [
+    {
+      "id": "toy-hsa11-report-tsv-b10",
+      "batch": "toy-batches/toy-hsa11-report-tsv-b10.batch",
+      "tier": "T1",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa11_report_example.tsv_b10",
+        "network": "example/report_example.xml",
+        "values": "example/report_example.tsv",
+        "fsc": "hsa11",
+        "bound": 10
+      },
+      "path_map": [
+        {
+          "from": "/fusion-test/case",
+          "to": "$CASE"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1_to_hsa22_w_hsa11_report_example.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_w_hsa11_report_example.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1_to_hsa22_wo_hsa11_report_example.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_wo_hsa11_report_example.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {}
+    },
+    {
+      "id": "toy-hsa11-wni-tsv-b10",
+      "batch": "toy-batches/toy-hsa11-wni-tsv-b10.batch",
+      "tier": "T1",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10",
+        "network": "example/with_node_included.xml",
+        "values": "example/with_node_included.tsv",
+        "fsc": "hsa11",
+        "bound": 10
+      },
+      "path_map": [
+        {
+          "from": "/fusion-test/case",
+          "to": "$CASE"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1_to_hsa22_w_hsa11_with_node_included.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_w_hsa11_with_node_included.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1_to_hsa22_wo_hsa11_with_node_included.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_wo_hsa11_with_node_included.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {}
+    },
+    {
+      "id": "toy-hsa12-report-csv-b10",
+      "batch": "toy-batches/toy-hsa12-report-csv-b10.batch",
+      "tier": "T1",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa12_report_example.csv_b10",
+        "network": "example/report_example.xml",
+        "values": "example/report_example.csv",
+        "fsc": "hsa12",
+        "bound": 10
+      },
+      "path_map": [
+        {
+          "from": "/fusion-test/case",
+          "to": "$CASE"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {}
+      },
+      "fusion1_seconds": {}
+    },
+    {
+      "id": "toy-hsa12-report-tsv-b10",
+      "batch": "toy-batches/toy-hsa12-report-tsv-b10.batch",
+      "tier": "T1",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa12_report_example.tsv_b10",
+        "network": "example/report_example.xml",
+        "values": "example/report_example.tsv",
+        "fsc": "hsa12",
+        "bound": 10
+      },
+      "path_map": [
+        {
+          "from": "/fusion-test/case",
+          "to": "$CASE"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1_to_hsa22_w_hsa12_report_example.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_w_hsa12_report_example.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1_to_hsa22_wo_hsa12_report_example.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_wo_hsa12_report_example.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {}
+    },
+    {
+      "id": "toy-hsa13-wni-tsv-b10",
+      "batch": "toy-batches/toy-hsa13-wni-tsv-b10.batch",
+      "tier": "T1",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa13_with_node_included.tsv_b10",
+        "network": "example/report_example_with_pathways.xml",
+        "values": "example/with_node_included.tsv",
+        "fsc": "hsa13",
+        "bound": 10
+      },
+      "path_map": [
+        {
+          "from": "/fusion-test/case",
+          "to": "$CASE"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1_to_hsa22_w_hsa13_with_node_included.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_w_hsa13_with_node_included.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1_to_hsa22_wo_hsa13_with_node_included.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_wo_hsa13_with_node_included.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {}
+    },
+    {
+      "id": "toy-hsa13-wni-tsv-b15",
+      "batch": "toy-batches/toy-hsa13-wni-tsv-b15.batch",
+      "tier": "T1",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa13_with_node_included.tsv_b15",
+        "network": "example/report_example_with_pathways.xml",
+        "values": "example/with_node_included.tsv",
+        "fsc": "hsa13",
+        "bound": 15
+      },
+      "path_map": [
+        {
+          "from": "/fusion-test/case",
+          "to": "$CASE"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1_to_hsa22_w_hsa13_with_node_included.tsv_b15.dat",
+            "limits": "f1/run/hsa1_to_hsa22_w_hsa13_with_node_included.tsv_b15_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1_to_hsa22_wo_hsa13_with_node_included.tsv_b15.dat",
+            "limits": "f1/run/hsa1_to_hsa22_wo_hsa13_with_node_included.tsv_b15_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {}
+    },
+    {
+      "id": "toy-hsa15-wni-tsv-b10",
+      "batch": "toy-batches/toy-hsa15-wni-tsv-b10.batch",
+      "tier": "T1",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa15_with_node_included.tsv_b10",
+        "network": "example/report_example_with_pathways.xml",
+        "values": "example/with_node_included.tsv",
+        "fsc": "hsa15",
+        "bound": 10
+      },
+      "path_map": [
+        {
+          "from": "/fusion-test/case",
+          "to": "$CASE"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1_to_hsa22_w_hsa15_with_node_included.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_w_hsa15_with_node_included.tsv_b10_limits_timefile.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1_to_hsa22_wo_hsa15_with_node_included.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_wo_hsa15_with_node_included.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {}
+    },
+    {
+      "id": "toy-hsa18-wni-tsv-b10",
+      "batch": "toy-batches/toy-hsa18-wni-tsv-b10.batch",
+      "tier": "T1",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa18_with_node_included.tsv_b10",
+        "network": "example/report_example_with_pathways.xml",
+        "values": "example/with_node_included.tsv",
+        "fsc": "hsa18",
+        "bound": 10
+      },
+      "path_map": [
+        {
+          "from": "/fusion-test/case",
+          "to": "$CASE"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1_to_hsa22_w_hsa18_with_node_included.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_w_hsa18_with_node_included.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1_to_hsa22_wo_hsa18_with_node_included.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_wo_hsa18_with_node_included.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {}
+    },
+    {
+      "id": "toy-hsa5-wni-tsv-b10",
+      "batch": "toy-batches/toy-hsa5-wni-tsv-b10.batch",
+      "tier": "T1",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa5_with_node_included.tsv_b10",
+        "network": "example/report_example_with_pathways.xml",
+        "values": "example/with_node_included.tsv",
+        "fsc": "hsa5",
+        "bound": 10
+      },
+      "path_map": [
+        {
+          "from": "/fusion-test/case",
+          "to": "$CASE"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1_to_hsa22_w_hsa5_with_node_included.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_w_hsa5_with_node_included.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1_to_hsa22_wo_hsa5_with_node_included.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_wo_hsa5_with_node_included.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {}
+    },
+    {
+      "id": "toy-hsa7-wni-tsv-b10",
+      "batch": "toy-batches/toy-hsa7-wni-tsv-b10.batch",
+      "tier": "T1",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa7_with_node_included.tsv_b10",
+        "network": "example/report_example_with_pathways.xml",
+        "values": "example/with_node_included.tsv",
+        "fsc": "hsa7",
+        "bound": 10
+      },
+      "path_map": [
+        {
+          "from": "/fusion-test/case",
+          "to": "$CASE"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1_to_hsa22_w_hsa7_with_node_included.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_w_hsa7_with_node_included.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1_to_hsa22_wo_hsa7_with_node_included.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_wo_hsa7_with_node_included.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {}
+    },
+    {
+      "id": "toy-hsa7-wni-tsv-b15",
+      "batch": "toy-batches/toy-hsa7-wni-tsv-b15.batch",
+      "tier": "T1",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa7_with_node_included.tsv_b15",
+        "network": "example/report_example_with_pathways.xml",
+        "values": "example/with_node_included.tsv",
+        "fsc": "hsa7",
+        "bound": 15
+      },
+      "path_map": [
+        {
+          "from": "/fusion-test/case",
+          "to": "$CASE"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1_to_hsa22_w_hsa7_with_node_included.tsv_b15.dat",
+            "limits": "f1/run/hsa1_to_hsa22_w_hsa7_with_node_included.tsv_b15_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1_to_hsa22_wo_hsa7_with_node_included.tsv_b15.dat",
+            "limits": "f1/run/hsa1_to_hsa22_wo_hsa7_with_node_included.tsv_b15_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {}
+    },
+    {
+      "id": "toy-hsa9-wni-tsv-b10",
+      "batch": "toy-batches/toy-hsa9-wni-tsv-b10.batch",
+      "tier": "T1",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa9_with_node_included.tsv_b10",
+        "network": "example/with_node_included.xml",
+        "values": "example/with_node_included.tsv",
+        "fsc": "hsa9",
+        "bound": 10
+      },
+      "path_map": [
+        {
+          "from": "/fusion-test/case",
+          "to": "$CASE"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1_to_hsa22_w_hsa9_with_node_included.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_w_hsa9_with_node_included.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1_to_hsa22_wo_hsa9_with_node_included.tsv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_wo_hsa9_with_node_included.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {}
+    },
+    {
+      "id": "egfhela-erk1-b6-nr4-er20-off",
+      "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er20_off.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er20_off.batch",
+        "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er20_off"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc",
+          "to": "$DATA/expression"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/merged_kegg_master_graph_with_exp_score.xml",
+          "to": "$DATA/legacy/merged_kegg_master_graph_with_exp_score.xml"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/hsa_stringdb_coexpression_links_over400.csv",
+          "to": "$DATA/constraints/hsa_stringdb_coexpression_links_over400.csv"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data",
+          "to": "$DATA/legacy/IITB_ACTREC_old_data"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa5595_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa5595_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa5595_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa5595_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 5.748,
+        "out": 7.729
+      }
+    },
+    {
+      "id": "egfhela-erk1-b6-nr4-er20-on",
+      "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er20_on.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er20_on.batch",
+        "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er20_on"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc",
+          "to": "$DATA/expression"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/merged_kegg_master_graph_with_exp_score.xml",
+          "to": "$DATA/legacy/merged_kegg_master_graph_with_exp_score.xml"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/hsa_stringdb_coexpression_links_over400.csv",
+          "to": "$DATA/constraints/hsa_stringdb_coexpression_links_over400.csv"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data",
+          "to": "$DATA/legacy/IITB_ACTREC_old_data"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa5595_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa5595_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa5595_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa5595_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 9.662,
+        "out": 7.67
+      }
+    },
+    {
+      "id": "egfhela-erk1-b6-nr4-er4-off",
+      "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er4_off.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er4_off.batch",
+        "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er4_off"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc",
+          "to": "$DATA/expression"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/merged_kegg_master_graph_with_exp_score.xml",
+          "to": "$DATA/legacy/merged_kegg_master_graph_with_exp_score.xml"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/hsa_stringdb_coexpression_links_over400.csv",
+          "to": "$DATA/constraints/hsa_stringdb_coexpression_links_over400.csv"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data",
+          "to": "$DATA/legacy/IITB_ACTREC_old_data"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa5595_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa5595_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa5595_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa5595_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 8.002,
+        "out": 6.323
+      }
+    },
+    {
+      "id": "egfhela-erk1-b6-nr4-er4-on",
+      "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er4_on.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er4_on.batch",
+        "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er4_on"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc",
+          "to": "$DATA/expression"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/merged_kegg_master_graph_with_exp_score.xml",
+          "to": "$DATA/legacy/merged_kegg_master_graph_with_exp_score.xml"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/hsa_stringdb_coexpression_links_over400.csv",
+          "to": "$DATA/constraints/hsa_stringdb_coexpression_links_over400.csv"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data",
+          "to": "$DATA/legacy/IITB_ACTREC_old_data"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa5595_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa5595_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa5595_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa5595_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 23.204,
+        "out": 6.7
+      }
+    },
+    {
+      "id": "egfhela-erk1-b6-r5-12",
+      "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_r5_12.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_r5_12.batch",
+        "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_r5_12"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc",
+          "to": "$DATA/expression"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/merged_kegg_master_graph_with_exp_score.xml",
+          "to": "$DATA/legacy/merged_kegg_master_graph_with_exp_score.xml"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/hsa_stringdb_coexpression_links_over400.csv",
+          "to": "$DATA/constraints/hsa_stringdb_coexpression_links_over400.csv"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data",
+          "to": "$DATA/legacy/IITB_ACTREC_old_data"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa5595_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa5595_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa5595_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa5595_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 53.567,
+        "out": 32.363
+      }
+    },
+    {
+      "id": "egfhela-jun-b6-nr4-er20-off",
+      "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er20_off.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er20_off.batch",
+        "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er20_off"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc",
+          "to": "$DATA/expression"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/merged_kegg_master_graph_with_exp_score.xml",
+          "to": "$DATA/legacy/merged_kegg_master_graph_with_exp_score.xml"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/hsa_stringdb_coexpression_links_over400.csv",
+          "to": "$DATA/constraints/hsa_stringdb_coexpression_links_over400.csv"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data",
+          "to": "$DATA/legacy/IITB_ACTREC_old_data"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 7.134,
+        "out": 45.104
+      }
+    },
+    {
+      "id": "egfhela-jun-b6-nr4-er20-on",
+      "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er20_on.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er20_on.batch",
+        "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er20_on"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc",
+          "to": "$DATA/expression"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/merged_kegg_master_graph_with_exp_score.xml",
+          "to": "$DATA/legacy/merged_kegg_master_graph_with_exp_score.xml"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/hsa_stringdb_coexpression_links_over400.csv",
+          "to": "$DATA/constraints/hsa_stringdb_coexpression_links_over400.csv"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data",
+          "to": "$DATA/legacy/IITB_ACTREC_old_data"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 11.725,
+        "out": 30.767
+      }
+    },
+    {
+      "id": "egfhela-jun-b6-nr4-er4-off",
+      "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er4_off.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er4_off.batch",
+        "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er4_off"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc",
+          "to": "$DATA/expression"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/merged_kegg_master_graph_with_exp_score.xml",
+          "to": "$DATA/legacy/merged_kegg_master_graph_with_exp_score.xml"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/hsa_stringdb_coexpression_links_over400.csv",
+          "to": "$DATA/constraints/hsa_stringdb_coexpression_links_over400.csv"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data",
+          "to": "$DATA/legacy/IITB_ACTREC_old_data"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 10.297,
+        "out": 45.741
+      }
+    },
+    {
+      "id": "egfhela-jun-b6-nr4-er4-on",
+      "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er4_on.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er4_on.batch",
+        "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er4_on"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc",
+          "to": "$DATA/expression"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/merged_kegg_master_graph_with_exp_score.xml",
+          "to": "$DATA/legacy/merged_kegg_master_graph_with_exp_score.xml"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/hsa_stringdb_coexpression_links_over400.csv",
+          "to": "$DATA/constraints/hsa_stringdb_coexpression_links_over400.csv"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data",
+          "to": "$DATA/legacy/IITB_ACTREC_old_data"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 6.587,
+        "out": 96.32
+      }
+    },
+    {
+      "id": "egfhela-jun-b6-r5-12",
+      "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_r5_12.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_r5_12.batch",
+        "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_r5_12"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc",
+          "to": "$DATA/expression"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/merged_kegg_master_graph_with_exp_score.xml",
+          "to": "$DATA/legacy/merged_kegg_master_graph_with_exp_score.xml"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/hsa_stringdb_coexpression_links_over400.csv",
+          "to": "$DATA/constraints/hsa_stringdb_coexpression_links_over400.csv"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data",
+          "to": "$DATA/legacy/IITB_ACTREC_old_data"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 39.948,
+        "out": 41.265
+      }
+    },
+    {
+      "id": "egfhela-nfkb1-b6-nr4-er20-off",
+      "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er20_off.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er20_off.batch",
+        "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er20_off"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc",
+          "to": "$DATA/expression"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/merged_kegg_master_graph_with_exp_score.xml",
+          "to": "$DATA/legacy/merged_kegg_master_graph_with_exp_score.xml"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/hsa_stringdb_coexpression_links_over400.csv",
+          "to": "$DATA/constraints/hsa_stringdb_coexpression_links_over400.csv"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data",
+          "to": "$DATA/legacy/IITB_ACTREC_old_data"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa4790_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa4790_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa4790_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa4790_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 29.766,
+        "out": 5.857
+      }
+    },
+    {
+      "id": "egfhela-nfkb1-b6-nr4-er20-on",
+      "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er20_on.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er20_on.batch",
+        "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er20_on"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc",
+          "to": "$DATA/expression"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/merged_kegg_master_graph_with_exp_score.xml",
+          "to": "$DATA/legacy/merged_kegg_master_graph_with_exp_score.xml"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/hsa_stringdb_coexpression_links_over400.csv",
+          "to": "$DATA/constraints/hsa_stringdb_coexpression_links_over400.csv"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data",
+          "to": "$DATA/legacy/IITB_ACTREC_old_data"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa4790_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa4790_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa4790_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa4790_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 24.416,
+        "out": 4.865
+      }
+    },
+    {
+      "id": "egfhela-nfkb1-b6-nr4-er4-off",
+      "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er4_off.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er4_off.batch",
+        "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er4_off"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc",
+          "to": "$DATA/expression"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/merged_kegg_master_graph_with_exp_score.xml",
+          "to": "$DATA/legacy/merged_kegg_master_graph_with_exp_score.xml"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/hsa_stringdb_coexpression_links_over400.csv",
+          "to": "$DATA/constraints/hsa_stringdb_coexpression_links_over400.csv"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data",
+          "to": "$DATA/legacy/IITB_ACTREC_old_data"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa4790_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa4790_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa4790_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa4790_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 23.626,
+        "out": 5.329
+      }
+    },
+    {
+      "id": "egfhela-nfkb1-b6-nr4-er4-on",
+      "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er4_on.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er4_on.batch",
+        "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er4_on"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc",
+          "to": "$DATA/expression"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/merged_kegg_master_graph_with_exp_score.xml",
+          "to": "$DATA/legacy/merged_kegg_master_graph_with_exp_score.xml"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/hsa_stringdb_coexpression_links_over400.csv",
+          "to": "$DATA/constraints/hsa_stringdb_coexpression_links_over400.csv"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data",
+          "to": "$DATA/legacy/IITB_ACTREC_old_data"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa4790_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa4790_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa4790_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa4790_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 22.073,
+        "out": 4.487
+      }
+    },
+    {
+      "id": "egfhela-nfkb1-b6-r5-12",
+      "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_r5_12.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_r5_12.batch",
+        "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_r5_12"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc",
+          "to": "$DATA/expression"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/merged_kegg_master_graph_with_exp_score.xml",
+          "to": "$DATA/legacy/merged_kegg_master_graph_with_exp_score.xml"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/example/real_experiments/hsa_stringdb_coexpression_links_over400.csv",
+          "to": "$DATA/constraints/hsa_stringdb_coexpression_links_over400.csv"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data",
+          "to": "$DATA/legacy/IITB_ACTREC_old_data"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa4790_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa4790_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa4790_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa4790_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 61.424,
+        "out": 46.411
+      }
+    },
+    {
+      "id": "model-example",
+      "batch": "fusion1-batches/macOS/model_example/run_model_example.batch",
+      "tier": "T2",
+      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "origin": {
+        "batch": "macOS/model_example/run_model_example.batch",
+        "outputs": "macOS/model_example/run",
+        "inputs": "macOS/model_example/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/ABSOLUTE/PATH/TO/FuSION/macOS/model_example",
+          "to": "$CASE"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {}
+    },
+    {
+      "id": "jun-b6-old",
+      "batch": "fusion1-batches/runs/egfr_cxcl8_jun_b6_nr8_er8/egfr_cxcl8_fsc_jun_b6_nr8_er8.batch",
+      "tier": "T2",
+      "source": "recorded 2026-07-17",
+      "origin": {
+        "batch": "runs/egfr_cxcl8_jun_b6_nr8_er8/egfr_cxcl8_fsc_jun_b6_nr8_er8.batch",
+        "outputs": "runs/egfr_cxcl8_jun_b6_nr8_er8",
+        "inputs": "runs/egfr_cxcl8_jun_b6_nr8_er8/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_cxcl8_jun_b6_nr8_er8",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 8.214,
+        "out": 20.161
+      }
+    },
+    {
+      "id": "jun-b6-fdr025",
+      "batch": "fusion1-batches/runs/egfr_cxcl8_jun_b6_nr8_er8_gsea_fdr025/egfr_cxcl8_fsc_jun_b6_nr8_er8_gsea_fdr025.batch",
+      "tier": "T2",
+      "source": "recorded 2026-09-28",
+      "origin": {
+        "batch": "runs/egfr_cxcl8_jun_b6_nr8_er8_gsea_fdr025/egfr_cxcl8_fsc_jun_b6_nr8_er8_gsea_fdr025.batch",
+        "outputs": "runs/egfr_cxcl8_jun_b6_nr8_er8_gsea_fdr025",
+        "inputs": "runs/egfr_cxcl8_jun_b6_nr8_er8_gsea_fdr025/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_cxcl8_jun_b6_nr8_er8_gsea_fdr025",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 0.495,
+        "out": 0.258
+      }
+    },
+    {
+      "id": "jun-b6-fdr040keep",
+      "batch": "fusion1-batches/runs/egfr_cxcl8_jun_b6_nr8_er8_gsea_fdr040_keep/egfr_cxcl8_fsc_jun_b6_nr8_er8_gsea_fdr040_keep.batch",
+      "tier": "T2",
+      "source": "recorded 2026-09-28",
+      "origin": {
+        "batch": "runs/egfr_cxcl8_jun_b6_nr8_er8_gsea_fdr040_keep/egfr_cxcl8_fsc_jun_b6_nr8_er8_gsea_fdr040_keep.batch",
+        "outputs": "runs/egfr_cxcl8_jun_b6_nr8_er8_gsea_fdr040_keep",
+        "inputs": "runs/egfr_cxcl8_jun_b6_nr8_er8_gsea_fdr040_keep/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_cxcl8_jun_b6_nr8_er8_gsea_fdr040_keep",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b6_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 3.625,
+        "out": 4.044
+      }
+    },
+    {
+      "id": "jun-b7-fdr025",
+      "batch": "fusion1-batches/runs/egfr_cxcl8_jun_b7_nr8_er8_gsea_fdr025/egfr_cxcl8_fsc_jun_b7_nr8_er8_gsea_fdr025.batch",
+      "tier": "T2",
+      "source": "recorded 2026-09-28",
+      "origin": {
+        "batch": "runs/egfr_cxcl8_jun_b7_nr8_er8_gsea_fdr025/egfr_cxcl8_fsc_jun_b7_nr8_er8_gsea_fdr025.batch",
+        "outputs": "runs/egfr_cxcl8_jun_b7_nr8_er8_gsea_fdr025",
+        "inputs": "runs/egfr_cxcl8_jun_b7_nr8_er8_gsea_fdr025/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_cxcl8_jun_b7_nr8_er8_gsea_fdr025",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b7.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b7_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b7.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b7_limits_timefile.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 0.691,
+        "out": 0.358
+      }
+    },
+    {
+      "id": "jun-b7-fdr040keep",
+      "batch": "fusion1-batches/runs/egfr_cxcl8_jun_b7_nr8_er8_gsea_fdr040_keep/egfr_cxcl8_fsc_jun_b7_nr8_er8_gsea_fdr040_keep.batch",
+      "tier": "T2",
+      "source": "recorded 2026-09-28",
+      "origin": {
+        "batch": "runs/egfr_cxcl8_jun_b7_nr8_er8_gsea_fdr040_keep/egfr_cxcl8_fsc_jun_b7_nr8_er8_gsea_fdr040_keep.batch",
+        "outputs": "runs/egfr_cxcl8_jun_b7_nr8_er8_gsea_fdr040_keep",
+        "inputs": "runs/egfr_cxcl8_jun_b7_nr8_er8_gsea_fdr040_keep/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_cxcl8_jun_b7_nr8_er8_gsea_fdr040_keep",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b7.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b7_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b7.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b7_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 15.199,
+        "out": 20.743
+      }
+    },
+    {
+      "id": "jun-b10-fdr025",
+      "batch": "fusion1-batches/runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr025/egfr_cxcl8_fsc_jun_b10_nr8_er8_gsea_fdr025.batch",
+      "tier": "T2",
+      "source": "recorded 2026-09-28",
+      "origin": {
+        "batch": "runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr025/egfr_cxcl8_fsc_jun_b10_nr8_er8_gsea_fdr025.batch",
+        "outputs": "runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr025",
+        "inputs": "runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr025/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr025",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 13.687,
+        "out": 601.64
+      }
+    },
+    {
+      "id": "jun-b10-fdr030",
+      "batch": "fusion1-batches/runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr030/egfr_cxcl8_fsc_jun_b10_nr8_er8_gsea_fdr030.batch",
+      "tier": "T2",
+      "source": "recorded 2026-10-14",
+      "origin": {
+        "batch": "runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr030/egfr_cxcl8_fsc_jun_b10_nr8_er8_gsea_fdr030.batch",
+        "outputs": "runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr030",
+        "inputs": "runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr030/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr030",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 209.812,
+        "out": 528.551
+      }
+    },
+    {
+      "id": "jun-b7-old",
+      "batch": "fusion1-batches/runs/egfr_cxcl8_jun_b7_nr8_er8/egfr_cxcl8_fsc_jun_b7_nr8_er8.batch",
+      "tier": "T3",
+      "source": "recorded 2026-07-16",
+      "origin": {
+        "batch": "runs/egfr_cxcl8_jun_b7_nr8_er8/egfr_cxcl8_fsc_jun_b7_nr8_er8.batch",
+        "outputs": "runs/egfr_cxcl8_jun_b7_nr8_er8",
+        "inputs": "runs/egfr_cxcl8_jun_b7_nr8_er8/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_cxcl8_jun_b7_nr8_er8",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b7.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b7_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b7.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b7_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 27.698,
+        "out": 2341.557
+      }
+    },
+    {
+      "id": "jun-b10-fdr040",
+      "batch": "fusion1-batches/runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr040/egfr_cxcl8_fsc_jun_b10_nr8_er8_gsea_fdr040.batch",
+      "tier": "T3",
+      "source": "recorded 2026-10-14",
+      "origin": {
+        "batch": "runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr040/egfr_cxcl8_fsc_jun_b10_nr8_er8_gsea_fdr040.batch",
+        "outputs": "runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr040",
+        "inputs": "runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr040/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr040",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 1111.82,
+        "out": 3028.493
+      }
+    },
+    {
+      "id": "jun-b10-old",
+      "batch": "fusion1-batches/runs/egfr_cxcl8_jun_b10_nr8_er8/egfr_cxcl8_fsc_jun_b10_nr8_er8.batch",
+      "tier": "T3",
+      "source": "recorded 2026-07-17",
+      "origin": {
+        "batch": "runs/egfr_cxcl8_jun_b10_nr8_er8/egfr_cxcl8_fsc_jun_b10_nr8_er8.batch",
+        "outputs": "runs/egfr_cxcl8_jun_b10_nr8_er8",
+        "inputs": "runs/egfr_cxcl8_jun_b10_nr8_er8/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_cxcl8_jun_b10_nr8_er8",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 4043.809,
+        "out": 57248.117
+      }
+    },
+    {
+      "id": "fosb-b10-old",
+      "batch": "fusion1-batches/runs/egfr_cxcl8_fosb_b10_nr8_er8/egfr_cxcl8_fsc_fosb_b10_nr8_er8.batch",
+      "tier": "T3",
+      "source": "recorded 2026-07-17",
+      "origin": {
+        "batch": "runs/egfr_cxcl8_fosb_b10_nr8_er8/egfr_cxcl8_fsc_fosb_b10_nr8_er8.batch",
+        "outputs": "runs/egfr_cxcl8_fosb_b10_nr8_er8",
+        "inputs": "runs/egfr_cxcl8_fosb_b10_nr8_er8/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_cxcl8_fosb_b10_nr8_er8",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa2354_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa2354_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa2354_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa2354_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 4554.496,
+        "out": 6806.005
+      }
+    },
+    {
+      "id": "dusp1-b10-old",
+      "batch": "fusion1-batches/runs/egfr_cxcl8_dusp1_b10_nr8_er8/egfr_cxcl8_fsc_dusp1_b10_nr8_er8.batch",
+      "tier": "T3",
+      "source": "recorded 2026-07-17",
+      "origin": {
+        "batch": "runs/egfr_cxcl8_dusp1_b10_nr8_er8/egfr_cxcl8_fsc_dusp1_b10_nr8_er8.batch",
+        "outputs": "runs/egfr_cxcl8_dusp1_b10_nr8_er8",
+        "inputs": "runs/egfr_cxcl8_dusp1_b10_nr8_er8/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_cxcl8_dusp1_b10_nr8_er8",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run.log",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa1843_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa1843_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa1843_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa1843_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 13792.292,
+        "out": 6225.037
+      }
+    },
+    {
+      "id": "jun-b10-fdr040keep",
+      "batch": "fusion1-batches/runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr040_keep/egfr_cxcl8_fsc_jun_b10_nr8_er8_gsea_fdr040_keep.batch",
+      "tier": "T3",
+      "source": "recorded 2026-09-28",
+      "origin": {
+        "batch": "runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr040_keep/egfr_cxcl8_fsc_jun_b10_nr8_er8_gsea_fdr040_keep.batch",
+        "outputs": "runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr040_keep",
+        "inputs": "runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr040_keep/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr040_keep",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 13486.02,
+        "out": 61048.261
+      }
+    },
+    {
+      "id": "jun-b10-fdr050",
+      "batch": "fusion1-batches/runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr050/egfr_cxcl8_fsc_jun_b10_nr8_er8_gsea_fdr050.batch",
+      "tier": "T3",
+      "source": "recorded 2026-10-14",
+      "origin": {
+        "batch": "runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr050/egfr_cxcl8_fsc_jun_b10_nr8_er8_gsea_fdr050.batch",
+        "outputs": "runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr050",
+        "inputs": "runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr050/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr050",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 58144.859,
+        "out": 124355.186
+      }
+    },
+    {
+      "id": "fdr044-r0-cxcl8-jun",
+      "batch": "fusion1-batches/runs/egfr_b10_gsea_fdr044_candidates/r0_cxcl8_jun/r0_cxcl8_jun.batch",
+      "tier": "T3",
+      "source": "recorded 2026-11-09",
+      "origin": {
+        "batch": "runs/egfr_b10_gsea_fdr044_candidates/r0_cxcl8_jun/r0_cxcl8_jun.batch",
+        "outputs": "runs/egfr_b10_gsea_fdr044_candidates/r0_cxcl8_jun",
+        "inputs": "runs/egfr_b10_gsea_fdr044_candidates/r0_cxcl8_jun/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_b10_gsea_fdr044_candidates/r0_cxcl8_jun",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 45775.033,
+        "out": 115720.797
+      }
+    },
+    {
+      "id": "fdr044-r1-cxcl8-rhoa",
+      "batch": "fusion1-batches/runs/egfr_b10_gsea_fdr044_candidates/r1_cxcl8_rhoa/r1_cxcl8_rhoa.batch",
+      "tier": "T3",
+      "source": "recorded 2026-11-09",
+      "origin": {
+        "batch": "runs/egfr_b10_gsea_fdr044_candidates/r1_cxcl8_rhoa/r1_cxcl8_rhoa.batch",
+        "outputs": "runs/egfr_b10_gsea_fdr044_candidates/r1_cxcl8_rhoa",
+        "inputs": "runs/egfr_b10_gsea_fdr044_candidates/r1_cxcl8_rhoa/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_b10_gsea_fdr044_candidates/r1_cxcl8_rhoa",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa387_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa387_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa387_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa387_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 31644.43,
+        "out": 33533.773
+      }
+    },
+    {
+      "id": "fdr044-r2-cxcl8-cdc42",
+      "batch": "fusion1-batches/runs/egfr_b10_gsea_fdr044_candidates/r2_cxcl8_cdc42/r2_cxcl8_cdc42.batch",
+      "tier": "T3",
+      "source": "recorded 2026-11-09",
+      "origin": {
+        "batch": "runs/egfr_b10_gsea_fdr044_candidates/r2_cxcl8_cdc42/r2_cxcl8_cdc42.batch",
+        "outputs": "runs/egfr_b10_gsea_fdr044_candidates/r2_cxcl8_cdc42",
+        "inputs": "runs/egfr_b10_gsea_fdr044_candidates/r2_cxcl8_cdc42/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_b10_gsea_fdr044_candidates/r2_cxcl8_cdc42",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa998_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa998_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa998_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa998_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 48867.912,
+        "out": 48540.436
+      }
+    },
+    {
+      "id": "fdr044-r3-cxcl8-rac1",
+      "batch": "fusion1-batches/runs/egfr_b10_gsea_fdr044_candidates/r3_cxcl8_rac1/r3_cxcl8_rac1.batch",
+      "tier": "T3",
+      "source": "recorded 2026-11-09",
+      "origin": {
+        "batch": "runs/egfr_b10_gsea_fdr044_candidates/r3_cxcl8_rac1/r3_cxcl8_rac1.batch",
+        "outputs": "runs/egfr_b10_gsea_fdr044_candidates/r3_cxcl8_rac1",
+        "inputs": "runs/egfr_b10_gsea_fdr044_candidates/r3_cxcl8_rac1/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_b10_gsea_fdr044_candidates/r3_cxcl8_rac1",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_hsa5879_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_hsa5879_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_hsa5879_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_hsa5879_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 45073.086,
+        "out": 15943.104
+      }
+    },
+    {
+      "id": "fdr044-r4-cxcl8-rho-ko",
+      "batch": "fusion1-batches/runs/egfr_b10_gsea_fdr044_candidates/r4_cxcl8_rho_ko/r4_cxcl8_rho_ko.batch",
+      "tier": "T3",
+      "source": "recorded 2026-11-09",
+      "origin": {
+        "batch": "runs/egfr_b10_gsea_fdr044_candidates/r4_cxcl8_rho_ko/r4_cxcl8_rho_ko.batch",
+        "outputs": "runs/egfr_b10_gsea_fdr044_candidates/r4_cxcl8_rho_ko",
+        "inputs": "runs/egfr_b10_gsea_fdr044_candidates/r4_cxcl8_rho_ko/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_b10_gsea_fdr044_candidates/r4_cxcl8_rho_ko",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa3576_w_rhoKO_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_w_rhoKO_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa3576_wo_rhoKO_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa3576_wo_rhoKO_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 39614.006,
+        "out": 27404.079
+      }
+    },
+    {
+      "id": "fdr044-r5-mcl1-stat3",
+      "batch": "fusion1-batches/runs/egfr_b10_gsea_fdr044_candidates/r5_mcl1_stat3/r5_mcl1_stat3.batch",
+      "tier": "T3",
+      "source": "recorded 2026-11-09",
+      "origin": {
+        "batch": "runs/egfr_b10_gsea_fdr044_candidates/r5_mcl1_stat3/r5_mcl1_stat3.batch",
+        "outputs": "runs/egfr_b10_gsea_fdr044_candidates/r5_mcl1_stat3",
+        "inputs": "runs/egfr_b10_gsea_fdr044_candidates/r5_mcl1_stat3/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_b10_gsea_fdr044_candidates/r5_mcl1_stat3",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa4170_w_hsa6774_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa4170_w_hsa6774_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa4170_wo_hsa6774_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa4170_wo_hsa6774_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 19456.081,
+        "out": 124477.741
+      }
+    },
+    {
+      "id": "fdr044-r6-mcl1-creb1",
+      "batch": "fusion1-batches/runs/egfr_b10_gsea_fdr044_candidates/r6_mcl1_creb1/r6_mcl1_creb1.batch",
+      "tier": "T3",
+      "source": "recorded 2026-11-09",
+      "origin": {
+        "batch": "runs/egfr_b10_gsea_fdr044_candidates/r6_mcl1_creb1/r6_mcl1_creb1.batch",
+        "outputs": "runs/egfr_b10_gsea_fdr044_candidates/r6_mcl1_creb1",
+        "inputs": "runs/egfr_b10_gsea_fdr044_candidates/r6_mcl1_creb1/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_b10_gsea_fdr044_candidates/r6_mcl1_creb1",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/Linux/supporting_files",
+          "to": "$DATA/fusion1/Linux/supporting_files"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1956_to_hsa4170_w_hsa1385_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa4170_w_hsa1385_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1956_to_hsa4170_wo_hsa1385_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa4170_wo_hsa1385_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "in": 15782.513,
+        "out": 171840.344
+      }
+    },
+    {
+      "id": "fdr044-r7-epha2-curated",
+      "batch": "fusion1-batches/runs/egfr_b10_gsea_fdr044_candidates/r7_epha2_curated/r7_epha2_curated.batch",
+      "tier": "T3",
+      "source": "recorded 2026-11-09",
+      "origin": {
+        "batch": "runs/egfr_b10_gsea_fdr044_candidates/r7_epha2_curated/r7_epha2_curated.batch",
+        "outputs": "runs/egfr_b10_gsea_fdr044_candidates/r7_epha2_curated",
+        "inputs": "runs/egfr_b10_gsea_fdr044_candidates/r7_epha2_curated/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_b10_gsea_fdr044_candidates/r7_epha2_curated",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "free": {
+            "dat": "f1/run/hsa1956_to_hsa1969_w_target_only_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa1969_w_target_only_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "free": 29989.949
+      }
+    },
+    {
+      "id": "fdr044-r8-phlda1-curated",
+      "batch": "fusion1-batches/runs/egfr_b10_gsea_fdr044_candidates/r8_phlda1_curated/r8_phlda1_curated.batch",
+      "tier": "T3",
+      "source": "recorded 2026-11-09",
+      "origin": {
+        "batch": "runs/egfr_b10_gsea_fdr044_candidates/r8_phlda1_curated/r8_phlda1_curated.batch",
+        "outputs": "runs/egfr_b10_gsea_fdr044_candidates/r8_phlda1_curated",
+        "inputs": "runs/egfr_b10_gsea_fdr044_candidates/r8_phlda1_curated/inputs"
+      },
+      "path_map": [
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_b10_gsea_fdr044_candidates/r8_phlda1_curated",
+          "to": "$CASE"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/auxilliary/hsa_pathways_with_exp_score",
+          "to": "$DATA/kegg/hsa_pathways_with_exp_score"
+        },
+        {
+          "from": "/home/ks-149-u24/Desktop/arjun/FuSION/updated_pathways/xml_files",
+          "to": "$DATA/kegg/updated_pathways"
+        }
+      ],
+      "fusion1": {
+        "up": "f1/run/up_reg",
+        "down": "f1/run/down_reg",
+        "exceptions": "f1/run/exception_file.txt",
+        "console": "f1/run_console.log",
+        "gsea_table": "f1/run/gsea_kgml_files.gsea.tsv",
+        "shortlist": "f1/run/gsea_kgml_files.txt",
+        "reread": "f1/capture/graph_reread.xml",
+        "corridor": "f1/capture/corridor.xml",
+        "solve": {
+          "free": {
+            "dat": "f1/run/hsa1956_to_hsa22822_w_target_only_egf_hela_t120_lfc.tsv_b10.dat",
+            "limits": "f1/run/hsa1956_to_hsa22822_w_target_only_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          }
+        }
+      },
+      "fusion1_seconds": {
+        "free": 69628.854
+      }
+    }
+  ]
+}
