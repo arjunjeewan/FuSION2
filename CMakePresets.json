@@ -1,0 +1,27 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {"major": 3, "minor": 28, "patch": 0},
+  "configurePresets": [
+    {
+      "name": "dev",
+      "displayName": "Debug, with tests",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/dev",
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug", "FUSION_BUILD_TESTS": "ON"}
+    },
+    {
+      "name": "release",
+      "displayName": "Release, without tests",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/release",
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Release", "FUSION_BUILD_TESTS": "OFF"}
+    }
+  ],
+  "buildPresets": [
+    {"name": "dev", "configurePreset": "dev"},
+    {"name": "release", "configurePreset": "release"}
+  ],
+  "testPresets": [
+    {"name": "dev", "configurePreset": "dev", "output": {"outputOnFailure": true}}
+  ]
+}

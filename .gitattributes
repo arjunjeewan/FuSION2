@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.bat eol=crlf
+*.cmd eol=crlf
+# FuSION 1's toy value files keep their CRLF line ends (section 12, Repository layout).
+backend/tests/reference/synthetic/**/inputs/*.tsv -text
+backend/tests/reference/synthetic/**/inputs/*.csv -text
