@@ -7311,3 +7311,964 @@ Both messages end with the co-author line (decision 0034). The diffs and message
 - Let me review first: I wait while you read the diffs and messages. Tell me when to commit or what to change.
 
 **Answer:** Commit both (Recommended)
+
+## 265 · User prompt · 2026-11-17 16:55
+
+> resume phase 3
+
+Sent after Claude's report that the Phase 3 plan was accepted and committed (entry 264), which named the next step: booking 1's scripts (W1 to W6, X02, X03, X05, X06 and X08), each shown as a diff before it runs, and then a booking of about 2.5 h.
+
+## 266 · Poll · 2026-11-17 17:17
+
+Asked after entry 265, once Claude had checked the state of FuSION 1 for booking 1: `runs/` now holds 125 batch files (section 12 counted 107 at 18:19 on 2026-11-12; the new ones are candidates `r9` to `r36`, the `*_string125` reruns, `resolve_wo_*` and `egfr_hallmark_string_fdr025`), and the live `Linux/fusion` still has section 12's SHA-256 (`22b312fc…0c50`), so the 2026-11-16 rebuild produced the same binary. A FuSION 1 `fusion` process (PID 1653017) had been running for 23 h.
+
+**Q1 (Authoring).** Booking 1's scripts (Phase 3 plan items W1 to W6, X02, X03, X05, X06 and X08) all read one shared case inventory. It lists the 39 KEGG cases and 12 toy cases, each with its FuSION 1 run folder (batch, inputs/, run/ outputs, console log), its artefacts and its path map: the data of plan item C4's cases.json, in section 12's format. FuSION 1's tree has grown since section 12's census (125 batch files now, 107 then), but the 39 cases are fixed. Who should write the scripts?
+
+- Inventory by me, then subagents (Recommended): I write cases.json's data and W1's fill script, since everything else reads them. Subagents then write W2 to W6 and the five experiments in parallel (decision 0026). Each script comes with a dry-run check, and nothing runs FuSION 1. I review each one before you see its diff.
+- Claude writes everything: One author, in order: the inventory, W1 to W6, then the experiments. Slower, and the most coherent.
+- Subagents from the start: Parallel subagents for everything, the inventory included. Fastest, but each works out its own view of the cases until I reconcile them.
+
+**Answer:** Inventory by me, then subagents (Recommended) → [decision 0037](../decisions/0037-booking-1-scripts.md)
+
+## 267 · Subagent prompt · Booking 1 scripts: W2 and W6 · 2026-11-17 17:34
+
+Sent to a new general-purpose subagent under decision 0037. The brief, as saved in Claude's scratchpad as `phase3/briefs/booking1_A_w2_w6.txt`:
+
+```text
+You are writing part of FuSION 2.0's Phase 3 capture work. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) is a rewrite of FuSION 1. FuSION 1's live tree is /home/ks-149-u24/Desktop/arjun/FuSION, and its frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; both are read only. Phase 3 saves FuSION 1's reference outputs, so that 2.0 can be checked against them, and runs a few experiments. Its plan is docs/phase3/plan.md, and section 12 of the architecture, docs/architecture/12-tests.md, designs the tests; your items are in both. The spec of FuSION 1 is docs/spec/ (items S1.01 onward), and the other architecture sections are in docs/architecture/.
+
+What Claude has already written, which you build on. Read these first, and do not edit them:
+- backend/tests/reference/cases.json: the 51 reference cases. Its generator, backend/tests/experiments/capture/make_cases.py, explains the format in its header. The spec calls jun-b10-fdr025 "the reference run" and jun-b10-old "the full run" (docs/spec/04-reachability-corridor.md, lines 8 and 9).
+- backend/tests/experiments/capture/fill_data_root.sh: what the data root will hold. The data root is $FUSION_TEST_DATA, which will be /home/ks-149-u24/Desktop/arjun/FuSION2-test-data. The script has not run yet, so the data root does not exist.
+- backend/tests/experiments/capture/run_fusion1.py: the one way to run a FuSION 1 batch for a case, in a fresh scratch folder under the data root, with the case's path map applied. Every FuSION 1 run in your scripts goes through it.
+
+Rules:
+- Do not run FuSION 1, Z3, gseapy, gnuplot, or anything else that loads the workstation. It is shared, and every such run happens later, in a slot the user books. You may run your scripts' dry runs, which must start none of these.
+- Never write, create or delete anything under FuSION 1's tree or the snapshot.
+- Now, write only your own new files, in the folders named below. Your scripts' outputs are written later, when they run in the booked slot. Do not edit any other file in the repository, do not commit, and do not install anything.
+- Use bash, or Python 3's standard library run as python3 -I. jq is installed. Add no other dependency.
+- Every script starts with a comment that says what it does, its plan item, its inputs and its outputs. It refuses to run without FUSION_TEST_DATA, and has a --dry-run mode that checks everything it can and writes nothing outside a temporary folder that it removes. It never deletes or overwrites a result: each run writes to a fresh folder and stops if that folder exists.
+- Results that hold KEGG data go to the data root, never the repository (S8.31).
+
+When you finish, reply in at most 250 words: the files you wrote, what each does, what its dry run showed, and anything you could not settle, naming the file and line.
+
+Your items:
+Folders: backend/tests/experiments/capture/w2/ and backend/tests/experiments/capture/w6/.
+
+W2 (plan item W2; section 12, "FuSION 1 as the reference", lines 185 to 191). Write a script that:
+1. checks that every source file in the snapshot's MANIFEST.sha256 still matches FuSION 1's live tree (README.txt exists only in the snapshot), and stops, naming the files, if any differs;
+2. checks that the data root's fusion1/Linux/fusion has section 12's SHA-256, 22b312fc006ce57ee07d9514f95fcf1996ad5c250c5282bd90a746f1041e0c50;
+3. reruns the five fastest recorded cases, by the sum of their fusion1_seconds in cases.json (jun-b6-fdr025, jun-b7-fdr025, jun-b6-fdr040keep, jun-b6-old and jun-b7-fdr040keep), each with its own batch through run_fusion1.py, one at a time;
+4. compares each rerun's .dat, solutions and relaxations files byte for byte with the recorded ones in the data root's reference/<id>/f1/run/, finding the rerun's files in its scratch folder from the batch's own $WRITE_DIR;
+5. writes a report, one line per case and file, match or differ, to the data root's reports/w2/.
+Section 12 expects every file to match, as the fdr025 rerun did (S5.22).
+
+W6 (plan item W6; section 12, "Evidence used", the batch corpus, line 73, and "Repository layout", fixtures/fusion1-batches/). Write a script that copies every *.batch file under FuSION 1's runs/ and macOS/model_example/, and the three GUI scripts in Linux/ (script.txt, output_script.txt and advtempscript.txt), verbatim into backend/tests/fixtures/fusion1-batches/, keeping each file's path relative to FuSION 1's root, and writes that folder's own manifest (path, size, SHA-256), so that the frozen copy does not move with the tree. In your reply, say how many files it found (section 12 counted 107 batch files on 2026-11-12, and there are more now), whether all have LF line ends, and whether any *.batch file lies elsewhere in FuSION 1's tree (section 12 mentions two in auxilliary/comparison_results/), without copying those. The batch files hold no KEGG content.
+```
+
+## 268 · Subagent prompt · Booking 1 scripts: W3 and X05 · 2026-11-17 17:34
+
+Sent to a new general-purpose subagent under decision 0037. The brief, as saved in Claude's scratchpad as `phase3/briefs/booking1_B_w3_x05.txt`:
+
+```text
+You are writing part of FuSION 2.0's Phase 3 capture work. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) is a rewrite of FuSION 1. FuSION 1's live tree is /home/ks-149-u24/Desktop/arjun/FuSION, and its frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; both are read only. Phase 3 saves FuSION 1's reference outputs, so that 2.0 can be checked against them, and runs a few experiments. Its plan is docs/phase3/plan.md, and section 12 of the architecture, docs/architecture/12-tests.md, designs the tests; your items are in both. The spec of FuSION 1 is docs/spec/ (items S1.01 onward), and the other architecture sections are in docs/architecture/.
+
+What Claude has already written, which you build on. Read these first, and do not edit them:
+- backend/tests/reference/cases.json: the 51 reference cases. Its generator, backend/tests/experiments/capture/make_cases.py, explains the format in its header. The spec calls jun-b10-fdr025 "the reference run" and jun-b10-old "the full run" (docs/spec/04-reachability-corridor.md, lines 8 and 9).
+- backend/tests/experiments/capture/fill_data_root.sh: what the data root will hold. The data root is $FUSION_TEST_DATA, which will be /home/ks-149-u24/Desktop/arjun/FuSION2-test-data. The script has not run yet, so the data root does not exist.
+- backend/tests/experiments/capture/run_fusion1.py: the one way to run a FuSION 1 batch for a case, in a fresh scratch folder under the data root, with the case's path map applied. Every FuSION 1 run in your scripts goes through it.
+
+Rules:
+- Do not run FuSION 1, Z3, gseapy, gnuplot, or anything else that loads the workstation. It is shared, and every such run happens later, in a slot the user books. You may run your scripts' dry runs, which must start none of these.
+- Never write, create or delete anything under FuSION 1's tree or the snapshot.
+- Now, write only your own new files, in the folders named below. Your scripts' outputs are written later, when they run in the booked slot. Do not edit any other file in the repository, do not commit, and do not install anything.
+- Use bash, or Python 3's standard library run as python3 -I. jq is installed. Add no other dependency.
+- Every script starts with a comment that says what it does, its plan item, its inputs and its outputs. It refuses to run without FUSION_TEST_DATA, and has a --dry-run mode that checks everything it can and writes nothing outside a temporary folder that it removes. It never deletes or overwrites a result: each run writes to a fresh folder and stops if that folder exists.
+- Results that hold KEGG data go to the data root, never the repository (S8.31).
+
+When you finish, reply in at most 250 words: the files you wrote, what each does, what its dry run showed, and anything you could not settle, naming the file and line.
+
+Your items:
+Folders: backend/tests/experiments/capture/w3/ and backend/tests/experiments/x05/.
+
+W3 (plan item W3; section 12, "Capture in Phase 3", lines 558 to 564). FuSION 1 never saves its corridor (S4.21), so Phase 3 runs a capture batch for each of the 39 KEGG cases, the cases of cases.json whose tier is T2 or T3. The capture batch is the case's batch, cut before its first pathz3 line, with two lines added: a wgx of the re-read graph after rgx, written to $WRITE_DIR/graph_reread.xml, and a wgx of the corridor after the fb_rch that precedes the first pathz3, written to $WRITE_DIR/corridor.xml. Section 12 writes these as `wgx 0 $WRITE_DIR/graph_reread.xml KEGG` and `wgx 0 $WRITE_DIR/corridor.xml KEGG`; check wgx's arguments, and which graph number each line must name, against FuSION 1's code in the snapshot (Linux/src/) and the spec (S1.09, S2.01, S4.21), and use what the code needs. Write a script that builds each capture batch, runs it through run_fusion1.py --batch, one case at a time (each takes at most about a minute), and copies graph_reread.xml, corridor.xml and the console log into the data root's reference/<id>/f1/capture/ (cases.json names the first two "reread" and "corridor"). Its dry run builds all 39 capture batches in a temporary folder and checks each: the cut point and both insertion points found, and nothing left after the cut. In your reply, name any case whose batch does not fit this shape. The 12 toy cases are not yours; W4 captures them.
+
+X05 (plan, experiments table; section 12, "Phase 3 experiments", X05, and the last sentence of "Capture in Phase 3"; spec stage 4, open question 3, and S4.15; section 12's expected difference XD-08). Write the analysis that answers stage 4's question 3 from the full run's captured corridor, whose file lists nodes in the order in which ids are claimed: count the ids that change node, 57 or 58, and say which they are, so that XD-08's prediction can be checked. It reads only the data root's reference/jun-b10-old/f1/capture/corridor.xml and whatever else it needs from the data root, and writes its result to the data root's reports/x05/. Note the gap if the question needs anything the capture does not hold.
+```
+
+## 269 · Subagent prompt · Booking 1 scripts: W4 · 2026-11-17 17:34
+
+Sent to a new general-purpose subagent under decision 0037. The brief, as saved in Claude's scratchpad as `phase3/briefs/booking1_C_w4.txt`:
+
+```text
+You are writing part of FuSION 2.0's Phase 3 capture work. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) is a rewrite of FuSION 1. FuSION 1's live tree is /home/ks-149-u24/Desktop/arjun/FuSION, and its frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; both are read only. Phase 3 saves FuSION 1's reference outputs, so that 2.0 can be checked against them, and runs a few experiments. Its plan is docs/phase3/plan.md, and section 12 of the architecture, docs/architecture/12-tests.md, designs the tests; your items are in both. The spec of FuSION 1 is docs/spec/ (items S1.01 onward), and the other architecture sections are in docs/architecture/.
+
+What Claude has already written, which you build on. Read these first, and do not edit them:
+- backend/tests/reference/cases.json: the 51 reference cases. Its generator, backend/tests/experiments/capture/make_cases.py, explains the format in its header. The spec calls jun-b10-fdr025 "the reference run" and jun-b10-old "the full run" (docs/spec/04-reachability-corridor.md, lines 8 and 9).
+- backend/tests/experiments/capture/fill_data_root.sh: what the data root will hold. The data root is $FUSION_TEST_DATA, which will be /home/ks-149-u24/Desktop/arjun/FuSION2-test-data. The script has not run yet, so the data root does not exist.
+- backend/tests/experiments/capture/run_fusion1.py: the one way to run a FuSION 1 batch for a case, in a fresh scratch folder under the data root, with the case's path map applied. Every FuSION 1 run in your scripts goes through it.
+
+Rules:
+- Do not run FuSION 1, Z3, gseapy, gnuplot, or anything else that loads the workstation. It is shared, and every such run happens later, in a slot the user books. You may run your scripts' dry runs, which must start none of these.
+- Never write, create or delete anything under FuSION 1's tree or the snapshot.
+- Now, write only your own new files, in the folders named below. Your scripts' outputs are written later, when they run in the booked slot. Do not edit any other file in the repository, do not commit, and do not install anything.
+- Use bash, or Python 3's standard library run as python3 -I. jq is installed. Add no other dependency.
+- Every script starts with a comment that says what it does, its plan item, its inputs and its outputs. It refuses to run without FUSION_TEST_DATA, and has a --dry-run mode that checks everything it can and writes nothing outside a temporary folder that it removes. It never deletes or overwrites a result: each run writes to a fresh folder and stops if that folder exists.
+- Results that hold KEGG data go to the data root, never the repository (S8.31).
+
+When you finish, reply in at most 250 words: the files you wrote, what each does, what its dry run showed, and anything you could not settle, naming the file and line.
+
+Your items:
+Folder: backend/tests/experiments/capture/w4/.
+
+W4 (plan item W4; section 12, "Test data and the KEGG licence", lines 123 to 139, "Reference cases", lines 498 to 513, and "Capture work in Phase 3", step 3). Regenerate, with the snapshot binary, the 12 toy cases, the 15 EGF-HeLa b6 cases and the model example. cases.json lists all 28 (ids toy-*, egfhela-* and model-example), each with its origin.
+
+Toy cases (tier T1; they must run from the repository alone):
+- Make relabelled copies of FuSION 1's three toy networks (example/report_example.xml, report_example_with_pathways.xml and with_node_included.xml in FuSION 1's tree). Their <graphics> names are KEGG aliases, so replace each with a neutral label (G1, G2, and so on), keeping every id, entry, relation and attribute that FuSION 1 reads.
+- Copy the value files the cases name byte for byte, after checking that they hold no KEGG names: report_example.tsv; report_example.csv, which is tab-separated despite its name; and with_node_included.tsv, with spaces and CRLF line ends, which keeps the id typo has16.
+- Rebuild each toy case's batch from the GUI template that FuSION 1's GUI fills. Find which file that is: section 12 says Linux/advtempscript.txt holds %__12__% placeholders, and spec stage 8, S8.18 to S8.27, describes the script the GUI generates. Fill it with the case's FSC, bound, network and value file from cases.json's origin, and with /fusion-test/case as the case's root folder, which is the toy cases' path map.
+- The batch goes to backend/tests/fixtures/toy-batches/<id>.batch, and its inputs to backend/tests/reference/synthetic/<id>/inputs/. Run it through run_fusion1.py, and copy the outputs of its write folder into backend/tests/reference/synthetic/<id>/f1/run/, with the console log as f1/run_console.log.
+- Also capture each toy case's re-read graph and corridor, as W3 does for the KEGG cases (its batch cut before the first pathz3, with wgx lines after rgx and after the fb_rch before that pathz3), into f1/capture/graph_reread.xml and f1/capture/corridor.xml.
+- The 2025 run of toy-hsa12-report-csv-b10 stopped with empty up and down lists. Your script reports what the regenerated run does.
+
+EGF-HeLa b6 cases and the model example (tier T2): run each case's own batch through run_fusion1.py; their path maps point the batches' old paths at the data root. Copy the outputs of each write folder into the data root's reference/<id>/f1/run/, with the console log as f1/run_console.log.
+
+Claude reruns make_cases.py with the data root afterwards, which records the regenerated outputs in cases.json; do not edit cases.json. Check every label you write into the repository for KEGG names.
+```
+
+## 270 · Subagent prompt · Booking 1 scripts: W5 · 2026-11-17 17:34
+
+Sent to a new general-purpose subagent under decision 0037. The brief, as saved in Claude's scratchpad as `phase3/briefs/booking1_D_w5.txt`:
+
+```text
+You are writing part of FuSION 2.0's Phase 3 capture work. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) is a rewrite of FuSION 1. FuSION 1's live tree is /home/ks-149-u24/Desktop/arjun/FuSION, and its frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; both are read only. Phase 3 saves FuSION 1's reference outputs, so that 2.0 can be checked against them, and runs a few experiments. Its plan is docs/phase3/plan.md, and section 12 of the architecture, docs/architecture/12-tests.md, designs the tests; your items are in both. The spec of FuSION 1 is docs/spec/ (items S1.01 onward), and the other architecture sections are in docs/architecture/.
+
+What Claude has already written, which you build on. Read these first, and do not edit them:
+- backend/tests/reference/cases.json: the 51 reference cases. Its generator, backend/tests/experiments/capture/make_cases.py, explains the format in its header. The spec calls jun-b10-fdr025 "the reference run" and jun-b10-old "the full run" (docs/spec/04-reachability-corridor.md, lines 8 and 9).
+- backend/tests/experiments/capture/fill_data_root.sh: what the data root will hold. The data root is $FUSION_TEST_DATA, which will be /home/ks-149-u24/Desktop/arjun/FuSION2-test-data. The script has not run yet, so the data root does not exist.
+- backend/tests/experiments/capture/run_fusion1.py: the one way to run a FuSION 1 batch for a case, in a fresh scratch folder under the data root, with the case's path map applied. Every FuSION 1 run in your scripts goes through it.
+
+Rules:
+- Do not run FuSION 1, Z3, gseapy, gnuplot, or anything else that loads the workstation. It is shared, and every such run happens later, in a slot the user books. You may run your scripts' dry runs, which must start none of these.
+- Never write, create or delete anything under FuSION 1's tree or the snapshot.
+- Now, write only your own new files, in the folders named below. Your scripts' outputs are written later, when they run in the booked slot. Do not edit any other file in the repository, do not commit, and do not install anything.
+- Use bash, or Python 3's standard library run as python3 -I. jq is installed. Add no other dependency.
+- Every script starts with a comment that says what it does, its plan item, its inputs and its outputs. It refuses to run without FUSION_TEST_DATA, and has a --dry-run mode that checks everything it can and writes nothing outside a temporary folder that it removes. It never deletes or overwrites a result: each run writes to a fresh folder and stops if that folder exists.
+- Results that hold KEGG data go to the data root, never the repository (S8.31).
+
+When you finish, reply in at most 250 words: the files you wrote, what each does, what its dry run showed, and anything you could not settle, naming the file and line.
+
+Your items:
+Folder: backend/tests/experiments/capture/w5/.
+
+W5 (plan item W5; section 12, "GSEA agreement with gseapy (S7.11)", lines 761 to 772, "Test data" (the synthetic GSEA rankings and gene sets), and "Capture work in Phase 3", step 4; section 08, docs/architecture/08-enrichment.md, in particular 08.C1, 08.C2 and 08.C7). Write two scripts.
+1. The gseapy references. Generate seeded synthetic rankings and gene sets with made-up ids; run gseapy 1.3.1 on them through the harness that sections 12 and 08 describe (the ranking passed ordered by value, then by gene id in byte order, with the arguments section 12 names); and record the inputs and gseapy's results in backend/tests/fixtures/gsea/. gseapy 1.3.1 is in FuSION 1's virtual environment: run /home/ks-149-u24/Desktop/arjun/FuSION/.venv/bin/python with PYTHONDONTWRITEBYTECODE=1 and with MPLCONFIGDIR in a temporary folder, so that nothing is written into FuSION 1's tree. Keep out of the fixtures the inputs that section 08 says gseapy's own result is an artefact for (08.C7, a draw whose hits all have value 0). Choose the cases so that they cover what section 12's GSEA tests need, and list them in a README beside the fixtures.
+2. FuSION 1's suggest_thresholds.py report on the EGF file. Run the snapshot's suggest_thresholds.py (find it in the snapshot) on the data root's expression/egf_hela_t120_lfc.tsv with FuSION 1's virtual environment, and save its report in the data root's reports/w5/. Section 04's tests compare against it (section 12, the expression row, line 381; spec stage 3, S3.15 to S3.17).
+Neither runs now. Their dry runs check their inputs and print the commands.
+```
+
+## 271 · Subagent prompt · Booking 1 scripts: X02 and X08 · 2026-11-17 17:34
+
+Sent to a new general-purpose subagent under decision 0037. The brief, as saved in Claude's scratchpad as `phase3/briefs/booking1_E_x02_x08.txt`:
+
+```text
+You are writing part of FuSION 2.0's Phase 3 capture work. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) is a rewrite of FuSION 1. FuSION 1's live tree is /home/ks-149-u24/Desktop/arjun/FuSION, and its frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; both are read only. Phase 3 saves FuSION 1's reference outputs, so that 2.0 can be checked against them, and runs a few experiments. Its plan is docs/phase3/plan.md, and section 12 of the architecture, docs/architecture/12-tests.md, designs the tests; your items are in both. The spec of FuSION 1 is docs/spec/ (items S1.01 onward), and the other architecture sections are in docs/architecture/.
+
+What Claude has already written, which you build on. Read these first, and do not edit them:
+- backend/tests/reference/cases.json: the 51 reference cases. Its generator, backend/tests/experiments/capture/make_cases.py, explains the format in its header. The spec calls jun-b10-fdr025 "the reference run" and jun-b10-old "the full run" (docs/spec/04-reachability-corridor.md, lines 8 and 9).
+- backend/tests/experiments/capture/fill_data_root.sh: what the data root will hold. The data root is $FUSION_TEST_DATA, which will be /home/ks-149-u24/Desktop/arjun/FuSION2-test-data. The script has not run yet, so the data root does not exist.
+- backend/tests/experiments/capture/run_fusion1.py: the one way to run a FuSION 1 batch for a case, in a fresh scratch folder under the data root, with the case's path map applied. Every FuSION 1 run in your scripts goes through it.
+
+Rules:
+- Do not run FuSION 1, Z3, gseapy, gnuplot, or anything else that loads the workstation. It is shared, and every such run happens later, in a slot the user books. You may run your scripts' dry runs, which must start none of these.
+- Never write, create or delete anything under FuSION 1's tree or the snapshot.
+- Now, write only your own new files, in the folders named below. Your scripts' outputs are written later, when they run in the booked slot. Do not edit any other file in the repository, do not commit, and do not install anything.
+- Use bash, or Python 3's standard library run as python3 -I. jq is installed. Add no other dependency.
+- Every script starts with a comment that says what it does, its plan item, its inputs and its outputs. It refuses to run without FUSION_TEST_DATA, and has a --dry-run mode that checks everything it can and writes nothing outside a temporary folder that it removes. It never deletes or overwrites a result: each run writes to a fresh folder and stops if that folder exists.
+- Results that hold KEGG data go to the data root, never the repository (S8.31).
+
+When you finish, reply in at most 250 words: the files you wrote, what each does, what its dry run showed, and anything you could not settle, naming the file and line.
+
+Your items:
+Folders: backend/tests/experiments/x02/ and backend/tests/experiments/x08/.
+
+X02 (section 12, "Phase 3 experiments", X02; spec stage 2, open question 1, stage 4, open question 5, and S2.26; section 02's open question 7, docs/architecture/02-network.md near line 1205). In the reference run, jun-b10-fdr025, graph 84 is the graph that rgx re-reads, and graph 83 the one before it. Write a script that makes a copy of the reference run's batch whose fb_rch and pathz3 lines use graph 83 instead of 84 (check the batch for every line that names 84, and the graph numbering in the spec, S1.09 and S2.01); runs it through run_fusion1.py --batch; and compares it with the recorded run in the data root: the corridors (capture each with wgx after its fb_rch, as section 12's capture does, or explain how else you compare them) and the frontiers (the .dat files of both FSC cases). It writes its comparison to the data root's reports/x02/. About 25 minutes of machine time.
+
+X08 (section 12, "Phase 3 experiments", X08; spec stage 5, open question 6; section 06's open question 7, docs/architecture/06-solve.md near line 1128). Does the seed reach the solver? Write a script that runs fdr:0.3 (case jun-b10-fdr030, 738 s of solves) with seed 42 and with seed 7 (find how its batch sets the seed), through run_fusion1.py --batch, one after the other, and compares their limits files and witnesses (the solutions and relaxations files) with each other and with the recorded run. It writes its comparison to the data root's reports/x08/. About 25 minutes of machine time.
+```
+
+## 272 · Subagent prompt · Booking 1 scripts: X03 and X06 · 2026-11-17 17:34
+
+Sent to a new general-purpose subagent under decision 0037. The brief, as saved in Claude's scratchpad as `phase3/briefs/booking1_F_x03_x06.txt`:
+
+```text
+You are writing part of FuSION 2.0's Phase 3 capture work. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) is a rewrite of FuSION 1. FuSION 1's live tree is /home/ks-149-u24/Desktop/arjun/FuSION, and its frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; both are read only. Phase 3 saves FuSION 1's reference outputs, so that 2.0 can be checked against them, and runs a few experiments. Its plan is docs/phase3/plan.md, and section 12 of the architecture, docs/architecture/12-tests.md, designs the tests; your items are in both. The spec of FuSION 1 is docs/spec/ (items S1.01 onward), and the other architecture sections are in docs/architecture/.
+
+What Claude has already written, which you build on. Read these first, and do not edit them:
+- backend/tests/reference/cases.json: the 51 reference cases. Its generator, backend/tests/experiments/capture/make_cases.py, explains the format in its header. The spec calls jun-b10-fdr025 "the reference run" and jun-b10-old "the full run" (docs/spec/04-reachability-corridor.md, lines 8 and 9).
+- backend/tests/experiments/capture/fill_data_root.sh: what the data root will hold. The data root is $FUSION_TEST_DATA, which will be /home/ks-149-u24/Desktop/arjun/FuSION2-test-data. The script has not run yet, so the data root does not exist.
+- backend/tests/experiments/capture/run_fusion1.py: the one way to run a FuSION 1 batch for a case, in a fresh scratch folder under the data root, with the case's path map applied. Every FuSION 1 run in your scripts goes through it.
+
+Rules:
+- Do not run FuSION 1, Z3, gseapy, gnuplot, or anything else that loads the workstation. It is shared, and every such run happens later, in a slot the user books. You may run your scripts' dry runs, which must start none of these.
+- Never write, create or delete anything under FuSION 1's tree or the snapshot.
+- Now, write only your own new files, in the folders named below. Your scripts' outputs are written later, when they run in the booked slot. Do not edit any other file in the repository, do not commit, and do not install anything.
+- Use bash, or Python 3's standard library run as python3 -I. jq is installed. Add no other dependency.
+- Every script starts with a comment that says what it does, its plan item, its inputs and its outputs. It refuses to run without FUSION_TEST_DATA, and has a --dry-run mode that checks everything it can and writes nothing outside a temporary folder that it removes. It never deletes or overwrites a result: each run writes to a fresh folder and stops if that folder exists.
+- Results that hold KEGG data go to the data root, never the repository (S8.31).
+
+When you finish, reply in at most 250 words: the files you wrote, what each does, what its dry run showed, and anything you could not settle, naming the file and line.
+
+Your items:
+Folders: backend/tests/experiments/x03/ and backend/tests/experiments/x06/.
+
+X03 (section 12, "Phase 3 experiments", X03; spec stage 2, open question 4; section 03, docs/architecture/03-merge.md). Does each id sit in exactly one node in FuSION 1's merges? Write a script that draws, from a fixed seed, 100 random lists of 10 to 60 of the 167 KGMLs in the data root (kegg/hsa_pathways_with_exp_score/ and kegg/updated_pathways/), each in two orders; merges each list with FuSION 1's mff and writes the result with wgx, through run_fusion1.py (use a case whose path map covers the KGML folders, such as jun-b10-fdr025, and pass the lists with --extra-inputs); and checks each written XML for an id that appears in more than one node. It writes its result to the data root's reports/x03/. Find mff's arguments for a list of KGMLs in the spec (stage 2: S2.16 and the merge items) and in the batches. About 20 minutes of machine time.
+
+X06 (section 12, "Phase 3 experiments", X06; spec stage 5, open question 1; section 06, 06.C2 and its open question 8). What do Z3's :solver2_timeout and :timeout do? Write a script that runs the system Z3 (/usr/bin/z3, version 4.8.12, the version FuSION 1 links) with -v:10 -st on the full run's dump (the 2.9 MB dump of jun-b10-old: find it under the data root's reference/jun-b10-old/f1/dumps/, which fill_data_root.sh copies from the run's smt-files folders, and say which file it is), with small values of both timeouts, and records what each run reports. It writes its results to the data root's reports/x06/. Also read Z3 4.8.12's combined solver (src/solver/combined_solver.cpp at the tag z3-4.8.12 in Z3's GitHub repository; you may read it with WebFetch), and write a short note, backend/tests/experiments/x06/NOTES.md, on how the two timeouts interact, citing lines. About 10 minutes of machine time.
+```
+
+## 273 · Note · How entries 267 to 272 were delivered · 2026-11-17 17:34
+
+Before the briefs, Claude wrote the parts that every script reads, as decision 0037 says: the case inventory, `backend/tests/reference/cases.json` (51 cases, from `backend/tests/experiments/capture/make_cases.py`), W1's `fill_data_root.sh`, and the shared runner `run_fusion1.py`, through which every Phase 3 run of FuSION 1 goes. As in entries 223 and 243, each brief was saved in Claude's scratchpad as `phase3/briefs/booking1_<X>.txt`, whose text is the text logged above, and each of the six new subagents was sent one line: "Your instructions are in <file>. Read the whole file and follow it exactly." The six run in parallel (decision 0026).
+
+## 274 · Note · Correction to entry 262's context: two sources differ from the snapshot · 2026-11-17 17:49
+
+Entry 262's context says that every source in the snapshot's `MANIFEST.sha256` still matched the live tree, and the Phase 3 plan's note on FuSION 1's binary said the same. Two did not: `Linux/supporting_files/gsea_select_pathways.py` and `macOS/supporting_files/gsea_select_pathways.py`, both changed on 2026-11-16 at 17:52. Claude's own check that day showed both as FAILED, beside the snapshot-only `README.txt`. The W2 subagent's dry run found it again (entry 267's brief; its report is in Claude's scratchpad as `phase3/reports/booking1_A_w2_w6.txt`). The plan's note is corrected. The data root takes the snapshot's copy of the script (W1), and whether W2's first check may exempt the two files is the user's decision.
+
+## 275 · User prompt · 2026-11-17 18:01
+
+> what's the timeline on when the first complete build will end
+
+Sent while four of booking 1's six subagents were still writing scripts (entries 267 to 272). The W2 and W6 subagent and the X02 and X08 subagent had reported.
+
+## 276 · Subagent prompt · Follow-up to the W4 subagent: end every batch with exit · 2026-11-17 18:04
+
+Sent to the W4 subagent (entry 269) while it was still working, after the W3 subagent reported that FuSION 1 loops on stdin past the end of a batch. The message as sent:
+
+```text
+A finding from the W3 subagent that affects your batches: FuSION 1 does not stop at the end of a batch file. It reads past the end and loops on stdin (spec S1.04), so every batch that FuSION 1 runs must end with an exit line. run_fusion1.py gives FuSION 1 /dev/null as stdin, so a batch without exit would spin with no end. Check that every batch your scripts build ends with exit: the toy batches rebuilt from the GUI template, and the toy capture batches, which are cut before the first pathz3 and so lose the template's own exit. Make each script's dry run check it. Everything else in your brief stands.
+```
+
+## 277 · Subagent prompt · Follow-up to the X03 and X06 subagent: end every batch with exit · 2026-11-17 18:04
+
+Sent to the X03 and X06 subagent (entry 272) while it was still working, for the same reason. The message as sent:
+
+```text
+A finding from the W3 subagent that affects X03: FuSION 1 does not stop at the end of a batch file. It reads past the end and loops on stdin (spec S1.04), so every batch that FuSION 1 runs must end with an exit line. run_fusion1.py gives FuSION 1 /dev/null as stdin, so a batch without exit would spin with no end. Make sure every mff and wgx batch your X03 script builds ends with exit, and that its dry run checks it. Everything else in your brief stands.
+```
+
+## 278 · User prompt · 2026-11-17 18:05
+
+> it shouldn't take so long, most implementations have already been done in fusion 1. i want to make an end to end working version by the end of this week. we can iterate over it later. finish the build on priority. but be thorough with implementations.
+
+Sent after Claude's timeline (reply to entry 275), which put the first complete build around mid-March 2027. At the time, the W4 subagent and the X03 and X06 subagent were still writing booking 1's scripts, with the follow-ups of entries 276 and 277.
+
+## 279 · Poll · 2026-11-17 18:07
+
+Asked after entry 278, in which the user asked for an end-to-end working version by the end of the week (that day was a Tuesday), to be iterated on later, with the build first and thorough implementations.
+
+**Q1 (Scope).** You want an end-to-end working version of FuSION 2.0 by the end of this week (today is Tuesday), iterated on later. What should this week's version do?
+
+- Backend + minimal app (Recommended): Backend: the fusion CLI runs FuSION 1's batches end to end (KGML and master reading, mff merge, cudf, fb_rch, pathz3 on Z3 with the in, out and free FSC cases, results and Pareto plot, GSEA as the exact gseapy port, explanation pages). App: a minimal JavaFX app logs in, edits the default pipeline, runs it, shows progress and opens the results. Resume after a kill, partial runs, sweeps, the graph display and installers come later.
+- Backend CLI only: The fusion CLI end to end, checked against FuSION 1. The desktop app comes in the next iteration.
+
+**Answer:** Backend + minimal app (Recommended)
+
+**Q2 (Phase 3).** What happens to Phase 3 (reference tests), which decision 0003 puts before the backend?
+
+- Build now, references alongside (Recommended): Pause Phase 3's test kit, runner and experiments. Keep booking 1, which records FuSION 1's references and corridor captures so the build is checked against FuSION 1 from the start. The rest of Phase 3 resumes after the first version. This amends decisions 0003 and 0036.
+- Finish Phase 3 first: Keep the plan as it is. The working version comes later than this week.
+
+**Answer:** Build now, references alongside (Recommended)
+
+**Q3 (Method).** How should the backend modules get written this week?
+
+- Parallel agents porting FuSION 1 (Recommended): Today I set up the build skeleton and every module's interface header from sections 01 to 09. Then one subagent per module ports FuSION 1's working code into its module, applying the spec's fix decisions and its section's design, with unit tests. I integrate daily and run the reference batches end to end.
+- Claude alone, module by module: The most coherent option, but it won't fit in a week.
+
+**Answer:** Parallel agents porting FuSION 1 (Recommended)
+
+**Q4 (Reviews).** How do you want to review during this sprint? CLAUDE.md requires your approval of the diff before every commit, and that stays either way.
+
+- One approval per module (Recommended): No separate design-note approvals during the sprint. Each module is committed once its tests pass and you've approved its diff summary. You review the working version at the end of the week. This amends decision 0036's loop for the sprint.
+- One approval per day: Each evening I show you the day's modules as one diff, for one commit approval.
+- Full loop: Per module: design note, your OK, code, diff review, commit. Slower, and probably misses the week.
+
+**Answer:** One approval per module (Recommended) → [decision 0038](../decisions/0038-end-to-end-version-this-week.md)
+
+## 280 · Poll · 2026-11-17 18:09
+
+The sprint's toolchain, asked after poll 279 once Claude had checked this machine: GCC 13.3, OpenJDK 21.0.13, gnuplot 6.0 and Z3 4.8.12 with its headers are installed; CMake, Ninja and Gradle are not.
+
+**Q1 (Z3).** Which Z3 should this week's build link? Section 11 pins Z3 5.3.3, but only after experiment X11's speed check, which now runs after the first version. The system Z3 4.8.12 is installed with its headers, and it is the version FuSION 1 links.
+
+- System 4.8.12 for now (Recommended): No build needed, and the week's results compare directly with FuSION 1's references. The switch to the 5.3.3 pin comes after X11 (11.C2).
+- Build 5.3.3 now: The pinned version, built from the official source archive (11.C3), about 15 min on 16 cores. Results may differ from FuSION 1's wherever Z3 behaves differently, and X11's speed check hasn't run.
+
+**Answer:** System 4.8.12 for now (Recommended)
+
+**Q2 (Tools).** CMake and Ninja (backend build) and Gradle (desktop app build) are not installed. Section 11 pins CMake 3.28 or later (CI uses 4.4.5), Ninja 1.13.2 and Gradle 9.9.1. How should they be installed?
+
+- User-local official releases (Recommended): I download CMake 4.4.5, Ninja 1.13.2 and Gradle 9.9.1 from their official release pages, check each against its published SHA-256, and unpack them under ~/.local/opt/. Nothing system-wide and no sudo. Gradle only generates the project's pinned wrapper.
+- You install with apt: You run sudo apt install cmake ninja-build. That gives CMake 3.28.3, which meets the floor, and Ninja 1.11, below the pin. Gradle still comes from its zip. I wait until you've done it.
+
+**Answer:** User-local official releases (Recommended) → [decision 0039](../decisions/0039-sprint-toolchain.md)
+
+## 281 · Note · git status in FuSION 1's read-only tree · 2026-11-17 18:10
+
+The W4 subagent (entry 269) reported that it ran `git status` in FuSION 1's tree, and Claude had done the same twice: at about 15:57, while checking for de-claude, and at 18:09, by mistake, in a command meant only to read file times. `git status` briefly creates and removes `.git/index.lock`, which changed the modification time of FuSION 1's `.git` folder, last at 18:09:47. Nothing else changed: `.git/index` is still dated 2026-07-16, and no lock file is left. FuSION 1's tree is meant to stay untouched, so no git command that can take a lock runs there again; a read that needs git uses `git --no-optional-locks`.
+
+## 282 · Poll · 2026-11-17 18:18
+
+Booking 1's open points, asked once all six subagents had reported (their reports are in Claude's scratchpad, `phase3/reports/booking1_*.txt`). Before it, Claude removed two stray `__pycache__` folders, made `run_fusion1.py` refuse a batch that does not end with `exit`, and reran every script's dry run: all pass except W2's, which stops on the two changed GSEA scripts.
+
+**Q1 (W2 check).** W2's first check stops today: both copies of gsea_select_pathways.py in FuSION 1's live tree (Linux/ and macOS/supporting_files/) differ from the snapshot. They changed on 2026-11-16 at 17:52: the other thread's member="yes" filter for generated KGMLs. The test data takes the snapshot's copy of the script, so booking 1's runs never use the changed file. May W2 exempt these two files?
+
+- Exempt the two, nothing else (Recommended): W2's check lists them as known differences, with the reason, and still stops on any other difference.
+- Keep the strict check: Booking 1 waits until the live tree matches the snapshot again, which may never happen.
+
+**Answer:** Exempt the two, nothing else (Recommended)
+
+**Q2 (EGF values).** W5's 3,054-gene GSEA test fixture currently copies the actual values of your EGF file (egf_hela_t120_lfc.tsv, without gene ids) into the repository, which is on GitHub (private). Section 12 asks only that the fixture copy that file's ties: 190 distinct values, blocks of 145 at 0.00 and 71 at -0.06. What should the fixture hold?
+
+- Synthetic values, same ties (Recommended): Seeded made-up values with exactly the EGF file's tie structure. It tests the same thing, and none of your lab data goes into the repository.
+- The EGF values, without ids: Keep the fixture as written now.
+
+**Answer:** Synthetic values, same ties (Recommended)
+
+**Q3 (W5 additions).** Section 12 also asks W5 to run gseapy on the EGF file itself with the 167 candidate pathways, at the same seeds (42 and 1 to 20), with the results kept in the test data. The brief and the plan left this out. Should W5's subagent be sent back to add it?
+
+- Add it, plus a one-thread check (Recommended): Also rerun seed 42 on one thread and require identical output. That settles whether gseapy's thread count matters; section 08's exact port assumes it doesn't.
+- Add it only: Only the EGF-file run that section 12 asks for.
+- Leave W5 as it is: No EGF-file references for now.
+
+**Answer:** Add it, plus a one-thread check (Recommended)
+
+**Q4 (Booking 1).** Booking 1 (W1 to W6: the test-data copy, W2's checks and five reruns, the 39 captures, the regenerations and the gseapy references) takes about 1 hour on one or two of the 36 cores. A FuSION 1 run (PID 1653017) has been using one core for over a day. When may booking 1 run?
+
+- Tonight, beside that run (Recommended): As soon as its scripts are committed. I check the load first, and stop if more of your runs start.
+- After that run ends: I wait for PID 1653017 to finish, then start.
+- Not this week: The build goes ahead without FuSION 1's references until later.
+
+**Answer:** Tonight, beside that run (Recommended)
+
+## 283 · Subagent prompt · Follow-up to the W2 and W6 subagent: exempt the two GSEA scripts · 2026-11-17 18:18
+
+Sent to the W2 and W6 subagent (entry 267) after poll 282. The message as sent:
+
+```text
+Follow-up on W2, after the user's answer in prompt log entry 282: the user allows W2's first check to exempt exactly two files, Linux/supporting_files/gsea_select_pathways.py and macOS/supporting_files/gsea_select_pathways.py. Both changed in FuSION 1's live tree on 2026-11-16 at 17:52 (a filter for generated KGMLs whose entries carry member="yes"), and the data root takes the snapshot's copy of the script, so the reruns never use the changed file. Make check_fusion1.py list these two as known differences, with that reason, in its output and its report, and still stop on any other file that differs. Keep everything else as it is. Reply in at most 100 words: what you changed and what the dry run shows now.
+```
+
+## 284 · Subagent prompt · Follow-up to the W5 subagent: synthetic values, the EGF run and a one-thread check · 2026-11-17 18:18
+
+Sent to the W5 subagent (entry 270) after poll 282. The message as sent:
+
+```text
+Follow-up on W5, after the user's answers in prompt log entry 282. Make three changes to your scripts in backend/tests/experiments/capture/w5/:
+1. The n3054 fixture must not hold the EGF file's values. Generate seeded made-up values with exactly the EGF file's tie structure instead: the same number of genes (3054), 190 distinct values, a block of 145 at 0.00 and one of 71 at -0.06, and the same sizes for every other tie block. Read the EGF file only to measure that structure. No value from the EGF file may go into the repository.
+2. Add what section 12 asks for (12-tests.md, lines 766 to 768): gseapy on the EGF file itself (the data root's expression/egf_hela_t120_lfc.tsv) with the 167 candidate pathways, at seeds 42 and 1 to 20, with the results in the data root, not the repository (for example reports/w5/gseapy_egf/). Find how FuSION 1 builds the 167 candidates' gene sets from the KGMLs (gsea_select_pathways.py in the snapshot, and section 08) and do the same, from the data root's kegg/ folders.
+3. Add a one-thread check: rerun seed 42 of every fixture and of the EGF run with gseapy on one thread, and require output identical to the default run's; report any difference.
+Keep everything else as it is, and the same rules as before. Reply in at most 150 words: what you changed and what the dry runs show now.
+```
+
+## 285 · Subagent prompt · Sprint: core · 2026-11-17 18:29
+
+Sent to a new general-purpose subagent under decision 0038. The brief, as saved in Claude's scratchpad as `sprint/briefs/sprint_core.txt`:
+
+```text
+You are porting one part of FuSION 2.0 during a one-week sprint. Decision 0038 (docs/decisions/0038-end-to-end-version-this-week.md) sets the goal: a first end-to-end working version by the end of this week, built thoroughly. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) rewrites FuSION 1, with a C++20 backend and a Java frontend. FuSION 1's code works, and it is your starting point: port it, applying the spec's decisions and your section's design, rather than re-deriving it. FuSION 1's frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; cite it as file:line. Its live tree is /home/ks-149-u24/Desktop/arjun/FuSION. Both are read only. The spec of FuSION 1 is docs/spec/, one file per stage, and each item records the user's decision (keep, fix or drop) and the fix. The architecture is docs/architecture/: 00-skeleton.md, then one section per module. What you build is your section's Design, Interface, Choices (every Decision line is binding) and Test hooks. Section 11 is the build and section 12 the tests.
+
+The build (decision 0039). CMake 4.4.5 and Ninja 1.13.2 are under ~/.local/opt: put $HOME/.local/opt/cmake-4.4.5-linux-x86_64/bin and $HOME/.local/opt/ninja-1.13.2 first on PATH. The compiler is GCC 13.3, and the system Z3 is 4.8.12. The skeleton is in place:
+- CMakeLists.txt and cmake/;
+- backend/CMakeLists.txt, with one static library per module, linked as section 11's targets table says;
+- backend/modules/<module>/include/fusion/<module>/ and backend/modules/<module>/src/;
+- backend/cli/main.cpp;
+- backend/tests/unit/<module>/, with one Catch2 executable, test_<module>, per module.
+A module's own build steps, such as generated sources or compiled-in assets, go in backend/modules/<module>/module.cmake, which the build includes if it exists. It sees the target as fusion_<module>. Never edit backend/CMakeLists.txt or cmake/.
+Build in your own build folder, never build/dev: run cmake -S . -B build/<module> -G Ninja -DCMAKE_BUILD_TYPE=Debug, then cmake --build build/<module> -j 4 --target fusion_<module> test_<module>, then ctest --test-dir build/<module> -R <module>. Use at most 4 parallel compile jobs, because the workstation is shared.
+
+Interfaces. The headers of core, run, network and expression are written and compile (backend/modules/<m>/include/fusion/<m>/<m>.hpp). They are the outlines of sections 09, 02 and 04, made complete. The other modules' headers do not exist yet. Each module's subagent writes its own header first, from its section's outline, keeping every name and signature unless it does not compile, and then implements it. Each section's C++ outline, extracted, is in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/sprint/interfaces/<section number>.hpp.txt.
+Another module's header is a contract: never edit it. If yours needs a change in another module's header, or you find a mistake in one, give the exact change in your reply, and work around it meanwhile. You may add to your own module's header, keeping what is there. Read the headers you depend on before you start.
+
+Rules:
+- Edit only your module's folder (backend/modules/<module>/) and its tests (backend/tests/unit/<module>/), plus any other file your item names. Do not edit any other file, do not commit, and install nothing system-wide.
+- Never write under FuSION 1's tree or its snapshot; only read them. Never run FuSION 1, and run nothing long.
+- Your tests must be fast, seconds in all, and use synthetic inputs kept in the repository, never KEGG files (S8.31).
+- Port thoroughly. Implement every behaviour your section and its spec items decide, and give each a unit test, as section 12's row for your module asks ("Library-level tests per module"). Where FuSION 1 has a bug that the spec fixes, implement the fix and test it. Give each ported piece a short comment citing FuSION 1's file:line and the spec item.
+- Code in C++20 with the flags in cmake/FusionFlags.cmake; warnings must stay at zero.
+- Add no new dependencies, and no raw new or delete.
+- Nothing that reaches an output may depend on std::hash or on the locale (section 09's determinism rules).
+- Follow section 09's conventions: failures throw core::Failure with a dotted code; reported results are core::Outcome reports; outputs go through core::Files and core::OutputFile.
+- Other subagents are porting the other modules at the same time. Stay inside your folders, and leave their files alone.
+
+When you finish, reply in at most 300 words: what you implemented, what you left for later and why, the test count and result, the warnings (there must be none), and any change you need in another module's header.
+
+Your part:
+core: section 09's core part; section 11's platform layer and build information (11.C19); cross-section items 1.1, 2A.5, 2A.11, 2B.13 and 3A.19.
+- Implement everything in core.hpp. Start with what the other modules call most: Failure, Interner, Sha256, Settings, Log, OutputFile, parse_decimal and format_number. The others are waiting for them.
+- Add these public headers to your module:
+  - fusion/core/process.hpp: section 11's process layer. It starts a child with arguments, environment and working folder, with stdin from /dev/null and stdout and stderr to files or captured. It waits with a timeout, and can kill the process tree (11.C19, cross-section item 2A.11). The batch's exec lines and gnuplot use it.
+  - the gnuplot runner, with the plot palette (cross-section item 2B.13).
+  - fusion/core/xoshiro.hpp: section 08's Xoshiro256pp and shuffle_like_rand09 (08.C1, cross-section item 1.19). Section 08's outline puts them in core.
+- Build information: build_id() is VERSION plus the git commit, with the executable's SHA-256 added when the tree has uncommitted changes (11.C16). Generate it at configure time from your module.cmake.
+- Tests: section 12's core row. They cover:
+  - the 10,000th output of std::mt19937_64;
+  - golden first values of Rng::stream(42, 0), of a bounded draw and of a shuffle;
+  - Xoshiro256pp(0)'s first three outputs, which section 12 gives;
+  - format_number against Python's repr;
+  - parse_decimal's grammar (04.C2), including NA, nan, inf, 1_000, 1,5 and 0x1p0 rejected;
+  - OutputFile's commit, and the temporary file's removal when it is not committed;
+  - the stop token, and Settings.
+```
+
+## 286 · Subagent prompt · Sprint: network · 2026-11-17 18:29
+
+Sent to a new general-purpose subagent under decision 0038. The brief, as saved in Claude's scratchpad as `sprint/briefs/sprint_network.txt`:
+
+```text
+You are porting one part of FuSION 2.0 during a one-week sprint. Decision 0038 (docs/decisions/0038-end-to-end-version-this-week.md) sets the goal: a first end-to-end working version by the end of this week, built thoroughly. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) rewrites FuSION 1, with a C++20 backend and a Java frontend. FuSION 1's code works, and it is your starting point: port it, applying the spec's decisions and your section's design, rather than re-deriving it. FuSION 1's frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; cite it as file:line. Its live tree is /home/ks-149-u24/Desktop/arjun/FuSION. Both are read only. The spec of FuSION 1 is docs/spec/, one file per stage, and each item records the user's decision (keep, fix or drop) and the fix. The architecture is docs/architecture/: 00-skeleton.md, then one section per module. What you build is your section's Design, Interface, Choices (every Decision line is binding) and Test hooks. Section 11 is the build and section 12 the tests.
+
+The build (decision 0039). CMake 4.4.5 and Ninja 1.13.2 are under ~/.local/opt: put $HOME/.local/opt/cmake-4.4.5-linux-x86_64/bin and $HOME/.local/opt/ninja-1.13.2 first on PATH. The compiler is GCC 13.3, and the system Z3 is 4.8.12. The skeleton is in place:
+- CMakeLists.txt and cmake/;
+- backend/CMakeLists.txt, with one static library per module, linked as section 11's targets table says;
+- backend/modules/<module>/include/fusion/<module>/ and backend/modules/<module>/src/;
+- backend/cli/main.cpp;
+- backend/tests/unit/<module>/, with one Catch2 executable, test_<module>, per module.
+A module's own build steps, such as generated sources or compiled-in assets, go in backend/modules/<module>/module.cmake, which the build includes if it exists. It sees the target as fusion_<module>. Never edit backend/CMakeLists.txt or cmake/.
+Build in your own build folder, never build/dev: run cmake -S . -B build/<module> -G Ninja -DCMAKE_BUILD_TYPE=Debug, then cmake --build build/<module> -j 4 --target fusion_<module> test_<module>, then ctest --test-dir build/<module> -R <module>. Use at most 4 parallel compile jobs, because the workstation is shared.
+
+Interfaces. The headers of core, run, network and expression are written and compile (backend/modules/<m>/include/fusion/<m>/<m>.hpp). They are the outlines of sections 09, 02 and 04, made complete. The other modules' headers do not exist yet. Each module's subagent writes its own header first, from its section's outline, keeping every name and signature unless it does not compile, and then implements it. Each section's C++ outline, extracted, is in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/sprint/interfaces/<section number>.hpp.txt.
+Another module's header is a contract: never edit it. If yours needs a change in another module's header, or you find a mistake in one, give the exact change in your reply, and work around it meanwhile. You may add to your own module's header, keeping what is there. Read the headers you depend on before you start.
+
+Rules:
+- Edit only your module's folder (backend/modules/<module>/) and its tests (backend/tests/unit/<module>/), plus any other file your item names. Do not edit any other file, do not commit, and install nothing system-wide.
+- Never write under FuSION 1's tree or its snapshot; only read them. Never run FuSION 1, and run nothing long.
+- Your tests must be fast, seconds in all, and use synthetic inputs kept in the repository, never KEGG files (S8.31).
+- Port thoroughly. Implement every behaviour your section and its spec items decide, and give each a unit test, as section 12's row for your module asks ("Library-level tests per module"). Where FuSION 1 has a bug that the spec fixes, implement the fix and test it. Give each ported piece a short comment citing FuSION 1's file:line and the spec item.
+- Code in C++20 with the flags in cmake/FusionFlags.cmake; warnings must stay at zero.
+- Add no new dependencies, and no raw new or delete.
+- Nothing that reaches an output may depend on std::hash or on the locale (section 09's determinism rules).
+- Follow section 09's conventions: failures throw core::Failure with a dotted code; reported results are core::Outcome reports; outputs go through core::Files and core::OutputFile.
+- Other subagents are porting the other modules at the same time. Stay inside your folders, and leave their files alone.
+
+When you finish, reply in at most 300 words: what you implemented, what you left for later and why, the test count and result, the warnings (there must be none), and any change you need in another module's header.
+
+Your part:
+network: section 02; spec stage 2, S2.01 to S2.31.
+- Implement network.hpp:
+  - the KGML reader: its rejections (S2.06), keys and the split threshold (S2.07), S2.08's fix, complexes and component edges (S2.09), fan-out, undirected pairs and tags (S2.10), the indirect and ECrel settings (S2.11, S2.31), family bindings (S2.03), and each pathway's name from its KGML root title (entry 205);
+  - the id and label maps (02.C3);
+  - the model and its builder (02.C8 to 02.C11), and views;
+  - bindings.tsv (02.C13), and input lists (02.C12);
+  - FuSION's network file, written and read (02.C4), and add (02.C17);
+  - the legacy reader, which reproduces FuSION 1's graph from an old master (02.C5);
+  - summaries (the size command).
+- The edge-table reader (02.C2) can wait unless time allows.
+- FuSION 1's code is in XMLParser.cc and GraphManagerNew.cc; the spec's items cite the lines.
+- One header fix is already made: section 02's two key() overloads collided, because NodeIdx and EdgeIdx are the same type, so they are node_key() and edge_key().
+- Tests: section 12's network row, on hand-written KGML-format pathways with made-up ids, kept in your tests' folder.
+```
+
+## 287 · Subagent prompt · Sprint: expression · 2026-11-17 18:29
+
+Sent to a new general-purpose subagent under decision 0038. The brief, as saved in Claude's scratchpad as `sprint/briefs/sprint_expression.txt`:
+
+```text
+You are porting one part of FuSION 2.0 during a one-week sprint. Decision 0038 (docs/decisions/0038-end-to-end-version-this-week.md) sets the goal: a first end-to-end working version by the end of this week, built thoroughly. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) rewrites FuSION 1, with a C++20 backend and a Java frontend. FuSION 1's code works, and it is your starting point: port it, applying the spec's decisions and your section's design, rather than re-deriving it. FuSION 1's frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; cite it as file:line. Its live tree is /home/ks-149-u24/Desktop/arjun/FuSION. Both are read only. The spec of FuSION 1 is docs/spec/, one file per stage, and each item records the user's decision (keep, fix or drop) and the fix. The architecture is docs/architecture/: 00-skeleton.md, then one section per module. What you build is your section's Design, Interface, Choices (every Decision line is binding) and Test hooks. Section 11 is the build and section 12 the tests.
+
+The build (decision 0039). CMake 4.4.5 and Ninja 1.13.2 are under ~/.local/opt: put $HOME/.local/opt/cmake-4.4.5-linux-x86_64/bin and $HOME/.local/opt/ninja-1.13.2 first on PATH. The compiler is GCC 13.3, and the system Z3 is 4.8.12. The skeleton is in place:
+- CMakeLists.txt and cmake/;
+- backend/CMakeLists.txt, with one static library per module, linked as section 11's targets table says;
+- backend/modules/<module>/include/fusion/<module>/ and backend/modules/<module>/src/;
+- backend/cli/main.cpp;
+- backend/tests/unit/<module>/, with one Catch2 executable, test_<module>, per module.
+A module's own build steps, such as generated sources or compiled-in assets, go in backend/modules/<module>/module.cmake, which the build includes if it exists. It sees the target as fusion_<module>. Never edit backend/CMakeLists.txt or cmake/.
+Build in your own build folder, never build/dev: run cmake -S . -B build/<module> -G Ninja -DCMAKE_BUILD_TYPE=Debug, then cmake --build build/<module> -j 4 --target fusion_<module> test_<module>, then ctest --test-dir build/<module> -R <module>. Use at most 4 parallel compile jobs, because the workstation is shared.
+
+Interfaces. The headers of core, run, network and expression are written and compile (backend/modules/<m>/include/fusion/<m>/<m>.hpp). They are the outlines of sections 09, 02 and 04, made complete. The other modules' headers do not exist yet. Each module's subagent writes its own header first, from its section's outline, keeping every name and signature unless it does not compile, and then implements it. Each section's C++ outline, extracted, is in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/sprint/interfaces/<section number>.hpp.txt.
+Another module's header is a contract: never edit it. If yours needs a change in another module's header, or you find a mistake in one, give the exact change in your reply, and work around it meanwhile. You may add to your own module's header, keeping what is there. Read the headers you depend on before you start.
+
+Rules:
+- Edit only your module's folder (backend/modules/<module>/) and its tests (backend/tests/unit/<module>/), plus any other file your item names. Do not edit any other file, do not commit, and install nothing system-wide.
+- Never write under FuSION 1's tree or its snapshot; only read them. Never run FuSION 1, and run nothing long.
+- Your tests must be fast, seconds in all, and use synthetic inputs kept in the repository, never KEGG files (S8.31).
+- Port thoroughly. Implement every behaviour your section and its spec items decide, and give each a unit test, as section 12's row for your module asks ("Library-level tests per module"). Where FuSION 1 has a bug that the spec fixes, implement the fix and test it. Give each ported piece a short comment citing FuSION 1's file:line and the spec item.
+- Code in C++20 with the flags in cmake/FusionFlags.cmake; warnings must stay at zero.
+- Add no new dependencies, and no raw new or delete.
+- Nothing that reaches an output may depend on std::hash or on the locale (section 09's determinism rules).
+- Follow section 09's conventions: failures throw core::Failure with a dotted code; reported results are core::Outcome reports; outputs go through core::Files and core::OutputFile.
+- Other subagents are porting the other modules at the same time. Stay inside your folders, and leave their files alone.
+
+When you finish, reply in at most 300 words: what you implemented, what you left for later and why, the test count and result, the warnings (there must be none), and any change you need in another module's header.
+
+Your part:
+expression: section 04; spec stage 3, S3.01 to S3.19.
+- Implement expression.hpp:
+  - the one value reader (S3.14, 04.C1, 04.C3, 04.C10), with numbers parsed through core::parse_decimal (04.C2);
+  - ValueInputs (04.C9);
+  - classification, the cudf command (S3.06, S3.07, 04.C4, and 04.C5's observations.none);
+  - saving and loading the lists (S3.09, S3.12);
+  - match_observations and observations_match.tsv (05.C9);
+  - threshold suggestion (S3.15 to S3.19, 04.C6), with the histogram script (04.C7).
+- The --query answers (04.C8) can wait.
+- FuSION 1's cudf and its readers are in main.cc (the spec cites the lines), and suggest_thresholds.py is in the snapshot's auxilliary/.
+- Tests: section 12's expression row.
+```
+
+## 288 · Subagent prompt · Sprint: merge · 2026-11-17 18:29
+
+Sent to a new general-purpose subagent under decision 0038. The brief, as saved in Claude's scratchpad as `sprint/briefs/sprint_merge.txt`:
+
+```text
+You are porting one part of FuSION 2.0 during a one-week sprint. Decision 0038 (docs/decisions/0038-end-to-end-version-this-week.md) sets the goal: a first end-to-end working version by the end of this week, built thoroughly. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) rewrites FuSION 1, with a C++20 backend and a Java frontend. FuSION 1's code works, and it is your starting point: port it, applying the spec's decisions and your section's design, rather than re-deriving it. FuSION 1's frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; cite it as file:line. Its live tree is /home/ks-149-u24/Desktop/arjun/FuSION. Both are read only. The spec of FuSION 1 is docs/spec/, one file per stage, and each item records the user's decision (keep, fix or drop) and the fix. The architecture is docs/architecture/: 00-skeleton.md, then one section per module. What you build is your section's Design, Interface, Choices (every Decision line is binding) and Test hooks. Section 11 is the build and section 12 the tests.
+
+The build (decision 0039). CMake 4.4.5 and Ninja 1.13.2 are under ~/.local/opt: put $HOME/.local/opt/cmake-4.4.5-linux-x86_64/bin and $HOME/.local/opt/ninja-1.13.2 first on PATH. The compiler is GCC 13.3, and the system Z3 is 4.8.12. The skeleton is in place:
+- CMakeLists.txt and cmake/;
+- backend/CMakeLists.txt, with one static library per module, linked as section 11's targets table says;
+- backend/modules/<module>/include/fusion/<module>/ and backend/modules/<module>/src/;
+- backend/cli/main.cpp;
+- backend/tests/unit/<module>/, with one Catch2 executable, test_<module>, per module.
+A module's own build steps, such as generated sources or compiled-in assets, go in backend/modules/<module>/module.cmake, which the build includes if it exists. It sees the target as fusion_<module>. Never edit backend/CMakeLists.txt or cmake/.
+Build in your own build folder, never build/dev: run cmake -S . -B build/<module> -G Ninja -DCMAKE_BUILD_TYPE=Debug, then cmake --build build/<module> -j 4 --target fusion_<module> test_<module>, then ctest --test-dir build/<module> -R <module>. Use at most 4 parallel compile jobs, because the workstation is shared.
+
+Interfaces. The headers of core, run, network and expression are written and compile (backend/modules/<m>/include/fusion/<m>/<m>.hpp). They are the outlines of sections 09, 02 and 04, made complete. The other modules' headers do not exist yet. Each module's subagent writes its own header first, from its section's outline, keeping every name and signature unless it does not compile, and then implements it. Each section's C++ outline, extracted, is in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/sprint/interfaces/<section number>.hpp.txt.
+Another module's header is a contract: never edit it. If yours needs a change in another module's header, or you find a mistake in one, give the exact change in your reply, and work around it meanwhile. You may add to your own module's header, keeping what is there. Read the headers you depend on before you start.
+
+Rules:
+- Edit only your module's folder (backend/modules/<module>/) and its tests (backend/tests/unit/<module>/), plus any other file your item names. Do not edit any other file, do not commit, and install nothing system-wide.
+- Never write under FuSION 1's tree or its snapshot; only read them. Never run FuSION 1, and run nothing long.
+- Your tests must be fast, seconds in all, and use synthetic inputs kept in the repository, never KEGG files (S8.31).
+- Port thoroughly. Implement every behaviour your section and its spec items decide, and give each a unit test, as section 12's row for your module asks ("Library-level tests per module"). Where FuSION 1 has a bug that the spec fixes, implement the fix and test it. Give each ported piece a short comment citing FuSION 1's file:line and the spec item.
+- Code in C++20 with the flags in cmake/FusionFlags.cmake; warnings must stay at zero.
+- Add no new dependencies, and no raw new or delete.
+- Nothing that reaches an output may depend on std::hash or on the locale (section 09's determinism rules).
+- Follow section 09's conventions: failures throw core::Failure with a dotted code; reported results are core::Outcome reports; outputs go through core::Files and core::OutputFile.
+- Other subagents are porting the other modules at the same time. Stay inside your folders, and leave their files alone.
+
+When you finish, reply in at most 300 words: what you implemented, what you left for later and why, the test count and result, the warnings (there must be none), and any change you need in another module's header.
+
+Your part:
+merge: section 03; the merge items of spec stage 2 (S2.13, S2.16 to S2.24).
+- First write fusion/merge/merge.hpp from section 03's outline (03.hpp.txt).
+- Implement:
+  - the explicit, order-independent union with the exception set (03.C1, 03.C2);
+  - the merge key (03.C8);
+  - a single KGML read as a one-file merge (03.C5);
+  - two KGMLs with one pathway id (03.C6);
+  - FuSION network files and legacy files in an mff list (03.C7, 03.C9);
+  - the merge report (S2.24).
+- Saved base merges in the shared store (03.C3, 03.C4) can wait.
+- FuSION 1's mff is in main.cc and GraphManagerNew.cc.
+- Tests: section 12's merge row: order independence, one node per id, and a type conflict that stops the run.
+```
+
+## 289 · Subagent prompt · Sprint: corridor · 2026-11-17 18:29
+
+Sent to a new general-purpose subagent under decision 0038. The brief, as saved in Claude's scratchpad as `sprint/briefs/sprint_corridor.txt`:
+
+```text
+You are porting one part of FuSION 2.0 during a one-week sprint. Decision 0038 (docs/decisions/0038-end-to-end-version-this-week.md) sets the goal: a first end-to-end working version by the end of this week, built thoroughly. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) rewrites FuSION 1, with a C++20 backend and a Java frontend. FuSION 1's code works, and it is your starting point: port it, applying the spec's decisions and your section's design, rather than re-deriving it. FuSION 1's frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; cite it as file:line. Its live tree is /home/ks-149-u24/Desktop/arjun/FuSION. Both are read only. The spec of FuSION 1 is docs/spec/, one file per stage, and each item records the user's decision (keep, fix or drop) and the fix. The architecture is docs/architecture/: 00-skeleton.md, then one section per module. What you build is your section's Design, Interface, Choices (every Decision line is binding) and Test hooks. Section 11 is the build and section 12 the tests.
+
+The build (decision 0039). CMake 4.4.5 and Ninja 1.13.2 are under ~/.local/opt: put $HOME/.local/opt/cmake-4.4.5-linux-x86_64/bin and $HOME/.local/opt/ninja-1.13.2 first on PATH. The compiler is GCC 13.3, and the system Z3 is 4.8.12. The skeleton is in place:
+- CMakeLists.txt and cmake/;
+- backend/CMakeLists.txt, with one static library per module, linked as section 11's targets table says;
+- backend/modules/<module>/include/fusion/<module>/ and backend/modules/<module>/src/;
+- backend/cli/main.cpp;
+- backend/tests/unit/<module>/, with one Catch2 executable, test_<module>, per module.
+A module's own build steps, such as generated sources or compiled-in assets, go in backend/modules/<module>/module.cmake, which the build includes if it exists. It sees the target as fusion_<module>. Never edit backend/CMakeLists.txt or cmake/.
+Build in your own build folder, never build/dev: run cmake -S . -B build/<module> -G Ninja -DCMAKE_BUILD_TYPE=Debug, then cmake --build build/<module> -j 4 --target fusion_<module> test_<module>, then ctest --test-dir build/<module> -R <module>. Use at most 4 parallel compile jobs, because the workstation is shared.
+
+Interfaces. The headers of core, run, network and expression are written and compile (backend/modules/<m>/include/fusion/<m>/<m>.hpp). They are the outlines of sections 09, 02 and 04, made complete. The other modules' headers do not exist yet. Each module's subagent writes its own header first, from its section's outline, keeping every name and signature unless it does not compile, and then implements it. Each section's C++ outline, extracted, is in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/sprint/interfaces/<section number>.hpp.txt.
+Another module's header is a contract: never edit it. If yours needs a change in another module's header, or you find a mistake in one, give the exact change in your reply, and work around it meanwhile. You may add to your own module's header, keeping what is there. Read the headers you depend on before you start.
+
+Rules:
+- Edit only your module's folder (backend/modules/<module>/) and its tests (backend/tests/unit/<module>/), plus any other file your item names. Do not edit any other file, do not commit, and install nothing system-wide.
+- Never write under FuSION 1's tree or its snapshot; only read them. Never run FuSION 1, and run nothing long.
+- Your tests must be fast, seconds in all, and use synthetic inputs kept in the repository, never KEGG files (S8.31).
+- Port thoroughly. Implement every behaviour your section and its spec items decide, and give each a unit test, as section 12's row for your module asks ("Library-level tests per module"). Where FuSION 1 has a bug that the spec fixes, implement the fix and test it. Give each ported piece a short comment citing FuSION 1's file:line and the spec item.
+- Code in C++20 with the flags in cmake/FusionFlags.cmake; warnings must stay at zero.
+- Add no new dependencies, and no raw new or delete.
+- Nothing that reaches an output may depend on std::hash or on the locale (section 09's determinism rules).
+- Follow section 09's conventions: failures throw core::Failure with a dotted code; reported results are core::Outcome reports; outputs go through core::Files and core::OutputFile.
+- Other subagents are porting the other modules at the same time. Stay inside your folders, and leave their files alone.
+
+When you finish, reply in at most 300 words: what you implemented, what you left for later and why, the test count and result, the warnings (there must be none), and any change you need in another module's header.
+
+Your part:
+corridor: section 05; spec stage 4, S4.01 to S4.22.
+- First write fusion/corridor/corridor.hpp from section 05's outline, which names the file. Write it early: the solve's subagent needs it.
+- Implement fb_rch:
+  - the corridor as a view with its distances (05.C1), trimmed during the search (05.C2);
+  - ids checked (05.C3, 05.C5);
+  - a repeated fb_rch reused (05.C4);
+  - the saved form, corridor.json with its node table (05.C6);
+  - the bound the solve shares (05.C7);
+  - exclusions, which also remove every complex holding an excluded gene (S4.06, as entry 170 extends it);
+  - the observations report (05.C9), through expression's match_observations.
+- FuSION 1's fb_rch is in GraphManagerNew.cc.
+- Tests: section 12's corridor row, on synthetic graphs.
+```
+
+## 290 · Subagent prompt · Sprint: solve · 2026-11-17 18:29
+
+Sent to a new general-purpose subagent under decision 0038. The brief, as saved in Claude's scratchpad as `sprint/briefs/sprint_solve.txt`:
+
+```text
+You are porting one part of FuSION 2.0 during a one-week sprint. Decision 0038 (docs/decisions/0038-end-to-end-version-this-week.md) sets the goal: a first end-to-end working version by the end of this week, built thoroughly. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) rewrites FuSION 1, with a C++20 backend and a Java frontend. FuSION 1's code works, and it is your starting point: port it, applying the spec's decisions and your section's design, rather than re-deriving it. FuSION 1's frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; cite it as file:line. Its live tree is /home/ks-149-u24/Desktop/arjun/FuSION. Both are read only. The spec of FuSION 1 is docs/spec/, one file per stage, and each item records the user's decision (keep, fix or drop) and the fix. The architecture is docs/architecture/: 00-skeleton.md, then one section per module. What you build is your section's Design, Interface, Choices (every Decision line is binding) and Test hooks. Section 11 is the build and section 12 the tests.
+
+The build (decision 0039). CMake 4.4.5 and Ninja 1.13.2 are under ~/.local/opt: put $HOME/.local/opt/cmake-4.4.5-linux-x86_64/bin and $HOME/.local/opt/ninja-1.13.2 first on PATH. The compiler is GCC 13.3, and the system Z3 is 4.8.12. The skeleton is in place:
+- CMakeLists.txt and cmake/;
+- backend/CMakeLists.txt, with one static library per module, linked as section 11's targets table says;
+- backend/modules/<module>/include/fusion/<module>/ and backend/modules/<module>/src/;
+- backend/cli/main.cpp;
+- backend/tests/unit/<module>/, with one Catch2 executable, test_<module>, per module.
+A module's own build steps, such as generated sources or compiled-in assets, go in backend/modules/<module>/module.cmake, which the build includes if it exists. It sees the target as fusion_<module>. Never edit backend/CMakeLists.txt or cmake/.
+Build in your own build folder, never build/dev: run cmake -S . -B build/<module> -G Ninja -DCMAKE_BUILD_TYPE=Debug, then cmake --build build/<module> -j 4 --target fusion_<module> test_<module>, then ctest --test-dir build/<module> -R <module>. Use at most 4 parallel compile jobs, because the workstation is shared.
+
+Interfaces. The headers of core, run, network and expression are written and compile (backend/modules/<m>/include/fusion/<m>/<m>.hpp). They are the outlines of sections 09, 02 and 04, made complete. The other modules' headers do not exist yet. Each module's subagent writes its own header first, from its section's outline, keeping every name and signature unless it does not compile, and then implements it. Each section's C++ outline, extracted, is in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/sprint/interfaces/<section number>.hpp.txt.
+Another module's header is a contract: never edit it. If yours needs a change in another module's header, or you find a mistake in one, give the exact change in your reply, and work around it meanwhile. You may add to your own module's header, keeping what is there. Read the headers you depend on before you start.
+
+Rules:
+- Edit only your module's folder (backend/modules/<module>/) and its tests (backend/tests/unit/<module>/), plus any other file your item names. Do not edit any other file, do not commit, and install nothing system-wide.
+- Never write under FuSION 1's tree or its snapshot; only read them. Never run FuSION 1, and run nothing long.
+- Your tests must be fast, seconds in all, and use synthetic inputs kept in the repository, never KEGG files (S8.31).
+- Port thoroughly. Implement every behaviour your section and its spec items decide, and give each a unit test, as section 12's row for your module asks ("Library-level tests per module"). Where FuSION 1 has a bug that the spec fixes, implement the fix and test it. Give each ported piece a short comment citing FuSION 1's file:line and the spec item.
+- Code in C++20 with the flags in cmake/FusionFlags.cmake; warnings must stay at zero.
+- Add no new dependencies, and no raw new or delete.
+- Nothing that reaches an output may depend on std::hash or on the locale (section 09's determinism rules).
+- Follow section 09's conventions: failures throw core::Failure with a dotted code; reported results are core::Outcome reports; outputs go through core::Files and core::OutputFile.
+- Other subagents are porting the other modules at the same time. Stay inside your folders, and leave their files alone.
+
+When you finish, reply in at most 300 words: what you implemented, what you left for later and why, the test count and result, the warnings (there must be none), and any change you need in another module's header.
+
+Your part:
+solve: section 06; spec stage 5, S5.01 to S5.31.
+- First write fusion/solve/solve.hpp from section 06's outline. It depends on the corridor header, which corridor's subagent writes early; until it exists, read section 05's outline.
+- Implement pathz3:
+  - the encoding of S5.05 to S5.17 on Z3 (06.C1);
+  - the FSC cases in, out and free (06.C10);
+  - the Pareto search, with answers from monotonicity and from the models' own counts (06.C5);
+  - timeouts and the TIMEOUT label (06.C2, 06.C3), and certification (06.C6);
+  - extra solutions (06.C11), and the edge bound (06.C14);
+  - no DE gene in the corridor (06.C15), and endpoints present and active (06.C16);
+  - the box's default bounds (06.C17), and a point beaten by its own witness (06.C20);
+  - every avoided gene forbidding every complex that holds it (entries 170 and 229).
+- Journals and resume (06.C7, 06.C8, 06.C19), partial solves (06.C9) and debug dumps (06.C13) come later. Keep their declarations.
+- FuSION 1's pathz3 is in main.cc, with its encoding in GraphManagerNew.cc. Port its constraint generation faithfully.
+- Z3 4.8.12 is linked (decision 0039), and z3++.h is included only inside your module.
+- Tests: section 12's solve row. Write the small exhaustive checker and the scripted oracle your tests need inside your tests, because the shared test kit waits for Phase 3. Keep each test to a few seconds.
+```
+
+## 291 · Subagent prompt · Sprint: results · 2026-11-17 18:29
+
+Sent to a new general-purpose subagent under decision 0038. The brief, as saved in Claude's scratchpad as `sprint/briefs/sprint_results.txt`:
+
+```text
+You are porting one part of FuSION 2.0 during a one-week sprint. Decision 0038 (docs/decisions/0038-end-to-end-version-this-week.md) sets the goal: a first end-to-end working version by the end of this week, built thoroughly. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) rewrites FuSION 1, with a C++20 backend and a Java frontend. FuSION 1's code works, and it is your starting point: port it, applying the spec's decisions and your section's design, rather than re-deriving it. FuSION 1's frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; cite it as file:line. Its live tree is /home/ks-149-u24/Desktop/arjun/FuSION. Both are read only. The spec of FuSION 1 is docs/spec/, one file per stage, and each item records the user's decision (keep, fix or drop) and the fix. The architecture is docs/architecture/: 00-skeleton.md, then one section per module. What you build is your section's Design, Interface, Choices (every Decision line is binding) and Test hooks. Section 11 is the build and section 12 the tests.
+
+The build (decision 0039). CMake 4.4.5 and Ninja 1.13.2 are under ~/.local/opt: put $HOME/.local/opt/cmake-4.4.5-linux-x86_64/bin and $HOME/.local/opt/ninja-1.13.2 first on PATH. The compiler is GCC 13.3, and the system Z3 is 4.8.12. The skeleton is in place:
+- CMakeLists.txt and cmake/;
+- backend/CMakeLists.txt, with one static library per module, linked as section 11's targets table says;
+- backend/modules/<module>/include/fusion/<module>/ and backend/modules/<module>/src/;
+- backend/cli/main.cpp;
+- backend/tests/unit/<module>/, with one Catch2 executable, test_<module>, per module.
+A module's own build steps, such as generated sources or compiled-in assets, go in backend/modules/<module>/module.cmake, which the build includes if it exists. It sees the target as fusion_<module>. Never edit backend/CMakeLists.txt or cmake/.
+Build in your own build folder, never build/dev: run cmake -S . -B build/<module> -G Ninja -DCMAKE_BUILD_TYPE=Debug, then cmake --build build/<module> -j 4 --target fusion_<module> test_<module>, then ctest --test-dir build/<module> -R <module>. Use at most 4 parallel compile jobs, because the workstation is shared.
+
+Interfaces. The headers of core, run, network and expression are written and compile (backend/modules/<m>/include/fusion/<m>/<m>.hpp). They are the outlines of sections 09, 02 and 04, made complete. The other modules' headers do not exist yet. Each module's subagent writes its own header first, from its section's outline, keeping every name and signature unless it does not compile, and then implements it. Each section's C++ outline, extracted, is in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/sprint/interfaces/<section number>.hpp.txt.
+Another module's header is a contract: never edit it. If yours needs a change in another module's header, or you find a mistake in one, give the exact change in your reply, and work around it meanwhile. You may add to your own module's header, keeping what is there. Read the headers you depend on before you start.
+
+Rules:
+- Edit only your module's folder (backend/modules/<module>/) and its tests (backend/tests/unit/<module>/), plus any other file your item names. Do not edit any other file, do not commit, and install nothing system-wide.
+- Never write under FuSION 1's tree or its snapshot; only read them. Never run FuSION 1, and run nothing long.
+- Your tests must be fast, seconds in all, and use synthetic inputs kept in the repository, never KEGG files (S8.31).
+- Port thoroughly. Implement every behaviour your section and its spec items decide, and give each a unit test, as section 12's row for your module asks ("Library-level tests per module"). Where FuSION 1 has a bug that the spec fixes, implement the fix and test it. Give each ported piece a short comment citing FuSION 1's file:line and the spec item.
+- Code in C++20 with the flags in cmake/FusionFlags.cmake; warnings must stay at zero.
+- Add no new dependencies, and no raw new or delete.
+- Nothing that reaches an output may depend on std::hash or on the locale (section 09's determinism rules).
+- Follow section 09's conventions: failures throw core::Failure with a dotted code; reported results are core::Outcome reports; outputs go through core::Files and core::OutputFile.
+- Other subagents are porting the other modules at the same time. Stay inside your folders, and leave their files alone.
+
+When you finish, reply in at most 300 words: what you implemented, what you left for later and why, the test count and result, the warnings (there must be none), and any change you need in another module's header.
+
+Your part:
+results: section 07; spec stage 6, S6.01 to S6.26.
+- First write the headers of section 07's outline. Its blocks name their files: model.hpp, analyse.hpp, json.hpp, view.hpp, explain.hpp, pareto.hpp, site.hpp and legacy.hpp. They depend on the solve's header, which solve's subagent is writing; until it exists, read section 06's outline.
+- Implement:
+  - results.json per solve (07.C1);
+  - FuSION 1's text outputs, byte for byte under legacy_prefix (01.C11, cross-section item 1.21): the .dat file, the limits file, and the solutions and relaxations files. Old batches and the comparison with FuSION 1 need them;
+  - the Pareto plot, through core's gnuplot runner;
+  - the explanation pages (07.C2), with vis-network 10.1.5 compiled into libfusion (07.C3, 11.C11). Fetch it at a pinned SHA-256 from your module.cmake;
+  - labels with family size (07.C10), and the FSC comparison (07.C7).
+- The site and its index (site.hpp) can wait.
+- FuSION 1's writers are in main.cc, and its explanation pages come from plot_explanation.py in Linux/supporting_files.
+- Tests: section 12's results row.
+```
+
+## 292 · Subagent prompt · Sprint: enrichment · 2026-11-17 18:29
+
+Sent to a new general-purpose subagent under decision 0038. The brief, as saved in Claude's scratchpad as `sprint/briefs/sprint_enrichment.txt`:
+
+```text
+You are porting one part of FuSION 2.0 during a one-week sprint. Decision 0038 (docs/decisions/0038-end-to-end-version-this-week.md) sets the goal: a first end-to-end working version by the end of this week, built thoroughly. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) rewrites FuSION 1, with a C++20 backend and a Java frontend. FuSION 1's code works, and it is your starting point: port it, applying the spec's decisions and your section's design, rather than re-deriving it. FuSION 1's frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; cite it as file:line. Its live tree is /home/ks-149-u24/Desktop/arjun/FuSION. Both are read only. The spec of FuSION 1 is docs/spec/, one file per stage, and each item records the user's decision (keep, fix or drop) and the fix. The architecture is docs/architecture/: 00-skeleton.md, then one section per module. What you build is your section's Design, Interface, Choices (every Decision line is binding) and Test hooks. Section 11 is the build and section 12 the tests.
+
+The build (decision 0039). CMake 4.4.5 and Ninja 1.13.2 are under ~/.local/opt: put $HOME/.local/opt/cmake-4.4.5-linux-x86_64/bin and $HOME/.local/opt/ninja-1.13.2 first on PATH. The compiler is GCC 13.3, and the system Z3 is 4.8.12. The skeleton is in place:
+- CMakeLists.txt and cmake/;
+- backend/CMakeLists.txt, with one static library per module, linked as section 11's targets table says;
+- backend/modules/<module>/include/fusion/<module>/ and backend/modules/<module>/src/;
+- backend/cli/main.cpp;
+- backend/tests/unit/<module>/, with one Catch2 executable, test_<module>, per module.
+A module's own build steps, such as generated sources or compiled-in assets, go in backend/modules/<module>/module.cmake, which the build includes if it exists. It sees the target as fusion_<module>. Never edit backend/CMakeLists.txt or cmake/.
+Build in your own build folder, never build/dev: run cmake -S . -B build/<module> -G Ninja -DCMAKE_BUILD_TYPE=Debug, then cmake --build build/<module> -j 4 --target fusion_<module> test_<module>, then ctest --test-dir build/<module> -R <module>. Use at most 4 parallel compile jobs, because the workstation is shared.
+
+Interfaces. The headers of core, run, network and expression are written and compile (backend/modules/<m>/include/fusion/<m>/<m>.hpp). They are the outlines of sections 09, 02 and 04, made complete. The other modules' headers do not exist yet. Each module's subagent writes its own header first, from its section's outline, keeping every name and signature unless it does not compile, and then implements it. Each section's C++ outline, extracted, is in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/sprint/interfaces/<section number>.hpp.txt.
+Another module's header is a contract: never edit it. If yours needs a change in another module's header, or you find a mistake in one, give the exact change in your reply, and work around it meanwhile. You may add to your own module's header, keeping what is there. Read the headers you depend on before you start.
+
+Rules:
+- Edit only your module's folder (backend/modules/<module>/) and its tests (backend/tests/unit/<module>/), plus any other file your item names. Do not edit any other file, do not commit, and install nothing system-wide.
+- Never write under FuSION 1's tree or its snapshot; only read them. Never run FuSION 1, and run nothing long.
+- Your tests must be fast, seconds in all, and use synthetic inputs kept in the repository, never KEGG files (S8.31).
+- Port thoroughly. Implement every behaviour your section and its spec items decide, and give each a unit test, as section 12's row for your module asks ("Library-level tests per module"). Where FuSION 1 has a bug that the spec fixes, implement the fix and test it. Give each ported piece a short comment citing FuSION 1's file:line and the spec item.
+- Code in C++20 with the flags in cmake/FusionFlags.cmake; warnings must stay at zero.
+- Add no new dependencies, and no raw new or delete.
+- Nothing that reaches an output may depend on std::hash or on the locale (section 09's determinism rules).
+- Follow section 09's conventions: failures throw core::Failure with a dotted code; reported results are core::Outcome reports; outputs go through core::Files and core::OutputFile.
+- Other subagents are porting the other modules at the same time. Stay inside your folders, and leave their files alone.
+
+When you finish, reply in at most 300 words: what you implemented, what you left for later and why, the test count and result, the warnings (there must be none), and any change you need in another module's header.
+
+Your part:
+enrichment: section 08; spec stage 7, S7.01 to S7.19.
+- First write fusion/enrichment/enrichment.hpp from section 08's outline. Xoshiro256pp and shuffle_like_rand09 go in core, and core's subagent is writing them; until they exist, read section 08's outline.
+- Implement the gsea command in C++:
+  - gseapy 1.3.1's prerank, exactly (08.C1): the stream and the statistics, with ties ordered by gene id in byte order (08.C2);
+  - gene sets from the KGMLs (08.C3);
+  - the relation share (08.C4, 08.C5);
+  - one thread (08.C6);
+  - draws whose hits all have value 0 (08.C7);
+  - the permutation limits (08.C8);
+  - equal |NES| ordered by pathway id (08.C9), and the tie warning (08.C10);
+  - the outputs, the shortlist and the table, written whole (08.C12, 08.C13).
+- The references:
+  - FuSION 1's gsea_select_pathways.py, in the snapshot's Linux/supporting_files;
+  - gseapy 1.3.1's Python source, in FuSION 1's .venv, read only;
+  - section 08's Algorithms subsection, which describes the port.
+- Tests: section 12's enrichment row, and its "GSEA agreement with gseapy". W5's gseapy fixtures do not exist yet, so test against small cases you work out independently.
+```
+
+## 293 · Subagent prompt · Sprint: run · 2026-11-17 18:29
+
+Sent to a new general-purpose subagent under decision 0038. The brief, as saved in Claude's scratchpad as `sprint/briefs/sprint_run.txt`:
+
+```text
+You are porting one part of FuSION 2.0 during a one-week sprint. Decision 0038 (docs/decisions/0038-end-to-end-version-this-week.md) sets the goal: a first end-to-end working version by the end of this week, built thoroughly. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) rewrites FuSION 1, with a C++20 backend and a Java frontend. FuSION 1's code works, and it is your starting point: port it, applying the spec's decisions and your section's design, rather than re-deriving it. FuSION 1's frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; cite it as file:line. Its live tree is /home/ks-149-u24/Desktop/arjun/FuSION. Both are read only. The spec of FuSION 1 is docs/spec/, one file per stage, and each item records the user's decision (keep, fix or drop) and the fix. The architecture is docs/architecture/: 00-skeleton.md, then one section per module. What you build is your section's Design, Interface, Choices (every Decision line is binding) and Test hooks. Section 11 is the build and section 12 the tests.
+
+The build (decision 0039). CMake 4.4.5 and Ninja 1.13.2 are under ~/.local/opt: put $HOME/.local/opt/cmake-4.4.5-linux-x86_64/bin and $HOME/.local/opt/ninja-1.13.2 first on PATH. The compiler is GCC 13.3, and the system Z3 is 4.8.12. The skeleton is in place:
+- CMakeLists.txt and cmake/;
+- backend/CMakeLists.txt, with one static library per module, linked as section 11's targets table says;
+- backend/modules/<module>/include/fusion/<module>/ and backend/modules/<module>/src/;
+- backend/cli/main.cpp;
+- backend/tests/unit/<module>/, with one Catch2 executable, test_<module>, per module.
+A module's own build steps, such as generated sources or compiled-in assets, go in backend/modules/<module>/module.cmake, which the build includes if it exists. It sees the target as fusion_<module>. Never edit backend/CMakeLists.txt or cmake/.
+Build in your own build folder, never build/dev: run cmake -S . -B build/<module> -G Ninja -DCMAKE_BUILD_TYPE=Debug, then cmake --build build/<module> -j 4 --target fusion_<module> test_<module>, then ctest --test-dir build/<module> -R <module>. Use at most 4 parallel compile jobs, because the workstation is shared.
+
+Interfaces. The headers of core, run, network and expression are written and compile (backend/modules/<m>/include/fusion/<m>/<m>.hpp). They are the outlines of sections 09, 02 and 04, made complete. The other modules' headers do not exist yet. Each module's subagent writes its own header first, from its section's outline, keeping every name and signature unless it does not compile, and then implements it. Each section's C++ outline, extracted, is in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/sprint/interfaces/<section number>.hpp.txt.
+Another module's header is a contract: never edit it. If yours needs a change in another module's header, or you find a mistake in one, give the exact change in your reply, and work around it meanwhile. You may add to your own module's header, keeping what is there. Read the headers you depend on before you start.
+
+Rules:
+- Edit only your module's folder (backend/modules/<module>/) and its tests (backend/tests/unit/<module>/), plus any other file your item names. Do not edit any other file, do not commit, and install nothing system-wide.
+- Never write under FuSION 1's tree or its snapshot; only read them. Never run FuSION 1, and run nothing long.
+- Your tests must be fast, seconds in all, and use synthetic inputs kept in the repository, never KEGG files (S8.31).
+- Port thoroughly. Implement every behaviour your section and its spec items decide, and give each a unit test, as section 12's row for your module asks ("Library-level tests per module"). Where FuSION 1 has a bug that the spec fixes, implement the fix and test it. Give each ported piece a short comment citing FuSION 1's file:line and the spec item.
+- Code in C++20 with the flags in cmake/FusionFlags.cmake; warnings must stay at zero.
+- Add no new dependencies, and no raw new or delete.
+- Nothing that reaches an output may depend on std::hash or on the locale (section 09's determinism rules).
+- Follow section 09's conventions: failures throw core::Failure with a dotted code; reported results are core::Outcome reports; outputs go through core::Files and core::OutputFile.
+- Other subagents are porting the other modules at the same time. Stay inside your folders, and leave their files alone.
+
+When you finish, reply in at most 300 words: what you implemented, what you left for later and why, the test count and result, the warnings (there must be none), and any change you need in another module's header.
+
+Your part:
+run: section 09's run part; spec items S1.26, S5.30 and S8.21.
+- Implement run.hpp:
+  - run directory names (09.C1), one directory per step (09.C2);
+  - inputs copied and read once (09.C3), and every step saving its output (09.C4);
+  - the stop file (09.C7), signals (09.C8), and the OS lock (09.C9);
+  - the event set and events.jsonl (09.C10; cross-section item 1.3: dotted names, with the envelope fields v, seq, t and type);
+  - one run log, holding the exec output too (09.C11);
+  - run.json (E1), with every setting and its source;
+  - core::Files for a step, with each OutputFile commit recorded in run.json.
+- These can wait, but keep their declarations: the check-only mode (09.C12), restart and resume from a parent run (09.C5, 09.C6, Registry), and the shared store (09.C13).
+- Tests: section 12's run row.
+```
+
+## 294 · Subagent prompt · Sprint: batch · 2026-11-17 18:29
+
+Sent to a new general-purpose subagent under decision 0038. The brief, as saved in Claude's scratchpad as `sprint/briefs/sprint_batch.txt`:
+
+```text
+You are porting one part of FuSION 2.0 during a one-week sprint. Decision 0038 (docs/decisions/0038-end-to-end-version-this-week.md) sets the goal: a first end-to-end working version by the end of this week, built thoroughly. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) rewrites FuSION 1, with a C++20 backend and a Java frontend. FuSION 1's code works, and it is your starting point: port it, applying the spec's decisions and your section's design, rather than re-deriving it. FuSION 1's frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; cite it as file:line. Its live tree is /home/ks-149-u24/Desktop/arjun/FuSION. Both are read only. The spec of FuSION 1 is docs/spec/, one file per stage, and each item records the user's decision (keep, fix or drop) and the fix. The architecture is docs/architecture/: 00-skeleton.md, then one section per module. What you build is your section's Design, Interface, Choices (every Decision line is binding) and Test hooks. Section 11 is the build and section 12 the tests.
+
+The build (decision 0039). CMake 4.4.5 and Ninja 1.13.2 are under ~/.local/opt: put $HOME/.local/opt/cmake-4.4.5-linux-x86_64/bin and $HOME/.local/opt/ninja-1.13.2 first on PATH. The compiler is GCC 13.3, and the system Z3 is 4.8.12. The skeleton is in place:
+- CMakeLists.txt and cmake/;
+- backend/CMakeLists.txt, with one static library per module, linked as section 11's targets table says;
+- backend/modules/<module>/include/fusion/<module>/ and backend/modules/<module>/src/;
+- backend/cli/main.cpp;
+- backend/tests/unit/<module>/, with one Catch2 executable, test_<module>, per module.
+A module's own build steps, such as generated sources or compiled-in assets, go in backend/modules/<module>/module.cmake, which the build includes if it exists. It sees the target as fusion_<module>. Never edit backend/CMakeLists.txt or cmake/.
+Build in your own build folder, never build/dev: run cmake -S . -B build/<module> -G Ninja -DCMAKE_BUILD_TYPE=Debug, then cmake --build build/<module> -j 4 --target fusion_<module> test_<module>, then ctest --test-dir build/<module> -R <module>. Use at most 4 parallel compile jobs, because the workstation is shared.
+
+Interfaces. The headers of core, run, network and expression are written and compile (backend/modules/<m>/include/fusion/<m>/<m>.hpp). They are the outlines of sections 09, 02 and 04, made complete. The other modules' headers do not exist yet. Each module's subagent writes its own header first, from its section's outline, keeping every name and signature unless it does not compile, and then implements it. Each section's C++ outline, extracted, is in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/sprint/interfaces/<section number>.hpp.txt.
+Another module's header is a contract: never edit it. If yours needs a change in another module's header, or you find a mistake in one, give the exact change in your reply, and work around it meanwhile. You may add to your own module's header, keeping what is there. Read the headers you depend on before you start.
+
+Rules:
+- Edit only your module's folder (backend/modules/<module>/) and its tests (backend/tests/unit/<module>/), plus any other file your item names. Do not edit any other file, do not commit, and install nothing system-wide.
+- Never write under FuSION 1's tree or its snapshot; only read them. Never run FuSION 1, and run nothing long.
+- Your tests must be fast, seconds in all, and use synthetic inputs kept in the repository, never KEGG files (S8.31).
+- Port thoroughly. Implement every behaviour your section and its spec items decide, and give each a unit test, as section 12's row for your module asks ("Library-level tests per module"). Where FuSION 1 has a bug that the spec fixes, implement the fix and test it. Give each ported piece a short comment citing FuSION 1's file:line and the spec item.
+- Code in C++20 with the flags in cmake/FusionFlags.cmake; warnings must stay at zero.
+- Add no new dependencies, and no raw new or delete.
+- Nothing that reaches an output may depend on std::hash or on the locale (section 09's determinism rules).
+- Follow section 09's conventions: failures throw core::Failure with a dotted code; reported results are core::Outcome reports; outputs go through core::Files and core::OutputFile.
+- Other subagents are porting the other modules at the same time. Stay inside your folders, and leave their files alone.
+
+When you finish, reply in at most 300 words: what you implemented, what you left for later and why, the test count and result, the warnings (there must be none), and any change you need in another module's header.
+
+Your part:
+batch, and the fusion executable: section 01; spec stage 1 (S1.01 to S1.29), and the commands of every stage.
+- First write fusion/batch/batch.hpp from section 01's outline, its four cpp blocks.
+- Implement:
+  - the lexer and expansion (S1.05 to S1.08, 01.C2, 01.C18, 01.C19);
+  - the command table, with named and positional arguments (01.C1, 01.C9, 01.C17);
+  - the check of the whole batch and its inputs before any step runs (decision 0021, 01.C12, 01.C13);
+  - the plan, and the interpreter that runs the steps through run and the step modules;
+  - the handlers of every command FuSION 1's reference batches use: start, mff, rgx, wgx, cudf, fb_rch, pathz3, pex, gsea, exec, add, size, exit, let, psp where needed, and the rest of stage 1's table;
+  - the exec shell (01.C10), and the six fixed-name moves (01.C11);
+  - reported results that skip a point (01.C15), and the latest value of each kind (01.C16);
+  - window plots skipped when there is no display (01.C20);
+  - exit statuses and the command line (01.C14), with --check --json and --commands (01.C9).
+- Sweeps (01.C3 to 01.C5) and partial runs (01.C6) come later.
+- Write backend/cli/main.cpp.
+- The step modules are being written in parallel; call them through their headers.
+  - Keep the language (lexer, expansion, parser, command table and check) in translation units that call no step module, so that test_batch links before the step modules exist.
+  - Put the handlers in their own translation units.
+- FuSION 1's interpreter is in main.cc.
+- Tests: section 12's batch row. The batch-corpus test needs W6's copy, which does not exist yet, so use batch text kept in your test files.
+```
+
+## 295 · Subagent prompt · Sprint: frontend · 2026-11-17 18:29
+
+Sent to a new general-purpose subagent under decision 0038. The brief, as saved in Claude's scratchpad as `sprint/briefs/sprint_frontend.txt`:
+
+```text
+You are porting one part of FuSION 2.0 during a one-week sprint. Decision 0038 (docs/decisions/0038-end-to-end-version-this-week.md) sets the goal: a first end-to-end working version by the end of this week, built thoroughly. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) rewrites FuSION 1, with a C++20 backend and a Java frontend. FuSION 1's code works, and it is your starting point: port it, applying the spec's decisions and your section's design, rather than re-deriving it. FuSION 1's frozen source snapshot is /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10; cite it as file:line. Its live tree is /home/ks-149-u24/Desktop/arjun/FuSION. Both are read only. The spec of FuSION 1 is docs/spec/, one file per stage, and each item records the user's decision (keep, fix or drop) and the fix. The architecture is docs/architecture/: 00-skeleton.md, then one section per module. What you build is your section's Design, Interface, Choices (every Decision line is binding) and Test hooks. Section 11 is the build and section 12 the tests.
+
+The build (decision 0039). CMake 4.4.5 and Ninja 1.13.2 are under ~/.local/opt: put $HOME/.local/opt/cmake-4.4.5-linux-x86_64/bin and $HOME/.local/opt/ninja-1.13.2 first on PATH. The compiler is GCC 13.3, and the system Z3 is 4.8.12. The skeleton is in place:
+- CMakeLists.txt and cmake/;
+- backend/CMakeLists.txt, with one static library per module, linked as section 11's targets table says;
+- backend/modules/<module>/include/fusion/<module>/ and backend/modules/<module>/src/;
+- backend/cli/main.cpp;
+- backend/tests/unit/<module>/, with one Catch2 executable, test_<module>, per module.
+A module's own build steps, such as generated sources or compiled-in assets, go in backend/modules/<module>/module.cmake, which the build includes if it exists. It sees the target as fusion_<module>. Never edit backend/CMakeLists.txt or cmake/.
+Build in your own build folder, never build/dev: run cmake -S . -B build/<module> -G Ninja -DCMAKE_BUILD_TYPE=Debug, then cmake --build build/<module> -j 4 --target fusion_<module> test_<module>, then ctest --test-dir build/<module> -R <module>. Use at most 4 parallel compile jobs, because the workstation is shared.
+
+Interfaces. The headers of core, run, network and expression are written and compile (backend/modules/<m>/include/fusion/<m>/<m>.hpp). They are the outlines of sections 09, 02 and 04, made complete. The other modules' headers do not exist yet. Each module's subagent writes its own header first, from its section's outline, keeping every name and signature unless it does not compile, and then implements it. Each section's C++ outline, extracted, is in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/sprint/interfaces/<section number>.hpp.txt.
+Another module's header is a contract: never edit it. If yours needs a change in another module's header, or you find a mistake in one, give the exact change in your reply, and work around it meanwhile. You may add to your own module's header, keeping what is there. Read the headers you depend on before you start.
+
+Rules:
+- Edit only your module's folder (backend/modules/<module>/) and its tests (backend/tests/unit/<module>/), plus any other file your item names. Do not edit any other file, do not commit, and install nothing system-wide.
+- Never write under FuSION 1's tree or its snapshot; only read them. Never run FuSION 1, and run nothing long.
+- Your tests must be fast, seconds in all, and use synthetic inputs kept in the repository, never KEGG files (S8.31).
+- Port thoroughly. Implement every behaviour your section and its spec items decide, and give each a unit test, as section 12's row for your module asks ("Library-level tests per module"). Where FuSION 1 has a bug that the spec fixes, implement the fix and test it. Give each ported piece a short comment citing FuSION 1's file:line and the spec item.
+- Code in C++20 with the flags in cmake/FusionFlags.cmake; warnings must stay at zero.
+- Add no new dependencies, and no raw new or delete.
+- Nothing that reaches an output may depend on std::hash or on the locale (section 09's determinism rules).
+- Follow section 09's conventions: failures throw core::Failure with a dotted code; reported results are core::Outcome reports; outputs go through core::Files and core::OutputFile.
+- Other subagents are porting the other modules at the same time. Stay inside your folders, and leave their files alone.
+
+When you finish, reply in at most 300 words: what you implemented, what you left for later and why, the test count and result, the warnings (there must be none), and any change you need in another module's header.
+
+Your part:
+frontend: the minimal desktop app of decision 0038 (section 10; spec stage 8). Your folders are frontend/ and share/fusion/pipelines/. The C++ build rules above do not apply to you; the rest do.
+- Create the frontend/ Gradle project as section 11 lays it out:
+  - a Kotlin DSL build script, a version catalog and the Gradle 9.9.1 wrapper (11.C13);
+  - Spring Boot 4.1.2 without a web server (11.C21);
+  - OpenJFX 21.0.13 (10.C3, 11.C24), on Java 21.
+- Generate the wrapper with $HOME/.local/opt/gradle-9.9.1/bin/gradle wrapper, with its distributionSha256Sum pinned and JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64.
+- Gradle may download its dependencies. Pin them with Gradle's dependency verification (11.C4).
+- The app (10.C1) is a JavaFX window with:
+  - accounts, with open sign-up, bcrypt at strength 12, and the role field kept (10.C2, 10.C9, 10.C10);
+  - sessions stored as JSON in a per-user data folder (10.C8);
+  - the default pipeline, shipped as share/fusion/pipelines/standard.json, which you write (10.C12), with minimal editing;
+  - the generated batch, holding only the arguments the pipeline binds (10.C14);
+  - the runner (10.C5, 10.C16, 10.C19, 10.C20). It starts the fusion executable (the backend build's backend/fusion, or a path setting) on the generated batch, follows events.jsonl at each 250 ms tick, and shows progress;
+  - the results view (10.C6): native views of a run's results, and section 07's pages opened in the system browser;
+  - the five packages of 10.C11, with their boundary test.
+- The backend's fusion executable is being written now. Until it runs batches, test the runner against a small fake, a script that writes events.jsonl, as section 12's "Frontend contracts" describes.
+```
+
+## 296 · Note · The sprint's start, and how entries 285 to 295 were delivered · 2026-11-17 18:29
+
+Before the briefs, Claude:
+- installed CMake 4.4.5, Ninja 1.13.2 and Gradle 9.9.1 under `~/.local/opt/`, each checked against its published SHA-256 (decision 0039);
+- wrote the build skeleton: `CMakeLists.txt`, `CMakePresets.json`, `VERSION` (0.1.0), `cmake/`, `backend/CMakeLists.txt`, `backend/tests/CMakeLists.txt` and `.gitattributes`. The C++ pins are pugixml 1.16, nlohmann/json 3.12.0, fast_float 8.3.3 and Catch2 3.16.1, each with its SHA-256; Z3 is the system's 4.8.12, and there is no `.gitignore`;
+- wrote the headers of core, run, network and expression from the outlines of sections 09, 02 and 04, and built them with no warnings.
+
+The headers differ from the outlines in four ways:
+- core links nlohmann_json publicly, because its interface passes JSON;
+- core::parse_decimal takes section 04's form;
+- network's two key() overloads are node_key() and edge_key(), because NodeIdx and EdgeIdx are one type;
+- each class that holds state has a private Impl.
+
+As in entry 273, each brief was saved in Claude's scratchpad as `sprint/briefs/sprint_<part>.txt`, whose text is the text logged above. Each of the eleven new subagents was sent one line: "Your instructions are in <file>. Read the whole file and follow it exactly." The eleven run in parallel (decision 0026).
+
+## 297 · Poll · 2026-11-17 18:31
+
+Commit approval, shown with three diffs and four messages, while the eleven sprint subagents worked in their own folders.
+
+**Q1 (Commits).** Ready to commit four things locally, staged by name; nothing is pushed:
+(1) "Record decisions 0037 to 0039": the three records and their README rows.
+(2) "Add booking 1's scripts and the reference-case inventory": cases.json (51 cases), the fill script, the shared runner, the W2 to W6 capture scripts, the X02 to X08 experiment scripts (these wait until after the first version), and the plan's corrected notes.
+(3) "Set up the backend build skeleton": CMake files, presets, VERSION 0.1.0 and .gitattributes. The module headers and code come later, with each module's own commit.
+(4) "Log prompt entries 265 to 297".
+All messages end with the co-author line. The diffs and messages are in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/commits/ (8_decisions.diff, 9_booking1.diff, 10_skeleton.diff, msg8 to msg11). Once they're in, booking 1 starts tonight beside the FuSION 1 run, as you said. Commit?
+
+- Commit all four (Recommended): Four local commits in this order. Booking 1 then starts after a load check.
+- Let me review first: I wait while you read the diffs and messages. Tell me when to commit or what to change.
+
+**Answer:** Commit all four (Recommended)
