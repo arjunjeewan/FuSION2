@@ -32,3 +32,7 @@ One file per decision, numbered in the order the decisions were made. Each recor
 | [0026](0026-maximum-parallel-subagents.md) | Subagents at maximum parallelism; verification subagents per stage | Accepted | 2026-11-11 |
 | [0027](0027-graph-display-in-phase-5.md) | The graph display is designed in Phase 5, with the frontend (amends 0022's timing) | Accepted | 2026-11-12 |
 | [0028](0028-phase-2-method.md) | Phase 2: skeleton first, then parallel section drafts with verifiers, every choice polled | Accepted | 2026-11-12 |
+| [0029](0029-architecture-section-template.md) | Architecture sections follow one full template; one cross-section check catches conflicts | Accepted | 2026-11-12 |
+| [0030](0030-verifier-findings-to-drafters.md) | Verifier findings go back to each section's drafter; Claude checks the revision | Accepted | 2026-11-12 |
+| [0031](0031-polling-the-architecture-sections.md) | Architecture polls: substantive items and choices one per question, mechanical alignments grouped | Accepted | 2026-11-13 |
+| [0032](0032-resuming-subagents-across-sessions.md) | A new session resumes the old session's subagents by copying their saved transcripts | Accepted | 2026-11-16 |
