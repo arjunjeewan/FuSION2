@@ -7206,3 +7206,108 @@ The message ends with the co-author line, per 0034. Then de-claude strips that l
 - Let me review first: I wait while you read the diff and message. Tell me when to go on or what to change.
 
 **Answer:** Commit, clean, push (Recommended)
+
+## 258 · Note · The clean-up before the push, and the push · 2026-11-17 16:16
+
+After poll 257, Claude committed the records as `5bd9632`, with the co-author line (decision 0034). Plain de-claude then cleaned that one commit, which became `0105469`; its parent stays `377b467`, the tree is unchanged, and no co-author line is left in the history. Claude switched `origin` to `git@github.com:arjunjeewan/FuSION2.git`, confirmed over SSH that GitHub's `main` was still `9914fe2`, and ran `git push --force-with-lease=main:9914fe2fec4fe10def13a003b7dad0ab72733afc -u origin main` (decision 0035). Git reported "+ 9914fe2...0105469 main -> main (forced update)". GitHub's `main` is now `0105469`, and `main` tracks `origin/main`. The old history stays in this clone under `refs/backup/main-before-de-claude` (`a78ac38`).
+
+## 259 · User prompt · 2026-11-17 16:19
+
+> show phase 2
+
+Sent after Claude's report that FuSION2 was on GitHub (entry 258) and that Phase 2 still needed the user's review (decision 0003).
+
+## 260 · User prompt · 2026-11-17 16:24
+
+> yes sign it off
+
+Sent after Claude's overview of Phase 2 (in reply to entry 259), which ended: "Phase 2 ends once you sign it off (decision 0003). Tell me it passes, or what to change."
+
+## 261 · Poll · 2026-11-17 16:29
+
+Asked after the user signed off Phase 2 (entry 260), as poll 103 asked how Phase 2 would be run.
+
+**Q1 (Phase 3).** Phase 2 is signed off. Section 12 sets out three kinds of Phase 3 work:
+(1) capture work, about 1 h of machine time: the data root, the snapshot binary, capture batches for 39 KEGG cases, regenerated toy and EGF-HeLa runs, and the gseapy references;
+(2) the first code: the C++ test kit and reference runner, the expected-differences list and the end-to-end fixtures;
+(3) experiments X02, X03, X05 to X08 and X11, plus measurements M01 to M04: about 30 h on the workstation, booked with you. X11 needs Z3 4.16.0 and 5.3.3 installed and must finish before Phase 4.
+How should Phase 3 be run?
+
+- Plan first, then in order (Recommended): I write docs/phase3/plan.md, giving each item its inputs, machine time, outputs and what you review, and I poll its choices. Then the captures and cheap runs go first, and the long runs on dates you book. Code follows Phase 4's loop: design note, your OK, code with tests, your diff review, commit.
+- Captures now, plan later: Start at once with capture steps 1 to 6, each run booked with you. The code and the long experiments are planned afterwards, from what the captures show.
+- Long runs first: Book X11 and X07 first (about 29 h together), since X11 gates the Z3 pin. Install the two Z3 versions, then plan and build the rest while they run.
+
+**Answer:** Plan first, then in order (Recommended) → [decision 0036](../decisions/0036-phase-3-method.md)
+
+## 262 · Poll · 2026-11-17 16:38
+
+The first poll on the Phase 3 plan, `docs/phase3/plan.md`, which Claude drafted from section 12 and the other sections' Phase 3 items (decision 0036). Before drafting, Claude checked FuSION 1 read-only: the live `Linux/fusion` was rebuilt on 2026-11-16 at 17:29, every source in the snapshot's `MANIFEST.sha256` still matched (`Linux/src/GraphManagerNew.cc` touched, not changed), and the live `gsea_select_pathways.py` had changed on 2026-11-16 (generated KGMLs with a `member` attribute contribute only `member="yes"` genes). The plan's W2 records this.
+
+**Q1 (P1 Data root).** Phase 3 plan (docs/phase3/plan.md), choice P1: where should the data root live? It holds FuSION 1's KEGG data, recorded outputs, SMT dumps and binary: 150 to 200 MB, plus the experiments' outputs and the Z3 builds. KEGG data must stay out of the repository (S8.31).
+
+- Beside the repos (Recommended): /home/ks-149-u24/Desktop/arjun/FuSION2-test-data: outside both repositories, on the disk with 376 GB free. Claude sets FUSION_TEST_DATA on each command.
+- In the home folder: ~/fusion-test-data.
+- Inside FuSION2, git-ignored: Needs a .gitignore entry, and one slip would publish KEGG files.
+
+**Answer:** Beside the repos (Recommended)
+
+**Q2 (P2 Fill).** Phase 3 plan, choice P2: how should the data root be filled the first time? Section 12 designs a C++ tool for it (fusion-test data init), which needs the build skeleton and part of the test kit. Decision 0036 puts the captures first.
+
+- One-off script now (Recommended): backend/tests/experiments/capture/fill_data_root.sh copies the files from FuSION 1's live tree, read only, and writes data-manifest.json with each file's size, SHA-256 and origin. fusion-test data init re-checks the root later.
+- Wait for the C++ tool: Build fusion-test's data subcommand first (plan items C1 to C3), then fill the root. The captures wait for it.
+
+**Answer:** One-off script now (Recommended)
+
+**Q3 (P3 Backend).** Phase 3 plan, choice P3: how much of the backend should Phase 3 build? The test kit uses core::Rng, core::Process and core::Failure. Section 12 says Phase 3's suites "are written against the interfaces of sections 01 to 09 and go green as Phase 4 implements them". What should Phase 3's first code (item C1) include?
+
+- Skeleton, core, headers (Recommended): The build skeleton (11.C14's layout, 11.C6's targets, 11.C4's pinned fetches), the three core pieces, and the public headers of the modules in sections 01 to 09, declarations only. The runner and suites then compile now and go green in Phase 4.
+- Skeleton and core only: Code that needs a module stays out of the build until Phase 4 adds the module's header.
+- No backend code: The kit carries its own stand-ins for the three core pieces, replaced by core in Phase 4.
+
+**Answer:** Skeleton, core, headers (Recommended)
+
+**Q4 (P4 Z3).** Phase 3 plan, choice P4: where should the Z3 versions for X11 (the speed gate on the 5.3.3 pin) and X07 come from? Only the system 4.8.12 that FuSION 1 links is installed, and installing anything needs your OK.
+
+- Build all three from source (Recommended): Build 4.8.12, 4.16.0 and 5.3.3 from the official source archives, SHA-256-checked, with one compiler and one set of release flags, as 11.C3 builds Linux's Z3. They go under the data root's tools/, not on PATH, with no sudo. Each build takes 10 to 20 min, inside booking 2.
+- Official release binaries: 4.16.0 and 5.3.3 binaries beside the system 4.8.12. No builds, but X11 would compare three differently built binaries.
+- Python wheels: Z3's pip wheels for 4.16.0 and 5.3.3.
+
+**Answer:** Build all three from source (Recommended)
+
+## 263 · Poll · 2026-11-17 16:39
+
+The second poll on the Phase 3 plan, `docs/phase3/plan.md`.
+
+**Q1 (P5 Code checks).** Phase 3 plan (docs/phase3/plan.md), choice P5: when should the checks that need 2.0's own code run? The sections assign some checks to Phase 3 that only that code can show:
+- the benchmarks of sections 01, 02, 03 and 08;
+- S2.22's split equivalence;
+- the witness checker on 2.0's witnesses;
+- 09's Windows replace check;
+- section 10's platform confirmations: macOS file watching, opening pages with file: URIs, Windows argument quoting, no console window, jpackage's job object, and bcrypt timing in Java.
+
+- When their code exists (Recommended): Phase 3 builds their harnesses, fixtures and budgets. They run in Phase 4 as each module lands, and section 10's run in Phase 5 with the frontend. The plan keeps them listed until each is done.
+- Prototypes now: Throwaway prototypes in Phase 3 measure them now, as M01 and M02 do.
+- Platform probes on CI now: Section 10's confirmations become small probe programs on GitHub's macOS and Windows runners in Phase 3; macOS minutes cost 10.3 times Linux's. The rest run when the code exists.
+
+**Answer:** When their code exists (Recommended)
+
+**Q2 (P6 Phase end).** Phase 3 plan, choice P6: what ends Phase 3? X07's two passes take up to 24 h each of booked machine time. X11 must finish before Phase 4, because the Z3 pin waits for it.
+
+- Everything done (Recommended): Phase 3 ends when every work item is done or moved with your OK, X11 has run and the pin is confirmed or re-decided, every finding that bears on a decision is polled, and the kit, driver, runner, manifest, case lists and fixtures are committed after your diff reviews. Then you review the phase.
+- All but X07: End Phase 3 once everything but X07 is done. X07's two passes run during Phase 4, before T3 needs them.
+
+**Answer:** Everything done (Recommended)
+
+## 264 · Poll · 2026-11-17 16:49
+
+Commit approval for the Phase 3 setup, shown with the two diffs and messages.
+
+**Q1 (Commits).** Ready to commit the Phase 3 setup locally, in two commits split by concern and staged by name; nothing is pushed.
+(1) "Set up Phase 3: plan and decision 0036": the new docs/phase3/plan.md, with its work items, five bookings and choices P1 to P6 all filled as decided, plus decision 0036 and its README row.
+(2) "Log prompt entries 258 to 264": the push note, your Phase 2 overview request and sign-off, polls 261 to 263, and this poll.
+Both messages end with the co-author line (decision 0034). The diffs and messages are in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/commits/ (6_phase3_setup.diff, 7_log.diff, msg6.txt, msg7.txt). Commit?
+
+- Commit both (Recommended): Two local commits in this order. Nothing is pushed.
+- Let me review first: I wait while you read the diffs and messages. Tell me when to commit or what to change.
+
+**Answer:** Commit both (Recommended)
