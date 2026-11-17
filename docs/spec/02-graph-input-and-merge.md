@@ -49,7 +49,7 @@ Counts come from Python scripts that parse these files; FuSION 1 was not run. `<
   The real run's re-read graph has 1134 nodes: 952 gene, 96 group and 86 compound (`run_console.log:236`).
 - **Problems:** None in the record itself. One avoidable cost: every accessor returns its vector by value (`get_node_ids`, `get_edge_ids`, `get_outlist`, `get_all_ids_of_node`, …), so each call copies the whole list (see S2.23).
 - **Proposed call:** keep. Port the record as described; the fields no stage fills carry no behaviour.
-- **Decision:** keep (prompt log entry 033)
+- **Decision:** keep (prompt log entry 033) *Phase 2 (prompt log entry 163):* amended by 02.C16: display names, `other_value1` and `excess` are not stored; labels are derived from the symbol map when printed.
 
 ### S2.03 · Looking up a gene id (first claim wins) and the family-node trap
 
@@ -166,7 +166,7 @@ Counts come from Python scripts that parse these files; FuSION 1 was not run. `<
   - Node identity depends on E, which holds this run's differentially expressed genes. The same pathway list therefore gives a different graph at every LFC threshold, and no merged graph can be reused across runs (S2.22).
   - No batch uses a threshold other than 1.
 - **Proposed call:** keep. Port the exception-first, collapse-above-threshold rule, with 1 as the default; how families ought to merge is roadmap objective 2.
-- **Decision:** keep (prompt log entry 034)
+- **Decision:** keep (prompt log entry 034) *Phase 2 (prompt log entry 166):* amended by 03.C5: a single KGML read is a one-file merge, with the same union and split as any merge.
 
 ### S2.08 · Bug: a later box with an existing node's key loses its other genes
 
@@ -184,7 +184,7 @@ Counts come from Python scripts that parse these files; FuSION 1 was not run. `<
     - entry 5, {`hsa:2122 hsa:861`} (the AML1-EVI1 box), is reached at position 14. It keys to `hsa2122`, finds that node, and RUNX1 is dropped.
   - Ids in E are immune, because they always get a node of their own.
 - **Proposed call:** fix. Add every id of a box to the node the box resolves to.
-- **Decision:** fix, as proposed (prompt log entry 034)
+- **Decision:** fix, as proposed (prompt log entry 034) *Phase 2 (prompt log entry 163):* the fix applies to the raw-KGML pipeline. The legacy reader keeps FuSION 1's loss, so that it reproduces the published runs' graph exactly (S2.27).
 
 ### S2.09 · Groups: complex nodes and component edges
 
@@ -280,7 +280,7 @@ Counts come from Python scripts that parse these files; FuSION 1 was not run. `<
   - The set comes from this run's LFC thresholds, so a merged graph cannot be reused across experiments. Every run re-reads and re-merges all its KGMLs: 3 s for 42 pathways, about 124 s for 163 (S2.22).
   - An exception id that sits inside a box still collects the box's `<graphics>` aliases as display names. EGFR's written label begins `EGFR, CSF1R, BANDDOS, C-FMS, CD115, …`, because EGFR sits in a 25-gene receptor box whose graphics name lists CSF1R's aliases (S2.25).
 - **Proposed call:** fix. Keep the set's meaning, and always include the FSC being tested in it.
-- **Decision:** fix as proposed: the FSC being tested joins the set automatically, along with the up and down genes, source and target that S1.17 adds. Merging must therefore know them; Phase 2 designs how. (prompt log entry 036)
+- **Decision:** fix as proposed: the FSC being tested joins the set automatically, along with the up and down genes, source and target that S1.17 adds. Merging must therefore know them; Phase 2 designs how. (prompt log entry 036) *Phase 2 (prompt log entries 164 and 165):* applies to legacy reads too whenever the FSC is known. An unchanged FuSION 1 batch names no FSC, so it keeps its own exception file, and the check notes it.
 
 ### S2.14 · The inter-database map in merging: `all_id_map` keys and mff's naming-map step
 
@@ -340,7 +340,7 @@ Counts come from Python scripts that parse these files; FuSION 1 was not run. `<
   - A blank line or a bad path in the list aborts the run (S2.05). So does a list with CRLF line endings, because every path then ends in `\r`.
   - A one-file mff writes no `edges_merged_filename`. The batch's next command, `exec mv edges_merged_filename …`, then fails with `mv: cannot stat 'edges_merged_filename': No such file or directory` (`runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er4_on/run.log:46`). In a directory that still holds an earlier run's file, it moves that stale file instead.
 - **Proposed call:** fix. Keep `mff <list> <thres> <y|n>` with the same meaning, drop the format token and the map-file list, and check every listed path before reading any.
-- **Decision:** fix as proposed, with old lines still running: the new form is `mff <list> <thres> <y|n>`, and FuSION 1's `xml` token and map-file list are still accepted with a warning that they are ignored. Every listed path is checked before the run starts ([decision 0021](../decisions/0021-required-and-optional-inputs.md)). (prompt log entry 038)
+- **Decision:** fix as proposed, with old lines still running: the new form is `mff <list> <thres> <y|n>`, and FuSION 1's `xml` token and map-file list are still accepted with a warning that they are ignored. Every listed path is checked before the run starts ([decision 0021](../decisions/0021-required-and-optional-inputs.md)). (prompt log entry 038) *Phase 2 (prompt log entry 188):* amended by 01.C12: a listed path that the batch itself makes is checked just before its step.
 
 ### S2.17 · Merging nodes across pathways
 
@@ -445,7 +445,7 @@ Counts come from Python scripts that parse these files; FuSION 1 was not run. `<
 
   The logs are `runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr_sweep/fdr0{25,30,40,50}/run_console.log`, `runs/egfr_cxcl8_jun_b10_nr8_er8_gsea_fdr040_keep/run_console.log`, and `runs/egf_hela/experiment/graph_build.log` and `build_graph_egfr.log`; the two 163-pathway logs predate the indirect discard. The whole merge is repeated for every run, because the exception set changes the result (S2.13). The build is also unoptimised (S1.29).
 - **Proposed call:** fix. Build the same merged graph in a single pass over all pathways, with hashed indexes from id to node and from edge key to edge, instead of k − 1 full copies and linear scans.
-- **Decision:** fix as proposed, and reuse merges: each pathway list is merged once without the run's exceptions, and the exception ids are split out afterwards, so runs on the same pathways share one merge. Phase 3 must show that the split gives the same graph as merging with the exceptions. (prompt log entry 039)
+- **Decision:** fix as proposed, and reuse merges: each pathway list is merged once without the run's exceptions, and the exception ids are split out afterwards, so runs on the same pathways share one merge. Phase 3 must show that the split gives the same graph as merging with the exceptions. (prompt log entry 039) *Phase 2 (prompt log entry 208):* read by 12.C14: 'merging with the exceptions' means 2.0's own exception-aware merge, checked by two independent oracles, with FuSION 1's merge as a cross-check.
 
 ### S2.23 · Dead work inside the live paths
 
@@ -559,7 +559,7 @@ Counts come from Python scripts that parse these files; FuSION 1 was not run. `<
   - The earlier findings this stage was given (HRAS in 4 nodes, 417 multi-edge pairs, 162 untyped relations) describe this file, not current mff output. Current raw merges place every id in exactly one node (S2.03, S2.17).
   - Its generator lives outside the repo's tracked code, and two different files share its name.
 - **Proposed call:** drop. FuSION 2.0 builds its merged graph from raw KGMLs; whether to keep reading this file in order to reproduce published runs is open question 2.
-- **Decision:** keep, as a compatibility reader. 2.0 can read this one file the way FuSION 1 does (S2.12's tool-written read: first-claim lookups, no component edges, one-way associations), kept apart from the raw-KGML pipeline and flagged as legacy in the output. The published runs can then be re-run in 2.0, and Phase 3 can compare them like for like. This settles open question 2. (prompt log entry 042)
+- **Decision:** keep, as a compatibility reader. 2.0 can read this one file the way FuSION 1 does (S2.12's tool-written read: first-claim lookups, no component edges, one-way associations), kept apart from the raw-KGML pipeline and flagged as legacy in the output. The published runs can then be re-run in 2.0, and Phase 3 can compare them like for like. This settles open question 2. (prompt log entry 042) *Phase 2 (prompt log entries 159, 163 and 164):* widened by 02.C5: every unmarked FuSION 1-written file is read with the legacy reader. It reproduces FuSION 1's graph 2 exactly, S2.08's loss included, and merges exact duplicate edges when it reads them. A known FSC joins the exception set there too (S2.13).
 
 ### S2.28 · `sz` / `size`
 
@@ -614,7 +614,7 @@ Counts come from Python scripts that parse these files; FuSION 1 was not run. `<
   - A file it cannot open only prints an error, and nothing is XML-escaped.
   - The standalone tool does not skip a short line. It re-adds the previous line's edge instead, so a trailing blank line duplicates the last edge.
 - **Proposed call:** fix. Keep the command and its output format, but check types against KEGG's spelling and reject malformed lines with a message.
-- **Decision:** fix as proposed. A plain edge list like this is also a candidate exchange format for the plug-and-play inputs of [decision 0020](../decisions/0020-plug-and-play-inputs.md), in Phase 2. (prompt log entry 044)
+- **Decision:** fix as proposed. A plain edge list like this is also a candidate exchange format for the plug-and-play inputs of [decision 0020](../decisions/0020-plug-and-play-inputs.md), in Phase 2. (prompt log entry 044) *Phase 2 (prompt log entry 163):* amended by 02.C17: `add` writes FuSION's mark on the root and no DOCTYPE, so 2.0 reads its output as its own file.
 
 ### S2.31 · ECrel relations become signalling edges
 
@@ -646,3 +646,5 @@ Counts come from Python scripts that parse these files; FuSION 1 was not run. `<
    *Still open, for phase 3.*
 7. **Do any later stages read the edge fields the constructor leaves uninitialised (`weight`, `capacity`, `flow`, `other1`–`other4`, `deleted`; S2.04)?** *Would settle it:* stages 4 and 5.
    *Still open, for stages 4 and 5.*
+
+   *Closed in Phase 2 by 02.C14 (prompt log entry 162):* none of these fields is kept in 2.0.

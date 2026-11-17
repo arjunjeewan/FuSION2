@@ -28,7 +28,7 @@ The skeleton has to carry these decisions:
 - **Alternatives:**
   - The backend as a long-running local service (HTTP or gRPC) that the frontend calls. This allows richer interaction, such as querying a graph live, but gives two interfaces to keep in step.
   - A JNI binding of the C++ library inside the JVM. This has the lowest latency, but one native crash takes the frontend down, and it must be packaged for two platforms.
-- **Decision:** the CLI child process, as proposed (prompt log entry 104). *Amended after G3 (prompt log entry 107):* Stop is the platform-neutral stop request described above, not a POSIX signal.
+- **Decision:** the CLI child process, as proposed (prompt log entry 104). *Amended after G3 (prompt log entry 107):* Stop is the platform-neutral stop request described above, not a POSIX signal. *Phase 2 (prompt log entries 168, 174, 185, 191 and 192):* a killed or crashed run's journal is used on resume, so a kill loses only the check in progress (06.C19, entry 174). Read-only calls that make no run directory, such as `--check` and `--query`, are outside A1 (entry 168), and signal handlers that only make the same stop request are allowed (09.C8, entry 185). The frontend is a JavaFX desktop application (10.C1, entries 191 and 192), so 'the web server' in the Why now reads 'the frontend'.
 
 ## Choice A2 · Progress and status channel
 
@@ -62,7 +62,7 @@ The skeleton has to carry these decisions:
 
   The frontend's screens are Phase 5's ([0027](../decisions/0027-graph-display-in-phase-5.md)).
 - **Alternative:** fewer, larger modules, for example `merge` folded into `network`, and `results` into `solve`.
-- **Decision:** these modules, as proposed (prompt log entry 104)
+- **Decision:** these modules, as proposed (prompt log entry 104) *Phase 2 (prompt log entries 198 and 204):* `core` also holds build information, the install directory, the platform layer and the dependency registry (11.C19, entry 204). The frontend's `web` module is named `ui`, for the JavaFX screens (10.C11, entry 198).
 
 ## Choice D1 · Data flow between steps
 
@@ -87,7 +87,7 @@ The skeleton has to carry these decisions:
   - Tables are TSV with a header: the search log (S5.24), the GSEA table (S7.16) and the edge sources (S6.08).
   - FuSION 1's text formats (`temp_w_solutions.txt` and the rest) are written only when a run setting asks for them, for old scripts.
 - **Alternative:** plain text files only, as in FuSION 1, with a documented layout for each.
-- **Decision:** `run.json` plus JSON results and TSV tables, as proposed (prompt log entry 105)
+- **Decision:** `run.json` plus JSON results and TSV tables, as proposed (prompt log entry 105) *Phase 2 (prompt log entry 179):* the run setting that asks for FuSION 1's text formats is `legacy_prefix`, set by a positional `pathz3`'s prefix or by name (cross-section items 1.21 and 4A.9).
 
 ## Choice F1 · Languages for the helpers
 
@@ -100,7 +100,7 @@ The skeleton has to carry these decisions:
 - **Alternatives:**
   - A C++ core with pinned Python helpers (gseapy for GSEA, pyvis for explanation pages). Results stay closer to FuSION 1's, but there are two runtimes to install and pin (S7.02).
   - C++ draws the Pareto plot itself (SVG and PNG), with no gnuplot.
-- **Decision:** all C++, with gnuplot kept for the Pareto image. Measured before the answer: a real Pareto plot through `plot_po.sh` takes 0.11 s (gnuplot alone 0.06 s for PNG, 0.02 s for SVG), against well under a millisecond for an SVG written by C++; one plot per run makes the difference negligible (prompt log entries 105 and 106)
+- **Decision:** all C++, with gnuplot kept for the Pareto image. Measured before the answer: a real Pareto plot through `plot_po.sh` takes 0.11 s (gnuplot alone 0.06 s for PNG, 0.02 s for SVG), against well under a millisecond for an SVG written by C++; one plot per run makes the difference negligible (prompt log entries 105 and 106) *Phase 2 (prompt log entry 159):* amended by 08.C1: GSEA reproduces gseapy 1.3.1's numbers exactly, given the same ranking, not only statistically.
 
 ## Choice G1 · Backend language level, build and dependencies
 
@@ -112,13 +112,13 @@ The skeleton has to carry these decisions:
   - Catch2 for tests.
   - The small libraries are fetched at pinned versions by the build; Z3 comes from the system or a pinned download.
 - **Alternatives:** keep libxml++ (FuSION 1's parser); GoogleTest instead of Catch2; C++17.
-- **Decision:** C++20, CMake and pugixml, as proposed, with nlohmann/json and Catch2 (prompt log entry 105)
+- **Decision:** C++20, CMake and pugixml, as proposed, with nlohmann/json and Catch2 (prompt log entry 105) *Phase 2 (prompt log entry 200):* amended by 11.C22: the minimum compilers are GCC 13 and Clang 17, so `std::format` may be used.
 
 ## Choice G2 · Frontend stack
 
 - **Proposed:** Java 21 LTS (installed here) with Spring Boot 3, built with Gradle.
 - **Alternative:** Maven instead of Gradle.
-- **Decision:** Java 21, Spring Boot 3 and Gradle, as proposed (prompt log entry 106)
+- **Decision:** Java 21, Spring Boot 3 and Gradle, as proposed (prompt log entry 106) *Phase 2 (prompt log entries 191, 192 and 200):* amended by 11.C21: Spring Boot 4.1 with Gradle 9.9.1, on Java 21. The frontend is a JavaFX desktop application, with Spring Boot as its application framework and no web server (10.C1).
 
 ## Choice G3 · Platforms
 

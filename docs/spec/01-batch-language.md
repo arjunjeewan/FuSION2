@@ -91,7 +91,7 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
   - Undefined references are silent. A misspelt `$NAME` reaches the command as literal text, with no warning.
   - Each `$` costs a linear walk over all the keys (77 in the real batch). This is negligible.
 - **Proposed call:** fix. Replace "the first key in sorted order that is a prefix" with "the longest defined key that is a prefix". Keep concatenation without delimiters, single-pass replacement, and literal pass-through of a `$` that matches nothing.
-- **Decision:** fix as proposed, plus a warning for a `$NAME` that matches no defined key, except on `exec` lines. Every token, the command name included, is expanded before dispatch. (prompt log entry 023)
+- **Decision:** fix as proposed, plus a warning for a `$NAME` that matches no defined key, except on `exec` lines. Every token, the command name included, is expanded before dispatch. (prompt log entry 023) *Phase 2 (prompt log entry 187):* amended by 01.C2: outside `exec` lines, `$$` stands for a literal `$`; any other unmatched `$` still passes through.
 
 ### S1.08 · `let <key> <value>`
 
@@ -167,7 +167,7 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
   - Whitespace inside quoted shell strings is changed without warning.
   - The batch language relies on `exec` for file plumbing that the pipeline could do itself. The batch builds `connect_pairs`, `src_file`, `tgt_file` and the exception file this way (S1.17), and uses 8 `mv` lines to move fixed-name outputs out of the launch directory (S1.26).
 - **Proposed call:** fix. Keep the shell pass-through, but report a non-zero shell status on stderr, with the batch line number, instead of discarding it.
-- **Decision:** fix as proposed, and pass the rest of the line to the shell exactly as written after `$` expansion, so spacing inside shell quotes survives (prompt log entry 026)
+- **Decision:** fix as proposed, and pass the rest of the line to the shell exactly as written after `$` expansion, so spacing inside shell quotes survives (prompt log entry 026) *Phase 2 (prompt log entries 179 and 190):* amended for two kinds of line: the six `exec mv` lines that move FuSION 1's fixed-name outputs are recognised and not passed to the shell (01.C11), and window-plot lines (`gnuplot -p` without `set term`) are skipped with a note when no display is available.
 
 ### S1.15 · `start <inter_db_map> <exception_file> <symbol_map> <pathway_name_map>`
 
@@ -186,7 +186,7 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
   - The ` -1` sentinel is a leftover from the interactive prompt for several files; batch mode cannot pass two exception files.
   - The two sizes are printed without labels.
 - **Proposed call:** fix. Keep the four-file load and its output, but fail with a clear message when a command that needs the graph manager runs before `start`.
-- **Decision:** fix as proposed; a named `start` file that cannot be read stops the run before it starts ([decision 0021](../decisions/0021-required-and-optional-inputs.md)) (prompt log entry 026)
+- **Decision:** fix as proposed; a named `start` file that cannot be read stops the run before it starts ([decision 0021](../decisions/0021-required-and-optional-inputs.md)) (prompt log entry 026) *Phase 2 (prompt log entries 163 and 188):* amended: `start` is optional, with the shipped maps as its defaults (cross-section item 2B.4), and a `start` file that the batch itself makes is checked just before its step (01.C12).
 
 ### S1.16 · Inter-database id map (`start` argument 1)
 
@@ -318,7 +318,7 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
   - Every fixed-name output is written to disk and then moved by a shell command.
   - A relative `$WORK_DIR` breaks without any error, because some `exec` lines `cd` first. `macOS/model_example/RUNNING.md:40-42` says the run then "exits 0 while quietly producing no plot".
 - **Proposed call:** fix. Write every fixed-name output under one output directory per run instead of the launch directory. Each owning stage keeps its file names.
-- **Decision:** fix, as proposed. The run's output directory is also where partial runs find saved steps ([decision 0019](../decisions/0019-partial-runs.md)); Phase 2 designs how a batch names it. (prompt log entry 029)
+- **Decision:** fix, as proposed. The run's output directory is also where partial runs find saved steps ([decision 0019](../decisions/0019-partial-runs.md)); Phase 2 designs how a batch names it. (prompt log entry 029) *Phase 2 (prompt log entries 166 and 169):* read in Phase 2: a relative or omitted output path lands in the step's directory, and an explicit absolute one is honoured as well, with the file also kept in the step directory (cross-section item 2B.3). The per-user merge store outside run directories is a cache, not a run output (03.C3, 09.C13).
 
 ### S1.27 · Console number format
 
@@ -336,7 +336,7 @@ This stage covers how the `fusion` binary starts and reads its commands. That me
   - The exit status cannot tell a run that partly failed from a clean one. `RUNNING.md:40-42` documents one such silent exit-0 failure.
   - One blank numeric field aborts the whole run, and the message does not give the batch line.
 - **Proposed call:** fix. Catch errors per command, report each failure with its batch line number, and exit non-zero if any command failed. Whether the batch should stop at the first failure is an open question.
-- **Decision:** fix as proposed, and the batch stops at the first failure, exiting non-zero; a failing `exec` counts as a failure (S1.14). Partial runs restart from the last good step ([decision 0019](../decisions/0019-partial-runs.md)). (prompt log entry 030)
+- **Decision:** fix as proposed, and the batch stops at the first failure, exiting non-zero; a failing `exec` counts as a failure (S1.14). Partial runs restart from the last good step ([decision 0019](../decisions/0019-partial-runs.md)). (prompt log entry 030) *Phase 2 (prompt log entry 188):* read by 01.C5 for sweeps: a failure stops only its own point, and the sweep exits 1.
 
 ### S1.29 · Compile-time feature flags
 

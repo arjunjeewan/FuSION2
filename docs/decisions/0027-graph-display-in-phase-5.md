@@ -28,3 +28,7 @@ Option 3. The graph display is designed in Phase 5, together with the frontend s
 
 - Decision 0022's requirement stands: the display must be efficient and seamless.
 - Phase 2 must still give the backend's results a form the display can use, but it does not choose the display's approach.
+
+## Phase 2 note
+
+Amended in Phase 2 by 07.C4 (prompt log entry 178): the static explanation page draws a present, inactive node faded; the frontend's display stays Phase 5's.

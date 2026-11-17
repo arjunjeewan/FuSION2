@@ -135,7 +135,7 @@ Names and evidence used below:
   - The batches exclude the FSC in pathz3, through its avoid file, not here. Both solves therefore run on the same corridor, but not on the same observations: pathz3 removes avoided nodes from the up set (`main.cc:4668`), and the FSC, JUN, is up-regulated. The reference run prints `Up: 3` and then `Up: 2` (`run_console.log:281`, `350`), and the full run 21 and then 20 (`run.log:101`, `189`). Excluding the FSC here instead would change which expression changes pathz3 counts.
   - Excluding the only target makes the call fail with a message that does not name the exclusion as the cause (S4.18, cases 2 and 3).
 - **Proposed call:** fix. Keep the list, and never let an excluded node into the corridor as a complex member.
-- **Decision:** fix, as proposed (prompt log entry 058)
+- **Decision:** fix, as proposed (prompt log entry 058) *Phase 2 (prompt log entry 170):* extended by a new rule: excluding a gene also removes every complex that contains it.
 
 ### S4.07 · Forward search from the sources
 
@@ -210,7 +210,7 @@ Names and evidence used below:
   - pathz3 requires every present edge to increase distance (S4.03), so none of these edges can be part of a solution path. Whether they still cost time or constrain the solve is stage 5's question.
   - The GUI's script comment, "Retain only those nodes that appear in some path of length <= $REACH_PATH_BOUND" (`Linux/advtempscript.txt:225` and `277`, repeated in the pipeline editor at `gui4.java:140`), overstates what is kept.
 - **Proposed call:** keep. The rule never drops an edge that a bounded simple path uses, and exact simple-path pruning is exponential in general. If stage 5 shows that off-path edges matter, self-loops and edges into a source or out of a target are the cheap cases to trim.
-- **Decision:** deferred until stage 5 settles S5.13. If off-path edges still count as relaxed, trim self-loops and edges into a source or out of a target; if not, keep the walk rule as it is. (prompt log entry 060) *Settled by S5.13 (prompt log entry 068):* off-path edges keep counting as relaxed, so the corridor trims self-loops and edges into a source or out of a target.
+- **Decision:** deferred until stage 5 settles S5.13. If off-path edges still count as relaxed, trim self-loops and edges into a source or out of a target; if not, keep the walk rule as it is. (prompt log entry 060) *Settled by S5.13 (prompt log entry 068):* off-path edges keep counting as relaxed, so the corridor trims self-loops and edges into a source or out of a target. *Phase 2 (prompt log entry 170):* read by 05.C2: the searches never follow the trimmed edges, and the keep rule runs on what remains.
 
 ### S4.12 · Complex members are copied with their complex
 
@@ -251,7 +251,7 @@ Names and evidence used below:
   - Dead work: `duplicate_node` appends each display name cut at its last comma (`9241-9250`), then overwrites the list with the uncut names (`9251`). A corridor node's `other_value1` points into the discarded forward graph, and nothing reads it.
   - The duplicate test scans the source's out-list and copies subtype lists along the way (`676` carries the comment `HIGHLY INEFFICIENT CODE`).
 - **Proposed call:** keep. Port the attribute copy and the merge rule as described.
-- **Decision:** keep (prompt log entry 062)
+- **Decision:** keep (prompt log entry 062) *Phase 2 (prompt log entry 159):* moved by 02.C5: exact duplicate edges are merged when a legacy file is read, so the corridor needs no merge step.
 
 ### S4.14 · Node and edge ids change with every copy
 
@@ -268,7 +268,7 @@ Names and evidence used below:
   - Any comparison between the two solves has to go through rep ids. Stage 6 should check pex and psp for this.
   - The only link back, `other_value1`, points to the discarded forward graph (S4.13).
 - **Proposed call:** fix. Outputs name nodes and edges by stable keys: the rep id for a node, and source, target and subtypes for an edge. Any internal id that does appear means the same node or edge in every step of a run.
-- **Decision:** fix, as proposed (prompt log entry 062)
+- **Decision:** fix, as proposed (prompt log entry 062) *Phase 2 (prompt log entry 159):* amended by 02.C11: the key also holds the relation type, which makes it unique.
 
 ### S4.15 · The corridor rebuilds the id lookup
 
@@ -342,7 +342,7 @@ Names and evidence used below:
   - After a failure, the batch's next `pathz3 0` runs on the input graph (case 1) or on an empty graph (cases 2 and 3, and the two empty successes), because nothing checks the result.
   - "Exiting." is false.
 - **Proposed call:** fix. A failure leaves no graph behind and stops the run (S1.28's decision). The message names the real cause: no source resolved, the target is not reachable within the bound, or every edge into the target was dropped by the flag. An empty corridor counts as a failure.
-- **Decision:** fix, except that an empty corridor is a reported result ("no path within b"), not a failure: its solve is skipped, so one small bound doesn't halt a bound sweep ([decision 0018](../decisions/0018-batch-interface.md)). Real failures leave no graph behind, stop the run (S1.28) and name their cause. (prompt log entry 063)
+- **Decision:** fix, except that an empty corridor is a reported result ("no path within b"), not a failure: its solve is skipped, so one small bound doesn't halt a bound sweep ([decision 0018](../decisions/0018-batch-interface.md)). Real failures leave no graph behind, stop the run (S1.28) and name their cause. (prompt log entry 063) *Phase 2 (prompt log entry 167):* widened by 01.C15: after an empty corridor, every later line of the run or sweep point is skipped, not only its solve.
 
 ### S4.19 · Trace files `fb_rch` and `fb_rch_back`
 

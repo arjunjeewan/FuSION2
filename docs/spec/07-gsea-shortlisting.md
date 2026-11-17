@@ -253,7 +253,7 @@ The 2026-11-09 change to Z3 result labelling touches none of this stage's code.
   - The fixed seed hides Monte Carlo noise. With seeds 1 to 20, fdr:0.25 selects 41 to 46 pathways: 38 pass with every seed and 8 with some. ErbB signaling passes with 4 of the 20 seeds. With 10,000 permutations (11.6 s instead of 1.3 s), fdr:0.25 selects 43.
   - Byte-identical NES, p and FDR values need gseapy's own random stream. A reimplementation gets statistically equivalent but different numbers, so pathways near a cut-off would change.
 - **Proposed call:** keep. Port the procedure with seed 42 and 1000 permutations. The measured noise is for the user to weigh against the cost of more permutations.
-- **Decision:** keep the procedure, with the seed (default 42) and the permutation count (default 1000) as run settings recorded in the output, like S1.29's other result-changing settings (prompt log entry 085)
+- **Decision:** keep the procedure, with the seed (default 42) and the permutation count (default 1000) as run settings recorded in the output, like S1.29's other result-changing settings (prompt log entry 085) *Phase 2 correction (prompt log entry 183):* gseapy's core, which made FuSION 1's numbers, differs from the Python reference code quoted above in two places: for ES < 0 the nominal p counts null scores ≤ ES, and NES uses ES itself as the mean when no null score has the needed sign. The FWER formula is given in 08-enrichment.md.
 
 ### S7.12 · A pathway's FDR depends on the other candidates
 
@@ -377,7 +377,7 @@ The 2026-11-09 change to Z3 result labelling touches none of this stage's code.
   - **Layout:** the name column is as wide as the longest name shown. ES and NES print with their sign and three decimals, and p and FDR with three decimals.
 - **Problems:** The gene count is the number of ids parsed, including any NaN value that gseapy then drops. The EGF file plus a `nan` line reports `3055 genes ranked`, although 3054 are ranked. S7.04's fix removes this.
 - **Proposed call:** keep.
-- **Decision:** keep (prompt log entry 087)
+- **Decision:** keep (prompt log entry 087) *Phase 2 (prompt log entry 183):* amended by 08.C10: the tie warning's second sentence becomes 'Tied genes are ordered by gene id.'
 
 ### S7.18 · The review pause
 

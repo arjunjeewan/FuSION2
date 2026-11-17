@@ -23,7 +23,7 @@ FuSION 1 was not built or run. Counts come from that copy and from Python script
   - The argument count is never checked. Tokens after the fifth are ignored. A missing threshold reads as `""` and aborts the whole run (S3.02). A missing output path reads as `""`, which fails to open only after the other output has been truncated (S3.10).
   - The help line lists `cudf` but not the long name (S1.12, already decided).
 - **Proposed call:** fix. Keep the five positional arguments and both names, and report a wrong argument count as an error before any file is touched.
-- **Decision:** fix as proposed; the arguments can also be given by name ([decision 0018](../decisions/0018-batch-interface.md)) (prompt log entry 049)
+- **Decision:** fix as proposed; the arguments can also be given by name ([decision 0018](../decisions/0018-batch-interface.md)) (prompt log entry 049) *Phase 2 (prompt log entry 169):* extended by 04.C11: in the named form, `up_out` and `down_out` may be left out, and the lists then go to the step directory.
 
 ### S3.02 · Threshold parsing
 
@@ -34,7 +34,7 @@ FuSION 1 was not built or run. Counts come from that copy and from Python script
   - `nan` makes every comparison false, so the list comes out empty with no message. `inf` as the up threshold (or `-inf` as the down threshold) empties that list, and the opposite sign puts every gene in it.
   - One malformed value kills the whole batch, not just this command.
 - **Proposed call:** fix. Accept a threshold only when the whole token is a finite number, and otherwise fail with an error that names the argument, as S1.28 decides for failures.
-- **Decision:** fix, as proposed (prompt log entry 049)
+- **Decision:** fix, as proposed (prompt log entry 049) *Phase 2 (prompt log entry 167):* refined by 04.C2: a threshold must match one decimal grammar, parsed with fast_float, so `0x1p0` is refused.
 
 ### S3.03 · The LFC input file
 
@@ -51,7 +51,7 @@ FuSION 1 was not built or run. Counts come from that copy and from Python script
 - **Problems:**
   - The id column is tied to KEGG ([decision 0020](../decisions/0020-plug-and-play-inputs.md)). Later steps match it exactly against the network's ids (S3.12), which in FuSION 1 are KEGG gene ids with the colon removed (`hsa3725`). The KGML reader strips colons from KGML names (`XMLParser.cc:883-886`), but nothing strips them from the LFC file. `hsa:3725`, the symbol `JUN` and the bare Entrez id `3725` all pass through cudf and then match nothing, with no message.
 - **Proposed call:** keep. Port the two-column, whitespace-separated format with extra columns ignored and LF or CRLF line ends; how ids from other sources map onto network ids is the plug-and-play question that decision 0020 leaves to Phase 2.
-- **Decision:** keep (prompt log entry 049)
+- **Decision:** keep (prompt log entry 049) *Phase 2 (prompt log entries 167 and 169):* settled and extended: a value must match 04.C2's grammar as a whole token, with no longest-prefix reading, and 04.C10 accepts a lone CR and a UTF-8 byte-order mark and refuses UTF-16 and NUL bytes.
 
 ### S3.04 · Bug: a value that is not a number counts as 0
 
@@ -105,7 +105,7 @@ FuSION 1 was not built or run. Counts come from that copy and from Python script
   - Repeats that disagree, such as `hsa7<TAB>2.0` and `hsa7<TAB>-2.0`, put the gene in both lists. The solver then reads it as up only (S3.07), while `gsea` and `pex` keep the last value, −2.0 (S3.14).
   - pathz3's reader removes repeats (S3.12), so the line count of a list overstates its genes.
 - **Proposed call:** fix. Report repeated ids, write each gene at most once per list, and stop with an error when an id's lines put it in different classes.
-- **Decision:** fix as proposed; the same rule binds every reader of the LFC file (S3.14) (prompt log entry 051)
+- **Decision:** fix as proposed; the same rule binds every reader of the LFC file (S3.14) (prompt log entry 051) *Phase 2 (prompt log entries 165 and 167):* narrowed: Not DE genes are set to none before classification (04.C4), and with `repeats=max_abs` each id is reduced to its largest-magnitude value first, so its rows cannot conflict (04.C3).
 
 ### S3.09 · The up and down list format
 
@@ -190,7 +190,7 @@ FuSION 1 was not built or run. Counts come from that copy and from Python script
   Recomputed from the EGF file with `--current 1.01 -1.01` (the script was not run): `min / max      -1.560 / +5.190`, `mean / sd      +0.0371 / 0.3364`, `median / MAD   +0.0000 / 0.1200   (MAD*1.4826 = 0.1779)`, `tail extents   up tail reaches 3.3x further than the other`. Nothing in FuSION 1 calls the script. The only references to it are its two copies, `CHANGELOG.md:125-136` and a notes file under `.claude/`; no batch file, command or GUI panel uses it.
 - **Problems:** A suggested pair reaches cudf only by hand. The report is written to be read, and has no machine-readable form that a batch or the GUI could take.
 - **Proposed call:** keep. Port the advisory report as it is; whether it becomes a FuSION command or stays a separate tool is a Phase 2 question.
-- **Decision:** keep; its form is a Phase 2 decision (prompt log entry 054)
+- **Decision:** keep; its form is a Phase 2 decision (prompt log entry 054) *Phase 2 (prompt log entry 168):* extended by 04.C6: the table gains a `conflicts` column, and numbers a user may copy into a batch are printed exactly.
 
 ### S3.16 · `suggest_thresholds.py` reads the LFC file differently from cudf
 

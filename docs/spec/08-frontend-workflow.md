@@ -228,7 +228,7 @@ This stage covers FuSION 1's Java Swing GUI in `Linux/frontend/`: its screens an
   - The dialog edits the session's own array (line 26 takes the array `getMappingFile()` returns), so a pick is kept even if the dialog is closed without OK. It has no Cancel and no way to clear a file.
   - An empty cross-database map gives `start` and both `mff` lines an empty token (S1.07), which FuSION 1 tolerates.
 - **Proposed call:** fix. Ship the two reference maps with 2.0 and use them by default from a checked location, keeping the three choosers for other maps.
-- **Decision:** fix with two choosers: ship the two reference maps and use them by default from a checked location, with choosers for other symbol and pathway-name maps; a cross-database input waits for Phase 2's id mapping (S2.14) (prompt log entry 092)
+- **Decision:** fix with two choosers: ship the two reference maps and use them by default from a checked location, with choosers for other symbol and pathway-name maps; a cross-database input waits for Phase 2's id mapping (S2.14) (prompt log entry 092) *Phase 2 (prompt log entry 205):* the shipped maps are rebuilt from sources with clear terms (NCBI Gene; Reactome, with attribution), recorded in `data/SOURCES.md`. KEGG pathway names are not shipped: they are read from the title on each KGML's root.
 
 ### S8.14 · Threshold filter page
 
@@ -275,7 +275,7 @@ This stage covers FuSION 1's Java Swing GUI in `Linux/frontend/`: its screens an
   - Overrides are not saved with the session (S8.05).
   - The temporary file is deleted when the JVM exits; a run still going then loses it (S8.28).
 - **Proposed call:** fix. Keep per-gene overrides, but write each kind to a one-id-per-line file in the run directory, pass every kind pathz3 accepts, and store the overrides with the session.
-- **Decision:** fix, as proposed, with the three kinds the GUI never wrote wired too: Active and Non-relaxed join pathz3's active and non-relaxed node files, and Not DE removes the gene from the observed up and down lists (open question 3; prompt log entry 093)
+- **Decision:** fix, as proposed, with the three kinds the GUI never wrote wired too: Active and Non-relaxed join pathz3's active and non-relaxed node files, and Not DE removes the gene from the observed up and down lists (open question 3; prompt log entry 093) *Phase 2 (prompt log entry 165):* the Relaxed override is dropped, since S5.05 removed its target. Confirmed overrides also join the exception set (03.C2).
 
 ### S8.16 · Edge files page and the coexpression inputs
 
@@ -292,7 +292,7 @@ This stage covers FuSION 1's Java Swing GUI in `Linux/frontend/`: its screens an
   - A chosen file cannot be removed again.
   - The edge-file formats are neither shown nor checked, and the thresholds accept negative numbers.
 - **Proposed call:** keep. The five optional edge files and the coexpression inputs are all live pathz3 inputs; S8.17 fixes how they reach pathz3, and S8.30 checks them.
-- **Decision:** keep; S8.17 fixes how the inputs reach pathz3, S8.30 checks them, and Phase 5's navigation (S8.03) covers Save and clearing a choice (prompt log entry 093)
+- **Decision:** keep; S8.17 fixes how the inputs reach pathz3, S8.30 checks them, and Phase 5's navigation (S8.03) covers Save and clearing a choice (prompt log entry 093) *Phase 2 (prompt log entry 165):* the Relaxed Edges File is dropped, since S5.05 removed its target, which leaves four edge files.
 
 ### S8.17 · Bug: the coexpression and frozen-edge settings never reach `pathz3` (Linux)
 
@@ -398,7 +398,7 @@ This stage covers FuSION 1's Java Swing GUI in `Linux/frontend/`: its screens an
   - Fixed-name files are moved out of `Linux/` by name. A run that failed before writing one moves an earlier run's file (for example `PO.dat`) into its own directory, and two GUI runs at once take each other's files (S8.28).
   - A working directory with a space is cut at the space by `let` (S1.08), so the run deletes and writes under a different directory.
 - **Proposed call:** fix. Give every run a new directory of its own, never delete one, put every output of the run in it, SMT dumps included, and record the run's full parameters there.
-- **Decision:** fix, as proposed (prompt log entry 096)
+- **Decision:** fix, as proposed (prompt log entry 096) *Phase 2 (prompt log entries 166 and 169):* read in Phase 2 as for S1.26: an explicit absolute output path is honoured as well, with the file also kept in the run directory, and the per-user merge store is a cache, not a run output.
 
 ### S8.22 · Generated script: input preparation
 
@@ -414,7 +414,7 @@ This stage covers FuSION 1's Java Swing GUI in `Linux/frontend/`: its screens an
   The hand-written batches use the same lines, without the no-op (the real batch's lines 145-154).
 - **Problems:** This is the file plumbing through `exec` that S1.14 and S1.17 describe, with a round trip through disk for cudf's lists.
 - **Proposed call:** fix. Follow S1.17's decision: the backend builds the exception set from cudf's lists, the source, the target and the not-merged file, so the frontend supplies only those inputs.
-- **Decision:** fix, as proposed: the backend builds the exception set from cudf's lists, the source, the target, the FSC (S2.13) and the not-merged file (prompt log entry 096)
+- **Decision:** fix, as proposed: the backend builds the exception set from cudf's lists, the source, the target, the FSC (S2.13) and the not-merged file (prompt log entry 096) *Phase 2 (prompt log entry 165):* amended by 03.C2: confirmed up and down genes join the exception set too.
 
 ### S8.23 · Generated script: building the graph
 
@@ -536,7 +536,7 @@ This stage covers FuSION 1's Java Swing GUI in `Linux/frontend/`: its screens an
   - None of the 162 KGML paths exists on this machine; the list the batches use now, `auxilliary/list_of_kegg_xml_files.txt` (167 paths), is a different file.
   - The repository carries compiled, generated and personal files: stale classes, one user's session, one user's account with an email address and a password hash, and two generated scripts.
 - **Proposed call:** fix. Ship only what 2.0 reads (the reference maps, with their source and date, and a KGML list that resolves) and keep compiled classes, sessions, accounts and generated scripts out of the repository.
-- **Decision:** fix, without shipping KGMLs: ship the reference maps with their source and date, and a KGML list resolved against the user's own KGML directory; keep compiled classes, sessions, accounts and generated scripts out of the repository (prompt log entry 098)
+- **Decision:** fix, without shipping KGMLs: ship the reference maps with their source and date, and a KGML list resolved against the user's own KGML directory; keep compiled classes, sessions, accounts and generated scripts out of the repository (prompt log entry 098) *Phase 2 (prompt log entries 204 and 205):* the KGML list ships as `data/kegg_pathways.txt`, 167 bare pathway ids, and the maps are rebuilt as S8.13's note says.
 
 ### S8.32 · `frontend1`, the older snapshot
 
@@ -550,7 +550,7 @@ This stage covers FuSION 1's Java Swing GUI in `Linux/frontend/`: its screens an
   `frontend1/` has no `out/`, an unused `sessions/.gitkeep` (its code writes to `frontend/sessions/`), and a `.gitignore` for `*.class`, `out/`, `sessions/*.json` and editor files. Run from `Linux/`, it shares `fusion_users.dat`, `frontend/sessions/` and the template with `frontend`.
 - **Problems:** Two copies of 18 source files have to be kept in step. The only behavioural difference is that `frontend1` skips the pipeline editor, which does not affect runs anyway (S8.18).
 - **Proposed call:** drop. It is an older snapshot of `frontend/`; nothing in it needs carrying over beyond what S8.03 to S8.30 describe.
-- **Decision:** drop the copy, but keep its quick Submit: 2.0's frontend has a Submit that runs the default pipeline at once, without opening the editor (prompt log entry 098)
+- **Decision:** drop the copy, but keep its quick Submit: 2.0's frontend has a Submit that runs the default pipeline at once, without opening the editor (prompt log entry 098) *Phase 2 (prompt log entry 195):* the quick Submit runs the session's current pipeline, which is the default pipeline unless the session edited it.
 
 ## Open questions
 

@@ -123,7 +123,7 @@ Names and evidence used below:
   - Contradictions such as an id that is both essential and avoided, or both active and inactive, are not checked; the solve is simply UNSAT.
   - A rep id with no node would insert node id -1 (`18704`), and the later `.at("__node_-1")` would throw. S4.15 found no such id, so this is latent.
 - **Proposed call:** fix. Keep the list semantics and drop the relaxed-nodes and relaxed-edges inputs. Report which node each id bound to (S2.03), and reject contradictory lists before solving.
-- **Decision:** fix, as proposed (prompt log entry 066)
+- **Decision:** fix, as proposed (prompt log entry 066) *Phase 2 (prompt log entry 229):* extended: a gene on an avoid list also forbids every complex that contains it, as the out case's FSC does (S5.17).
 
 ### S5.06 · Edge list files
 
@@ -195,7 +195,7 @@ Names and evidence used below:
   - `up_down_size = 0` gives `ceil(log2(0))`, which is undefined (S3.10). With no observation in the corridor the encoding is malformed.
   - b = 0 gives width 0. Stage 4 already yields an empty corridor in that case (S4.18).
 - **Proposed call:** fix. Keep the variable families and the bit-vector encoding. Clamp or reject an edge bound above |E|, and stop with a message when no observation reaches the corridor.
-- **Decision:** fix, as proposed (prompt log entry 067)
+- **Decision:** fix, as proposed (prompt log entry 067) *Phase 2 (prompt log entries 167 and 176):* 'stop with a message' is read as the case status `no_de_gene`, and the batch goes on (06.C15). An edge bound above the counted edges is clamped with a warning (06.C14).
 
 ### S5.10 · Which nodes and edges enter the encoding
 
@@ -335,7 +335,7 @@ Names and evidence used below:
   - An FSC that cannot lie on a path aborts the run (S5.11).
   - The comparison of the two curves is the scientific result, yet pathz3 knows nothing of it. The batch must keep 15 arguments in step across two pathz3 lines and two `fb_rch` lines.
 - **Proposed call:** fix. Make the FSC a named argument of the solve. "In" means present and active; for a down-regulated FSC, leave out the non-relaxed assertion or refuse with a message. "Out" means absent and removed from the observations. Run both cases on one corridor.
-- **Decision:** fix as proposed: the FSC is a named argument of the solve, and both cases run on one corridor. 'Out' means absent and removed from the observations. 'In' means present on a path, with activity matching its observation: active when up-regulated or unobserved, inactive when down-regulated (open question 5). (prompt log entry 069)
+- **Decision:** fix as proposed: the FSC is a named argument of the solve, and both cases run on one corridor. 'Out' means absent and removed from the observations. 'In' means present on a path, with activity matching its observation: active when up-regulated or unobserved, inactive when down-regulated (open question 5). (prompt log entry 069) *Phase 2 (prompt log entries 170 and 175):* extended: the FSC may be a set of ids, with a third case, `free` (06.C10), and the out case also forbids every complex that contains the FSC (a new rule).
 
 ### S5.18 · How the Pareto frontier is enumerated
 
@@ -387,7 +387,7 @@ Names and evidence used below:
   - Five of the nine repeated a query that had already timed out, which is about 20 of the run's 50.7 h.
   - The pattern continues after the fix: `runs/egfr_b10_gsea_fdr044_candidates/r0_cxcl8_jun/run/hsa1956_to_hsa3576_w_hsa3725_egf_hela_t120_lfc.tsv_b10_limits_timefile.txt:108` and `:114` time out twice at (n 2, e 6).
 - **Proposed call:** fix. Cache TIMEOUT and UNDEFINED like SAT and UNSAT within a solve, and keep that cache across a resumed solve for decision 0019.
-- **Decision:** fix, as proposed (prompt log entry 070)
+- **Decision:** fix, as proposed (prompt log entry 070) *Phase 2 (prompt log entry 174):* amended by 06.C8: on resume, a TIMEOUT answer is asked again when the resumed per-query timeout is longer (`retry=automatic`, the default).
 
 ### S5.21 · Solver timeouts
 
@@ -470,7 +470,7 @@ Names and evidence used below:
   - It never fires: S5.18's windows give every point a distinct e, so the filter is dead weight.
   - The file has no header and no case label, and does not mark uncertified points (S5.19).
 - **Proposed call:** fix. Drop the filter, since the search already yields a non-dominated set. Keep the two-column file for stage 6, and carry the certification flag in the structured outputs (S5.19).
-- **Decision:** fix, as proposed (prompt log entry 071)
+- **Decision:** fix, as proposed (prompt log entry 071) *Phase 2 (prompt log entry 174):* amended by 06.C20: the frontier is the set of Pareto-minimal counts among the SAT witnesses, so a point dominated by its own witness is replaced by the witness's counts.
 
 ### S5.26 · Solutions at each frontier point
 
@@ -568,6 +568,7 @@ Names and evidence used below:
 
 1. **What exactly do `:solver2_timeout` and `:timeout` do in this Z3 configuration, and why does a 4 h timeout report `unknown` rather than `timeout`?** The code comments say "incremental solver" and "overall", and the logs show each unknown check stopping at the overall cap. *Would settle it:* run one of the full run's dumps with Z3's verbose and statistics output under both timeouts, with the Z3 version FuSION links. Or read that version's combined-solver source.
    *Still open, for phase 3.* No stage 5 decision depends on it; the answer tells Phase 2 how S5.21's per-query timeout maps onto Z3.
+   *Answered in Phase 2 (06-solve.md, prompt log entry 173):* they are the combined solver's incremental phase limit and the per-check cap, and the `unknown` came from reading Z3's reason after `pop`. Phase 3's X06 confirms it.
 2. **Should edge relaxations count only selected edges instead of every considered edge between present nodes (S5.13, S5.16)?** This is a modelling choice: it decides whether an unused inhibition edge between two active genes is an inconsistency. *Would settle it:* the user's judgement, informed by a phase-3 comparison on the full run's corridor of both counting rules, plus a run with self-loops left out.
    *Resolved:* every considered edge between present nodes keeps counting, selected or not, and self-loops leave the count (S5.13; prompt log entry 068).
 3. **Are the frontier points next to unknown answers really Pareto-optimal (S5.19)?** Examples: the full run's (n 7, e 1) and (n 8, e 0) next to the undecided (n 7, e 0), and fdr050's points near (n 2, e 7) and (n 5, e 0). *Would settle it:* re-check the undecided queries from their dumps with a longer timeout or another Z3 tactic.

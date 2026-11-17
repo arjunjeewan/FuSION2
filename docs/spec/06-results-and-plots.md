@@ -203,7 +203,7 @@ Names and evidence used below:
   - A `"` inside a field is not doubled, which would make the CSV invalid.
   - psp needs `start` only for this lookup, while pex reads the same map file itself.
 - **Proposed call:** fix. Write one row per drawn edge listing all its edge ids, quote fields to the CSV standard, and take names from the run's one pathway-name map.
-- **Decision:** fix, as proposed (prompt log entry 077)
+- **Decision:** fix, as proposed (prompt log entry 077) *Phase 2 (prompt log entry 180):* written as TSV, following E1, with no tab or line break in a field and lists joined by `;`.
 
 ### S6.09 · psp's messages and failures
 
@@ -365,7 +365,7 @@ Names and evidence used below:
   - The fill shows the observed expression class, not the solved activity, which appears only in the hover.
   - psp uses a different scheme (S6.26).
 - **Proposed call:** keep. Port the drawn colours and legend as they are; the docstring and `RUNNING.md` are what is wrong, not the code.
-- **Decision:** keep, with the legend made to match what is drawn and the docs corrected; how solved activity is shown visually is left to decision 0022's design (prompt log entry 079)
+- **Decision:** keep, with the legend made to match what is drawn and the docs corrected; how solved activity is shown visually is left to decision 0022's design (prompt log entry 079) *Phase 2 (prompt log entry 178):* amended by 07.C4 for the static page: a present, inactive node is drawn faded, at 45 % opacity.
 
 ### S6.17 · pex: the HTML page
 
@@ -515,7 +515,7 @@ Names and evidence used below:
   - The window lines need a display: under the GUI each run pops up a window, and a headless run can only fail to open it.
   - Each plot is a hand-written shell command with no error check (S1.14).
 - **Proposed call:** drop. The 2.0 GUI emits the built-in plot step (S6.22). Old batch files keep working, because `exec` passes these lines to the shell (S1.14).
-- **Decision:** drop, as proposed (prompt log entry 081)
+- **Decision:** drop, as proposed (prompt log entry 081) *Phase 2 (prompt log entry 190):* window-plot lines (`gnuplot -p` without `set term`) are skipped with a note when no display is available.
 
 ### S6.26 · Two renderers that disagree about one solution
 

@@ -30,3 +30,7 @@ Option 1. The user added: "ideally there should be robust frontend validation fo
 
 - The backend validates all inputs before the first step runs.
 - The Spring Boot frontend validates the same cases before it submits a run (phase 5). Phase 2 decides how the two share one set of rules.
+
+## Phase 2 note
+
+Amended in Phase 2 by 01.C12 (prompt log entry 188): an input that the batch itself makes is checked just before the step that reads it.
