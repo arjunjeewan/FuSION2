@@ -40,3 +40,6 @@ One file per decision, numbered in the order the decisions were made. Each recor
 | [0034](0034-co-author-line-kept-until-push.md) | Commits keep the Claude co-author line; de-claude runs before each push | Accepted | 2026-11-17 |
 | [0035](0035-claude-pushes-over-ssh.md) | Claude pushes when the user asks, over this machine's SSH key (amends 0006) | Accepted | 2026-11-17 |
 | [0036](0036-phase-3-method.md) | Phase 3: a written plan first, its choices polled, then captures, cheap runs and booked long runs in order | Accepted | 2026-11-17 |
+| [0037](0037-booking-1-scripts.md) | Booking 1's scripts: Claude writes the case inventory and the fill script, subagents the rest | Accepted | 2026-11-17 |
+| [0038](0038-end-to-end-version-this-week.md) | A first end-to-end version this week, built ahead of the rest of Phase 3 (amends 0003 and 0036) | Accepted | 2026-11-17 |
+| [0039](0039-sprint-toolchain.md) | The sprint's toolchain: the system Z3 4.8.12 until X11, and user-local CMake, Ninja and Gradle | Accepted | 2026-11-17 |
