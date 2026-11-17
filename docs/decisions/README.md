@@ -39,3 +39,4 @@ One file per decision, numbered in the order the decisions were made. Each recor
 | [0033](0033-de-claude-on-all-commits.md) | Plain de-claude strips the Claude co-author lines from every commit, replacing GitHub's initial commit | Accepted | 2026-11-17 |
 | [0034](0034-co-author-line-kept-until-push.md) | Commits keep the Claude co-author line; de-claude runs before each push | Accepted | 2026-11-17 |
 | [0035](0035-claude-pushes-over-ssh.md) | Claude pushes when the user asks, over this machine's SSH key (amends 0006) | Accepted | 2026-11-17 |
+| [0036](0036-phase-3-method.md) | Phase 3: a written plan first, its choices polled, then captures, cheap runs and booked long runs in order | Accepted | 2026-11-17 |
