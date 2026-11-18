@@ -8272,3 +8272,43 @@ All messages end with the co-author line. The diffs and messages are in /tmp/cla
 - Let me review first: I wait while you read the diffs and messages. Tell me when to commit or what to change.
 
 **Answer:** Commit all four (Recommended)
+
+## 298 · Note · Booking 1 started · 2026-11-17 18:32
+
+After the commits of poll 297, Claude checked the machine: load 1.7 on 36 cores, with the user's FuSION 1 run (PID 1653017) the only busy process. Claude then started booking 1 beside that run, as poll 282 allowed. A driver in Claude's scratchpad (`phase3/booking1/run_booking1.sh`) runs W1, W6, W2, W3, W4 and both halves of W5 in order, then refreshes `cases.json` from the data root. It stops at the first step that fails, and logs each step to `phase3/booking1/<step>.log`. The experiment scripts do not run (decision 0038).
+
+## 299 · Note · Booking 1's first four steps, and the W4 fix · 2026-11-17 18:49
+
+- W1 copied all 2,063 files into the data root and wrote `backend/tests/reference/data-manifest.json`.
+- W6 froze the batch corpus into `backend/tests/fixtures/fusion1-batches/`: 125 batch files and the three GUI scripts, with their own manifest. Four batch files outside `runs/` were not copied.
+- W2 found no source differences except the two exempt GSEA scripts. In the five fastest recorded cases, every .dat, solutions and relaxations file matched byte for byte, so the data root's binary is the snapshot binary in behaviour too.
+- W3 captured all 39 KEGG cases. Every corridor matched its recorded node and edge counts; `reports/w3/` holds the table.
+- W4 then stopped before writing anything. Its guard against overwriting refused because each regenerated KEGG case's `f1/` already existed: W3 had written `f1/capture/` there. Claude narrowed the guard to W4's own outputs (`f1/run/` and the console log, plus `f1/capture/` for a toy case), checked the dry run (40 runs, no problem), and resumed booking 1 from W4.
+
+## 300 · User prompt · 2026-11-18 23:35
+
+> resume
+
+The user sent this twice; the first was interrupted. Between 18:50 and 18:58 on 2026-11-17, all eleven sprint subagents (entries 285 to 295) had stopped at the 5-hour usage limit, which reset at 20:30 that evening. Booking 1's resumed run (entry 299) had finished.
+
+## 301 · Subagent prompt · Resume message to the eleven sprint subagents · 2026-11-18 23:35
+
+Sent after entry 300 to each of the eleven sprint subagents (entries 285 to 295), with <part> replaced by its own part. The message as sent:
+
+```text
+Continue from where you stopped; the usage limit that stopped you has reset. Your instructions are in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/sprint/briefs/sprint_<part>.txt; reread it if you need to. The other parts' subagents are resuming at the same time. Booking 1 has also finished, which gives your tests real FuSION 1 behaviour with no KEGG data. The frozen batch corpus is in backend/tests/fixtures/fusion1-batches/. FuSION 1's regenerated toy cases, with relabelled networks, are in backend/tests/reference/synthetic/, with their batches in backend/tests/fixtures/toy-batches/. gseapy 1.3.1's reference results on synthetic rankings are in backend/tests/fixtures/gsea/. Read them; do not edit them.
+```
+
+## 302 · Poll · 2026-11-19 00:52
+
+Commit approval for booking 1's repository outputs, shown with the diff of the changed files and two messages. The answer arrived while the sprint subagents were finishing, and Claude made the commits after it; this entry's time is when it was logged.
+
+**Q1 (Commits).** Booking 1 finished cleanly. Ready to commit its repository outputs locally, staged by name, in two commits; nothing is pushed.
+(1) "Record booking 1's FuSION 1 references": the data manifest (2,063 files); the frozen batch corpus (129 files); the 12 regenerated toy cases on relabelled networks (430 files, 2.5 MB) with their batches; gseapy's fixtures on synthetic rankings; the refreshed cases.json (28 entries now name their regenerated outputs); and the W4 guard fix. None of it holds KEGG data: none of the 30 aliases in FuSION 1's toy networks appears in it. The captures and EGF results stay in the test-data folder outside the repo.
+(2) "Log prompt entries 298 to 302".
+The diff of the changed files and the messages are in /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/commits/ (12_booking1_outputs.diff, msg12, msg13). Commit?
+
+- Commit both (Recommended): Two local commits. The eleven subagents keep working in their own folders.
+- Let me review first: I wait while you read them. Tell me when to commit or what to change.
+
+**Answer:** Commit both (Recommended)
