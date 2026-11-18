@@ -1,0 +1,58 @@
+;; **********************************************************************
+;; Build step (run ONCE, separate fusion invocation): merge the 163
+;; hsa_pathways_with_exp_score KGML files into a single KEGG master graph
+;; that preserves experiment_score on every relation, and write it to
+;; experiment/merged_kegg_master_graph_with_exp_score.xml.
+;;
+;; This is a single mff(n)+wgx+exit, which is stable. The analysis batch
+;; (egf_to_il8.batch) then reads this pre-built graph in a fresh invocation
+;; -- doing the heavy merge and the analysis in one session segfaults the
+;; tool (two graph-reads after a 163-file merge corrupt state).
+;; **********************************************************************
+
+let $WORK_DIR /home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment
+let $WRITE_DIR $WORK_DIR/graph_build
+let $MERGED_KEGG_PATHWAYS_XML_FILE $WORK_DIR/merged_kegg_master_graph_with_exp_score.xml
+
+let $LOG_FOLD_CHANGE_FILE /home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/lfc/egf_hela_t120_lfc.tsv
+let $LIST_OF_MERGED_KEGG_XML_FILE /home/ks-149-u24/Desktop/arjun/FuSION/EGF_HeLa/experiment/list_of_kegg_xml_files.txt
+
+let $COMMON_FILES_DIR /home/ks-149-u24/Desktop/arjun/FuSION/IITB_ACTREC_old_data/IITB_ACTREC_old_data
+let $INTER_DB_MAP_FILE $COMMON_FILES_DIR/inter_db_mapping_file
+let $HSA_TO_GENE_SYMBOL_MAP_FILE $COMMON_FILES_DIR/hsa_to_gene_symbol_map_6334.txt
+let $HSA_PATH_TO_PATH_NAME_MAP_FILE $COMMON_FILES_DIR/hsa_path_to_path_name_map_2822.txt
+let $HSA_IDS_NOT_TO_BE_MERGED_FILE $COMMON_FILES_DIR/hsa_ids_not_to_be_merged.txt
+
+let $SRC_NODE hsa1950
+let $TGT_NODE hsa3576
+let $UP_REG_THRESH 0.67
+let $DOWN_REG_THRESH -0.67
+let $NODE_SPLIT_THRESHOLD 1
+
+let $UP_REG_FILE $WRITE_DIR/up_reg
+let $DOWN_REG_FILE $WRITE_DIR/down_reg
+let $SRC_FILE $WRITE_DIR/src_file
+let $TGT_FILE $WRITE_DIR/tgt_file
+let $EXCEPTION_TO_NODE_MERGE_FILE $WRITE_DIR/exception_file.txt
+
+exec if [ -d $WRITE_DIR ] ; then /bin/rm -rf $WRITE_DIR; fi
+exec mkdir -p $WRITE_DIR
+
+cudf $LOG_FOLD_CHANGE_FILE $UP_REG_THRESH $DOWN_REG_THRESH $UP_REG_FILE $DOWN_REG_FILE
+
+exec cd $WRITE_DIR; echo $SRC_NODE > $SRC_FILE; echo $TGT_NODE > $TGT_FILE
+exec cat $UP_REG_FILE $DOWN_REG_FILE $SRC_FILE $TGT_FILE $HSA_IDS_NOT_TO_BE_MERGED_FILE > $EXCEPTION_TO_NODE_MERGE_FILE
+exec touch $WRITE_DIR/empty_file
+
+start $INTER_DB_MAP_FILE $EXCEPTION_TO_NODE_MERGE_FILE $HSA_TO_GENE_SYMBOL_MAP_FILE $HSA_PATH_TO_PATH_NAME_MAP_FILE
+
+;; Single merge of the raw KEGG pathway XMLs ('n' = not tool-written).
+;; experiment_score is carried through the merge (max across pathways).
+mff $LIST_OF_MERGED_KEGG_XML_FILE xml $NODE_SPLIT_THRESHOLD n $INTER_DB_MAP_FILE -1
+size 0
+
+wgx 0 $MERGED_KEGG_PATHWAYS_XML_FILE KEGG
+
+exec mv edges_merged_filename $WRITE_DIR/merged_edges_file
+
+exit

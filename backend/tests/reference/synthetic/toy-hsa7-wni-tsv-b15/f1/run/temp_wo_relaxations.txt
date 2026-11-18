@@ -1,0 +1,31 @@
+Current PO point: 7 nodes, 2 edges relaxed
+Solution 1
+135	hsa3	hsa3	up_reg	not_present	inactive
+136	hsa4	hsa4	up_reg	not_present	inactive
+142	hsa10	hsa10	up_reg	not_present	inactive
+145	hsa13	hsa13	up_reg	not_present	inactive
+147	hsa15	hsa15	down_reg	present	active
+150	hsa18	hsa18	up_reg	present	inactive
+153	hsa21	hsa21	down_reg	present	active
+
+190	present	activation	hsa11	hsa11	hsa14	hsa14	src_present	src_active	tgt_present	tgt_inactive [path:hsa2]
+199	present	activation	hsa20	hsa20	hsa21	hsa21	src_present	src_inactive	tgt_present	tgt_active [path:hsa2]
+
+
+Solution 2
+
+Current PO point: 4 nodes, 4 edges relaxed
+Solution 1
+135	hsa3	hsa3	up_reg	not_present	inactive
+136	hsa4	hsa4	up_reg	not_present	inactive
+142	hsa10	hsa10	up_reg	not_present	inactive
+145	hsa13	hsa13	up_reg	not_present	inactive
+
+190	present	activation	hsa11	hsa11	hsa14	hsa14	src_present	src_active	tgt_present	tgt_inactive [path:hsa2]
+191	present	activation	hsa12	hsa12	hsa15	hsa15	src_present	src_active	tgt_present	tgt_inactive [path:1]
+199	present	activation	hsa20	hsa20	hsa21	hsa21	src_present	src_inactive	tgt_present	tgt_inactive [path:hsa2]
+200	present	activation	hsa21	hsa21	hsa22	hsa22	src_present	src_inactive	tgt_present	tgt_active [path:1]
+
+
+Solution 2
+

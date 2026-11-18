@@ -1,0 +1,106 @@
+
+new call with node relax in [0, 7] and edge relax in [0, 7] of type 0
+Relax bounds: 3 3
+Time taken (sec): 0.013409
+unsat
+N_l: 4 E_l: 4
+Relax bounds: 5 5
+Time taken (sec): 0.010397
+sat
+N_h: 4 E_h: 4
+Relax bounds: 4 4
+Time taken (sec): 0.017904
+unsat
+N_l: 4 E_l: 4
+
+Finding smallest n
+Relax bounds (node call): 5 2
+Time taken (sec): 0.001569
+sat
+N_h: 2 N_l: 0
+Relax bounds (node call): 5 1
+Time taken (sec): 0.000505
+unsat
+N_h: 2 N_l: 1
+Point 5 1 already unsat
+unsat
+Soln lower 5 2
+
+Finding smallest e
+Relax bounds (edge call): 2 5
+Time taken (sec): 0.002586
+unsat
+E_h: 5 E_l: 2
+Relax bounds (edge call): 3 5
+Time taken (sec): 0.000659
+sat
+E_h: 3 E_l: 2
+Point 2 5 already unsat
+unsat
+Soln upper 3 5
+Two solns in window (7, 0, 0, 7)
+Point 1: (5, 2)
+Point 2: (3, 5)
+
+new call with node relax in [6, 7] and edge relax in [0, 2] of type 1
+Relax bounds: 1 6
+Time taken (sec): 0.001414
+unsat
+N_l: 7 E_l: 2
+Relax bounds: 2 7
+Time taken (sec): 0.003758
+sat
+N_h: 7 E_h: 2
+
+Finding smallest n
+Relax bounds (node call): 2 6
+Time taken (sec): 0.002122
+unsat
+Soln lower 2 7
+
+Finding smallest e
+Relax bounds (edge call): 1 7
+Time taken (sec): 0.000604
+unsat
+E_h: 2 E_l: 1
+Point 1 7 already unsat
+unsat
+Soln upper 2 7
+One soln in window (2, 6, 0, 7)
+Point 1: (2, 7)
+
+new call with node relax in [8, 7] and edge relax in [0, 1] of type 1
+Invalid window: Quitting search
+
+new call with node relax in [6, 6] and edge relax in [3, 2] of type 2
+Invalid window: Quitting search
+
+new call with node relax in [0, 1] and edge relax in [6, 7] of type 2
+Relax bounds: 6 0
+Time taken (sec): 0.000617
+unsat
+N_l: 1 E_l: 7
+Relax bounds: 7 1
+Time taken (sec): 0.000823
+sat
+N_h: 1 E_h: 7
+
+Finding smallest n
+Relax bounds (node call): 7 0
+Time taken (sec): 0.000322
+unsat
+Soln lower 7 1
+
+Finding smallest e
+Relax bounds (edge call): 6 1
+Time taken (sec): 0.000635
+unsat
+Soln upper 7 1
+One soln in window (7, 0, 6, 1)
+Point 1: (7, 1)
+
+new call with node relax in [2, 1] and edge relax in [6, 6] of type 1
+Invalid window: Quitting search
+
+new call with node relax in [0, 0] and edge relax in [8, 7] of type 2
+Invalid window: Quitting search

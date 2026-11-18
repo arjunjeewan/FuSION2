@@ -1,0 +1,56 @@
+Current PO point: 7 nodes, 1 edges relaxed
+Solution 1
+136	hsa4	hsa4	up_reg	not_present	active
+146	hsa14	hsa14	down_reg	present	active
+147	hsa15	hsa15	down_reg	present	active
+149	hsa17	hsa17	up_reg	present	inactive
+150	hsa18	hsa18	up_reg	present	inactive
+152	hsa20	hsa20	down_reg	present	active
+153	hsa21	hsa21	down_reg	present	active
+
+189	present	inhibition	hsa10	hsa10	hsa12	hsa12	src_present	src_active	tgt_present	tgt_active [path:hsa2]
+
+
+Solution 2
+
+Current PO point: 4 nodes, 3 edges relaxed
+Solution 1
+136	hsa4	hsa4	up_reg	not_present	inactive
+147	hsa15	hsa15	down_reg	present	active
+150	hsa18	hsa18	up_reg	present	inactive
+153	hsa21	hsa21	down_reg	present	active
+
+189	present	inhibition	hsa10	hsa10	hsa12	hsa12	src_present	src_active	tgt_present	tgt_active [path:hsa2]
+190	present	activation	hsa11	hsa11	hsa14	hsa14	src_present	src_active	tgt_present	tgt_inactive [path:hsa2]
+199	present	activation	hsa20	hsa20	hsa21	hsa21	src_present	src_inactive	tgt_present	tgt_active [path:hsa2]
+
+
+Solution 2
+
+Current PO point: 1 nodes, 5 edges relaxed
+Solution 1
+136	hsa4	hsa4	up_reg	not_present	active
+
+189	present	inhibition	hsa10	hsa10	hsa12	hsa12	src_present	src_active	tgt_present	tgt_active [path:hsa2]
+190	present	activation	hsa11	hsa11	hsa14	hsa14	src_present	src_active	tgt_present	tgt_inactive [path:hsa2]
+191	present	activation	hsa12	hsa12	hsa15	hsa15	src_present	src_active	tgt_present	tgt_inactive [path:1]
+199	present	activation	hsa20	hsa20	hsa21	hsa21	src_present	src_inactive	tgt_present	tgt_inactive [path:hsa2]
+200	present	activation	hsa21	hsa21	hsa22	hsa22	src_present	src_inactive	tgt_present	tgt_active [path:1]
+
+
+Solution 2
+
+Current PO point: 0 nodes, 7 edges relaxed
+Solution 1
+
+178	present	inhibition	hsa1	hsa1	hsa4	hsa4	src_present	src_active	tgt_present	tgt_active [path:1]
+182	present	inhibition	hsa4	hsa4	hsa7	hsa7	src_present	src_active	tgt_present	tgt_active [path:hsa2]
+189	present	inhibition	hsa10	hsa10	hsa12	hsa12	src_present	src_active	tgt_present	tgt_active [path:hsa2]
+190	present	activation	hsa11	hsa11	hsa14	hsa14	src_present	src_active	tgt_present	tgt_inactive [path:hsa2]
+191	present	activation	hsa12	hsa12	hsa15	hsa15	src_present	src_active	tgt_present	tgt_inactive [path:1]
+199	present	activation	hsa20	hsa20	hsa21	hsa21	src_present	src_inactive	tgt_present	tgt_inactive [path:hsa2]
+200	present	activation	hsa21	hsa21	hsa22	hsa22	src_present	src_inactive	tgt_present	tgt_active [path:1]
+
+
+No more solutions. Obtained unsat
+

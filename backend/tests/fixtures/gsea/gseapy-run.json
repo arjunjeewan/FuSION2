@@ -1,0 +1,102 @@
+{
+  "made_by": "backend/tests/experiments/capture/w5/gseapy_references.py",
+  "plan_item": "W5",
+  "started": "2026-11-17T19:01:08+0530",
+  "versions": {
+    "python": "3.12.3",
+    "gseapy": "1.3.1",
+    "numpy": "2.4.3",
+    "pandas": "3.0.1"
+  },
+  "gseapy_core": {
+    "gse.cpython-312-x86_64-linux-gnu.so": "f8b2ffc47937ea8588a27d0e6903112e0c21af7d416a2af05c38178d44774bb1"
+  },
+  "call": {
+    "rnk": "values.tsv by value descending, then by id ascending in byte order",
+    "gene_sets": "sets.gmt as a dict",
+    "permutation_num": 1000,
+    "min_size": 15,
+    "max_size": 500,
+    "weight": 1.0,
+    "ascending": null,
+    "outdir": null,
+    "threads": 4
+  },
+  "seeds": [
+    42,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "one_thread_check": "seed 42 rerun with threads=1 must give identical output",
+  "fixtures": {
+    "n50": {
+      "sha256": {
+        "values.tsv": "d2a816c706b37fc552c03842c15449c343898a20a5633b2256ebb8552f15f282",
+        "sets.gmt": "01abef0e88701e578bdcf96836f36d53d8a77206c4bf9e4f20aa2edc27b58ab7"
+      },
+      "genes": 50,
+      "sets": 11,
+      "tested": 9,
+      "repeated_values": 32,
+      "repeated_share": "64.00%",
+      "one_thread": {
+        "seed": 42,
+        "threads": 1,
+        "identical": true
+      },
+      "seconds": 0.354
+    },
+    "n500": {
+      "sha256": {
+        "values.tsv": "25ee6d854ee60f0553c0a3247538e23dd4b5942d04005e55833126d0aa1baf92",
+        "sets.gmt": "e69dc37e1457de406810fc83d83dcd8e337681543a0b0d74adfcda3ac999d724"
+      },
+      "genes": 500,
+      "sets": 23,
+      "tested": 22,
+      "repeated_values": 345,
+      "repeated_share": "69.00%",
+      "one_thread": {
+        "seed": 42,
+        "threads": 1,
+        "identical": true
+      },
+      "seconds": 1.877
+    },
+    "n3054": {
+      "sha256": {
+        "values.tsv": "8995323e7fb3ef421c0ca8611bfbfe66aef1164a36dc404df91d6a83cc19857a",
+        "sets.gmt": "4b3a8161be79fc06c2710b56f042af54a76eb1aac6d3817d03bbfbf820e8bd98"
+      },
+      "genes": 3054,
+      "sets": 32,
+      "tested": 30,
+      "repeated_values": 2864,
+      "repeated_share": "93.78%",
+      "one_thread": {
+        "seed": 42,
+        "threads": 1,
+        "identical": true
+      },
+      "seconds": 7.698
+    }
+  }
+}

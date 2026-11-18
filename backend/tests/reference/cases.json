@@ -6,7 +6,7 @@
       "id": "toy-hsa11-report-tsv-b10",
       "batch": "toy-batches/toy-hsa11-report-tsv-b10.batch",
       "tier": "T1",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa11_report_example.tsv_b10",
         "network": "example/report_example.xml",
@@ -48,7 +48,7 @@
       "id": "toy-hsa11-wni-tsv-b10",
       "batch": "toy-batches/toy-hsa11-wni-tsv-b10.batch",
       "tier": "T1",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10",
         "network": "example/with_node_included.xml",
@@ -90,7 +90,7 @@
       "id": "toy-hsa12-report-csv-b10",
       "batch": "toy-batches/toy-hsa12-report-csv-b10.batch",
       "tier": "T1",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa12_report_example.csv_b10",
         "network": "example/report_example.xml",
@@ -111,7 +111,20 @@
         "console": "f1/run_console.log",
         "reread": "f1/capture/graph_reread.xml",
         "corridor": "f1/capture/corridor.xml",
-        "solve": {}
+        "solve": {
+          "in": {
+            "dat": "f1/run/hsa1_to_hsa22_w_hsa12_report_example.csv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_w_hsa12_report_example.csv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_w_solutions.txt",
+            "relaxations": "f1/run/temp_w_relaxations.txt"
+          },
+          "out": {
+            "dat": "f1/run/hsa1_to_hsa22_wo_hsa12_report_example.csv_b10.dat",
+            "limits": "f1/run/hsa1_to_hsa22_wo_hsa12_report_example.csv_b10_limits_timefile.txt",
+            "solutions": "f1/run/temp_wo_solutions.txt",
+            "relaxations": "f1/run/temp_wo_relaxations.txt"
+          }
+        }
       },
       "fusion1_seconds": {}
     },
@@ -119,7 +132,7 @@
       "id": "toy-hsa12-report-tsv-b10",
       "batch": "toy-batches/toy-hsa12-report-tsv-b10.batch",
       "tier": "T1",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa12_report_example.tsv_b10",
         "network": "example/report_example.xml",
@@ -161,7 +174,7 @@
       "id": "toy-hsa13-wni-tsv-b10",
       "batch": "toy-batches/toy-hsa13-wni-tsv-b10.batch",
       "tier": "T1",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa13_with_node_included.tsv_b10",
         "network": "example/report_example_with_pathways.xml",
@@ -203,7 +216,7 @@
       "id": "toy-hsa13-wni-tsv-b15",
       "batch": "toy-batches/toy-hsa13-wni-tsv-b15.batch",
       "tier": "T1",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa13_with_node_included.tsv_b15",
         "network": "example/report_example_with_pathways.xml",
@@ -245,7 +258,7 @@
       "id": "toy-hsa15-wni-tsv-b10",
       "batch": "toy-batches/toy-hsa15-wni-tsv-b10.batch",
       "tier": "T1",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa15_with_node_included.tsv_b10",
         "network": "example/report_example_with_pathways.xml",
@@ -285,7 +298,7 @@
       "id": "toy-hsa18-wni-tsv-b10",
       "batch": "toy-batches/toy-hsa18-wni-tsv-b10.batch",
       "tier": "T1",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa18_with_node_included.tsv_b10",
         "network": "example/report_example_with_pathways.xml",
@@ -327,7 +340,7 @@
       "id": "toy-hsa5-wni-tsv-b10",
       "batch": "toy-batches/toy-hsa5-wni-tsv-b10.batch",
       "tier": "T1",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa5_with_node_included.tsv_b10",
         "network": "example/report_example_with_pathways.xml",
@@ -369,7 +382,7 @@
       "id": "toy-hsa7-wni-tsv-b10",
       "batch": "toy-batches/toy-hsa7-wni-tsv-b10.batch",
       "tier": "T1",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa7_with_node_included.tsv_b10",
         "network": "example/report_example_with_pathways.xml",
@@ -411,7 +424,7 @@
       "id": "toy-hsa7-wni-tsv-b15",
       "batch": "toy-batches/toy-hsa7-wni-tsv-b15.batch",
       "tier": "T1",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa7_with_node_included.tsv_b15",
         "network": "example/report_example_with_pathways.xml",
@@ -453,7 +466,7 @@
       "id": "toy-hsa9-wni-tsv-b10",
       "batch": "toy-batches/toy-hsa9-wni-tsv-b10.batch",
       "tier": "T1",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "outputs": "runs/test_examples/toy_hsa1_to_hsa22/hsa1_to_hsa22_fsc_hsa9_with_node_included.tsv_b10",
         "network": "example/with_node_included.xml",
@@ -495,7 +508,7 @@
       "id": "egfhela-erk1-b6-nr4-er20-off",
       "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er20_off.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er20_off.batch",
         "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er20_off"
@@ -545,15 +558,15 @@
         }
       },
       "fusion1_seconds": {
-        "in": 5.748,
-        "out": 7.729
+        "in": 5.171,
+        "out": 6.64
       }
     },
     {
       "id": "egfhela-erk1-b6-nr4-er20-on",
       "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er20_on.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er20_on.batch",
         "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er20_on"
@@ -603,15 +616,15 @@
         }
       },
       "fusion1_seconds": {
-        "in": 9.662,
-        "out": 7.67
+        "in": 7.985,
+        "out": 6.672
       }
     },
     {
       "id": "egfhela-erk1-b6-nr4-er4-off",
       "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er4_off.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er4_off.batch",
         "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er4_off"
@@ -661,15 +674,15 @@
         }
       },
       "fusion1_seconds": {
-        "in": 8.002,
-        "out": 6.323
+        "in": 7.107,
+        "out": 5.796
       }
     },
     {
       "id": "egfhela-erk1-b6-nr4-er4-on",
       "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er4_on.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er4_on.batch",
         "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_nr4_er4_on"
@@ -719,15 +732,15 @@
         }
       },
       "fusion1_seconds": {
-        "in": 23.204,
-        "out": 6.7
+        "in": 21.014,
+        "out": 6.108
       }
     },
     {
       "id": "egfhela-erk1-b6-r5-12",
       "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_r5_12.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_r5_12.batch",
         "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_erk1_b6_t700_f800_r5_12"
@@ -777,15 +790,15 @@
         }
       },
       "fusion1_seconds": {
-        "in": 53.567,
-        "out": 32.363
+        "in": 6.719,
+        "out": 7.784
       }
     },
     {
       "id": "egfhela-jun-b6-nr4-er20-off",
       "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er20_off.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er20_off.batch",
         "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er20_off"
@@ -835,15 +848,15 @@
         }
       },
       "fusion1_seconds": {
-        "in": 7.134,
-        "out": 45.104
+        "in": 5.765,
+        "out": 41.017
       }
     },
     {
       "id": "egfhela-jun-b6-nr4-er20-on",
       "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er20_on.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er20_on.batch",
         "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er20_on"
@@ -893,15 +906,15 @@
         }
       },
       "fusion1_seconds": {
-        "in": 11.725,
-        "out": 30.767
+        "in": 11.061,
+        "out": 31.47
       }
     },
     {
       "id": "egfhela-jun-b6-nr4-er4-off",
       "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er4_off.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er4_off.batch",
         "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er4_off"
@@ -951,15 +964,15 @@
         }
       },
       "fusion1_seconds": {
-        "in": 10.297,
-        "out": 45.741
+        "in": 10.248,
+        "out": 46.953
       }
     },
     {
       "id": "egfhela-jun-b6-nr4-er4-on",
       "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er4_on.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er4_on.batch",
         "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_nr4_er4_on"
@@ -1009,15 +1022,15 @@
         }
       },
       "fusion1_seconds": {
-        "in": 6.587,
-        "out": 96.32
+        "in": 6.033,
+        "out": 97.415
       }
     },
     {
       "id": "egfhela-jun-b6-r5-12",
       "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_r5_12.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_r5_12.batch",
         "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_jun_b6_t700_f800_r5_12"
@@ -1067,15 +1080,15 @@
         }
       },
       "fusion1_seconds": {
-        "in": 39.948,
-        "out": 41.265
+        "in": 6.072,
+        "out": 12.237
       }
     },
     {
       "id": "egfhela-nfkb1-b6-nr4-er20-off",
       "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er20_off.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er20_off.batch",
         "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er20_off"
@@ -1123,15 +1136,15 @@
         }
       },
       "fusion1_seconds": {
-        "in": 29.766,
-        "out": 5.857
+        "in": 24.18,
+        "out": 5.261
       }
     },
     {
       "id": "egfhela-nfkb1-b6-nr4-er20-on",
       "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er20_on.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er20_on.batch",
         "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er20_on"
@@ -1179,15 +1192,15 @@
         }
       },
       "fusion1_seconds": {
-        "in": 24.416,
-        "out": 4.865
+        "in": 20.571,
+        "out": 4.308
       }
     },
     {
       "id": "egfhela-nfkb1-b6-nr4-er4-off",
       "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er4_off.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er4_off.batch",
         "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er4_off"
@@ -1235,15 +1248,15 @@
         }
       },
       "fusion1_seconds": {
-        "in": 23.626,
-        "out": 5.329
+        "in": 20.862,
+        "out": 4.795
       }
     },
     {
       "id": "egfhela-nfkb1-b6-nr4-er4-on",
       "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er4_on.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er4_on.batch",
         "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_nr4_er4_on"
@@ -1291,15 +1304,15 @@
         }
       },
       "fusion1_seconds": {
-        "in": 22.073,
-        "out": 4.487
+        "in": 19.645,
+        "out": 4.236
       }
     },
     {
       "id": "egfhela-nfkb1-b6-r5-12",
       "batch": "fusion1-batches/runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_r5_12.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_r5_12.batch",
         "outputs": "runs/egf_hela/experiment/egfr_to_il8_fsc_nfkb1_b6_t700_f800_r5_12"
@@ -1349,15 +1362,15 @@
         }
       },
       "fusion1_seconds": {
-        "in": 61.424,
-        "out": 46.411
+        "in": 38.156,
+        "out": 13.537
       }
     },
     {
       "id": "model-example",
       "batch": "fusion1-batches/macOS/model_example/run_model_example.batch",
       "tier": "T2",
-      "source": "regenerated (pending: artefacts from the recorded outputs)",
+      "source": "regenerated",
       "origin": {
         "batch": "macOS/model_example/run_model_example.batch",
         "outputs": "macOS/model_example/run",

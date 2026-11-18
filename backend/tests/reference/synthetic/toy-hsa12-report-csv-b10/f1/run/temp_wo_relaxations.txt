@@ -1,0 +1,38 @@
+Current PO point: 7 nodes, 5 edges relaxed
+Solution 1
+127	hsa3	hsa3	up_reg	not_present	inactive
+128	hsa4	hsa4	up_reg	not_present	inactive
+130	hsa6	hsa6	up_reg	not_present	inactive
+131	hsa7	hsa7	up_reg	not_present	active
+133	hsa9	hsa9	up_reg	not_present	inactive
+140	hsa18	hsa18	up_reg	not_present	inactive
+143	hsa21	hsa21	down_reg	present	active
+
+164	present	inhibition	hsa2	hsa2	hsa5	hsa5	src_present	src_active	tgt_present	tgt_active [-]
+170	present	inhibition	hsa8	hsa8	hsa11	hsa11	src_present	src_active	tgt_present	tgt_active [-]
+173	present	activation	hsa11	hsa11	hsa14	hsa14	src_present	src_active	tgt_present	tgt_inactive [-]
+178	present	activation	hsa17	hsa17	hsa20	hsa20	src_present	src_active	tgt_present	tgt_inactive [-]
+181	present	activation	hsa20	hsa20	hsa21	hsa21	src_present	src_inactive	tgt_present	tgt_active [-]
+
+
+Solution 2
+
+Current PO point: 6 nodes, 6 edges relaxed
+Solution 1
+127	hsa3	hsa3	up_reg	not_present	active
+128	hsa4	hsa4	up_reg	not_present	inactive
+130	hsa6	hsa6	up_reg	not_present	inactive
+131	hsa7	hsa7	up_reg	not_present	active
+133	hsa9	hsa9	up_reg	not_present	inactive
+140	hsa18	hsa18	up_reg	not_present	inactive
+
+164	present	inhibition	hsa2	hsa2	hsa5	hsa5	src_present	src_active	tgt_present	tgt_active [-]
+170	present	inhibition	hsa8	hsa8	hsa11	hsa11	src_present	src_active	tgt_present	tgt_active [-]
+173	present	activation	hsa11	hsa11	hsa14	hsa14	src_present	src_active	tgt_present	tgt_inactive [-]
+178	present	activation	hsa17	hsa17	hsa20	hsa20	src_present	src_active	tgt_present	tgt_inactive [-]
+181	present	activation	hsa20	hsa20	hsa21	hsa21	src_present	src_inactive	tgt_present	tgt_inactive [-]
+182	present	activation	hsa21	hsa21	hsa22	hsa22	src_present	src_inactive	tgt_present	tgt_active [-]
+
+
+Solution 2
+

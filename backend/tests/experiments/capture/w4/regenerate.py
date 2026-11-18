@@ -646,8 +646,14 @@ def main():
                 kept += [path.name] if path.exists() else []
             print(f"  {case['id']}: {len(toy[case['id']][0]) - len(kept)} toy files to write"
                   + (f", {len(kept)} already there and the same ({', '.join(kept)})" if kept else ""))
-        if f1_dir(case, root).exists():
-            stop(f"{f1_dir(case, root)} exists; results are never overwritten", dry)
+        # W4 writes f1/run/ and the console log, and a toy case's capture; W3 has already written
+        # the KEGG cases' f1/capture/, so only W4's own outputs must not exist yet.
+        own = [f1_dir(case, root) / "run", f1_dir(case, root) / "run_console.log"]
+        if case["tier"] == "T1":
+            own.append(f1_dir(case, root) / "capture")
+        for path in own:
+            if path.exists():
+                stop(f"{path} exists; results are never overwritten", dry)
         if not (FUSION1 / case["origin"]["outputs"]).is_dir():
             stop(f"{case['id']}: the recorded outputs {case['origin']['outputs']} are missing", dry)
     runs = plan_runs(cases, toy, stamp)

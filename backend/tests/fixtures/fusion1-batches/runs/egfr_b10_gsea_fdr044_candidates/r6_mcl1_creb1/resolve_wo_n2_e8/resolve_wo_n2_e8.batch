@@ -1,0 +1,124 @@
+;; **********************************************************************
+;; r6_mcl1_creb1, phase 2 re-solve of PO point (2 nodes, 8 edges), 2026-11-11
+;; The phase-2 search proved (2,8) sat (5738 s), but the later solution-writing check at that
+;; point was still running 3 h into its 4 h cap, and r5's equivalent check at (7,0) had timed
+;; out and left no witness. This repeats ../r6_mcl1_creb1.batch phase 2 unchanged (same
+;; inputs, 87-pathway list, avoid lists, seed) with the search window pinned to the single
+;; cell (2,8): the lower limits only set pathz3's window, the solver constraint stays
+;; nodes <= 2, edges <= 8, so it makes one query and writes its witness. The overall z3 timeout
+;; is raised from 4 h to 24 h because the point is already known sat. Phase 1 is not re-run;
+;; ../run is left untouched.
+;; **********************************************************************
+
+let $ONLY_ACT_EDGES_TO_TARGET 1
+let $ONLY_EXPR_EDGES_TO_TARGET 2
+let $BOTH_ACT_EXPR_EDGES_TO_TARGET 0
+
+let $WORK_DIR /home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_b10_gsea_fdr044_candidates/r6_mcl1_creb1
+let $INPUT_DIR $WORK_DIR/inputs
+let $WRITE_DIR $WORK_DIR/resolve_wo_n2_e8/run
+
+let $LOGFOLDCHANGES egf_hela_t120_lfc.tsv
+let $LOG_FOLD_CHANGE_FILE $INPUT_DIR/egf_hela_t120_lfc.tsv
+let $COEXPRESSION_CSV $INPUT_DIR/hsa_stringdb_coexpression_links_over400.csv
+
+let $COMMON_FILES_DIR $INPUT_DIR
+let $INTER_DB_MAP_FILE $COMMON_FILES_DIR/inter_db_mapping_file
+let $HSA_TO_GENE_SYMBOL_MAP_FILE $COMMON_FILES_DIR/hsa_to_gene_symbol_map.txt
+let $HSA_PATH_TO_PATH_NAME_MAP_FILE $COMMON_FILES_DIR/hsa_path_to_path_name_map.txt
+let $HSA_IDS_NOT_TO_BE_MERGED_FILE $COMMON_FILES_DIR/hsa_ids_not_to_be_merged.txt
+
+let $SRC_NODE hsa1956
+let $TGT_NODE hsa4170
+let $NODE_TO_TEST_FOR_SIGNIFICANCE hsa1385
+let $EDGES_TO_TARGET $ONLY_EXPR_EDGES_TO_TARGET
+
+let $REACH_PATH_BOUND 10
+let $EDGE_RELAX_LB 8
+let $EDGE_RELAX_UB 8
+let $NODE_RELAX_LB 2
+let $NODE_RELAX_UB 2
+let $UP_REG_THRESH 1.01
+let $DOWN_REG_THRESH -1.01
+let $NODE_SPLIT_THRESHOLD 1
+let $CONSTR_SOLVER_TIMEOUT1 3600000
+let $CONSTR_SOLVER_TIMEOUT2 86400000
+let $NUM_SOLNS_TO_COUNT 1
+let $NUM_SOLNS_TO_EXPLORE 1
+let $COEXP_THRESH 700
+let $FROZEN_THRESH 800
+let $NEW_CONSTRAINTS_ENABLED 1
+let $Z3_RANDOM_SEED 42
+
+exec mkdir -p $WRITE_DIR
+
+;; the original run's gsea selection (87 of 166), reused rather than recomputed
+let $GSEA_KGML_LIST $WORK_DIR/run/gsea_kgml_files.txt
+let $MERGED_PATHWAYS_XML_FILE  $WRITE_DIR/merged_master_graph.xml
+let $EXCEPTION_TO_NODE_MERGE_FILE $WRITE_DIR/exception_file.txt
+let $UP_REG_FILE $WRITE_DIR/up_reg
+let $DOWN_REG_FILE $WRITE_DIR/down_reg
+let $ESSENTIAL_NODES_FILE_WITHOUT_FSC $WRITE_DIR/essential_nodes_file_wo_$NODE_TO_TEST_FOR_SIGNIFICANCE
+let $ACTIVE_NODES_FILE_WITHOUT_FSC $WRITE_DIR/active_nodes_file_wo_$NODE_TO_TEST_FOR_SIGNIFICANCE
+let $NONRELAXED_NODES_FILE_WITHOUT_FSC $WRITE_DIR/nonrelaxed_nodes_file_wo_$NODE_TO_TEST_FOR_SIGNIFICANCE
+let $CONNECT_PAIRS_FILE $WRITE_DIR/connect_pairs
+let $SRC_FILE $WRITE_DIR/src_file
+let $TGT_FILE $WRITE_DIR/tgt_file
+
+let $ESSENTIAL_EDGES_FILE $WRITE_DIR/empty_file
+let $INACTIVE_NODES_FILE $WRITE_DIR/empty_file
+let $CONFIRMED_UP_REG_FILE $WRITE_DIR/empty_file
+let $CONFIRMED_DOWN_REG_FILE $WRITE_DIR/empty_file
+let $RELAXED_NODES_FILE $WRITE_DIR/empty_file
+let $RELAXED_EDGES_FILE $WRITE_DIR/empty_file
+let $NONRELAXED_EDGES_FILE $WRITE_DIR/empty_file
+
+cudf $LOG_FOLD_CHANGE_FILE $UP_REG_THRESH $DOWN_REG_THRESH $UP_REG_FILE $DOWN_REG_FILE
+
+exec cd $WRITE_DIR; echo $SRC_NODE > $SRC_FILE; echo $TGT_NODE > $TGT_FILE
+exec echo $SRC_NODE $TGT_NODE > $CONNECT_PAIRS_FILE
+exec cat $UP_REG_FILE $DOWN_REG_FILE $SRC_FILE $TGT_FILE $HSA_IDS_NOT_TO_BE_MERGED_FILE > $EXCEPTION_TO_NODE_MERGE_FILE
+exec touch $WRITE_DIR/empty_file
+
+start $INTER_DB_MAP_FILE $EXCEPTION_TO_NODE_MERGE_FILE $HSA_TO_GENE_SYMBOL_MAP_FILE $HSA_PATH_TO_PATH_NAME_MAP_FILE
+
+mff $GSEA_KGML_LIST xml $NODE_SPLIT_THRESHOLD n $INTER_DB_MAP_FILE -1
+size 0
+wgx 0 $MERGED_PATHWAYS_XML_FILE KEGG
+exec mv edges_merged_filename $WRITE_DIR/merged_edges_file
+
+rgx $MERGED_PATHWAYS_XML_FILE y $NODE_SPLIT_THRESHOLD
+size 0
+let $MERGED_GRAPH_NUM #LASTGRAPHNUM
+
+fb_rch 0 $SRC_NODE -1 $TGT_NODE -1 -1 $REACH_PATH_BOUND $EDGES_TO_TARGET
+size 0
+
+;; Phase 2 exactly as in ../r6_mcl1_creb1.batch (CREB1 + every CREB -> MCL1 expression edge avoided)
+fb_rch $MERGED_GRAPH_NUM $SRC_NODE -1 $TGT_NODE -1 -1 $REACH_PATH_BOUND $EDGES_TO_TARGET
+size 0
+exec mv fb_rch $WRITE_DIR/fb_rch
+exec mv fb_rch_back $WRITE_DIR/fb_rch_back
+exec cat $SRC_FILE $TGT_FILE > $ACTIVE_NODES_FILE_WITHOUT_FSC
+exec cat $SRC_FILE $TGT_FILE > $NONRELAXED_NODES_FILE_WITHOUT_FSC
+exec cat $SRC_FILE $TGT_FILE > $ESSENTIAL_NODES_FILE_WITHOUT_FSC
+let $AVOID_NODES_FILE_WITHOUT_FSC $WRITE_DIR/avoid_nodes_file_wo_$NODE_TO_TEST_FOR_SIGNIFICANCE
+exec printf '%s\n' hsa1385 > $AVOID_NODES_FILE_WITHOUT_FSC
+let $AVOID_EDGES_FILE_WITHOUT_FSC $WRITE_DIR/avoid_edges_file_wo_$NODE_TO_TEST_FOR_SIGNIFICANCE
+exec printf '%s\n' 'hsa1385 hsa4170 expression' 'hsa468 hsa4170 expression' 'hsa10488 hsa4170 expression' 'hsa1386 hsa4170 expression' > $AVOID_EDGES_FILE_WITHOUT_FSC
+let $FILENAME_PREFIX_WITHOUT_FSC $WRITE_DIR/temp_wo
+let $PO_SEARCH_MODE_WITHOUT_FSC 0
+exec echo "[mcl1_creb1 resolve] pathz3 phase 2 (window n=2, e=8) : start $(date)" >> $WRITE_DIR/timing.log
+exec date +%s.%N > $WRITE_DIR/timing_wo_start
+pathz3 0 $PO_SEARCH_MODE_WITHOUT_FSC $CONNECT_PAIRS_FILE $EDGE_RELAX_LB $NODE_RELAX_LB $EDGE_RELAX_UB $NODE_RELAX_UB $REACH_PATH_BOUND $FILENAME_PREFIX_WITHOUT_FSC $UP_REG_FILE $DOWN_REG_FILE $ESSENTIAL_NODES_FILE_WITHOUT_FSC $AVOID_NODES_FILE_WITHOUT_FSC $ESSENTIAL_EDGES_FILE $AVOID_EDGES_FILE_WITHOUT_FSC $ACTIVE_NODES_FILE_WITHOUT_FSC $INACTIVE_NODES_FILE $CONFIRMED_UP_REG_FILE $CONFIRMED_DOWN_REG_FILE $RELAXED_NODES_FILE $NONRELAXED_NODES_FILE_WITHOUT_FSC $RELAXED_EDGES_FILE $NONRELAXED_EDGES_FILE $LOG_FOLD_CHANGE_FILE $NUM_SOLNS_TO_COUNT $NUM_SOLNS_TO_EXPLORE $CONSTR_SOLVER_TIMEOUT1 $CONSTR_SOLVER_TIMEOUT2 $COEXPRESSION_CSV $COEXP_THRESH $FROZEN_THRESH $NEW_CONSTRAINTS_ENABLED $Z3_RANDOM_SEED
+exec date +%s.%N > $WRITE_DIR/timing_wo_end
+exec awk 'NR==FNR{a=$1;next}{printf "[mcl1_creb1 resolve] pathz3 phase 2 : elapsed %.3f s\n", $1-a}' $WRITE_DIR/timing_wo_start $WRITE_DIR/timing_wo_end >> $WRITE_DIR/timing.log
+exec mv limits_timefile.txt $WRITE_DIR/limits_timefile.txt
+exec mv PO.dat $WRITE_DIR/PO.dat
+
+;; Explanation subgraph for the re-solved point only
+pex 0 0 $WRITE_DIR/temp_wo_solutions.txt $WRITE_DIR/temp_wo_relaxations.txt $LOG_FOLD_CHANGE_FILE $HSA_PATH_TO_PATH_NAME_MAP_FILE $SRC_NODE $TGT_NODE excl 2,8 $WRITE_DIR/pex
+
+exec mv mylog.txt $WRITE_DIR/mylog.txt
+
+exit

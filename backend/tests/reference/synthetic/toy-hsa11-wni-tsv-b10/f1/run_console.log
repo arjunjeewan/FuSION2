@@ -1,0 +1,213 @@
+Entering batch mode
+No configuration provided.
+Log Manager Object is created
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                  exec if [ -d /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10 ] ; then /bin/rm -rf /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10; fi 
+-------------------------------
+exec mkdir /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10 
+-------------------------------
+cudf /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/with_node_included.tsv 0.9 -0.9 /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/up_reg /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/down_reg 
+-------------------------------
+exec cd /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10; echo hsa1 > /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/src_file; echo hsa22 > /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/tgt_file 
+-------------------------------
+exec cd /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10; 
+-------------------------------
+exec echo hsa1 hsa22 > /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/connect_pairs 
+-------------------------------
+exec cat /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/up_reg /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/down_reg /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/src_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/tgt_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file > /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/exception_file.txt 
+-------------------------------
+exec touch /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/empty_file 
+-------------------------------
+start /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/exception_file.txt /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file 
+-------------------------------
+----------------------------
+/home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/exception_file.txt -1 
+----------------------------
+0
+0
+exec if [ -f /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/list_of_xml_files_new.txt ] ; then /bin/rm /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/list_of_xml_files_new.txt; fi 
+-------------------------------
+exec echo /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/with_node_included.xml | cat > /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/list_of_xml_files_new.txt 
+-------------------------------
+mff /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/list_of_xml_files_new.txt xml 1 y /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file -1 
+-------------------------------
+/home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file has 0 entries
+Read map with 0 entries
+Starting to read files
+Read graph: 1 from file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/with_node_included.xml
+Only one graph. Returning same.
+New graph: 1
+Total time taken (in sec): 0.00
+size 0 
+-------------------------------
+Number of nodes: 22 (22 genes, 0 complexes, 0 compounds, 0 others) 0 isolated
+Number of edges: 25
+wgx 0 /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/merged_master_graph.xml KEGG 
+-------------------------------
+22 nodes written to xml file
+25 edges written to xml file
+exec mv edges_merged_filename /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/merged_edges_file 
+-------------------------------
+mv: cannot stat 'edges_merged_filename': No such file or directory
+rgx /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/merged_master_graph.xml y 1 
+-------------------------------
+Creating graph...
+Read graph: 2 from file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/merged_master_graph.xml
+Done!
+New graph id: 2
+Time taken (in sec): 0.00
+size 0 
+-------------------------------
+Number of nodes: 22 (22 genes, 0 complexes, 0 compounds, 0 others) 0 isolated
+Number of edges: 25
+fb_rch 0 hsa1 -1 hsa22 -1 -1 10 0 
+-------------------------------
+Bound: 10
+0 out of 2 edges to target excluded due to choice of activation/expression edges to target.
+fwd nodes 20
+eids 25
+edges 22
+Forward reachable graph id: 3 has 20 nodes 22 edges 
+New graph 4 has 20 nodes 22 edges
+Reachability Graph: 4
+size 0 
+-------------------------------
+Number of nodes: 20 (20 genes, 0 complexes, 0 compounds, 0 others) 0 isolated
+Number of edges: 22
+exec cat /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/src_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/tgt_file > /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/active_nodes_file_w_hsa11 
+-------------------------------
+exec echo hsa11 >> /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/active_nodes_file_w_hsa11 
+-------------------------------
+exec cat /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/src_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/tgt_file > /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/nonrelaxed_nodes_file_w_hsa11 
+-------------------------------
+exec echo hsa11 >> /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/nonrelaxed_nodes_file_w_hsa11 
+-------------------------------
+exec cat /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/src_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/tgt_file > /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/essential_nodes_file_w_hsa11 
+-------------------------------
+exec echo hsa11 >> /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/essential_nodes_file_w_hsa11 
+-------------------------------
+pathz3 0 0 /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/connect_pairs 0 0 7 7 10 /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/temp_w /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/up_reg /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/down_reg /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/essential_nodes_file_w_hsa11 /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/active_nodes_file_w_hsa11 /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/nonrelaxed_nodes_file_w_hsa11 /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/with_node_included.tsv 1 1 30000 150000 %__a21__% %__a22__% %__a23__% 1 42 
+-------------------------------
+[new-constraints] enabled=0 z3_random_seed=42
+[smt-dump] writing SMT2 dumps to with_node_included_smt-files_20261117_184917/
+1 connect pairs
+Nodes to avoid: 0
+Edges to avoid: 0
+Nodes to be active: 3
+Nodes to be inactive: 0
+Nodes not to relax: 3
+Edges not to relax: 0
+
+Up: 14 Down: 5
+Beginning to generate constraints
+Source: (hsa1) Target: (hsa22)
+[new-constraints] disabled (coexpression + frozen-edge constraints skipped)
+Finished generating constraints
+Not printing matrices in the current run
+Solving constraints to generate PO points...
+This may take some time ... See limits_timefile.txt to check progress
+(5, 4)
+(3, 6)
+(7, 2)
+(6, 3)
+4 PO points found
+(3 ,6) is not dominated
+(5 ,4) is not dominated
+(6 ,3) is not dominated
+(7 ,2) is not dominated
+Solution 1
+Solution 2
+Solution 1
+Solution 2
+Solution 1
+Solution 2
+Solution 1
+Solution 2
+[pathz3 timing] Total wall-clock time: 0.21 s (205.23 ms)
+exec mv limits_timefile.txt /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/hsa1_to_hsa22_w_hsa11_with_node_included.tsv_b10_limits_timefile.txt 
+-------------------------------
+exec mv PO.dat /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/hsa1_to_hsa22_w_hsa11_with_node_included.tsv_b10.dat 
+-------------------------------
+fb_rch 2 hsa1 -1 hsa22 -1 -1 10 0 
+-------------------------------
+Bound: 10
+0 out of 2 edges to target excluded due to choice of activation/expression edges to target.
+fwd nodes 20
+eids 25
+edges 22
+Forward reachable graph id: 6 has 20 nodes 22 edges 
+New graph 7 has 20 nodes 22 edges
+Reachability Graph: 7
+size 0 
+-------------------------------
+Number of nodes: 20 (20 genes, 0 complexes, 0 compounds, 0 others) 0 isolated
+Number of edges: 22
+exec mv fb_rch /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/fb_rch 
+-------------------------------
+exec mv fb_rch_back /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/fb_rch_back 
+-------------------------------
+exec cat /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/src_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/tgt_file > /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/active_nodes_file_wo_hsa11 
+-------------------------------
+exec cat /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/src_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/tgt_file > /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/nonrelaxed_nodes_file_wo_hsa11 
+-------------------------------
+exec cat /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/src_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/tgt_file > /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/essential_nodes_file_wo_hsa11 
+-------------------------------
+exec if [ -f /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/avoid_hsa11_file ] ; then /bin/rm /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/avoid_hsa11_file; fi 
+-------------------------------
+exec echo hsa11 > /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/avoid_hsa11_file 
+-------------------------------
+pathz3 0 0	 /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/connect_pairs 0 0 7 7 10 /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/temp_wo /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/up_reg /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/down_reg /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/essential_nodes_file_wo_hsa11 /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/avoid_hsa11_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/active_nodes_file_wo_hsa11 /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/nonrelaxed_nodes_file_wo_hsa11 /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/empty_file /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/inputs/with_node_included.tsv 1 1 30000 150000 %__a21__% %__a22__% %__a23__% 1 42 
+-------------------------------
+[new-constraints] enabled=0 z3_random_seed=42
+[smt-dump] writing SMT2 dumps to with_node_included_smt-files_20261117_184918/
+1 connect pairs
+Nodes to avoid: 1
+Edges to avoid: 0
+Nodes to be active: 2
+Nodes to be inactive: 0
+Nodes not to relax: 2
+Edges not to relax: 0
+
+Up: 13 Down: 5
+Beginning to generate constraints
+Source: (hsa1) Target: (hsa22)
+[new-constraints] disabled (coexpression + frozen-edge constraints skipped)
+Finished generating constraints
+Not printing matrices in the current run
+Solving constraints to generate PO points...
+This may take some time ... See limits_timefile.txt to check progress
+(3, 3)
+(1, 6)
+(5, 1)
+3 PO points found
+(1 ,6) is not dominated
+(3 ,3) is not dominated
+(5 ,1) is not dominated
+Solution 1
+Solution 2
+Solution 1
+Solution 2
+Solution 1
+Solution 2
+[pathz3 timing] Total wall-clock time: 0.18 s (181.95 ms)
+exec mv limits_timefile.txt /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/hsa1_to_hsa22_wo_hsa11_with_node_included.tsv_b10_limits_timefile.txt 
+-------------------------------
+exec mv PO.dat /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/hsa1_to_hsa22_wo_hsa11_with_node_included.tsv_b10.dat 
+-------------------------------
+exec cd /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10; gnuplot -p -e "set xlabel 'Node relaxn'; set ylabel 'Edge relaxn'; set xrange [-0.5:7+0.5]; set yrange [-0.5:7+0.5]; plot 'hsa1_to_hsa22_w_hsa11_with_node_included.tsv_b10.dat' with lp linecolor 'blue', 'hsa1_to_hsa22_wo_hsa11_with_node_included.tsv_b10.dat' with lp linecolor 'red'; exit" 
+-------------------------------
+WARNING: Plotting with 'unknown' terminal.
+No output will be generated. Please select a terminal with 'set terminal'.
+exec echo "Saving plot in /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10.png ..." 
+-------------------------------
+Saving plot in /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10.png ...
+exec cd /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10; gnuplot -p -e "set term png; set output '/home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10.png'; set xlabel 'Node relaxn'; set ylabel 'Edge relaxn'; set xrange [-0.5:7+0.5]; set yrange [-0.5:7+0.5]; plot 'hsa1_to_hsa22_w_hsa11_with_node_included.tsv_b10.dat' with lp linecolor 'blue', 'hsa1_to_hsa22_wo_hsa11_with_node_included.tsv_b10.dat' with lp linecolor 'red'; exit" 
+-------------------------------
+exec mv mylog.txt /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa11-wni-tsv-b10/hsa1_to_hsa22_fsc_hsa11_with_node_included.tsv_b10/mylog.txt 
+-------------------------------
+exit 
+-------------------------------
+Number of Log entries made totally:0
+
+ LogManager Object is deleted 
+
+

@@ -1,0 +1,128 @@
+;; **********************************************************************
+;; EGFR candidate set, target-only single solves, 2026-11-16 : r36_cxcl8_single
+;; EGFR (hsa1956) -> CXCL8 (hsa3576), target-only (single solve, no FSC).
+;; Question: how is CXCL8 induction explained with expression edges only into CXCL8?
+;; r0-r4 also allowed activation edges into it (JUN -> CXCL8, NOD-like receptor map).
+;;
+;; Shared design (see ../README.md): HeLa EGF t=120 log2FC (3*SD = 1.01), GSEA
+;; fdr:0.44 (87 pathways), b10, <= 8 node / 8 edge relaxations, coexp > 700,
+;; frozen > 800, seed 42, 1 h / 4 h z3 timeouts. RHOA, RAC1, CDC42, STAT3 and
+;; CREB1 are split out of their KEGG family nodes (inputs/hsa_ids_not_to_be_merged.txt).
+;; Graph and inputs = r5_mcl1_stat3_string125's (KEGG only, STRING v12.5 scores, no curated
+;; KGML): inputs/ is a copy of its inputs/; gsea is not re-run.
+;; Edges into the target: expression only (the readout is mRNA induction).
+;; **********************************************************************
+
+let $ONLY_ACT_EDGES_TO_TARGET 1
+let $ONLY_EXPR_EDGES_TO_TARGET 2
+let $BOTH_ACT_EXPR_EDGES_TO_TARGET 0
+
+let $WORK_DIR /home/ks-149-u24/Desktop/arjun/FuSION/runs/egfr_b10_gsea_fdr044_candidates/r36_cxcl8_single
+let $INPUT_DIR $WORK_DIR/inputs
+let $WRITE_SUBDIR run
+let $WRITE_DIR $WORK_DIR/$WRITE_SUBDIR
+
+let $LOGFOLDCHANGES egf_hela_t120_lfc.tsv
+let $LOG_FOLD_CHANGE_FILE $INPUT_DIR/egf_hela_t120_lfc.tsv
+let $COEXPRESSION_CSV $INPUT_DIR/hsa_stringdb_v12.5_coexpression_graph_pairs.csv
+
+let $COMMON_FILES_DIR $INPUT_DIR
+let $INTER_DB_MAP_FILE $COMMON_FILES_DIR/inter_db_mapping_file
+let $HSA_TO_GENE_SYMBOL_MAP_FILE $COMMON_FILES_DIR/hsa_to_gene_symbol_map.txt
+let $HSA_PATH_TO_PATH_NAME_MAP_FILE $COMMON_FILES_DIR/hsa_path_to_path_name_map.txt
+let $HSA_IDS_NOT_TO_BE_MERGED_FILE $COMMON_FILES_DIR/hsa_ids_not_to_be_merged.txt
+
+let $SRC_NODE hsa1956
+let $TGT_NODE hsa3576
+let $NODE_TO_TEST_FOR_SIGNIFICANCE target_only
+let $EDGES_TO_TARGET $ONLY_EXPR_EDGES_TO_TARGET
+
+let $REACH_PATH_BOUND 10
+let $EDGE_RELAX_LB 0
+let $EDGE_RELAX_UB 8
+let $NODE_RELAX_LB 0
+let $NODE_RELAX_UB 8
+let $UP_REG_THRESH 1.01
+let $DOWN_REG_THRESH -1.01
+let $NODE_SPLIT_THRESHOLD 1
+let $CONSTR_SOLVER_TIMEOUT1 3600000
+let $CONSTR_SOLVER_TIMEOUT2 14400000
+let $NUM_SOLNS_TO_COUNT 1
+let $NUM_SOLNS_TO_EXPLORE 1
+let $COEXP_THRESH 700
+let $FROZEN_THRESH 800
+let $NEW_CONSTRAINTS_ENABLED 1
+let $Z3_RANDOM_SEED 42
+
+exec mkdir -p $WRITE_DIR
+
+;; r5_mcl1_stat3's gsea selection (87 of 166), reused rather than recomputed
+let $GSEA_KGML_LIST $INPUT_DIR/gsea_kgml_files.txt
+let $MERGED_PATHWAYS_XML_FILE  $WRITE_DIR/merged_master_graph.xml
+let $EXCEPTION_TO_NODE_MERGE_FILE $WRITE_DIR/exception_file.txt
+let $UP_REG_FILE $WRITE_DIR/up_reg
+let $DOWN_REG_FILE $WRITE_DIR/down_reg
+let $ESSENTIAL_NODES_FILE_WITH_FSC $WRITE_DIR/essential_nodes_file_w_$NODE_TO_TEST_FOR_SIGNIFICANCE
+let $ACTIVE_NODES_FILE_WITH_FSC $WRITE_DIR/active_nodes_file_w_$NODE_TO_TEST_FOR_SIGNIFICANCE
+let $NONRELAXED_NODES_FILE_WITH_FSC $WRITE_DIR/nonrelaxed_nodes_file_w_$NODE_TO_TEST_FOR_SIGNIFICANCE
+let $CONNECT_PAIRS_FILE $WRITE_DIR/connect_pairs
+let $SRC_FILE $WRITE_DIR/src_file
+let $TGT_FILE $WRITE_DIR/tgt_file
+
+let $ESSENTIAL_EDGES_FILE $WRITE_DIR/empty_file
+let $AVOID_EDGES_FILE_WITH_FSC $WRITE_DIR/empty_file
+let $INACTIVE_NODES_FILE $WRITE_DIR/empty_file
+let $CONFIRMED_UP_REG_FILE $WRITE_DIR/empty_file
+let $CONFIRMED_DOWN_REG_FILE $WRITE_DIR/empty_file
+let $RELAXED_NODES_FILE $WRITE_DIR/empty_file
+let $RELAXED_EDGES_FILE $WRITE_DIR/empty_file
+let $NONRELAXED_EDGES_FILE $WRITE_DIR/empty_file
+
+cudf $LOG_FOLD_CHANGE_FILE $UP_REG_THRESH $DOWN_REG_THRESH $UP_REG_FILE $DOWN_REG_FILE
+
+exec cd $WRITE_DIR; echo $SRC_NODE > $SRC_FILE; echo $TGT_NODE > $TGT_FILE
+exec echo $SRC_NODE $TGT_NODE > $CONNECT_PAIRS_FILE
+exec cat $UP_REG_FILE $DOWN_REG_FILE $SRC_FILE $TGT_FILE $HSA_IDS_NOT_TO_BE_MERGED_FILE > $EXCEPTION_TO_NODE_MERGE_FILE
+exec touch $WRITE_DIR/empty_file
+
+start $INTER_DB_MAP_FILE $EXCEPTION_TO_NODE_MERGE_FILE $HSA_TO_GENE_SYMBOL_MAP_FILE $HSA_PATH_TO_PATH_NAME_MAP_FILE
+
+;; gsea not re-run: inputs/gsea_kgml_files.txt is r5_mcl1_stat3's selection
+
+mff $GSEA_KGML_LIST xml $NODE_SPLIT_THRESHOLD n $INTER_DB_MAP_FILE -1
+size 0
+wgx 0 $MERGED_PATHWAYS_XML_FILE KEGG
+exec mv edges_merged_filename $WRITE_DIR/merged_edges_file
+
+rgx $MERGED_PATHWAYS_XML_FILE y $NODE_SPLIT_THRESHOLD
+size 0
+let $MERGED_GRAPH_NUM #LASTGRAPHNUM
+
+fb_rch 0 $SRC_NODE -1 $TGT_NODE -1 -1 $REACH_PATH_BOUND $EDGES_TO_TARGET
+size 0
+
+;; Phase 1 : unconstrained (target-only)
+exec cat $SRC_FILE $TGT_FILE > $ACTIVE_NODES_FILE_WITH_FSC
+exec cat $SRC_FILE $TGT_FILE > $NONRELAXED_NODES_FILE_WITH_FSC
+exec cat $SRC_FILE $TGT_FILE > $ESSENTIAL_NODES_FILE_WITH_FSC
+let $AVOID_NODES_FILE_WITH_FSC $WRITE_DIR/empty_file
+let $FILENAME_PREFIX_WITH_FSC $WRITE_DIR/temp_w
+let $PO_SEARCH_MODE_WITH_FSC 0
+exec echo "[cxcl8_single] pathz3 phase 1 : start $(date)" >> $WRITE_DIR/timing.log
+exec date +%s.%N > $WRITE_DIR/timing_w_start
+pathz3 0 $PO_SEARCH_MODE_WITH_FSC $CONNECT_PAIRS_FILE $EDGE_RELAX_LB $NODE_RELAX_LB $EDGE_RELAX_UB $NODE_RELAX_UB $REACH_PATH_BOUND $FILENAME_PREFIX_WITH_FSC $UP_REG_FILE $DOWN_REG_FILE $ESSENTIAL_NODES_FILE_WITH_FSC $AVOID_NODES_FILE_WITH_FSC $ESSENTIAL_EDGES_FILE $AVOID_EDGES_FILE_WITH_FSC $ACTIVE_NODES_FILE_WITH_FSC $INACTIVE_NODES_FILE $CONFIRMED_UP_REG_FILE $CONFIRMED_DOWN_REG_FILE $RELAXED_NODES_FILE $NONRELAXED_NODES_FILE_WITH_FSC $RELAXED_EDGES_FILE $NONRELAXED_EDGES_FILE $LOG_FOLD_CHANGE_FILE $NUM_SOLNS_TO_COUNT $NUM_SOLNS_TO_EXPLORE $CONSTR_SOLVER_TIMEOUT1 $CONSTR_SOLVER_TIMEOUT2 $COEXPRESSION_CSV $COEXP_THRESH $FROZEN_THRESH $NEW_CONSTRAINTS_ENABLED $Z3_RANDOM_SEED
+exec date +%s.%N > $WRITE_DIR/timing_w_end
+exec awk 'NR==FNR{a=$1;next}{printf "[cxcl8_single] pathz3 phase 1 : elapsed %.3f s\n", $1-a}' $WRITE_DIR/timing_w_start $WRITE_DIR/timing_w_end >> $WRITE_DIR/timing.log
+let $PO_POINTS_WITH_FSC $SRC_NODE_to_$TGT_NODE_w_$NODE_TO_TEST_FOR_SIGNIFICANCE_$LOGFOLDCHANGES_b$REACH_PATH_BOUND
+exec mv limits_timefile.txt $WRITE_DIR/$PO_POINTS_WITH_FSC_limits_timefile.txt
+exec mv PO.dat $WRITE_DIR/$PO_POINTS_WITH_FSC.dat
+
+exec mv fb_rch $WRITE_DIR/fb_rch
+exec mv fb_rch_back $WRITE_DIR/fb_rch_back
+;; Single solve: the PO plot is drawn by the report (plot_po.sh needs two arms).
+;; Interactive explanation subgraphs for EVERY PO point
+pex $WRITE_DIR/temp_w_solutions.txt $WRITE_DIR/temp_w_relaxations.txt 0 0 $LOG_FOLD_CHANGE_FILE $HSA_PATH_TO_PATH_NAME_MAP_FILE $SRC_NODE $TGT_NODE incl all $WRITE_DIR/pex
+
+exec mv mylog.txt $WRITE_DIR/mylog.txt
+
+exit

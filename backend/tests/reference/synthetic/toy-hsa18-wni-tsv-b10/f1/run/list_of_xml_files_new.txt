@@ -1,0 +1,1 @@
+/home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/w4-20261117-184901-toy-hsa18-wni-tsv-b10/inputs/report_example_with_pathways.xml
