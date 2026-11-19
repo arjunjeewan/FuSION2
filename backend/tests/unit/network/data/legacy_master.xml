@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!DOCTYPE pathway SYSTEM "http://www.kegg.jp/kegg/xml/KGML_v0.7.1_.dtd">
+<pathway name="KEGG">
+	<entry id="1" name="t1" type="gene">
+		<graphics name="G1"/>
+	</entry>
+	<entry id="2" name="t2 t3 t4" type="gene">
+		<graphics name="G2, G3, G4"/>
+	</entry>
+	<entry id="3" name="t3" type="gene">
+		<graphics name="G3"/>
+	</entry>
+	<entry id="4" name="t5 t9" type="gene">
+		<graphics name="G5, G9"/>
+	</entry>
+	<entry id="5" name="t5 t6" type="gene">
+		<graphics name="G5, G6"/>
+	</entry>
+	<entry id="6" name="t7" type="gene">
+		<graphics name="G7"/>
+	</entry>
+	<entry id="7" name="undefined" type="group">
+		<graphics name="[G13+G7]"/>
+		<component id="11"/>
+		<component id="6"/>
+	</entry>
+	<entry id="8" name="t8" type="gene">
+		<graphics name="G8"/>
+	</entry>
+	<entry id="9" name="t10 t11" type="gene">
+		<graphics name="G10, G11"/>
+	</entry>
+	<entry id="10" name="t10 t12" type="gene">
+		<graphics name="G10, G12"/>
+	</entry>
+	<entry id="11" name="t13" type="gene">
+		<graphics name="G13"/>
+	</entry>
+	<entry id="12" name="t14" type="gene">
+		<graphics name="G14"/>
+	</entry>
+	<relation entry1="2" entry2="1" type="PPrel" pathways="path:a" experiment_score="5">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="3" entry2="6" type="PPrel" pathways="path:a" experiment_score="1">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="4" entry2="6" type="PPrel" pathways="path:b">
+		<subtype name="inhibition"/>
+	</relation>
+	<relation entry1="5" entry2="1" type="PPrel" pathways="path:b" experiment_score="2">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="7" entry2="1" type="PPrel" pathways="path:a">
+		<subtype name="binding/association"/>
+	</relation>
+	<relation entry1="8" entry2="1" type="PPrel" pathways="path:a">
+		<subtype name="activation"/>
+		<subtype name="indirect effect"/>
+	</relation>
+	<relation entry1="9" entry2="6" type="PPrel" pathways="path:c">
+		<subtype name="indirect effect"/>
+	</relation>
+	<relation entry1="10" entry2="6" type="PPrel" pathways="path:c" experiment_score="3">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="2" entry2="1" type="PPrel" pathways="path:c" experiment_score="9">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="6" entry2="1" type="PPrel" pathways="path:a">
+		<subtype name="activation"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+</pathway>

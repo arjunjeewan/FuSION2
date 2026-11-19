@@ -932,7 +932,7 @@ S2.25 has decided the rest: keep `wgx`'s XML format and element structure, escap
   - S2.22 and S2.13 need the exceptions split out of a saved merge whenever a new FSC sits in a family node. That needs the boxes and relations, not only the merged nodes: a union made through an exception id must be undone (the {FOS, MAPK9, MAPK10, SP1} case of 03).
   - The embedded sources cost about 18 % of the raw KGML bytes (348 KB for the 42 KGMLs, 2.1 MB for all 273). An entry no relation reaches can never become a node, so leaving it out loses nothing a rebuild needs.
   - FuSION 1 reads only root-level `entry` and `relation` children (`XMLParser.cc:635`, `666`), so the header and sources do not disturb it.
-- **Decision:** as proposed (prompt log entry 160)
+- **Decision:** as proposed (prompt log entry 160). *Sprint (prompt log entry 309):* the network module's reader needs five more things to rebuild a network exactly, and the format carries them: a `flags` attribute on relations; `flags="exception"` on entries; `<claim>` elements that keep the legacy reader's holder order; `size` and `format` attributes on `<input>`; and an `<id_map>` element. FuSION 1 still reads 2.0's files, because it reads only the `entry` and `relation` elements and ignores attributes it does not know.
 
 ### 02.C5 · The legacy reader: which files, and how exactly it reproduces FuSION 1
 

@@ -1,0 +1,13 @@
+# tst00001.xml transcribed into the exchange format (02.C2); the pathway is the file stem
+source	target	type	subtypes	pathways	score	source_type	target_type
+t1	t2,t3	PPrel	activation		625
+t2,t3	t10,t4,t5	PPrel	inhibition,phosphorylation		625x
+t10,t4,t5	t7	GErel	expression
+t6+t2,t3	t7	PPrel	activation		100
+t12	t1	PPrel	binding/association		300
+t7	t8	PPrel	activation,indirect effect
+t9	t7	ECrel	compound		0
+t7	pathtst00002	maplink	compound			gene	map
+t1	t2,t3	PPrel	activation		700
+t6	t6	PPrel	activation
+cpd:C00001	t1	PCrel	activation			compound
