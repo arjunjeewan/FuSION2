@@ -1,0 +1,62 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://fusion.local/schemas/fusion.view/1",
+ "title": "FuSION 2.0 explanation view, format fusion.view version 1 (section 07, 07.C2; 2A.10)",
+ "type": "object",
+ "additionalProperties": false,
+ "required": ["format", "version", "solve", "case", "label", "n", "e", "title", "subtitle", "certification", "certified",
+              "missing", "enumeration", "paths", "witness", "edge_table", "source", "target", "fsc", "observations",
+              "pathways", "witnesses"],
+ "properties": {
+  "format": {"enum": ["fusion.view"]},
+  "version": {"enum": [1]},
+  "solve": {"type": "string"}, "case": {"enum": ["in", "out", "free"]}, "label": {"type": "string"},
+  "n": {"$ref": "#/$defs/count"}, "e": {"$ref": "#/$defs/count"},
+  "title": {"type": "string"}, "subtitle": {"type": "string"}, "certification": {"type": "string"},
+  "certified": {"type": "boolean"}, "missing": {"type": "string"},
+  "enumeration": {"enum": ["not_requested", "complete", "limit_reached", "stopped_unknown"]},
+  "paths": {"type": "string"}, "witness": {"type": "integer", "minimum": 1}, "edge_table": {"type": "boolean"},
+  "source": {"type": "string"}, "target": {"type": "string"},
+  "fsc": {"type": "array", "items": {"type": "string"}},
+  "observations": {"type": "object", "additionalProperties": {"$ref": "#/$defs/count"}},
+  "pathways": {"type": "object", "additionalProperties": {"type": "string"}},
+  "witnesses": {"type": "array", "items": {
+   "type": "object", "additionalProperties": false, "required": ["counts", "shortest", "route", "nodes", "edges", "parked"],
+   "properties": {
+    "counts": {"type": "object", "additionalProperties": false, "required": ["n", "e"],
+               "properties": {"n": {"$ref": "#/$defs/count"}, "e": {"$ref": "#/$defs/count"}}},
+    "shortest": {"type": ["integer", "null"]}, "route": {"type": "string"},
+    "nodes": {"type": "array", "items": {
+     "type": "object", "additionalProperties": false,
+     "required": ["key", "label", "kind", "observed", "present", "active", "relaxed", "level", "roles", "members"],
+     "properties": {
+      "key": {"type": "string"}, "label": {"type": "string"}, "kind": {"enum": ["gene", "complex", "compound", "other"]},
+      "observed": {"enum": ["none", "up", "down"]}, "present": {"type": "boolean"}, "active": {"type": "boolean"},
+      "relaxed": {"type": "boolean"}, "level": {"type": "integer"},
+      "roles": {"type": "array", "items": {"enum": ["source", "target", "fsc"]}},
+      "members": {"type": "array", "items": {
+       "type": "object", "additionalProperties": false, "required": ["id", "symbol", "lfc"],
+       "properties": {"id": {"type": "string"}, "symbol": {"type": "string"}, "lfc": {"type": ["number", "null"]}}}}}}},
+    "edges": {"type": "array", "items": {
+     "type": "object", "additionalProperties": false,
+     "required": ["source", "target", "effect", "replaced", "draw", "in_witness", "ecrel", "on_route", "slack", "members"],
+     "properties": {
+      "source": {"type": "string"}, "target": {"type": "string"}, "effect": {"$ref": "#/$defs/effect"},
+      "replaced": {"type": ["string", "null"]}, "draw": {"enum": ["honoured", "removed", "flipped"]},
+      "in_witness": {"type": "boolean"}, "ecrel": {"type": "boolean"}, "on_route": {"type": "boolean"},
+      "slack": {"type": ["integer", "null"]},
+      "members": {"type": "array", "items": {
+       "type": "object", "additionalProperties": false, "required": ["key", "type", "subtypes", "pathways"],
+       "properties": {"key": {"type": "string"}, "type": {"type": "string"},
+                      "subtypes": {"type": "array", "items": {"type": "string"}},
+                      "pathways": {"type": "array", "items": {"type": "string"}}}}}}}},
+    "parked": {"type": "array", "items": {
+     "type": "object", "additionalProperties": false, "required": ["key", "label", "observed", "lfc", "reason"],
+     "properties": {"key": {"type": "string"}, "label": {"type": "string"}, "observed": {"enum": ["none", "up", "down"]},
+                    "lfc": {"type": ["number", "null"]}, "reason": {"type": "string"}}}}}}}
+ },
+ "$defs": {
+  "count": {"type": "integer", "minimum": 0},
+  "effect": {"enum": ["activation", "inhibition"]}
+ }
+}

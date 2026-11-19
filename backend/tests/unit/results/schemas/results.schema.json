@@ -1,0 +1,118 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://fusion.local/schemas/fusion.results/1",
+ "title": "FuSION 2.0 results.json, format fusion.results version 1 (section 07, 07.C1; 2A.10)",
+ "type": "object",
+ "additionalProperties": false,
+ "required": ["format", "version", "solve", "corridor", "pathways", "nodes", "edges", "cases", "comparison", "issues"],
+ "properties": {
+  "format": {"enum": ["fusion.results"]},
+  "version": {"enum": [1]},
+  "solve": {
+   "type": "object", "additionalProperties": false,
+   "required": ["name", "step", "source", "target", "fsc", "bound", "seed", "constraints", "rules"],
+   "properties": {
+    "name": {"type": "string"}, "step": {"type": "string"},
+    "source": {"type": "string"}, "target": {"type": "string"},
+    "fsc": {"type": "array", "items": {"type": "string"}},
+    "bound": {"type": "integer"}, "seed": {"type": "integer", "minimum": 0},
+    "constraints": {
+     "type": "object", "additionalProperties": false,
+     "properties": {"coexpression": {"$ref": "#/$defs/threshold"}, "frozen": {"$ref": "#/$defs/threshold"}}},
+    "rules": {"type": "array", "items": {"type": "string"}}}},
+  "corridor": {
+   "type": "object", "additionalProperties": false, "required": ["nodes", "edges", "bound", "artefact"],
+   "properties": {"nodes": {"$ref": "#/$defs/count"}, "edges": {"$ref": "#/$defs/count"},
+                  "bound": {"type": "integer"}, "artefact": {"type": "string"}}},
+  "pathways": {"type": "object", "additionalProperties": {"type": "string"}},
+  "nodes": {"type": "array", "items": {"$ref": "#/$defs/node"}},
+  "edges": {"type": "array", "items": {"$ref": "#/$defs/edge"}},
+  "cases": {"type": "array", "items": {"$ref": "#/$defs/case"}},
+  "comparison": {
+   "type": ["object", "null"], "additionalProperties": false, "required": ["verdict", "delta_n_at_e0", "certified"],
+   "properties": {
+    "verdict": {"enum": ["identical", "with_cheaper", "with_costlier", "mixed", "essential", "with_impossible", "no_points"]},
+    "delta_n_at_e0": {"type": ["integer", "null"]}, "certified": {"type": "boolean"}}},
+  "issues": {
+   "type": "array",
+   "items": {"type": "object", "additionalProperties": false, "required": ["kind", "code", "message"],
+             "properties": {"kind": {"enum": ["internal_error", "warning"]}, "code": {"type": "string"},
+                            "message": {"type": "string"}}}}
+ },
+ "$defs": {
+  "count": {"type": "integer", "minimum": 0},
+  "threshold": {"type": "object", "additionalProperties": false, "required": ["threshold"],
+                "properties": {"threshold": {"type": "number"}}},
+  "point": {"type": "object", "additionalProperties": false, "required": ["n", "e"],
+            "properties": {"n": {"$ref": "#/$defs/count"}, "e": {"$ref": "#/$defs/count"}}},
+  "observed": {"enum": ["none", "up", "down"]},
+  "keys": {"type": "array", "items": {"type": "string"}},
+  "node": {
+   "type": "object", "additionalProperties": false,
+   "required": ["key", "label", "kind", "observed", "members", "distance"],
+   "properties": {
+    "key": {"type": "string"}, "label": {"type": "string"},
+    "kind": {"enum": ["gene", "complex", "compound", "other"]}, "observed": {"$ref": "#/$defs/observed"},
+    "members": {"type": "array", "items": {
+     "type": "object", "additionalProperties": false, "required": ["id", "symbol", "lfc", "observed"],
+     "properties": {"id": {"type": "string"}, "symbol": {"type": "string"}, "lfc": {"type": ["number", "null"]},
+                    "observed": {"$ref": "#/$defs/observed"}}}},
+    "distance": {"type": "object", "additionalProperties": false, "required": ["from_source", "to_target"],
+                 "properties": {"from_source": {"type": ["integer", "null"]}, "to_target": {"type": ["integer", "null"]}}}}},
+  "edge": {
+   "type": "object", "additionalProperties": false,
+   "required": ["key", "source", "target", "type", "subtypes", "effect", "pathways", "frozen"],
+   "properties": {
+    "key": {"type": "string"}, "source": {"type": "string"}, "target": {"type": "string"}, "type": {"type": "string"},
+    "subtypes": {"$ref": "#/$defs/keys"}, "effect": {"enum": ["activation", "inhibition"]},
+    "pathways": {"$ref": "#/$defs/keys"}, "frozen": {"type": "boolean"}}},
+  "witness": {
+   "type": "object", "additionalProperties": false,
+   "required": ["counts", "active", "inactive", "relaxed_nodes", "selected", "relaxed_edges", "route"],
+   "properties": {
+    "counts": {"$ref": "#/$defs/point"}, "active": {"$ref": "#/$defs/keys"}, "inactive": {"$ref": "#/$defs/keys"},
+    "relaxed_nodes": {"type": "array", "items": {
+     "type": "object", "additionalProperties": false, "required": ["key", "present"],
+     "properties": {"key": {"type": "string"}, "present": {"type": "boolean"}}}},
+    "selected": {"$ref": "#/$defs/keys"},
+    "relaxed_edges": {"type": "array", "items": {
+     "type": "object", "additionalProperties": false, "required": ["key", "selected"],
+     "properties": {"key": {"type": "string"}, "selected": {"type": "boolean"}}}},
+    "route": {"type": "object", "additionalProperties": false, "required": ["exists", "fsc_on_route", "nodes"],
+              "properties": {"exists": {"type": "boolean"}, "fsc_on_route": {"$ref": "#/$defs/keys"},
+                             "nodes": {"$ref": "#/$defs/keys"}}}}},
+  "case": {
+   "type": "object", "additionalProperties": false,
+   "required": ["case", "label", "status", "status_text", "message", "box", "checks", "undecided", "observations",
+                "points", "requested_points"],
+   "properties": {
+    "case": {"enum": ["in", "out", "free"]}, "label": {"type": "string"},
+    "status": {"enum": ["complete", "no_point", "infeasible", "no_de_gene", "stopped", "budget_exhausted", "not_requested"]},
+    "status_text": {"type": "string"}, "message": {"type": "string"},
+    "box": {"type": "object", "additionalProperties": false, "required": ["requested", "searched"],
+            "properties": {"requested": {"$ref": "#/$defs/point"}, "searched": {"$ref": "#/$defs/point"}}},
+    "checks": {"type": "object", "additionalProperties": false, "required": ["sat", "unsat", "unknown"],
+               "properties": {"sat": {"$ref": "#/$defs/count"}, "unsat": {"$ref": "#/$defs/count"},
+                              "unknown": {"$ref": "#/$defs/count"}}},
+    "undecided": {"type": "array", "items": {
+     "type": "object", "additionalProperties": false, "required": ["n", "e", "label"],
+     "properties": {"n": {"$ref": "#/$defs/count"}, "e": {"$ref": "#/$defs/count"}, "label": {"type": "string"}}}},
+    "observations": {"type": "array", "items": {
+     "type": "object", "additionalProperties": false, "required": ["gene", "node", "observed", "status"],
+     "properties": {"gene": {"type": "string"}, "node": {"type": ["string", "null"]}, "observed": {"$ref": "#/$defs/observed"},
+                    "status": {"enum": ["counted", "forced", "exempt_endpoint", "removed_with_fsc", "outside_encoding",
+                                        "outside_corridor", "not_in_network"]}}}},
+    "points": {"type": "array", "items": {
+     "type": "object", "additionalProperties": false,
+     "required": ["n", "e", "certified", "undecided_below", "enumeration", "witnesses"],
+     "properties": {"n": {"$ref": "#/$defs/count"}, "e": {"$ref": "#/$defs/count"}, "certified": {"type": "boolean"},
+                    "undecided_below": {"type": "array", "items": {"$ref": "#/$defs/point"}},
+                    "enumeration": {"enum": ["not_requested", "complete", "limit_reached", "stopped_unknown"]},
+                    "witnesses": {"type": "array", "items": {"$ref": "#/$defs/witness"}}}}},
+    "requested_points": {"type": "array", "items": {
+     "type": "object", "additionalProperties": false, "required": ["n", "e", "answer", "label", "witnesses"],
+     "properties": {"n": {"$ref": "#/$defs/count"}, "e": {"$ref": "#/$defs/count"},
+                    "answer": {"enum": ["sat", "unsat", "timeout", "undefined", "stopped"]}, "label": {"type": "string"},
+                    "witnesses": {"type": "array", "items": {"$ref": "#/$defs/witness"}}}}}}}
+ }
+}

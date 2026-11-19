@@ -1,0 +1,44 @@
+/* fusion-explain.css: the layout of FuSION 2.0's explanation pages (section 07, 07.C2). The page fills
+   the window: header, controls and legend take their natural height and the graph the rest, as
+   FuSION 1's RESPONSIVE_CSS did (Linux/supporting_files/plot_explanation.py:471-476). */
+html, body { height: 100%; margin: 0; }
+body {
+  display: flex; flex-direction: column; min-height: 100vh;
+  font-family: Helvetica, Arial, sans-serif; color: #222; background: #ffffff;
+}
+.fx-header { text-align: center; padding: 10px 14px 2px; }
+.fx-title { font-size: 17px; font-weight: bold; margin: 0; }
+.fx-subtitle, .fx-certification, .fx-route { font-size: 13px; color: #555; margin: 2px 0; }
+.fx-missing { font-size: 15px; color: #8a2a2a; margin: 18px 14px; text-align: center; }
+.fx-uncertified { color: #8a5a00; }
+.fx-controls {
+  display: flex; flex-wrap: wrap; gap: 18px; align-items: center; justify-content: center;
+  font-size: 13px; padding: 4px 14px;
+}
+.fx-controls label { white-space: nowrap; }
+.fx-controls select, .fx-controls input { font: inherit; margin-left: 4px; }
+.fx-controls input[type=number] { width: 4em; }
+.fx-counts { color: #555; }
+.fx-legend {
+  font-size: 13px; color: #222; padding: 8px 14px; border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;
+  background: #fafafa;
+}
+.fx-legend-row { margin: 2px 0; }
+.fx-legend-group { font-weight: bold; margin-right: 10px; }
+.fx-legend-item { margin-right: 18px; white-space: nowrap; display: inline-block; }
+.fx-legend-item svg, .fx-swatch { vertical-align: middle; margin-right: 6px; }
+.fx-swatch { display: inline-block; width: 20px; height: 14px; box-sizing: border-box; }
+.fx-graph { flex: 1 1 auto; min-height: 320px; position: relative; }
+.fx-graph-canvas { position: absolute; inset: 0; }
+.fx-note { font-size: 13px; color: #555; padding: 6px 14px; }
+.fx-section {
+  font-size: 13px; color: #222; padding: 8px 14px; border-top: 1px solid #ddd; background: #fbfbf7;
+}
+.fx-section summary { cursor: pointer; font-weight: bold; }
+.fx-section table { border-collapse: collapse; margin-top: 6px; }
+.fx-section th, .fx-section td { padding: 2px 12px; text-align: left; vertical-align: top; }
+.fx-section th { border-bottom: 1px solid #ccc; }
+.fx-section td.fx-num, .fx-section th.fx-num { text-align: right; }
+.fx-section td.fx-key { color: #666; }
+.fx-tooltip { white-space: pre-line; font-size: 13px; max-width: 420px; }
+div.vis-tooltip { font-family: Helvetica, Arial, sans-serif; }
