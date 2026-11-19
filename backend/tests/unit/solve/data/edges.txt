@@ -1,0 +1,5 @@
+c_s_hsa6772_c_e hsa4170 expression
+hsa1 hsa2 activation_phosphorylation
+
+hsa2 hsa3 inhibition,dephosphorylation trailing words
+hsa3 hsa4 -

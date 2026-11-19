@@ -1,0 +1,6 @@
+node1,node2,coexpression_score,hsa_id_node1,hsa_id_node2
+CD74,HLA-DMA,611,hsa:972,hsa:3108 hsa:3109
+"A","B","700","hsa:1","hsa:2"
+C,D,n/a,hsa:3,hsa:4
+E,F,900
+G,H,750.5,hsa:5,
