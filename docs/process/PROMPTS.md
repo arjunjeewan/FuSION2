@@ -8312,3 +8312,474 @@ The diff of the changed files and the messages are in /tmp/claude-1000/-home-ks-
 - Let me review first: I wait while you read them. Tell me when to commit or what to change.
 
 **Answer:** Commit both (Recommended)
+
+## 303 · Subagent prompt · Integration follow-up to the batch subagent · 2026-11-19 00:59
+
+Sent to the batch subagent (entry 294) after Claude built and tested every module together. The message as sent:
+
+```text
+Integration follow-up from Claude (prompt log entry 303). With every module built together, the build has zero warnings and all 512 tests pass. FuSION 1's jun-b6-fdr025 batch runs end to end through 2.0's fusion, and both frontiers match FuSION 1's byte for byte. Make five changes in your module:
+1. fusion --version --json must give section 11's blocks (docs/architecture/11-build.md, "Versions in run.json", lines 546 to 566): versions.fusion (version, git_commit, git_dirty, build_type, compiler, target); versions.libraries, Z3 among them; tools, each bundled tool's probe; platform; install (prefix, home, source); and environment. Add the reference maps that section 10 names (10-frontend.md, line 212). Today it prints a flat object, and the frontend reads versions.fusion.version and install.home.
+2. fusion --commands: keep your table's fields, and add two top-level fields, "format": 1 and "fusion" with the version, so that the frontend can check what it reads.
+3. Take fb_rch's settings from corridor::settings() instead of your own copy. Your copy marks corridor.bound as may_change, where section 09 treats it as must_match, and corridor.observations as optional instead of computed. Do the same for every other module that now provides a settings() table (expression and solve among them).
+4. core now has Outcome<void>; replace your Outcome<std::monostate> stand-in.
+5. Check that --check --json diagnostics carry setting and path where they apply (cross-section item 1.9). Check also that the labels query (fusion --query with labels map=<file>, cross-section item 2B.6) answers with network::labels_answer's JSON.
+The rules are as before. Rebuild in build/batch, and keep warnings at zero. Reply in at most 200 words.
+```
+
+## 304 · Subagent prompt · Integration follow-up to the frontend subagent · 2026-11-19 00:59
+
+Sent to the frontend subagent (entry 295) at the same time. The message as sent:
+
+```text
+Integration follow-up from Claude (prompt log entry 304). The backend's fusion is built at /home/ks-149-u24/Desktop/arjun/FuSION2/build/dev/backend/fusion (Debug), and it runs FuSION 1's batches end to end. Make three changes:
+1. The command table comes from the backend (section 01.C9), not from a catalog that the frontend keeps, so read fusion --commands' real output. Its entries have name, aliases, summary, arguments (each with name, setting, type, need, default and more), forms, needs, produces, rules, tools and owner. The batch subagent is adding top-level "format" and "fusion" fields. Replace your catalog.json fixture with the real output, regenerated from the binary. Keep display-only labels, such as a stage name, in the frontend.
+2. fusion --version --json will give section 11's blocks (versions.fusion and the rest, install.home) once the batch subagent's change lands. Read those.
+3. Add a contract test against the real fusion. Generate the default pipeline's batch for FuSION 1's toy case toy-hsa13-wni-tsv-b10, whose inputs are in backend/tests/reference/synthetic/. Run it through the runner with the real executable, and check that the run ends ok and that its frontier matches FuSION 1's; the reference .dat files are in the same folder. When the executable is missing, skip the test and say why.
+The rules are as before. Reply in at most 200 words.
+```
+
+## 305 · User prompt · 2026-11-19 01:01
+
+> make max progress rn
+
+Sent while the T1 and T2 reference cases ran end to end through 2.0, and while the batch and frontend subagents worked on the follow-ups of entries 303 and 304.
+
+## 306 · Note · The first end-to-end checks against FuSION 1 · 2026-11-19 01:08
+
+Claude built every module together (zero warnings in Debug and Release, after one -O3 false positive in network was fixed), ran all 512 backend tests (all pass) and the app's 98 Java tests (all pass), and then ran every T1 and T2 reference case through 2.0's fusion. A scratch harness applied each case's path map, as run_fusion1.py does, and compared the .dat frontiers with FuSION 1's recorded ones.
+
+| Result | Cases (35) |
+|---|---|
+| Both frontiers identical to FuSION 1's | 32: all 12 toy cases, 14 of the 15 EGF-HeLa b6 cases, jun-b6-old, jun-b6-fdr025, jun-b6-fdr040keep, jun-b7-fdr025, jun-b10-fdr025 (the reference run) and jun-b10-fdr030 |
+| Different only through a decided fix | 3, traced below |
+
+- egfhela-nfkb1-b6-r5-12 (in): every FuSION 1 witness relaxes the self-loop NFKB1 -> NFKB1, so every point loses one edge. This is XD-07 (S5.13, entry 068).
+- model-example (out): FuSION 1's corridor holds an inhibitory NFKB1 self-loop, which costs one edge whenever NFKB1 is present. 2.0's witness at (2,0) uses NFKB1 for free. This is XD-07 too.
+- jun-b7-fdr040keep (both cases): the GSEA shortlist holds 90 pathways, not 87. Three pathways sit just under FDR 0.4 in 2.0 and just over it in FuSION 1's run (hsa04917 0.395 against 0.410, hsa04930 0.392 against 0.402, hsa05014 0.386 against 0.408), because ties are ordered by gene id. This is XD-01. With FuSION 1's shortlist pinned, both frontiers are identical.
+
+For the toy cases, the harness dropped pathz3's optional tail: 2.0 rejects the GUI's three unfilled placeholders (S5.02), and with the tail dropped the inputs decide, as in FuSION 1. The frontend subagent's contract test ran a toy case from a session, through the app's runner and the real fusion, and both frontiers equal FuSION 1's.
+
+## 307 · Subagent prompt · Sprint: the installed home and its data · 2026-11-19 01:09
+
+Sent to a new general-purpose subagent under decision 0038, after the end-to-end checks of entry 306. Section 11 designs the home, and entries 204 and 205 settled its data files. The brief, as saved in Claude's scratchpad as `sprint/briefs/sprint_home.txt`, and sent as the one-line pointer of entry 296:
+
+```text
+You are building one part of FuSION 2.0 during a one-week sprint. Decision 0038 (docs/decisions/0038-end-to-end-version-this-week.md) sets the goal: a first end-to-end working version this week, built thoroughly. Read this whole message before you start.
+
+Background. FuSION 2.0 (repository /home/ks-149-u24/Desktop/arjun/FuSION2) rewrites FuSION 1. FuSION 1's live tree, /home/ks-149-u24/Desktop/arjun/FuSION, and its frozen snapshot, /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10, are read only. The architecture is docs/architecture/. Its section 11 is the build, and your part follows it.
+
+The backend's modules are written, and together they build with zero warnings. Their 512 tests pass. The fusion executable (build/dev/backend/fusion) runs FuSION 1's reference batches end to end. What is missing is the installed home: a batch that names no maps stops with install.file_missing. Section 11 designs the home in "Finding the backend's own files (S1.20)" (docs/architecture/11-build.md, from line 446): the home's lookup, fusion-data.json, the four data files (settled in prompt log entries 204 and 205) and the staging tree. core already finds the home and checks fusion-data.json (backend/modules/core/include/fusion/core/install.hpp); read it before you start.
+
+Your part:
+1. Build share/fusion/data/ exactly as section 11 describes:
+   - hsa_to_gene_symbol_map.txt, rebuilt from NCBI Gene's human gene table (Homo_sapiens.gene_info.gz from NCBI's FTP site), in the layout FuSION 1's maps use (S1.18 and S1.19 in docs/spec/; FuSION 1's own map is in its tree, under Linux/frontend/);
+   - hsa_path_to_path_name_map.txt, rebuilt from Reactome's pathway names (ReactomePathways.txt), human pathways only, under CC BY 4.0 with its attribution. It must hold no KEGG pathway name: those come at run time from each KGML's root title (entry 205);
+   - kegg_pathways.txt: the 167 candidate pathways of FuSION 1's auxilliary/list_of_kegg_xml_files.txt, as bare pathway ids, one per line;
+   - SOURCES.md: for each file, its source URL, the date it was taken, the downloaded file's SHA-256, its licence and the attribution owed.
+   Write the script that builds them in packaging/data/, so that they can be rebuilt. You may download the two source files over HTTPS; record their SHA-256s.
+2. The staging tree and fusion-data.json (section 11, the layout under "<prefix>/" and the fusion-data.json example). Add cmake/FusionInstall.cmake, included from the top-level CMakeLists.txt. At build time it must stage share/fusion with a generated fusion-data.json (fusion_version, git_commit, and every file's bytes and SHA-256), so that a fusion run from the build tree finds its home as section 11 says, and cmake --install copies the tree to a prefix. Keep the system Z3 (decision 0039): stage no libz3. The fonts, the bundled tools and the licence notices come with packaging, later.
+3. Tests, kept fast and in the repository:
+   - fusion --version --json from the build tree shows its home and verifies the staged files;
+   - a named batch that has no start line runs with the shipped maps. FuSION 1's toy case in backend/tests/reference/synthetic/toy-hsa13-wni-tsv-b10/ is a good base.
+   Register them through backend/tests/CMakeLists.txt, as an addition that changes nothing already there.
+
+Rules:
+- Edit only share/fusion/data/, packaging/data/, cmake/FusionInstall.cmake, and the two include or registration lines in CMakeLists.txt and backend/tests/CMakeLists.txt. Leave share/fusion/pipelines/ alone: the frontend's subagent wrote it. Do not edit any other file, do not commit, and do not install anything system-wide.
+- Never write under FuSION 1's tree or its snapshot.
+- Nothing from KEGG beyond bare pathway ids may enter the repository (S8.31).
+- Put $HOME/.local/opt/cmake-4.4.5-linux-x86_64/bin and $HOME/.local/opt/ninja-1.13.2 first on PATH. Build in your own folder, build/home, with at most 4 parallel jobs. Warnings stay at zero.
+- Another subagent is changing the batch module at the same time; leave its files alone.
+
+When you finish, reply in at most 250 words: what you built, each data file's line count and source, the tests and their result, and anything you could not settle.
+```
+
+## 308 · Subagent prompt · Integration follow-up to the results subagent: observations lost in chained runs · 2026-11-19 01:10
+
+Sent to the results subagent (entry 291) after the end-to-end checks of entry 306. The message as sent:
+
+```text
+Integration follow-up from Claude (prompt log entry 308): a bug that shows only when results is driven through batch. In 2.0's end-to-end run of FuSION 1's model example, the legacy relaxations file for the out case at (2,0) says "hsa1843 hsa1843 DUSP1 not_diff_expr not_present NA" and the same for SGK1 (hsa6446). Both genes are in 2.0's own up_reg list, and FuSION 1 writes up_reg there. The frontier is right; the labels are wrong, so NodeRecord::observed is none for observed genes in chained runs. The batch subagent also saw legacy solutions files differ from FuSION 1's toy references when they run through batch, while your own tests, fed directly, match.
+To reproduce: the mapped batch is /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/f2-model-example-1/case.batch. Copy that folder's inputs/ and case.batch into a new folder under /home/ks-149-u24/Desktop/arjun/FuSION2-test-data/scratch/, then run /home/ks-149-u24/Desktop/arjun/FuSION2/build/dev/backend/fusion -b case.batch there (about 2 s). These are KEGG data, so use them only to check, never in a committed test.
+Likely cause: matching gene ids from different interners (network keeps one per Network and PathwayDoc) when build() fills each node's observation, or batch passing PublishInputs without the observations. Find it. If the fault is in results, fix it and add a test with an observed gene that sits in a witness. If it is in what batch passes, give the exact change in your reply; batch's files are not yours. Check results.json's observed fields too.
+The rules are as before. Reply in at most 150 words.
+```
+
+## 309 · Poll · 2026-11-19 12:19
+
+Module approvals, the first of the sprint's per-module polls (decision 0038), with the one format question that network's subagent raised. The answer arrived while the results and home subagents were finishing; this entry's time is when it was logged.
+
+**Q1 (02.C4 format).** network's subagent extended FuSION's own network file (02.C4) with five things its reader needs to rebuild a network exactly:
+- a flags attribute on relations;
+- flags="exception" on entries;
+- <claim> elements that keep the legacy reader's holder order;
+- size and format attributes on <input>;
+- an <id_map> element.
+FuSION 1's rgx still reads 2.0's files, because it reads only the entry and relation elements and ignores unknown attributes (section 02). Accept the extended format?
+
+- Accept the extension (Recommended): Section 02's 02.C4 gets a note recording the five additions.
+- Keep 02.C4 as written: The extra data moves to a side file, and network's reader and writer change.
+
+**Answer:** Accept the extension (Recommended)
+
+**Q2 (core).** Commit the core module (section 09's core and section 11's platform layer)? 39 files, 5,220 lines, 84 tests passing, zero warnings in Debug and Release. Its choices where the architecture was silent:
+- Rng::stream seeds std::mt19937_64 with SplitMix64's (k+1)th output from the seed;
+- stable_hash is FNV-1a followed by SplitMix64's finaliser;
+- an uncommitted build's id is <version>+<commit>.dirty.<executable SHA-256>;
+- child processes start with fork(), not section 11's vfork();
+- parse_decimal reads values below the smallest normal double as 0;
+- new error codes: setting.left_out, internal, install.executable.
+I compiled its SHA-256 at -O2 even in Debug, which cut a 54 s test suite to 4 s.
+
+- Commit, choices accepted (Recommended): One local commit of backend/modules/core and its tests.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit, choices accepted (Recommended)
+
+**Q3 (network).** Commit the network module (section 02)? 28 files, 5,899 lines, 56 tests passing, zero warnings. It holds the KGML reader, id and label maps, the model and builder, views, bindings.tsv, input lists, FuSION's network file, the legacy reader, the edge-table reader, add and size. On real FuSION 1 data it rebuilds the full run's graph exactly as FuSION 1 does: 3,100 nodes and 7,400 edges, 6,632 after the duplicate merge. Its other choices:
+- each Network and PathwayDoc keeps its own string interner, so other modules compare ids across objects by their text;
+- IdMap::none() passes ids through;
+- a name with a double space splits on runs of spaces, as section 02's Design says (its test hook said it fails).
+
+- Commit, choices accepted (Recommended): One local commit, including my fix of one -O3 false-positive warning.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit, choices accepted (Recommended)
+
+**Q4 (expression).** Commit the expression module (section 04)? 16 files, 3,420 lines, 39 tests passing, zero warnings. It holds the value reader, ValueInputs, cudf, saving and loading the lists, observation matching and threshold suggestion. The 12 toy cases' up and down lists are byte-identical to FuSION 1's. On the EGF file, section 04's threshold table matches to the last digit. Its only additions are to its own header: two ClassifyRequest fields, a three-argument histogram_script, and settings().
+
+- Commit (Recommended): One local commit of backend/modules/expression and its tests.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit (Recommended)
+
+## 310 · Note · The results and home subagents' reports · 2026-11-19 12:19
+
+- results (entry 308): the labels were lost because results read the run's gene ids through a Network's own interner (entry 309, Q3). It now takes each node's class from section 06's Problem and matches values by text through a new trailing PublishInputs::interner; its tests pass (47). batch must pass that interner (solve_handlers.cpp, one line). The same fault is in solve: bind.cpp reads an observation's id through the network's interner, so observations.tsv, and results.json's case observations built from it, can name the wrong genes.
+- home (entry 307): the data maps are built and staged (share/fusion/data: 46,530 symbols from NCBI Gene, 2,889 Reactome pathway names, FuSION 1's 167-pathway list, SOURCES.md), with packaging/data/build_data.py and cmake/FusionInstall.cmake; two end-to-end tests pass (517 tests in all). It raised six points: Reactome's data is CC0, not CC BY 4.0 as section 11 and entry 205 say; its symbol-map rule; pathway names keep FuSION 1's underscores; build/dev/backend/fusion finds no home; FusionInstall is included before FusionDependencies; and, outside its files, core lacks the startup version check and run.json does not list the shipped maps.
+
+## 311 · Poll · 2026-11-19 13:29
+
+Module approvals for merge, corridor, solve and enrichment (decision 0038). Before it, Claude fixed the interner fault of entry 310 in solve (solve::Inputs takes the run's interner, with a regression test) and in batch's call sites, and made batch's CLI tests use one scratch folder per process: two of four parallel ctest runs had failed when one test process removed a folder that another was using. After the fix, six parallel runs in a row passed (518 tests). This entry's time is when it was logged.
+
+**Q1 (merge).** Commit the merge module (section 03, mff)? 19 files, 3,911 lines, 52 tests passing, zero warnings. It covers:
+- the exception set, with all nine reasons;
+- the union (merge_direct);
+- the base merge and its split;
+- the merge key and the list rules: one-file merges, duplicate pathway ids, network files with embedded sources, legacy files;
+- the mff step's outputs.
+Its tests show that the split equals a direct merge for every exception subset at five thresholds, that input order doesn't matter, and that FuSION 1's toy legacy case reads as 22 nodes and 25 edges.
+Left for later:
+- the shared store (03.C3, 03.C4), which changes no result;
+- a network file without embedded sources joining a KGML list. It fails with merge.no_sources, and no current batch does this.
+Header additions: ExceptionInputs::interner, MergeRequest::maps and graph, MergedNetwork::source, step_details(), a get_or_build that takes parsed documents, and merge_key_text.
+
+- Commit (Recommended): One local commit of backend/modules/merge and its tests.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit (Recommended)
+
+**Q2 (corridor).** Commit the corridor module (section 05, fb_rch)? 14 files, 3,369 lines, 42 tests passing, zero warnings. The corridor is a view of the network with distances to source and target, trimmed during the search. The module also:
+- checks ids up front and again at the step;
+- saves and loads corridor.json and corridor_nodes.tsv;
+- gives the solve its bound.
+Excluding a gene also removes every complex that contains it, nested ones included. Its tests check 1,000 random graphs against brute-force walk enumeration, and match FuSION 1's corridors exactly on the 12 toy cases.
+Header additions:
+- Naming, the labels and graph ids for compute() and save();
+- reusable() and report_reuse(), for a repeated fb_rch (05.C4);
+- a match_observations() that prints nothing;
+- check_invariants().
+
+- Commit (Recommended): One local commit of backend/modules/corridor and its tests.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit (Recommended)
+
+**Q3 (solve).** Commit the solve module (section 06, pathz3)? 21 files, 5,332 lines, 52 tests passing, zero warnings. It covers:
+- the Z3 encoding (S5.05 to S5.17, on Z3 4.8.12);
+- the in, out and free cases;
+- the Pareto search, line for line as in FuSION 1;
+- the driver: extra solutions, one thread per case, budget, Stop, each case's files.
+Fed FuSION 1's logged answers, it replays all 24 toy searches query for query, and all 24 positional toy solves give FuSION 1's exact frontiers. A down-regulated FSC's in case is now satisfiable (XD-10).
+I fixed here the fault the results subagent found (log entry 310): Inputs now takes the run's interner, so observations.tsv names the right genes. A regression test covers it.
+Left for later: journals and resume, points=, answers_from, the free-to-in/out transfers, debug dumps. points= and answers_from fail as solve.unsupported.
+Header changes: Inputs::match is a span (one row per gene); new Inputs::maps, connect_pair and interner; new Settings::positional and path_bound.
+
+- Commit (Recommended): One local commit of backend/modules/solve and its tests, my fix included.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit (Recommended)
+
+**Q4 (enrichment).** Commit the enrichment module (section 08, gsea)? 16 files, 2,692 lines, 43 tests passing, zero warnings. It covers:
+- ranking, with ties ordered by gene id (08.C2);
+- candidates built from the KGMLs;
+- a port of gseapy 1.3.1's prerank walk and statistics, on Xoshiro256++ with one thread;
+- the selector, the keep list, the table, the shortlist and the console report.
+On all three synthetic fixtures at all 21 seeds, ES, NES, p, FDR and FWER equal gseapy's as doubles.
+Header additions: a make_candidates overload that takes the run's interner, and Candidate::gene_text.
+gseapy's BSD-3 licence text sits in prerank.cpp's header comment for now. Section 11's third-party notice comes with packaging.
+
+- Commit (Recommended): One local commit of backend/modules/enrichment and its tests.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit (Recommended)
+
+## 312 · Note · The second end-to-end round · 2026-11-19 13:05
+
+With the fixes of entry 311, Claude reran all 35 T1 and T2 reference cases through 2.0's fusion. The result is the same as entry 306's: 32 cases match FuSION 1 on both frontiers, and the other three differ only through XD-07 (egfhela-nfkb1-b6-r5-12, model-example) and XD-01 (jun-b7-fdr040keep). The reference run took 655 s. In the model example's out case at (2,0), the relaxations file now labels DUSP1 and SGK1 up_reg, as FuSION 1 does, and both solves' observations.tsv list exactly the 21 genes of the cudf lists, each in the right direction.
+
+## 313 · Note · Correction: entry 312's time · 2026-11-19 13:29
+
+Entry 312 was logged at 13:29, not 13:05 as its heading says; Claude typed the time instead of reading it from `date`.
+
+## 314 · Subagent prompt · Second integration follow-up to the batch subagent · 2026-11-19 13:32
+
+Sent to the batch subagent (entry 294) after the commits of entry 311. The message as sent:
+
+```text
+Second integration follow-up from Claude (prompt log entry 314). Seven modules are now committed (core, network, expression, merge, corridor, solve, enrichment); batch, run, results and the frontend are next. Two changes are already in your files, made by Claude: solve_handlers.cpp passes &st.interner to solve::Inputs and to results::PublishInputs (both gained a trailing interner field), and test_cli.cpp and test_interpreter.cpp give each test process its own scratch folder, because parallel ctest runs failed when one process removed a folder another was using. Keep both. Then close four gaps the architecture already decides:
+1. gsea's keep ids go through the run's id map before matching (section 08, "Keep list": "Id forms are handled by section 02's id mapping", entry 086; S7.14). Today value_handlers.cpp passes them raw.
+2. gsea records in its run.json step entry the base its relative lines resolved against, Shortlist::base, and the scores' seed and permutation count (08 "Lists", row 2B.10; Shortlist::settings).
+3. When the shipped maps apply (no start, or a file start leaves out), run.json records each map used by path and SHA-256 (02-network.md line 229, row 2B.4). Check what a run writes today, using the staged home that cmake/FusionInstall.cmake makes (FUSION_HOME=<build>/stage/share/fusion), and add what is missing.
+4. The fusion executable calls solve::verify_z3() at startup, before it reads the batch (11-build.md, "Check at startup"; install.z3_mismatch, exit status 1). Leave the home check of fusion-data.json alone: it waits for a decision on where builds put fusion.
+Add a test for each. The rules are as before: only your files, rebuild in build/batch, zero warnings, no KEGG data in tests. Reply in at most 150 words.
+```
+
+## 315 · Poll · 2026-11-19 14:09
+
+The home subagent's open points (entry 310), asked while the batch subagent worked on entry 314. This entry's time is when it was logged.
+
+**Q1 (Licence).** Section 11 and log entry 205 say the shipped pathway-name map, built from Reactome, is under CC BY 4.0. Reactome's licence page (checked today, section 1(c)) says all its data, and files derived from them, are CC0, with attribution "encouraged but not required". CC BY 4.0 covers only its illustrations, icons, art and branding, and none of those ship. The home subagent's SOURCES.md says CC0 and still gives Reactome's attribution. Correct section 11?
+
+- Correct it to CC0 (Recommended): A note in section 11 at its four mentions; fusion-data.json's source field says CC0. The attribution stays in SOURCES.md.
+- Leave section 11 as written: The architecture keeps saying CC BY 4.0, which asks more of users than Reactome does.
+
+**Answer:** Correct it to CC0 (Recommended)
+
+**Q2 (Symbol map).** The shipped symbol map (46,530 lines, from NCBI Gene's human table) follows this rule:
+- each gene's official HGNC symbol;
+- for protein-coding genes with no official symbol yet, NCBI's interim symbol (such as LOC102724594);
+- other unnamed genes are left out: biological regions, and unnamed ncRNA genes and pseudogenes.
+No symbol names two genes, so id_map=symbols can read the map backwards. All 5,615 gene ids in FuSION 1's 167 KGMLs have a symbol. Accept this rule?
+
+- Accept the rule (Recommended): share/fusion/data/hsa_to_gene_symbol_map.txt as built.
+- Official HGNC symbols only: Fewer lines; protein-coding genes still awaiting a name show their id.
+- Every gene NCBI lists: NCBI's own symbol for every human gene, unnamed loci included; the rule for repeats would need a second look.
+
+**Answer:** Accept the rule (Recommended)
+
+**Q3 (Path names).** The shipped pathway-name map (2,889 human pathways, Reactome release 98) writes each id as pathway_<n> for Reactome's R-HSA-<n>. Each name has _ for spaces, as in Signal_Transduction. This is the form FuSION 1's own map used for its 2,341 Reactome rows (macOS/frontend/hsa_path_to_path_name_map_2822.txt). Keep FuSION 1's form?
+
+- Keep FuSION 1's form (Recommended): Files keep one shape, and tools that split lines on whitespace keep working.
+- Reactome's own form: R-HSA-<n> ids and names with spaces; readers must take the rest of the line as the name.
+
+**Answer:** Keep FuSION 1's form (Recommended)
+
+**Q4 (Built fusion).** Section 11 finds the home at <prefix>/share/fusion, where prefix is the parent of the executable's folder. Today the build makes fusion at build/dev/backend/fusion, and the home subagent stages a copy at build/dev/stage/bin/fusion, beside stage/share/fusion. Only the copy finds its home. Once fusion gets section 11's startup check, where a missing home stops it, the other binary stops working. Which layout should builds use?
+
+- Build fusion into stage/bin (Recommended): One binary per build, at <build>/stage/bin/fusion, which always finds its home. Tests, my harness and the frontend's dev setting use it; cmake --install copies the stage tree.
+- Keep backend/fusion and the copy: Tests set FUSION_HOME for backend/fusion; the frontend and harness use stage/bin/fusion.
+
+**Answer:** Build fusion into stage/bin (Recommended)
+
+## 316 · Note · The batch subagent's report on entry 314 · 2026-11-19 14:09
+
+All four gaps are closed, each with a test: gsea's keep ids go through the run's id map; gsea records base, seed and permutations in its run.json step entry (through a new Workspace::details, which also carries mff's merge key and pathz3's results summary to run.json); the shipped maps go through the checked copies, so run.json lists them as inputs, and a maps detail records every map by path and SHA-256, marked shipped or from start; and fusion -b and --version call solve::verify_z3() before reading the batch. It also found and fixed a crash it had introduced (a JSON object destroyed while a loop used it). build/batch: zero warnings, 56 batch tests pass, and the toy batch still matches FuSION 1 byte for byte.
+
+## 317 · Subagent prompt · Follow-up to the home subagent: the decisions of entry 315 and the startup home check · 2026-11-19 14:10
+
+Sent to the home subagent (entry 307) after the poll of entry 315. The message as sent:
+
+```text
+Follow-up from Claude (prompt log entry 317). The user decided your open points in entry 315: Reactome's map is CC0 (section 11 is corrected; SOURCES.md stands), your symbol-map rule is accepted, pathway names keep FuSION 1's pathway_<n> ids and underscores, and builds put fusion straight into <build>/stage/bin. Seven modules are committed (core, network, expression, merge, corridor, solve, enrichment); batch, run, results, the frontend and your home work follow. Make four changes. For this follow-up you may edit, beyond your own files, core's install.hpp and install.cpp and their tests, batch's command-line startup and its tests, backend/CMakeLists.txt, and the three frontend lines named below. Leave everything else in other modules alone.
+1. Layout: build the fusion target straight into ${FUSION_STAGE_DIR}/bin (RUNTIME_OUTPUT_DIRECTORY, per configuration as well), and drop the copy step, so each build has one fusion that finds <build>/stage/share/fusion. cmake --install still copies the stage tree. Update the paths that name build/dev/backend/fusion: frontend/build.gradle.kts:101, frontend/src/test/java/fusion/frontend/runner/RealFusionContractTest.java:46 and 62, and the comment in frontend/src/test/java/fusion/frontend/pipeline/TestFixtures.java:58.
+2. fusion-data.json: each data file's source field also names its licence, taken from SOURCES.md's table, such as "Reactome release 98, CC0 1.0, see data/SOURCES.md" (entry 315, Q1).
+3. The startup home check (11-build.md, "Finding the backend's own files", steps 1 to 3, and its error table): the home must hold fusion-data.json, whose version equals build_info().version; otherwise fusion stops before reading the batch with install.home_missing or install.version_mismatch, exit status 1, and the message lists the paths it tried. Put the check in core, replacing install.hpp's "Not yet" note, and call it at startup for the commands that read a batch (-b, --check, --query). --version keeps reporting the install and exits 1 on a problem, as it does now. -h and --commands need no home. Tests that run batches in process must keep passing; give their test executables FUSION_HOME in CTest (the staged home, or a synthetic one) rather than skipping the check.
+4. Tests, as section 11 says (line 1118): FUSION_HOME pointing at fake homes, one per failure and its code: home_missing, version_mismatch, file_missing, file_damaged.
+Rebuild in build/home, keep warnings at zero, and run the whole backend suite and the frontend's tests (./gradlew test in frontend/, user-local Gradle 9.9.1; stop the daemon after). The rules are as before. Reply in at most 200 words.
+```
+
+## 318 · Poll · 2026-11-19 14:44
+
+Module approvals for run and results, with results' one wording choice, asked while the home subagent worked on entry 317. This entry's time is when it was logged.
+
+**Q1 (run).** Commit the run module (section 09's runs)? 16 files, 4,304 lines, 47 tests passing, zero warnings. It covers:
+- run names and layout: the label rule (with a golden list that the frontend's Java copy also reads), atomic claiming with -2, -3, run ids, adopting the frontend's folder;
+- inputs copied and hashed in one read, output clashes by file identity, every commit recorded in run.json, journals flushed per record;
+- Stop: a watcher for the stop file, a 30 s grace, Ctrl-C and SIGTERM, a second Ctrl-C exits 130, SIGHUP ignored; the run lock on byte 2^31 of run.lock;
+- events.jsonl, the run log, and run.json with every setting and its source.
+New error codes: run.debug_off, run.log_name, run.resume_unavailable, lock.timeout.
+Left for later: restart and resume (09.C5; a parent run is refused with run.resume_unavailable), the shared store (09.C13; off, which changes no result), Windows and macOS (their builds stop with #error), the JSON Schemas.
+
+- Commit (Recommended): One local commit of backend/modules/run and its tests.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit (Recommended)
+
+**Q2 (results).** Commit the results module (section 07)? 49 files, 8,310 lines, 47 tests passing, zero warnings. It covers:
+- build(): the solve's results in published form, with labels, family sizes, pathway names, values and distances;
+- analyse(): shape, polarity, counts, twins and the FSC, then the sign-consistent routes;
+- the FSC comparison, results.json and publish_solve;
+- FuSION 1's text files (.dat, limits, solutions, relaxations). Rebuilt from 23 of FuSION 1's toy dumps, they match byte for byte after S5.27's changes;
+- the explanation pages (view JSON, page shells, edge TSV, DOT and SVG through dot, the run page), with vis-network 10.1.5 fetched by SHA-256 and compiled in;
+- the Pareto plot, through gnuplot.
+The fix for labels lost in chained runs (log entry 310) is in, with a test.
+Left for later: the site export (publish_site fails with results.site_unavailable). The JSON Schemas stay in its test folder until section 12's folder exists.
+
+- Commit (Recommended): One local commit of backend/modules/results and its tests.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit (Recommended)
+
+**Q3 (Subtitle).** On a pex page, when the solve's search for extra explanations stops at its limit, section 07 has the subtitle say "Explanation 1 of 5 shown; more exist". The results subagent wrote "Explanation 1 of 5 shown; the solve stopped at 5, so there may be more". S6.17's decision is to claim more explanations only when that is known, and a search that stops at its limit never checks for a sixth. Which wording?
+
+- "there may be more" (Recommended): The page claims only what the solve checked. Section 07 gets a note.
+- "more exist", as section 07 says: Shorter, but it can be false when exactly 5 exist.
+
+**Answer:** "there may be more" (Recommended)
+
+## 319 · Note · The home subagent's report on entry 317 · 2026-11-19 14:44
+
+All four changes are in. backend/CMakeLists.txt builds fusion into the stage's bin/ (per configuration too) and the copy step is gone; cmake --install still gives exactly the stage tree, and the installed fusion ran the toy batch. Each data file's source in fusion-data.json names its licence. The startup check is core::check_home(), in a new core install.cpp that also takes find_install_dir, install_dir and home_file from build.cpp; -b, --check and --query call it before reading the batch, --version reports a failure as install.error and exits 1, and home_file raises install.file_damaged when a file's SHA-256 does not match. Tests: five core unit tests and four end-to-end fake homes, one per code; test_batch's synthetic home got a fusion-data.json. build/home: zero warnings, 528 backend tests pass in three parallel runs, and the frontend's 100 tests pass. Not fixed, being outside its lines: the frontend's contract test and its Gradle FUSION_HOME point at homes without a fusion-data.json, so both fail once build/dev is rebuilt.
+
+## 320 · Subagent prompt · Second follow-up to the frontend subagent · 2026-11-19 14:53
+
+Sent to the frontend subagent (entry 295) after the home subagent's report (entry 319). Before it, Claude fixed a fault in solve that the rebuilt suite showed once in two parallel runs: when an interrupt for the budget or a stop lands outside a check, Z3 throws "canceled", and solve turned that into a failure of the step (Z3 failed at n=3 e=3: canceled) instead of ending the case. Such an exception now counts as an interrupted check. A new stress test, 60 tiny budgets, failed in 16 of 24 parallel processes without the fix and in none of 40 with it. Claude also removed the stale build/dev/backend/fusion from before the new layout. The message as sent:
+
+```text
+Second follow-up from Claude (prompt log entry 320). Nine backend modules are committed; batch, the frontend and the home work are next. Two backend changes affect you:
+- Builds now make fusion at <build>/stage/bin/fusion, which finds its home at <build>/stage/share/fusion (prompt log entry 315). The home subagent already changed your four lines that named build/dev/backend/fusion. The current binary is /home/ks-149-u24/Desktop/arjun/FuSION2/build/dev/stage/bin/fusion.
+- fusion now checks its home at startup for -b, --check and --query (section 11, "Finding the backend's own files"). A home without fusion-data.json, or with another version, stops it with install.home_missing or install.version_mismatch, exit status 1.
+Make three changes:
+1. build.gradle.kts (line 102) sets FUSION_HOME to the source tree's share/fusion, which has no fusion-data.json: drop it, so the staged fusion uses its own home. Then RealFusionContractTest: run it on the staged home, whose real shipped maps it can now use, or give its synthetic home a fusion-data.json in the shape cmake/FusionInstall.cmake writes (the version from fusion --version --json, and each file's bytes and SHA-256).
+2. --query now answers labels, cudf and suggest_thresholds (01.C14, 04.C8, row 2B.6). Finish what waited on it: Submit's gene-id check through --query labels, which today warns that ids were not checked, and the threshold preview and suggestions of section 10's inputs view through --query cudf and --query suggest_thresholds. Add tests, with the Java fake fusion and one contract test against the real binary.
+3. Run all your tests against the real binary above, keep warnings at zero, and stop the Gradle daemon when done.
+The rules are as before. Reply in at most 200 words.
+```
+
+## 321 · Poll · 2026-11-20 12:33
+
+Approvals for batch, the home work, core's follow-up and solve's fix, asked while the frontend subagent worked on entry 320 and while the full-app run and round 4 of the reference cases ran at nice 19. The user's own FuSION 1 jobs (about 29 processes, timed) held 29 of the 36 cores, so the two long b10 cases were left out of round 4. This entry's time is when it was logged.
+
+**Q1 (batch).** Commit the batch module and the fusion executable (section 01)? 28 files, 7,104 lines, 55 tests passing, zero warnings. It covers:
+- the lexer and expansion: quotes, $$, longest match, UTF-8, BOM, CRLF, the four $FUSION_ variables;
+- the command table and settings registry, named and positional binding, -h and --commands;
+- the whole-batch check: graph ids and value kinds simulated, look-ahead facts (01.C17), inputs the batch makes, output clashes, tools, --check --json;
+- the interpreter over section 09's Run, with handlers for every command the reference batches use; exec, the six fixed-name moves, window plots skipped without a display, file reuse, exit statuses 0 to 3;
+- --version --json with section 11's blocks, also written into run.json; --query for labels, cudf and suggest_thresholds.
+Since its first report:
+- gsea's keep ids go through the id map;
+- run.json records gsea's base, seed and permutations, mff's merge key, pathz3's summary, and every map used, shipped or not;
+- fusion checks Z3's version and its home at startup.
+All of FuSION 1's 125 frozen batches bind, and both forms of the toy case match FuSION 1. My changes in it: the run's interner passed to solve and results, and one scratch folder per test process.
+One naming choice: section 01's RuleKind::requires is a C++20 keyword, so it is requires_.
+Left for later: sweeps, load and --resume, pex's site export, the JSON Schemas, the Windows shell.
+
+- Commit (Recommended): One local commit of backend/modules/batch, its tests and backend/cli/main.cpp.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit (Recommended)
+
+**Q2 (Home).** Commit the installed home and its data (section 11)? It is:
+- share/fusion/data: the symbol map (46,530 lines, from NCBI Gene), the pathway-name map (2,889 Reactome pathways), FuSION 1's 167-pathway list as bare ids, and SOURCES.md with each source, date, SHA-256 and licence;
+- packaging/data/build_data.py, which rebuilds the four files, byte for byte from the same downloads;
+- cmake/FusionInstall.cmake: the stage tree (bin/fusion, and share/fusion with a generated fusion-data.json giving each file's bytes, SHA-256, source and licence), cmake --install of exactly that tree, and end-to-end tests. The tests cover the staged home found and verified, a damaged copy refused, the toy case run on the shipped maps, and one fake home per install error;
+- the build changes: fusion built straight into <build>/stage/bin (log entry 315), and FusionInstall included before FusionDependencies so that pugixml's and fast_float's own install rules stay off;
+- section 11's licence correction to CC0.
+No KEGG data ships: the pathway list holds bare ids only.
+
+- Commit (Recommended): One local commit of these files.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit (Recommended)
+
+**Q3 (core fix).** Commit core's follow-up for the startup home check? A new install.cpp takes find_install_dir, install_dir and home_file from build.cpp and adds check_home():
+- a home without fusion-data.json stops fusion with install.home_missing;
+- a home of another version stops it with install.version_mismatch;
+- home_file now refuses a file whose SHA-256 differs from fusion-data.json's (install.file_damaged).
+The CLI calls the check for -b, --check and --query. 5 unit tests; the 4 end-to-end fake homes are in the home commit.
+
+- Commit (Recommended): One local commit to backend/modules/core and its tests.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit (Recommended)
+
+**Q4 (solve fix).** Commit a fix to solve? When an interrupt for the budget or a Stop lands outside a check (in an add, a push or a model read), Z3 throws "canceled". Solve turned that into a failure of the whole step ("Z3 failed at n=3 e=3: canceled"), which the rebuilt suite showed once in two parallel runs. It now counts as an interrupted check, so the case ends as budget_exhausted or stopped. A new stress test, 60 tiny budgets, failed in 16 of 24 parallel processes without the fix and in none of 40 with it.
+
+- Commit (Recommended): One local commit to backend/modules/solve and its tests.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit (Recommended)
+
+## 322 · Subagent prompt · Third follow-up to the frontend subagent: warnings on a successful Submit · 2026-11-20 12:35
+
+Sent to the frontend subagent (entry 295) after its report on entry 320: all three items were done, and its 108 tests pass against the real binary (the Gradle FUSION_HOME dropped and the contract test on the staged home; Submit's gene-id check through --query labels, with an on-disk cache that never stores a refusal; the threshold preview and suggestions through --query cudf and suggest_thresholds, with a histogram and a Use button). It noted that Submit drops warnings when it succeeds, which predates that change. The message as sent:
+
+```text
+Third follow-up from Claude (prompt log entry 322). Every backend module is committed, and the full app path ran FuSION 1's reference run (jun-b10-fdr025) end to end through a batch in section 10's generated form, with no start line: both frontiers equal FuSION 1's. One fix before your commit: Submit drops fusion --check's warnings when it succeeds, as you noted, but section 10 says "Warnings are shown and do not block" (10-frontend.md line 585). Show them when Submit succeeds, in the run's view or the dialog that confirms the submission, and add a test with the fake fusion and one against the real binary (an unused let gives a warning). Do not start on additional edges (S8.24): that waits for a decision. The rules are as before: run all your tests against /home/ks-149-u24/Desktop/arjun/FuSION2/build/dev/stage/bin/fusion, zero warnings, stop the Gradle daemon. Reply in at most 120 words.
+```
+
+## 323 · Poll · 2026-11-20 12:38
+
+The frontend's open points: the additional-edges design it could not build, and three choices it made without a poll (entry 295's report). Asked while it worked on entry 322. Before it, Claude ran the full app path on real data: a batch in section 10's generated form, with no start line, the settings of FuSION 1's reference run (jun-b10-fdr025) and one KGML folder holding the 167 candidates (FuSION 1 kept 4 of them in a second folder, updated_pathways, and 2.0's check named the first missing one). It ended ok in 1,304 s at nice 19, beside the user's jobs. Both frontiers equal FuSION 1's (with JUN: the point n=1 e=0; without JUN: none), the up and down lists are byte-identical, and the GSEA shortlist equals the one the batch-form run of 2.0 made (44 pathways; FuSION 1 had 42, the difference being XD-01's tie order). Round 4 of the short reference cases (33, at nice 19; the two b10 cases left out because of the user's jobs) gave the same result as rounds 2 and 3: 62 of 66 frontiers match, and the other 4 are the three known cases. This entry's time is when it was logged.
+
+**Q1 (Extra edges).** Additional edges (S8.24) have no batch form yet. Sections 10 and 03 want an additional-edges file (an edge table) merged into the network in both pathway modes. But section 01's mff takes one list, and the default pipeline's mff merges gsea's shortlist from memory, so a generated batch has no way to add the edge table to it. The frontend subagent left the input unbuilt. What now?
+
+- Defer past this week (Recommended): This week's version has no additional-edges input. We design it with you after your review.
+- Add edges=<file> to mff now: The edge table joins whatever mff merges: the shortlist, a list or a pre-merged graph. This changes section 01's table, batch and the frontend's generator, and delays the version.
+
+**Answer:** Defer past this week (Recommended)
+
+**Q2 (Fake fusion).** The frontend's process tests use a fake fusion written in Java, not a shell script. It writes events.jsonl and run.json and holds run.lock the way fusion does, because a shell script cannot hold the fcntl lock that the reattach tests need. Contract tests also run the real fusion when it is built. Accept?
+
+- Accept (Recommended): Fast process tests that need no backend build, plus the contract tests on the real binary.
+- Real fusion only: Every process test needs the backend built, and the lock and reattach cases are harder to stage.
+
+**Answer:** Accept (Recommended)
+
+**Q3 (fsync).** The frontend writes session files atomically with fsync. On this disk each synced write costs 40 to 65 ms, so its tests turn fsync off with -Dfusion.files.fsync=false, and one test still covers the synced path. The app itself always syncs. Accept?
+
+- Accept (Recommended): The 108 tests take about 25 s; the app keeps fsync.
+- Keep fsync in tests: Slower tests, each write as in the app.
+
+**Answer:** Accept (Recommended)
+
+**Q4 (Maps input).** In the frontend's pipeline, choosing your own maps (instead of the shipped ones) adds a start line to the generated batch. With the shipped maps there is no start line, as section 10's example shows (2B.4). Accept this rule?
+
+- Accept (Recommended): A start line appears only when a session names its own maps.
+- Always write start: Every generated batch names its maps, the shipped ones included.
+
+**Answer:** Accept (Recommended)
+
+## 324 · Note · The frontend subagent's report on entry 322 · 2026-11-20 12:48
+
+Submit now shows fusion --check's warnings when it succeeds, on the Submit status line and in the run's view; each run's record keeps them, so they survive a restart, and after Submit the Runs tab selects the new run. fusion gives no warning for an unused let (entry 322 was wrong about that), so the real-binary test uses a real one: the KGML path on the synthetic tst00001.xml, stopped after the merge, gets fusion's batch.no_fsc note. RunView gained a sixth component, warnings, which section 10's API does not list. Claude reran the frontend's tests from clean (cleanTest test): 110 pass, none skipped, in 16.7 s; the Gradle daemon is stopped. The two long b10 cases of round 4 are running at nice 19, beside six of the user's FuSION 1 jobs; the Release build has zero warnings, and through the Release binary the 14 short toy, model-example and jun-b6-fdr025 cases give the same frontiers as Debug (27 of 28 match; the other is model-example's known XD-07 case).
+
+## 325 · Poll · 2026-11-20 12:48
+
+**Q1 (frontend).** Commit the frontend (section 10)? 160 files: 121 main Java files (10,000 lines), 19 test files (3,648 lines), the Gradle build and share/fusion/pipelines/standard.json. 110 tests pass against the real fusion, none skipped, zero warnings. It is a JavaFX desktop app on Spring Boot 4.1.2, OpenJFX 21.0.13 and Java 21, with:
+- accounts: open sign-up, bcrypt, a command-line password reset;
+- sessions: one JSON folder each, atomic writes, override files;
+- pipeline: standard.json, its validator and the batch generator; golden tests reproduce section 10's example batch byte for byte;
+- runner: Submit's checks, including gene ids through --query labels; the queue; Stop, Kill and Resume; reattaching after a restart;
+- ui: sign-in, sessions, inputs with the threshold preview and suggestions (--query cudf and suggest_thresholds), runs, the frontier and Pareto plot, pages opened in the browser.
+The command table comes from fusion --commands. Submit now shows --check's warnings when it succeeds, as section 10 says. Its three choices were accepted in log entry 323. Additional edges are deferred.
+
+- Commit (Recommended): One local commit of frontend/ (not build/ or .gradle/) and share/fusion/pipelines/standard.json.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit (Recommended)
+
+**Q2 (RunView).** To show Submit's warnings with each run, the frontend's RunView gained a sixth component, warnings (the --check warnings, kept in the run's record so they survive a restart). Section 10's API lists five components. Add warnings to section 10's RunView, with a note?
+
+- Add it to section 10 (Recommended): Section 10's RunView declaration gains warnings, with a note citing the warning rule (line 585).
+- Keep section 10 as is: The code and the architecture then differ on RunView.
+
+**Answer:** Add it to section 10 (Recommended)
+
+**Q3 (Log commit).** Commit the prompt log's entries 303 to 325? They hold the integration follow-ups to the batch, frontend, results and home subagents, the end-to-end rounds, the module polls 309, 311, 315, 318, 321 and 323 with their answers, the correction of entry 312's time, and this poll.
+
+- Commit (Recommended): One local commit of docs/process/PROMPTS.md. Nothing is pushed.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit (Recommended)
