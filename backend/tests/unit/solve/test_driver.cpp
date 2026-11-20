@@ -213,6 +213,23 @@ TEST_CASE("solve: a spent budget ends the unfinished cases as budget_exhausted",
   CHECK(step.lines->any("used: "));
 }
 
+// The monitor interrupts a case until its thread returns, so an interrupt can land in an add, a push
+// or a model read, where Z3 throws "canceled" instead of answering unknown. Many tiny budgets hit
+// those places; each must end the cases as budget_exhausted, never as a Z3 failure.
+TEST_CASE("solve: an interrupt outside a check ends the case, not the step", "[unit][solve][06.C3]") {
+  const ToyCase toy = read_toy("toy-hsa13-wni-tsv-b15");
+  for (int round = 0; round < 60; ++round) {
+    INFO("round " << round);
+    solve::Settings settings = toy_settings(toy);
+    settings.budget = std::chrono::milliseconds(1 + round % 3);
+    Step step;
+    core::Context ctx = step.context();
+    const auto outcome = solve::solve_cases(toy_cases(toy, settings), settings, ctx);
+    for (const solve::CaseResult& r : outcome.value.cases)
+      CHECK((r.status == CaseStatus::budget_exhausted || r.status == CaseStatus::complete));
+  }
+}
+
 TEST_CASE("solve: the step's settings are checked before any case", "[unit][solve][0021]") {
   const ToyCase toy = read_toy("toy-hsa5-wni-tsv-b10");
   solve::Settings settings = toy_settings(toy);

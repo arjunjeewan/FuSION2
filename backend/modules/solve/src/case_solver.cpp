@@ -363,6 +363,13 @@ Answer CaseSolver::check(Point point, Phase phase) {
     m.run_check(answer);
     m.solver->pop();
   } catch (const z3::exception& e) {
+    // An interrupt that lands outside check(), in an add, a push or reading the model, comes back as
+    // the exception "canceled": the case is ending, so the check counts as stopped, not as a failure.
+    if (m.interrupted.load()) {
+      answer = m.start(point, phase);
+      answer.reason = "interrupted";
+      return answer;
+    }
     throw core::Failure("solve.z3", std::string("Z3 failed at n=") + std::to_string(point.n) + " e=" +
                                         std::to_string(point.e) + ": " + e.msg());
   }
@@ -388,6 +395,11 @@ std::optional<Witness> CaseSolver::next_solution(Point point, std::span<const Wi
     m.run_check(m.last);
     m.solver->pop();
   } catch (const z3::exception& e) {
+    if (m.interrupted.load()) {                            // as in check(): an interrupt, not a failure
+      m.last = m.start(point, Phase::extra);
+      m.last.reason = "interrupted";
+      return std::nullopt;
+    }
     throw core::Failure("solve.z3", std::string("Z3 failed on an extra solution at n=") + std::to_string(point.n) +
                                         " e=" + std::to_string(point.e) + ": " + e.msg());
   }
