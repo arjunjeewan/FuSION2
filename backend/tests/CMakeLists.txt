@@ -11,3 +11,4 @@ foreach(module core network expression merge corridor solve results enrichment r
     catch_discover_tests(test_${module} ADD_TAGS_AS_LABELS DISCOVERY_MODE PRE_TEST)
   endif()
 endforeach()
+fusion_add_home_tests()   # the staged home and the shipped maps, end to end (cmake/FusionInstall.cmake)

@@ -464,7 +464,7 @@ The home is the checked location that S8.13 asks for. The shipped maps are the d
 
 The data directory holds four files, settled in entries 204 and 205:
 - `hsa_to_gene_symbol_map.txt`, rebuilt from NCBI Gene's human gene table: each line pairs a gene's KEGG-style id (`hsa` and its NCBI Gene id, such as `hsa7791`) with its official symbol (`ZYX`). NCBI Gene's data are free to redistribute.
-- `hsa_path_to_path_name_map.txt`, rebuilt from Reactome's pathway names, under CC BY 4.0 with its attribution. It carries no KEGG pathway names: those are read at run time from the title on each KGML's root element ("MAPK signaling pathway") in the user's own KGMLs, a rule section 02 applies to every label (entry 205). FuSION 1's copy, of unknown source, held 479 KEGG rows beside its Reactome-style rows.
+- `hsa_path_to_path_name_map.txt`, rebuilt from Reactome's pathway names, under CC0, with its attribution. *Sprint (prompt log entry 315):* Reactome's data, and files derived from them, are CC0 (its licence, section 1(c)), not CC BY 4.0 as this section first said; CC BY 4.0 covers only Reactome's illustrations, icons, art and branding, none of which ship. The attribution is still given, though not required. It carries no KEGG pathway names: those are read at run time from the title on each KGML's root element ("MAPK signaling pathway") in the user's own KGMLs, a rule section 02 applies to every label (entry 205). FuSION 1's copy, of unknown source, held 479 KEGG rows beside its Reactome-style rows.
 - `kegg_pathways.txt`, the 167 candidate pathways of FuSION 1's list (`auxilliary/list_of_kegg_xml_files.txt`) as bare pathway ids, one per line (`hsa03320`, `hsa03460`, `hsa04010`, …; 1,503 bytes), which section 02 resolves against each user's `kgml_dir` (02.C12; cross-section items 2B.5, 4A.10 and 4B.41, entry 204). Ids carry no KEGG content, and S8.31's "KGML list resolved against the user's own KGML directory" is this file.
 - `SOURCES.md`, which records for each file its source, the date it was taken, its licence and the attribution owed. Nothing in 2.0 fetches KGMLs: the user guide says how to get them, and the check before a run names every listed pathway missing from the user's folder (02 open question 6, entry 164).
 
@@ -493,7 +493,7 @@ The layout is the same on every platform, and the build's staging tree has it to
   "git_commit": "3f2c9a1e0d4b7c6a5e8f9d0c1b2a3f4e5d6c7b8a",
   "files": {
     "data/hsa_to_gene_symbol_map.txt": {"bytes": 211406, "sha256": "4b1d…", "source": "NCBI Gene, see data/SOURCES.md"},
-    "data/hsa_path_to_path_name_map.txt": {"bytes": 118295, "sha256": "90ce…", "source": "Reactome, CC BY 4.0, see data/SOURCES.md"},
+    "data/hsa_path_to_path_name_map.txt": {"bytes": 118295, "sha256": "90ce…", "source": "Reactome, CC0, see data/SOURCES.md"},
     "data/kegg_pathways.txt": {"bytes": 1503, "sha256": "d27a…", "source": "FuSION 1's candidate list, ids only"},
     "pipelines/standard.json": {"bytes": 6214, "sha256": "a07c…"},
     "fonts/LiberationSans-Regular.ttf": {"bytes": 410820, "sha256": "e3a5…"},
@@ -691,7 +691,7 @@ GitHub Actions on `arjunjeewan/FuSION2`, once the user pushes (C15, accepted in 
 | GSEA's core ported from gseapy 1.3.1, and the generator ported from Rust's `rand` crate (08.C1, entry 159) | BSD-3-Clause; MIT | both notices ship with libfusion's |
 | Graphviz (07.C5) | EPL-1.0 | nothing: not shipped; the user installs it for `static=svg` |
 | `data/hsa_to_gene_symbol_map.txt` | NCBI Gene's data, free to redistribute | its source and date in `data/SOURCES.md` (S8.31) |
-| `data/hsa_path_to_path_name_map.txt` | Reactome's pathway names, CC BY 4.0 | the attribution, source and date in `data/SOURCES.md` and in `THIRD_PARTY_NOTICES.txt`; no KEGG pathway names ship (entry 205) |
+| `data/hsa_path_to_path_name_map.txt` | Reactome's pathway names, CC0 (corrected from CC BY 4.0, entry 315) | the attribution, source and date in `data/SOURCES.md` and in `THIRD_PARTY_NOTICES.txt`; no KEGG pathway names ship (entry 205) |
 | `data/kegg_pathways.txt` | 167 bare pathway ids, no KEGG content | its source in `data/SOURCES.md` |
 
 `packaging/` generates `THIRD_PARTY_NOTICES.txt` from `third_party/` and the Gradle report. The package step fails if a file in the bundle belongs to no listed component.
@@ -1137,7 +1137,7 @@ GitHub Actions on `arjunjeewan/FuSION2`, once the user pushes (C15, accepted in 
 1. **Spring Boot 3 is out of free support (C21).** *Closed:* C21 accepted, amending G2 to Spring Boot 4.1 with Gradle 9.9.1 (prompt log entry 200).
 2. **Compiler minimums (C22).** *Closed:* C22 accepted, amending G1 to GCC 13 and Clang 17 (entry 200).
 3. **Code signing.** Without an Apple Developer ID ($99 a year) and notarisation, the `.dmg` is blocked at first launch until the user allows it under System Settings, Privacy & Security. Without a Windows code-signing certificate or a signing service, the `.msi` meets a SmartScreen warning. *Deferred:* development builds stay unsigned, and signing is decided before the first public release, when the user creates the accounts and adds the secrets to GitHub (entry 203).
-4. **May the reference maps be shipped?** *Closed:* both maps are rebuilt from sources with clear terms, recorded in `data/SOURCES.md` (NCBI Gene's symbols; Reactome's names, with attribution), and no KEGG pathway names ship: they are read at run time from each KGML's root title (entry 205).
+4. **May the reference maps be shipped?** *Closed:* both maps are rebuilt from sources with clear terms, recorded in `data/SOURCES.md` (NCBI Gene's symbols; Reactome's names, with attribution), and no KEGG pathway names ship: they are read at run time from each KGML's root title (entry 205). *Sprint (prompt log entry 315):* Reactome's names are CC0, so the attribution is given though not required.
 5. **Does the official Windows gnuplot honour `PANGOCAIRO_BACKEND=fc` and `FONTCONFIG_FILE`?** *Recorded as a Phase 4 check* (entry 205): one plot on a Windows machine; the fallback is to install the font per user.
 6. **How does Z3 5.3.3 perform on FuSION's dumps?** *Recorded as a Phase 3 check* (entries 173 and 205): section 12's experiment X11, the gate on C2's pin.
 7. **busybox-w32's applets (section 01's open question 6).** *Recorded as a Phase 4 check* (entries 188 and 205): `date +%N` and a `bash` applet for the 29 `exec bash …/plot_po.sh` lines, run once on Windows with the pinned busybox-w32.

@@ -38,6 +38,14 @@ add_library(fusion::libfusion ALIAS fusion_libfusion)
 
 add_executable(fusion cli/main.cpp)
 target_link_libraries(fusion PRIVATE fusion::libfusion)
+# fusion is built into the staging tree's bin/ (cmake/FusionInstall.cmake), beside the staged home, so the
+# build's one fusion finds its home as an installed one does (S1.20). Multi-configuration generators get
+# the same folder for every configuration, not a subfolder per configuration.
+set_target_properties(fusion PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${FUSION_STAGE_DIR}/bin")
+foreach(config IN LISTS CMAKE_CONFIGURATION_TYPES)
+  string(TOUPPER "${config}" config)
+  set_target_properties(fusion PROPERTIES "RUNTIME_OUTPUT_DIRECTORY_${config}" "${FUSION_STAGE_DIR}/bin")
+endforeach()
 
 if(FUSION_BUILD_TESTS)
   add_subdirectory(tests)
