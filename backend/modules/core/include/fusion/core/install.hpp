@@ -1,5 +1,5 @@
-// fusion/core/install.hpp: where the running backend and its bundled files are (section 11,
-// "Finding the backend's own files (S1.20)"; 11.C19, 11.C20).
+// fusion/core/install.hpp: where the running backend and its bundled files are, and the checks of its
+// home (section 11, "Finding the backend's own files (S1.20)"; 11.C19, 11.C20).
 #pragma once
 
 #include <filesystem>
@@ -20,9 +20,15 @@ std::filesystem::path executable_path();                  // absolute, symlinks 
                                                           // throws InstallError (install.executable)
 const InstallDir& install_dir();                          // computed once, thread-safe
 InstallDir find_install_dir();                            // the same, worked out afresh (tests)
-std::filesystem::path home_file(std::string_view rel);    // throws InstallError (install.file_missing) if missing
+void check_home(const InstallDir&);                       // S1.20 step 3: the home holds a fusion-data.json
+                                                          // whose fusion_version is build_info().version;
+                                                          // throws InstallError: install.home_missing,
+                                                          // install.version_mismatch, or install.file_damaged
+                                                          // when fusion-data.json cannot be read
+void check_home();                                        // the same for install_dir(), at startup
+std::filesystem::path home_file(std::string_view rel);    // throws InstallError: install.file_missing if
+                                                          // missing, install.file_damaged if it differs from
+                                                          // its SHA-256 in fusion-data.json
 // InstallError is section 09's, derived from core::Failure; this section raises it with install.* codes.
-// Not yet: the startup check of the home's fusion-data.json (install.home_missing,
-// install.version_mismatch), which waits for the build's staging tree (11, Repository layout).
 
 }  // namespace fusion::core
