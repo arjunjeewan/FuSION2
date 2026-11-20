@@ -1,0 +1,24 @@
+;; FuSION 2.0 batch written by the FuSION frontend 0.1.0
+;; session 0b6f2c1e-6a4d-4f0e-9d1a-5c3e8f2b7a90, pipeline standard@0.1.0 sha256 @PIPELINE_SHA256@
+let $LFC /fusion-test/case/inputs/with_node_included.tsv
+let $UP 0.9
+let $DOWN -0.9
+let $MERGED_GRAPH /fusion-test/case/inputs/report_example_with_pathways.xml
+let $SPLIT_THRESHOLD 1
+let $SOURCE hsa1
+let $TARGET hsa22
+let $BOUND 10
+let $EDGES_TO_TARGET any
+let $FSC hsa13
+let $NODE_MIN 0
+let $NODE_MAX 7
+let $EDGE_MIN 0
+let $EDGE_MAX 7
+let $TIMEOUT 150s
+cudf values=$LFC up=$UP down=$DOWN
+rgx file=$MERGED_GRAPH split_threshold=$SPLIT_THRESHOLD
+fb_rch source=$SOURCE target=$TARGET bound=$BOUND edges_to_target=$EDGES_TO_TARGET
+pathz3 fsc=$FSC node_min=$NODE_MIN node_max=$NODE_MAX edge_min=$EDGE_MIN edge_max=$EDGE_MAX timeout=$TIMEOUT
+plot_pareto
+pex
+exit

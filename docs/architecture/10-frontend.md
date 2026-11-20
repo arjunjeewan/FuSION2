@@ -582,7 +582,7 @@ Each step runs only if the steps before it passed, except that paths missing at 
 
 How problems are reported:
 - Every problem names its block, argument or input. The backend's diagnostics, keyed by batch line and argument, are mapped back through the source map.
-- Submit is refused while any error remains. Warnings are shown and do not block.
+- Submit is refused while any error remains. Warnings are shown and do not block. *Sprint (prompt log entry 325):* they are shown when Submit succeeds too, and the run's record keeps them, as RunView's sixth component, warnings.
 
 #### Generating a batch (10.C14)
 
@@ -867,7 +867,9 @@ public record Progress(Optional<String> block, Optional<String> stage, int check
                        Map<String, Integer> pointsByCase, int unknowns,
                        Optional<String> checking, Duration elapsed) {}
 public record RunView(RunRecord record, Progress progress, List<JsonNode> reports,
-                      Map<String, String> caseStatuses, Optional<JsonNode> failure) {}
+                      Map<String, String> caseStatuses, Optional<JsonNode> failure,
+                      List<PipelineProblem> warnings) {}   // sprint, prompt log entry 325: Submit's
+                                                           // --check warnings, kept with the run
 
 public sealed interface RunMessage {
     record Event(RunId run, long seq, JsonNode body) implements RunMessage {}

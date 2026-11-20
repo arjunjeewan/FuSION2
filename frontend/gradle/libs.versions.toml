@@ -1,0 +1,22 @@
+# The frontend's pinned versions (section 11, 11.C4 and 11.C13). Every artefact they resolve is
+# also checked by SHA-256 in verification-metadata.xml beside this file.
+# Libraries without a version take it from Spring Boot's dependency management (11.C21).
+
+[versions]
+spring-boot = "4.1.2"        # 11.C21
+spring-modulith = "2.1.2"    # the line that goes with Spring Boot 4.1; the module boundary test (10.C11)
+javafx = "21.0.13"           # 10.C3, 11.C24
+
+[libraries]
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
+spring-security-crypto = { module = "org.springframework.security:spring-security-crypto" }
+jackson-databind = { module = "tools.jackson.core:jackson-databind" }
+javafx-base = { module = "org.openjfx:javafx-base", version.ref = "javafx" }
+javafx-graphics = { module = "org.openjfx:javafx-graphics", version.ref = "javafx" }
+javafx-controls = { module = "org.openjfx:javafx-controls", version.ref = "javafx" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+spring-modulith-core = { module = "org.springframework.modulith:spring-modulith-core", version.ref = "spring-modulith" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }

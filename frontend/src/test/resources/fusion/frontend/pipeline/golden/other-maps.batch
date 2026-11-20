@@ -1,0 +1,33 @@
+;; FuSION 2.0 batch written by the FuSION frontend 0.1.0
+;; session 0b6f2c1e-6a4d-4f0e-9d1a-5c3e8f2b7a90, pipeline standard@0.1.0 sha256 @PIPELINE_SHA256@
+let $LFC /home/ks-149-u24/data/egf_hela_t120_lfc.tsv
+let $UP 1.01
+let $DOWN -1.01
+let $KGML_LIST $FUSION_HOME/data/kegg_pathways.txt
+let $KGML_DIR /home/ks-149-u24/kegg/hsa_pathways_with_exp_score
+let $GSEA_SELECTOR fdr:0.25
+let $SPLIT_THRESHOLD 1
+let $NOT_MERGED /home/ks-149-u24/data/hsa_ids_not_to_be_merged.txt
+let $SYMBOLS /home/ks-149-u24/maps/hsa_symbols_2026.tsv
+let $SOURCE hsa1956
+let $TARGET hsa3576
+let $BOUND 10
+let $EDGES_TO_TARGET any
+let $FSC hsa3725
+let $NODE_MIN 0
+let $NODE_MAX 8
+let $EDGE_MIN 0
+let $EDGE_MAX 8
+let $TIMEOUT 4h
+let $COEXPRESSION_CSV /home/ks-149-u24/data/hsa_stringdb_coexpression_links_over400.csv
+let $COEXPRESSION_THRESHOLD 700
+let $FROZEN_THRESHOLD 800
+start symbols=$SYMBOLS
+cudf values=$LFC up=$UP down=$DOWN
+gsea values=$LFC candidates=$KGML_LIST selector=$GSEA_SELECTOR shortlist=gsea_kgml_files.txt kgml_dir=$KGML_DIR
+mff split_threshold=$SPLIT_THRESHOLD kgml_dir=$KGML_DIR not_merged=$NOT_MERGED
+fb_rch source=$SOURCE target=$TARGET bound=$BOUND edges_to_target=$EDGES_TO_TARGET
+pathz3 fsc=$FSC node_min=$NODE_MIN node_max=$NODE_MAX edge_min=$EDGE_MIN edge_max=$EDGE_MAX timeout=$TIMEOUT coexpression_csv=$COEXPRESSION_CSV coexpression_threshold=$COEXPRESSION_THRESHOLD frozen_threshold=$FROZEN_THRESHOLD
+plot_pareto
+pex
+exit

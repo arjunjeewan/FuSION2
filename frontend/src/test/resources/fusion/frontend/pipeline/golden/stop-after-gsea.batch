@@ -1,0 +1,8 @@
+;; FuSION 2.0 batch written by the FuSION frontend 0.1.0
+;; session 0b6f2c1e-6a4d-4f0e-9d1a-5c3e8f2b7a90, pipeline standard@0.1.0 sha256 @PIPELINE_SHA256@
+let $LFC /home/ks-149-u24/data/egf_hela_t120_lfc.tsv
+let $KGML_LIST $FUSION_HOME/data/kegg_pathways.txt
+let $KGML_DIR /home/ks-149-u24/kegg/hsa_pathways_with_exp_score
+let $GSEA_SELECTOR fdr:0.25
+gsea values=$LFC candidates=$KGML_LIST selector=$GSEA_SELECTOR shortlist=gsea_kgml_files.txt kgml_dir=$KGML_DIR
+exit

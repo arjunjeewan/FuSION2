@@ -1,0 +1,19 @@
+# Run directory labels (cross-section item 1.26, 09.C1): a label, a tab, and the label a run directory
+# gets: per Unicode code point, each run of code points outside [A-Za-z0-9._-] becomes one -, leading
+# and trailing - are trimmed, and the result is cut to 44 characters. Section 09's C++ copy of the rule
+# and the frontend's Java copy read this one table, so the two agree (section 12, Frontend contracts).
+# An empty second column is an empty label: the directory is then run_<timestamp>.
+EGFR to CXCL8, FSC JUN	EGFR-to-CXCL8-FSC-JUN
+EGFR→CXCL8 / b10	EGFR-CXCL8-b10
+egfr_cxcl8_jun_b10	egfr_cxcl8_jun_b10
+  padded name  	padded-name
+José's run	Jos-s-run
+a - b	a---b
+fdr0.25	fdr0.25
+日本語	
+-dash-	dash
+😀 emoji 😀	emoji
+path/with\slashes:and*stars?	path-with-slashes-and-stars
+CON	CON
+A very long session name that goes on beyond forty-four characters	A-very-long-session-name-that-goes-on-beyond
+abcdefghij abcdefghij abcdefghij abcdefghij abc	abcdefghij-abcdefghij-abcdefghij-abcdefghij-

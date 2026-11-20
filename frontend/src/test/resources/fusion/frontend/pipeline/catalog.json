@@ -1,0 +1,3315 @@
+{
+  "commands": [
+    {
+      "aliases": [
+        "h"
+      ],
+      "arguments": [
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the command to describe",
+          "list": false,
+          "name": "command",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "batch.command",
+          "takes": null,
+          "type": "text"
+        }
+      ],
+      "creates_graph": false,
+      "forms": [
+        {
+          "origin": "FuSION 1",
+          "slots": [
+            {
+              "arg": "",
+              "kind": "optional_tail",
+              "none_token": ""
+            },
+            {
+              "arg": "command",
+              "kind": "one",
+              "none_token": ""
+            }
+          ],
+          "usage": "[<command>]",
+          "warning": ""
+        }
+      ],
+      "name": "help",
+      "needs": [],
+      "needs_run_dir": false,
+      "owner": "batch",
+      "produces": null,
+      "rules": [],
+      "run_settings": [],
+      "step": true,
+      "summary": "the command listing, or one command's arguments (S1.12)",
+      "tools": []
+    },
+    {
+      "aliases": [],
+      "arguments": [],
+      "creates_graph": false,
+      "forms": [],
+      "name": "let",
+      "needs": [],
+      "needs_run_dir": false,
+      "owner": "batch",
+      "produces": null,
+      "rules": [],
+      "run_settings": [],
+      "step": false,
+      "summary": "defines a variable: let <$name> [<value>] (S1.08)",
+      "tools": []
+    },
+    {
+      "aliases": [],
+      "arguments": [],
+      "creates_graph": false,
+      "forms": [],
+      "name": "sweep",
+      "needs": [],
+      "needs_run_dir": true,
+      "owner": "batch",
+      "produces": null,
+      "rules": [],
+      "run_settings": [],
+      "step": false,
+      "summary": "one run per value: sweep <$name> <value>... (01.C3); not in this build yet",
+      "tools": []
+    },
+    {
+      "aliases": [],
+      "arguments": [
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "where the run directory is made (01.C7)",
+          "list": false,
+          "name": "root",
+          "need": "computed",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "run.root",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the run directory's label (01.C7)",
+          "list": false,
+          "name": "label",
+          "need": "computed",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "run.label",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the run log's name (S1.25)",
+          "list": false,
+          "name": "log",
+          "need": "computed",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "run.log",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "true",
+          "help": "use the shared store (09.C13)",
+          "list": false,
+          "name": "cache",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "run.cache",
+          "takes": null,
+          "type": "boolean"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "where the shared store lives (09.C13)",
+          "list": false,
+          "name": "cache_dir",
+          "need": "computed",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "run.cache_dir",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "auto",
+          "help": "the core budget for sweep points (01.C4)",
+          "list": false,
+          "name": "jobs",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "run.jobs",
+          "takes": null,
+          "type": "text"
+        }
+      ],
+      "creates_graph": false,
+      "forms": [],
+      "name": "run",
+      "needs": [],
+      "needs_run_dir": true,
+      "owner": "batch",
+      "produces": null,
+      "rules": [],
+      "run_settings": [],
+      "step": false,
+      "summary": "the run directory's root and label, and run-level settings by key (01.C7)",
+      "tools": []
+    },
+    {
+      "aliases": [],
+      "arguments": [],
+      "creates_graph": false,
+      "forms": [],
+      "name": "load",
+      "needs": [],
+      "needs_run_dir": true,
+      "owner": "batch",
+      "produces": null,
+      "rules": [],
+      "run_settings": [],
+      "step": true,
+      "summary": "restores saved values: load <file>, or load run=<dir> step=<step> (01.C6); not in this build yet",
+      "tools": []
+    },
+    {
+      "aliases": [],
+      "arguments": [],
+      "creates_graph": false,
+      "forms": [],
+      "name": "exec",
+      "needs": [],
+      "needs_run_dir": true,
+      "owner": "batch",
+      "produces": null,
+      "rules": [],
+      "run_settings": [],
+      "step": true,
+      "summary": "runs the rest of the line in a POSIX shell (S1.14, 01.C10)",
+      "tools": [
+        {
+          "features": [],
+          "id": "sh",
+          "kind": "program",
+          "min_version": ""
+        }
+      ]
+    },
+    {
+      "aliases": [],
+      "arguments": [],
+      "creates_graph": false,
+      "forms": [],
+      "name": "exit",
+      "needs": [],
+      "needs_run_dir": true,
+      "owner": "batch",
+      "produces": null,
+      "rules": [],
+      "run_settings": [],
+      "step": false,
+      "summary": "ends the run (S1.13)",
+      "tools": []
+    },
+    {
+      "aliases": [],
+      "arguments": [
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the inter-database id map (S1.16)",
+          "list": false,
+          "name": "id_map",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.id_map",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's exception file (S1.17)",
+          "list": false,
+          "name": "exception_file",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "merge.start_file",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the gene-symbol map (S1.18)",
+          "list": false,
+          "name": "symbols",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.symbols",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the pathway-name map (S1.19)",
+          "list": false,
+          "name": "pathway_names",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.pathway_names",
+          "takes": null,
+          "type": "input_file"
+        }
+      ],
+      "creates_graph": false,
+      "forms": [
+        {
+          "origin": "FuSION 1",
+          "slots": [
+            {
+              "arg": "id_map",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "exception_file",
+              "kind": "one",
+              "none_token": "-1"
+            },
+            {
+              "arg": "symbols",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "pathway_names",
+              "kind": "one",
+              "none_token": ""
+            }
+          ],
+          "usage": "<id_map> <exception_file> <symbols> <pathway_names>",
+          "warning": ""
+        }
+      ],
+      "name": "start",
+      "needs": [],
+      "needs_run_dir": true,
+      "owner": "network",
+      "produces": "maps",
+      "rules": [],
+      "run_settings": [],
+      "step": true,
+      "summary": "the maps: id map, exception file, symbols, pathway names (S1.15); optional (2B.4)",
+      "tools": []
+    },
+    {
+      "aliases": [
+        "create_up_down_file"
+      ],
+      "arguments": [
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the per-gene value file (S3.03)",
+          "list": false,
+          "name": "values",
+          "need": "required",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.values",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "up when value >= up (S3.06)",
+          "list": false,
+          "name": "up",
+          "need": "required",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.up",
+          "takes": null,
+          "type": "real"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "down when value <= down (S3.06)",
+          "list": false,
+          "name": "down",
+          "need": "required",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.down",
+          "takes": null,
+          "type": "real"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "up_reg",
+          "help": "the up list (2B.3)",
+          "list": false,
+          "name": "up_out",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.up_out",
+          "takes": null,
+          "type": "output_name"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "down_reg",
+          "help": "the down list (2B.3)",
+          "list": false,
+          "name": "down_out",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.down_out",
+          "takes": null,
+          "type": "output_name"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "ids never classified (04.C4)",
+          "list": false,
+          "name": "not_de",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.not_de",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the id column of a table (04.C1)",
+          "list": false,
+          "name": "id_column",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.id_column",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the value column of a table (04.C1)",
+          "list": false,
+          "name": "value_column",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.value_column",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "an id map file, or symbols (04.C1)",
+          "list": false,
+          "name": "id_map",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.id_map",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "choices": [
+            "classify_each",
+            "max_abs"
+          ],
+          "debug": false,
+          "default": "classify_each",
+          "help": "repeated ids (04.C3)",
+          "list": false,
+          "name": "repeats",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.repeats",
+          "takes": null,
+          "type": "choice"
+        }
+      ],
+      "creates_graph": false,
+      "forms": [
+        {
+          "origin": "FuSION 1",
+          "slots": [
+            {
+              "arg": "values",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "up",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "down",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "up_out",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "down_out",
+              "kind": "one",
+              "none_token": ""
+            }
+          ],
+          "usage": "<values> <up> <down> <up_out> <down_out>",
+          "warning": ""
+        }
+      ],
+      "name": "cudf",
+      "needs": [],
+      "needs_run_dir": false,
+      "owner": "expression",
+      "produces": "observations",
+      "rules": [
+        {
+          "a": "down",
+          "b": "up",
+          "kind": "less"
+        }
+      ],
+      "run_settings": [],
+      "step": true,
+      "summary": "classifies per-gene values: up when value >= up, down when value <= down, up above down",
+      "tools": []
+    },
+    {
+      "aliases": [
+        "sth"
+      ],
+      "arguments": [
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the per-gene value file (S3.03)",
+          "list": false,
+          "name": "values",
+          "need": "required",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.values",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the current up threshold",
+          "list": false,
+          "name": "current_up",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.current_up",
+          "takes": null,
+          "type": "real"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the current down threshold",
+          "list": false,
+          "name": "current_down",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.current_down",
+          "takes": null,
+          "type": "real"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the histogram PNG (04.C7)",
+          "list": false,
+          "name": "plot",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.plot",
+          "takes": null,
+          "type": "output_name"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the id column of a table (04.C1)",
+          "list": false,
+          "name": "id_column",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.id_column",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the value column of a table (04.C1)",
+          "list": false,
+          "name": "value_column",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.value_column",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "an id map file, or symbols (04.C1)",
+          "list": false,
+          "name": "id_map",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.id_map",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "choices": [
+            "classify_each",
+            "max_abs"
+          ],
+          "debug": false,
+          "default": "classify_each",
+          "help": "repeated ids (04.C3)",
+          "list": false,
+          "name": "repeats",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "expression.repeats",
+          "takes": null,
+          "type": "choice"
+        }
+      ],
+      "creates_graph": false,
+      "forms": [
+        {
+          "origin": "2.0",
+          "slots": [
+            {
+              "arg": "values",
+              "kind": "one",
+              "none_token": ""
+            }
+          ],
+          "usage": "<values>",
+          "warning": ""
+        }
+      ],
+      "name": "suggest_thresholds",
+      "needs": [],
+      "needs_run_dir": false,
+      "owner": "expression",
+      "produces": null,
+      "rules": [
+        {
+          "a": "current_up",
+          "b": "current_down",
+          "kind": "requires"
+        },
+        {
+          "a": "current_down",
+          "b": "current_up",
+          "kind": "requires"
+        },
+        {
+          "a": "current_down",
+          "b": "current_up",
+          "kind": "less"
+        }
+      ],
+      "run_settings": [],
+      "step": true,
+      "summary": "suggests up and down thresholds from the values (S3.15)",
+      "tools": []
+    },
+    {
+      "aliases": [],
+      "arguments": [
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "a symbol map (2B.6)",
+          "list": false,
+          "name": "map",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.map",
+          "takes": null,
+          "type": "input_file"
+        }
+      ],
+      "creates_graph": false,
+      "forms": [],
+      "name": "labels",
+      "needs": [],
+      "needs_run_dir": false,
+      "owner": "network",
+      "produces": null,
+      "rules": [],
+      "run_settings": [],
+      "step": true,
+      "summary": "id-label pairs of a symbol map; fusion --query only (2B.6)",
+      "tools": []
+    },
+    {
+      "aliases": [
+        "gsea_select_pathways"
+      ],
+      "arguments": [
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the per-gene value file (S7.04)",
+          "list": false,
+          "name": "values",
+          "need": "required",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "gsea.values",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the candidate pathway list (S7.06)",
+          "list": false,
+          "name": "candidates",
+          "need": "required",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "gsea.candidates",
+          "takes": null,
+          "type": "input_list"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "fdr:Q, pval:P, nes:X, top:N, joined by commas (S7.13)",
+          "list": false,
+          "name": "selector",
+          "need": "required",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "gsea.selector",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the shortlist file (S7.15)",
+          "list": false,
+          "name": "shortlist",
+          "need": "required",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "gsea.shortlist",
+          "takes": null,
+          "type": "output_name"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "gene ids whose pathways are kept (S7.14)",
+          "list": true,
+          "name": "keep",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "gsea.keep",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "42",
+          "help": "the permutation seed (S7.11)",
+          "list": false,
+          "max": 9.2e+18,
+          "min": 0.0,
+          "name": "seed",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "gsea.seed",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "1000",
+          "help": "permutations (08.C8)",
+          "list": false,
+          "max": 100000.0,
+          "min": 1.0,
+          "name": "permutations",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "gsea.permutations",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "where relative list lines resolve (02.C12)",
+          "list": false,
+          "name": "kgml_dir",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.kgml_dir",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the id column of a table (04.C1)",
+          "list": false,
+          "name": "id_column",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "gsea.id_column",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the value column of a table (04.C1)",
+          "list": false,
+          "name": "value_column",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "gsea.value_column",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "an id map file, or symbols (04.C1)",
+          "list": false,
+          "name": "id_map",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "gsea.id_map",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "choices": [
+            "classify_each",
+            "max_abs"
+          ],
+          "debug": false,
+          "default": "classify_each",
+          "help": "repeated ids (04.C3)",
+          "list": false,
+          "name": "repeats",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "gsea.repeats",
+          "takes": null,
+          "type": "choice"
+        }
+      ],
+      "creates_graph": false,
+      "forms": [
+        {
+          "origin": "FuSION 1",
+          "slots": [
+            {
+              "arg": "values",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "candidates",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "selector",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "shortlist",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "",
+              "kind": "optional_tail",
+              "none_token": ""
+            },
+            {
+              "arg": "keep",
+              "kind": "one",
+              "none_token": "0"
+            }
+          ],
+          "usage": "<values> <candidates> <selector> <shortlist> [<keep>]",
+          "warning": ""
+        }
+      ],
+      "name": "gsea",
+      "needs": [],
+      "needs_run_dir": true,
+      "owner": "enrichment",
+      "produces": "shortlist",
+      "rules": [],
+      "run_settings": [
+        "network.indirect",
+        "network.ecrel",
+        "network.maplink"
+      ],
+      "step": true,
+      "summary": "GSEA prerank over the candidate pathways, and the shortlist (S7.01)",
+      "tools": []
+    },
+    {
+      "aliases": [
+        "merge_from_file"
+      ],
+      "arguments": [
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the files to merge; by default the latest shortlist",
+          "list": false,
+          "name": "list",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "merge.list",
+          "takes": "shortlist",
+          "type": "input_list"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "1",
+          "help": "the split threshold (S2.07)",
+          "list": false,
+          "min": 0.0,
+          "name": "split_threshold",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.split_threshold",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's y|n flag (S2.12)",
+          "list": false,
+          "name": "tool_written",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.tool_written",
+          "takes": null,
+          "type": "boolean"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "where relative list lines resolve (02.C12)",
+          "list": false,
+          "name": "kgml_dir",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.kgml_dir",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the source; by default the batch's fb_rch lines (01.C17)",
+          "list": true,
+          "name": "source",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "merge.source",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the target; by default the batch's fb_rch lines (01.C17)",
+          "list": true,
+          "name": "target",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "merge.target",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the FSC; by default the batch's pathz3 lines (01.C17)",
+          "list": true,
+          "name": "fsc",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "merge.fsc",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "confirmed up genes (03.C2)",
+          "list": true,
+          "name": "confirmed_up",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "merge.confirmed_up",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "confirmed down genes (03.C2)",
+          "list": true,
+          "name": "confirmed_down",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "merge.confirmed_down",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "ids never merged (S1.17)",
+          "list": false,
+          "name": "not_merged",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "merge.not_merged",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the merge report (S2.24)",
+          "list": false,
+          "name": "report",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "merge.report",
+          "takes": null,
+          "type": "output_name"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the observations whose genes stay apart",
+          "list": false,
+          "name": "observations",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "merge.observations",
+          "takes": "observations",
+          "type": "text"
+        }
+      ],
+      "creates_graph": true,
+      "forms": [
+        {
+          "origin": "FuSION 1",
+          "slots": [
+            {
+              "arg": "list",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "",
+              "kind": "ignored",
+              "none_token": ""
+            },
+            {
+              "arg": "split_threshold",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "tool_written",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "",
+              "kind": "ignored_list",
+              "none_token": "-1"
+            }
+          ],
+          "usage": "<list> <ignored> <split_threshold> <tool_written> <ignored>... -1",
+          "warning": "mff: FuSION 1's 'xml' token and map-file list are ignored"
+        },
+        {
+          "origin": "2.0",
+          "slots": [
+            {
+              "arg": "list",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "split_threshold",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "tool_written",
+              "kind": "one",
+              "none_token": ""
+            }
+          ],
+          "usage": "<list> <split_threshold> <tool_written>",
+          "warning": ""
+        }
+      ],
+      "name": "mff",
+      "needs": [],
+      "needs_run_dir": true,
+      "owner": "merge",
+      "produces": "network",
+      "rules": [],
+      "run_settings": [
+        "network.indirect",
+        "network.ecrel",
+        "network.maplink"
+      ],
+      "step": true,
+      "summary": "merges the listed pathways into one network (S2.16)",
+      "tools": []
+    },
+    {
+      "aliases": [
+        "read_graph_xml"
+      ],
+      "arguments": [
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the network file (S2.12)",
+          "list": false,
+          "name": "file",
+          "need": "required",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.file",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's y|n flag (S2.12)",
+          "list": false,
+          "name": "tool_written",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.tool_written",
+          "takes": null,
+          "type": "boolean"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "1",
+          "help": "the split threshold (S2.07)",
+          "list": false,
+          "min": 0.0,
+          "name": "split_threshold",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.split_threshold",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": true,
+          "choices": [
+            "auto",
+            "kgml",
+            "fusion",
+            "legacy",
+            "edges"
+          ],
+          "debug": false,
+          "default": "auto",
+          "help": "overrides detection (02.C1)",
+          "list": false,
+          "name": "format",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.format",
+          "takes": null,
+          "type": "choice"
+        }
+      ],
+      "creates_graph": true,
+      "forms": [
+        {
+          "origin": "FuSION 1",
+          "slots": [
+            {
+              "arg": "file",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "tool_written",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "split_threshold",
+              "kind": "one",
+              "none_token": ""
+            }
+          ],
+          "usage": "<file> <tool_written> <split_threshold>",
+          "warning": ""
+        }
+      ],
+      "name": "rgx",
+      "needs": [],
+      "needs_run_dir": true,
+      "owner": "network",
+      "produces": "network",
+      "rules": [],
+      "run_settings": [
+        "network.indirect",
+        "network.ecrel",
+        "network.maplink"
+      ],
+      "step": true,
+      "summary": "reads one network file (S2.12)",
+      "tools": []
+    },
+    {
+      "aliases": [
+        "write_graph_xml"
+      ],
+      "arguments": [
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "0",
+          "help": "a graph id; 0 is the latest (S2.01)",
+          "list": false,
+          "min": 0.0,
+          "name": "graph",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.graph",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the file to write (2B.3)",
+          "list": false,
+          "name": "out",
+          "need": "required",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.out",
+          "takes": null,
+          "type": "output_name"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "KEGG",
+          "help": "the root's name (S2.25)",
+          "list": false,
+          "name": "tag",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.tag",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "true",
+          "help": "embed the sources (02.C4)",
+          "list": false,
+          "name": "embed_sources",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.embed_sources",
+          "takes": null,
+          "type": "boolean"
+        }
+      ],
+      "creates_graph": false,
+      "forms": [
+        {
+          "origin": "FuSION 1",
+          "slots": [
+            {
+              "arg": "graph",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "out",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "tag",
+              "kind": "one",
+              "none_token": ""
+            }
+          ],
+          "usage": "<graph> <out> <tag>",
+          "warning": ""
+        }
+      ],
+      "name": "wgx",
+      "needs": [],
+      "needs_run_dir": true,
+      "owner": "network",
+      "produces": null,
+      "rules": [],
+      "run_settings": [],
+      "step": true,
+      "summary": "writes a graph to a file (S2.25)",
+      "tools": []
+    },
+    {
+      "aliases": [
+        "size"
+      ],
+      "arguments": [
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "0",
+          "help": "a graph id; 0 is the latest (S2.01)",
+          "list": false,
+          "min": 0.0,
+          "name": "graph",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.graph",
+          "takes": null,
+          "type": "integer"
+        }
+      ],
+      "creates_graph": false,
+      "forms": [
+        {
+          "origin": "FuSION 1",
+          "slots": [
+            {
+              "arg": "graph",
+              "kind": "one",
+              "none_token": ""
+            }
+          ],
+          "usage": "<graph>",
+          "warning": ""
+        }
+      ],
+      "name": "sz",
+      "needs": [],
+      "needs_run_dir": true,
+      "owner": "network",
+      "produces": null,
+      "rules": [],
+      "run_settings": [],
+      "step": true,
+      "summary": "prints a graph's size (S2.28)",
+      "tools": []
+    },
+    {
+      "aliases": [],
+      "arguments": [
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the edge list (S2.30)",
+          "list": false,
+          "name": "edges",
+          "need": "required",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.edges",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the file to write (2B.3)",
+          "list": false,
+          "name": "out",
+          "need": "required",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "network.out",
+          "takes": null,
+          "type": "output_name"
+        }
+      ],
+      "creates_graph": false,
+      "forms": [
+        {
+          "origin": "FuSION 1",
+          "slots": [
+            {
+              "arg": "edges",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "out",
+              "kind": "one",
+              "none_token": ""
+            }
+          ],
+          "usage": "<edges> <out>",
+          "warning": ""
+        }
+      ],
+      "name": "add",
+      "needs": [],
+      "needs_run_dir": true,
+      "owner": "network",
+      "produces": null,
+      "rules": [],
+      "run_settings": [],
+      "step": true,
+      "summary": "writes an edge list as a network file (S2.30)",
+      "tools": []
+    },
+    {
+      "aliases": [
+        "corridor"
+      ],
+      "arguments": [
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "0",
+          "help": "the network to cut; 0 is the latest graph (S2.01)",
+          "list": false,
+          "min": 0.0,
+          "name": "graph",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "corridor.graph",
+          "takes": "network",
+          "type": "integer"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the source id; must bind to one node",
+          "list": true,
+          "name": "source",
+          "need": "required",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "corridor.source",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the target id; must bind to one node",
+          "list": true,
+          "name": "target",
+          "need": "required",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "corridor.target",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "",
+          "help": "nodes never entered, with their complexes (S4.06)",
+          "list": true,
+          "name": "exclude",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "corridor.exclude",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "edges, inclusive (S4.03)",
+          "list": false,
+          "max": 1000000.0,
+          "min": 0.0,
+          "name": "bound",
+          "need": "required",
+          "on_resume": "may_change",
+          "positional_only": false,
+          "setting": "corridor.bound",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": true,
+          "choices": [
+            "any",
+            "activation",
+            "expression"
+          ],
+          "debug": false,
+          "default": "any",
+          "help": "edges into the target: any, activation or expression (S4.05)",
+          "list": false,
+          "name": "edges_to_target",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "corridor.edges_to_target",
+          "takes": null,
+          "type": "choice"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "component,association,dissociation,mapping",
+          "help": "non-traversable subtypes (S4.04)",
+          "list": true,
+          "name": "skip_subtypes",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "corridor.skip_subtypes",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "observations matched for the report (05.C9)",
+          "list": false,
+          "name": "observations",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "corridor.observations",
+          "takes": "observations",
+          "type": "text"
+        }
+      ],
+      "creates_graph": true,
+      "forms": [
+        {
+          "origin": "FuSION 1",
+          "slots": [
+            {
+              "arg": "graph",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "source",
+              "kind": "list",
+              "none_token": ""
+            },
+            {
+              "arg": "target",
+              "kind": "list",
+              "none_token": ""
+            },
+            {
+              "arg": "exclude",
+              "kind": "list",
+              "none_token": ""
+            },
+            {
+              "arg": "bound",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "edges_to_target",
+              "kind": "one",
+              "none_token": ""
+            }
+          ],
+          "usage": "<graph> <source>... -1 <target>... -1 <exclude>... -1 <bound> <edges_to_target>",
+          "warning": ""
+        }
+      ],
+      "name": "fb_rch",
+      "needs": [
+        "network"
+      ],
+      "needs_run_dir": true,
+      "owner": "corridor",
+      "produces": "corridor",
+      "rules": [],
+      "run_settings": [],
+      "step": true,
+      "summary": "the corridor from the source to the target within the bound (S4.01)",
+      "tools": []
+    },
+    {
+      "aliases": [
+        "get_path_with_z3"
+      ],
+      "arguments": [
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "0",
+          "help": "the corridor; 0 is the latest graph (S2.01)",
+          "list": false,
+          "min": 0.0,
+          "name": "graph",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.graph",
+          "takes": "corridor",
+          "type": "integer"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "the FSC, one or more ids (06.C10)",
+          "list": true,
+          "name": "fsc",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.fsc",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "in, out, free; in,out with an FSC, free without (06.C10)",
+          "list": true,
+          "name": "cases",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.cases",
+          "takes": null,
+          "type": "choice"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "0",
+          "help": "node relaxations, lower",
+          "list": false,
+          "min": 0.0,
+          "name": "node_min",
+          "need": "defaulted",
+          "on_resume": "may_change",
+          "positional_only": false,
+          "setting": "solve.node_min",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "8",
+          "help": "node relaxations, upper (06.C17)",
+          "list": false,
+          "min": 0.0,
+          "name": "node_max",
+          "need": "defaulted",
+          "on_resume": "may_change",
+          "positional_only": false,
+          "setting": "solve.node_max",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "0",
+          "help": "edge relaxations, lower",
+          "list": false,
+          "min": 0.0,
+          "name": "edge_min",
+          "need": "defaulted",
+          "on_resume": "may_change",
+          "positional_only": false,
+          "setting": "solve.edge_min",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "8",
+          "help": "edge relaxations, upper (06.C17)",
+          "list": false,
+          "min": 0.0,
+          "name": "edge_max",
+          "need": "defaulted",
+          "on_resume": "may_change",
+          "positional_only": false,
+          "setting": "solve.edge_max",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "only these points: n,e;n,e (06.C9)",
+          "list": false,
+          "name": "points",
+          "need": "optional",
+          "on_resume": "may_change",
+          "positional_only": false,
+          "setting": "solve.points",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "4h",
+          "help": "per check (06.C2)",
+          "list": false,
+          "name": "timeout",
+          "need": "defaulted",
+          "on_resume": "may_change",
+          "positional_only": false,
+          "setting": "solve.timeout",
+          "takes": null,
+          "type": "duration"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "1h",
+          "help": "per incremental check (06.C2)",
+          "list": false,
+          "name": "incremental_timeout",
+          "need": "defaulted",
+          "on_resume": "may_change",
+          "positional_only": false,
+          "setting": "solve.incremental_timeout",
+          "takes": null,
+          "type": "duration"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "0",
+          "help": "the whole solve's budget; 0 = none (06.C3)",
+          "list": false,
+          "name": "budget",
+          "need": "defaulted",
+          "on_resume": "may_change",
+          "positional_only": false,
+          "setting": "solve.budget",
+          "takes": null,
+          "type": "duration"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "0",
+          "help": "Z3 steps per check; 0 = none (2B.8)",
+          "list": false,
+          "min": 0.0,
+          "name": "rlimit",
+          "need": "defaulted",
+          "on_resume": "may_change",
+          "positional_only": false,
+          "setting": "solve.rlimit",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "42",
+          "help": "Z3's seed (S5.22)",
+          "list": false,
+          "max": 4294967295.0,
+          "min": 0.0,
+          "name": "seed",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.seed",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "1",
+          "help": "witnesses per point (06.C11)",
+          "list": false,
+          "min": 1.0,
+          "name": "solutions",
+          "need": "defaulted",
+          "on_resume": "may_change",
+          "positional_only": false,
+          "setting": "solve.solutions",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "0",
+          "help": "0: one per case (06.C4)",
+          "list": false,
+          "min": 0.0,
+          "name": "threads",
+          "need": "defaulted",
+          "on_resume": "may_change",
+          "positional_only": false,
+          "setting": "solve.threads",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": true,
+          "choices": [
+            "automatic",
+            "unknown",
+            "none"
+          ],
+          "debug": false,
+          "default": "automatic",
+          "help": "re-asking unknowns (06.C8)",
+          "list": false,
+          "name": "retry",
+          "need": "defaulted",
+          "on_resume": "may_change",
+          "positional_only": false,
+          "setting": "solve.retry",
+          "takes": null,
+          "type": "choice"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "a step directory whose answers are reused (06.C12)",
+          "list": false,
+          "name": "answers_from",
+          "need": "optional",
+          "on_resume": "may_change",
+          "positional_only": false,
+          "setting": "solve.answers_from",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "coexpression links (S5.15)",
+          "list": false,
+          "name": "coexpression_csv",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.coexpression_csv",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "coexpression score, strict > (S5.15)",
+          "list": false,
+          "name": "coexpression_threshold",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.coexpression_threshold",
+          "takes": null,
+          "type": "real"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "frozen edges' score, strict > (S5.16)",
+          "list": false,
+          "name": "frozen_threshold",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.frozen_threshold",
+          "takes": null,
+          "type": "real"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's flag; absent: the inputs decide (S5.03)",
+          "list": false,
+          "name": "constraints",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.constraints",
+          "takes": null,
+          "type": "boolean"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "nodes always present (S5.05)",
+          "list": false,
+          "name": "essential_nodes",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.essential_nodes",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "genes never present, with their complexes (S5.05)",
+          "list": false,
+          "name": "avoid_nodes",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.avoid_nodes",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "nodes held active (S5.05)",
+          "list": false,
+          "name": "active_nodes",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.active_nodes",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "nodes held inactive (S5.05)",
+          "list": false,
+          "name": "inactive_nodes",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.inactive_nodes",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "nodes never relaxed (S5.05)",
+          "list": false,
+          "name": "nonrelaxed_nodes",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.nonrelaxed_nodes",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "confirmed up genes (S5.07)",
+          "list": false,
+          "name": "confirmed_up",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.confirmed_up",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "confirmed down genes (S5.07)",
+          "list": false,
+          "name": "confirmed_down",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.confirmed_down",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "edges always selected (S5.06)",
+          "list": false,
+          "name": "essential_edges",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.essential_edges",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "edges never selected (S5.06)",
+          "list": false,
+          "name": "avoid_edges",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.avoid_edges",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "edges never relaxed (S5.06)",
+          "list": false,
+          "name": "nonrelaxed_edges",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "solve.nonrelaxed_edges",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's text files (1.21)",
+          "list": false,
+          "name": "legacy_prefix",
+          "need": "optional",
+          "on_resume": "may_change",
+          "positional_only": false,
+          "setting": "solve.legacy_prefix",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": "0",
+          "help": "FuSION 1's mode; only 0 (S5.28)",
+          "list": false,
+          "max": 1.0,
+          "min": 0.0,
+          "name": "mode",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "solve.mode",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's connect pairs; must match the corridor",
+          "list": false,
+          "name": "pairs",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "solve.pairs",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's path bound; must equal the corridor's (05.C7)",
+          "list": false,
+          "min": 0.0,
+          "name": "bound",
+          "need": "optional",
+          "on_resume": "may_change",
+          "positional_only": true,
+          "setting": "solve.bound",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's up list (S5.01)",
+          "list": false,
+          "name": "up",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "solve.up",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's down list (S5.01)",
+          "list": false,
+          "name": "down",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "solve.down",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's relaxed nodes; ignored (S5.05)",
+          "list": false,
+          "name": "relaxed_nodes",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "solve.relaxed_nodes",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": true,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's relaxed edges; ignored (S5.05)",
+          "list": false,
+          "name": "relaxed_edges",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "solve.relaxed_edges",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's value file; recorded only",
+          "list": false,
+          "name": "fold_change",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "solve.fold_change",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's count; ignored (06.C11)",
+          "list": false,
+          "name": "count",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "solve.count",
+          "takes": null,
+          "type": "integer"
+        }
+      ],
+      "creates_graph": false,
+      "forms": [
+        {
+          "origin": "FuSION 1",
+          "slots": [
+            {
+              "arg": "graph",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "mode",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "pairs",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "edge_min",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "node_min",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "edge_max",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "node_max",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "bound",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "legacy_prefix",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "up",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "down",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "essential_nodes",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "avoid_nodes",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "essential_edges",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "avoid_edges",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "active_nodes",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "inactive_nodes",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "confirmed_up",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "confirmed_down",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "relaxed_nodes",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "nonrelaxed_nodes",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "relaxed_edges",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "nonrelaxed_edges",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "fold_change",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "count",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "solutions",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "incremental_timeout",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "timeout",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "",
+              "kind": "optional_tail",
+              "none_token": ""
+            },
+            {
+              "arg": "coexpression_csv",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "coexpression_threshold",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "frozen_threshold",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "constraints",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "seed",
+              "kind": "one",
+              "none_token": ""
+            }
+          ],
+          "usage": "<graph> <mode> <pairs> <edge_min> <node_min> <edge_max> <node_max> <bound> <legacy_prefix> <up> <down> <essential_nodes> <avoid_nodes> <essential_edges> <avoid_edges> <active_nodes> <inactive_nodes> <confirmed_up> <confirmed_down> <relaxed_nodes> <nonrelaxed_nodes> <relaxed_edges> <nonrelaxed_edges> <fold_change> <count> <solutions> <incremental_timeout> <timeout> [<coexpression_csv> <coexpression_threshold> <frozen_threshold> <constraints> <seed>]",
+          "warning": ""
+        }
+      ],
+      "name": "pathz3",
+      "needs": [
+        "corridor"
+      ],
+      "needs_run_dir": true,
+      "owner": "solve",
+      "produces": "results",
+      "rules": [
+        {
+          "a": "node_min",
+          "b": "node_max",
+          "kind": "less_or_equal"
+        },
+        {
+          "a": "edge_min",
+          "b": "edge_max",
+          "kind": "less_or_equal"
+        },
+        {
+          "a": "coexpression_threshold",
+          "b": "coexpression_csv",
+          "kind": "requires"
+        }
+      ],
+      "run_settings": [],
+      "step": true,
+      "summary": "the Pareto frontier of relaxations on a corridor, with Z3 (S5.01)",
+      "tools": []
+    },
+    {
+      "aliases": [
+        "plot_solution_paths"
+      ],
+      "arguments": [
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's solution file; binds by prefix (07.C9)",
+          "list": false,
+          "name": "solution",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.solution",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the source id",
+          "list": false,
+          "name": "src",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.src",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the target id",
+          "list": false,
+          "name": "tgt",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.tgt",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "subgraph, all, shortest or alt[:W] (S6.01)",
+          "list": false,
+          "name": "mode",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.mode",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "all",
+          "help": "all, least or <n>,<e> (S6.03)",
+          "list": false,
+          "name": "points",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.points",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the file-name prefix (S6.01)",
+          "list": false,
+          "name": "prefix",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.prefix",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "choices": [
+            "none",
+            "svg"
+          ],
+          "debug": false,
+          "default": "none",
+          "help": "a static SVG through dot (S6.07)",
+          "list": false,
+          "name": "static",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.static",
+          "takes": null,
+          "type": "choice"
+        }
+      ],
+      "creates_graph": false,
+      "forms": [
+        {
+          "origin": "FuSION 1",
+          "slots": [
+            {
+              "arg": "solution",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "src",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "tgt",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "mode",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "points",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "prefix",
+              "kind": "one",
+              "none_token": ""
+            }
+          ],
+          "usage": "<solution> <src> <tgt> <mode> <points> <prefix>",
+          "warning": ""
+        }
+      ],
+      "name": "psp",
+      "needs": [
+        "results"
+      ],
+      "needs_run_dir": true,
+      "owner": "results",
+      "produces": null,
+      "rules": [],
+      "run_settings": [],
+      "step": true,
+      "summary": "draws a solve's paths (S6.01)",
+      "tools": []
+    },
+    {
+      "aliases": [
+        "plot_explanation"
+      ],
+      "arguments": [
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the solves; the latest by default (07.C9)",
+          "list": true,
+          "name": "solve",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.solve",
+          "takes": "results",
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the cases drawn; every solved case by default",
+          "list": true,
+          "name": "cases",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.cases",
+          "takes": null,
+          "type": "choice"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "all",
+          "help": "all, least or <n>,<e> (S6.03)",
+          "list": false,
+          "name": "points",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.points",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "subgraph",
+          "help": "subgraph, all, shortest or alt[:W] (S6.04)",
+          "list": false,
+          "name": "paths",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.paths",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "1",
+          "help": "the witness shown first (S6.02)",
+          "list": false,
+          "min": 1.0,
+          "name": "witness",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.witness",
+          "takes": null,
+          "type": "integer"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "false",
+          "help": "write the edge table (S6.08)",
+          "list": false,
+          "name": "edge_table",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.edge_table",
+          "takes": null,
+          "type": "boolean"
+        },
+        {
+          "affects_results": false,
+          "choices": [
+            "none",
+            "svg"
+          ],
+          "debug": false,
+          "default": "none",
+          "help": "a static SVG through dot (S6.07)",
+          "list": false,
+          "name": "static",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.static",
+          "takes": null,
+          "type": "choice"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the file-name prefix (S6.01)",
+          "list": false,
+          "name": "prefix",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.prefix",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the site directory (S6.19)",
+          "list": false,
+          "name": "site_dir",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.site_dir",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the site's key (S6.19)",
+          "list": false,
+          "name": "run_key",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.run_key",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the site's run title (S6.19)",
+          "list": false,
+          "name": "run_title",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.run_title",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the site's takeaway (S6.19)",
+          "list": false,
+          "name": "takeaway",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.takeaway",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "FuSION explanation subgraphs",
+          "help": "the site's title (S6.19)",
+          "list": false,
+          "name": "site_title",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.site_title",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "false",
+          "help": "replace the site entry (S6.19)",
+          "list": false,
+          "name": "replace",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.replace",
+          "takes": null,
+          "type": "boolean"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the Pareto image for the site (S6.19)",
+          "list": false,
+          "name": "po_png",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.po_png",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's file; binds by prefix (07.C9)",
+          "list": false,
+          "name": "incl_soln",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "results.incl_soln",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's file; binds by prefix (07.C9)",
+          "list": false,
+          "name": "incl_relax",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "results.incl_relax",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's file; binds by prefix (07.C9)",
+          "list": false,
+          "name": "excl_soln",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "results.excl_soln",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's file; binds by prefix (07.C9)",
+          "list": false,
+          "name": "excl_relax",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "results.excl_relax",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's value file (07.C12)",
+          "list": false,
+          "name": "lfc",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "results.lfc",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "FuSION 1's pathway-name map (07.C12)",
+          "list": false,
+          "name": "pathmap",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "results.pathmap",
+          "takes": null,
+          "type": "input_file"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the source id",
+          "list": false,
+          "name": "src",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "results.src",
+          "takes": null,
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the target id",
+          "list": false,
+          "name": "tgt",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": true,
+          "setting": "results.tgt",
+          "takes": null,
+          "type": "text"
+        }
+      ],
+      "creates_graph": false,
+      "forms": [
+        {
+          "origin": "FuSION 1",
+          "slots": [
+            {
+              "arg": "incl_soln",
+              "kind": "one",
+              "none_token": "0"
+            },
+            {
+              "arg": "incl_relax",
+              "kind": "one",
+              "none_token": "0"
+            },
+            {
+              "arg": "excl_soln",
+              "kind": "one",
+              "none_token": "0"
+            },
+            {
+              "arg": "excl_relax",
+              "kind": "one",
+              "none_token": "0"
+            },
+            {
+              "arg": "lfc",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "pathmap",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "src",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "tgt",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "cases",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "points",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "prefix",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "",
+              "kind": "optional_tail",
+              "none_token": ""
+            },
+            {
+              "arg": "site_dir",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "run_key",
+              "kind": "one",
+              "none_token": ""
+            },
+            {
+              "arg": "po_png",
+              "kind": "one",
+              "none_token": ""
+            }
+          ],
+          "usage": "<incl_soln> <incl_relax> <excl_soln> <excl_relax> <lfc> <pathmap> <src> <tgt> <cases> <points> <prefix> [<site_dir> <run_key> <po_png>]",
+          "warning": ""
+        }
+      ],
+      "name": "pex",
+      "needs": [
+        "results"
+      ],
+      "needs_run_dir": true,
+      "owner": "results",
+      "produces": null,
+      "rules": [],
+      "run_settings": [],
+      "step": true,
+      "summary": "the explanation pages of a solve (S6.10)",
+      "tools": []
+    },
+    {
+      "aliases": [],
+      "arguments": [
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": null,
+          "help": "the solves; the latest by default (07.C9)",
+          "list": true,
+          "name": "solve",
+          "need": "optional",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.solve",
+          "takes": "results",
+          "type": "text"
+        },
+        {
+          "affects_results": false,
+          "debug": false,
+          "default": "Liberation Sans",
+          "help": "the plot's font (S6.23)",
+          "list": false,
+          "name": "font",
+          "need": "defaulted",
+          "on_resume": "must_match",
+          "positional_only": false,
+          "setting": "results.font",
+          "takes": null,
+          "type": "text"
+        }
+      ],
+      "creates_graph": false,
+      "forms": [],
+      "name": "plot_pareto",
+      "needs": [
+        "results"
+      ],
+      "needs_run_dir": true,
+      "owner": "results",
+      "produces": null,
+      "rules": [],
+      "run_settings": [],
+      "step": true,
+      "summary": "the Pareto plot of the latest solves (S6.22)",
+      "tools": [
+        {
+          "features": [
+            "pngcairo"
+          ],
+          "id": "gnuplot",
+          "kind": "program",
+          "min_version": "5.4"
+        },
+        {
+          "features": [],
+          "id": "font:Liberation Sans",
+          "kind": "font",
+          "min_version": ""
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "unique_prefix"
+      ],
+      "arguments": [],
+      "creates_graph": false,
+      "dropped": "upfx was dropped in FuSION 2.0; each run has its own directory (S2.29)",
+      "forms": [],
+      "name": "upfx",
+      "needs": [],
+      "needs_run_dir": true,
+      "owner": "batch",
+      "produces": null,
+      "rules": [],
+      "run_settings": [],
+      "step": true,
+      "summary": "dropped (S2.29)",
+      "tools": []
+    }
+  ],
+  "format": "fusion.commands",
+  "format_version": 1,
+  "run_settings": [
+    {
+      "affects_results": true,
+      "default": "component,association,dissociation,mapping",
+      "help": "non-traversable subtypes (S4.04)",
+      "key": "corridor.skip_subtypes",
+      "need": "defaulted",
+      "type": "text"
+    },
+    {
+      "affects_results": true,
+      "default": "1000",
+      "help": "permutations (08.C8)",
+      "key": "gsea.permutations",
+      "need": "defaulted",
+      "type": "integer"
+    },
+    {
+      "affects_results": true,
+      "default": "42",
+      "help": "the permutation seed (S7.11)",
+      "key": "gsea.seed",
+      "need": "defaulted",
+      "type": "integer"
+    },
+    {
+      "affects_results": true,
+      "choices": [
+        "keep",
+        "exclude"
+      ],
+      "default": "keep",
+      "help": "ECrel relations (S2.31)",
+      "key": "network.ecrel",
+      "need": "defaulted",
+      "type": "choice"
+    },
+    {
+      "affects_results": true,
+      "choices": [
+        "discard",
+        "keep"
+      ],
+      "default": "discard",
+      "help": "indirect relations (S2.11)",
+      "key": "network.indirect",
+      "need": "defaulted",
+      "type": "choice"
+    },
+    {
+      "affects_results": true,
+      "choices": [
+        "skip",
+        "keep"
+      ],
+      "default": "skip",
+      "help": "maplink relations (02.C7)",
+      "key": "network.maplink",
+      "need": "defaulted",
+      "type": "choice"
+    },
+    {
+      "affects_results": false,
+      "default": "true",
+      "help": "use the shared store (09.C13)",
+      "key": "run.cache",
+      "need": "defaulted",
+      "type": "boolean"
+    },
+    {
+      "affects_results": false,
+      "default": null,
+      "help": "where the shared store lives (09.C13)",
+      "key": "run.cache_dir",
+      "need": "computed",
+      "type": "text"
+    },
+    {
+      "affects_results": false,
+      "default": "auto",
+      "help": "the core budget for sweep points (01.C4)",
+      "key": "run.jobs",
+      "need": "defaulted",
+      "type": "text"
+    },
+    {
+      "affects_results": false,
+      "default": null,
+      "help": "the run directory's label (01.C7)",
+      "key": "run.label",
+      "need": "computed",
+      "type": "text"
+    },
+    {
+      "affects_results": false,
+      "default": null,
+      "help": "the run log's name (S1.25)",
+      "key": "run.log",
+      "need": "computed",
+      "type": "text"
+    },
+    {
+      "affects_results": false,
+      "default": null,
+      "help": "where the run directory is made (01.C7)",
+      "key": "run.root",
+      "need": "computed",
+      "type": "text"
+    }
+  ]
+}
