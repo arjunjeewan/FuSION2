@@ -8783,3 +8783,51 @@ The command table comes from fusion --commands. Submit now shows --check's warni
 - Hold: Tell me what to change first.
 
 **Answer:** Commit (Recommended)
+
+## 326 · Note · Round 4 complete · 2026-11-20 12:51
+
+The two long cases of round 4 finished at nice 19, beside six of the user's FuSION 1 jobs: jun-b10-fdr025 (the reference run, 737 s) and jun-b10-fdr030 (259 s) match FuSION 1 on both frontiers. Round 4, on the committed code, now covers all 35 T1 and T2 cases: 66 of 70 frontiers match, and the other 4 belong to the three known cases (XD-07: egfhela-nfkb1-b6-r5-12, model-example; XD-01: jun-b7-fdr040keep).
+
+## 327 · User prompt · 2026-11-26 17:42
+
+> resume
+
+Sent six days after entry 326, with the sprint's version committed (main 23 commits ahead of GitHub, unpushed) and waiting for the user's review.
+
+## 328 · Poll · 2026-11-26 17:44
+
+What "resume" (entry 327) covers. Asked with the user's FuSION 1 jobs running again: about 21 processes, load 24 on 36 cores, 22.5 h in.
+
+**Q1 (Resume).** The sprint's version is committed and waits for your review. Decision 0038 paused Phase 3 for the sprint, and its plan has three kinds of work left:
+- code: C2 to C7, the test kit, the fusion-test driver, the reference runner, end-to-end case definitions, benchmarks and experiment code; and W7, FuSION 1's merge on synthetic fixtures;
+- booking 1's five experiments (X02, X03, X05, X06, X08), held "until after the first version" (log entry 302);
+- bookings 2 to 5: X11, M04, X07's two passes, M01 to M03, about 57 h.
+What should I resume?
+
+- Phase 3, where it paused (Recommended): The code items now, since they need no booking. Booking 1's experiments when the machine is free, then bookings 2 to 5, each booked with you. Your review of the version can happen in parallel.
+- The version's open features: Restart and resume, sweeps, the shared store, the site export, additional edges (designed with you first), Windows and macOS.
+- Your review of the version first: I take you through the app and its results, and wait for your sign-off before anything else.
+
+**Answer:** Phase 3, where it paused (Recommended)
+
+**Q2 (Booking 1).** If Phase 3 resumes: booking 1's five experiments take about 80 min, light on cores. X02, X03 and X08 run FuSION 1; X06 times Z3's timeouts, so a busy machine can change its results. About 21 of your FuSION 1 jobs are running now (load 24 on 36 cores, 22.5 h so far). When may they run?
+
+- After your current jobs finish (Recommended): I check the load from time to time and start them when your jobs are done. The code items go on meanwhile.
+- Now, at nice 19, beside your jobs: Sooner, but X06's timings may be off, and your jobs' timings may move slightly.
+- At a time you name: Tell me when.
+
+**Answer:** After your current jobs finish (Recommended)
+
+**Q3 (Push).** The 23 local commits (the sprint's whole version and its log) are not on GitHub, which is still at 0105469 from 2026-11-17. Push them now? Per decisions 0034 and 0035, I run de-claude --dry-run and then de-claude -y on the unpushed commits (they lose the co-author line and get new hashes), then push over SSH.
+
+- Push now (Recommended): Six days of approved work gets an off-machine copy.
+- Not yet: The commits stay local until you say so.
+
+**Answer:** Push now (Recommended)
+
+**Q4 (Log commit).** Commit the prompt log's entries 326 to 328: round 4's completion, your prompt "resume", and this poll? de-claude refuses while tracked files have changes, so a push needs this commit first.
+
+- Commit (Recommended): One local commit of docs/process/PROMPTS.md.
+- Hold: Tell me what to change first.
+
+**Answer:** Commit (Recommended)
