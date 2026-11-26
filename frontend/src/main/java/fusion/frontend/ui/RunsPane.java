@@ -16,6 +16,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
@@ -112,14 +113,26 @@ final class RunsPane {
         frontier.getColumns().add(pointColumn("Certified", p -> p.certified() ? "yes" : "no"));
         frontier.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         plot.setPreserveRatio(true);
-        plot.setFitWidth(640);
+        // The plot fits its tab whole at any window size; gnuplot draws it at 980 by 690 pixels (07).
+        javafx.scene.control.ScrollPane plotPane = new javafx.scene.control.ScrollPane(plot);
+        plotPane.viewportBoundsProperty().addListener((o, was, now) -> {
+            plot.setFitWidth(Math.max(1, now.getWidth() - 2));
+            plot.setFitHeight(Math.max(1, now.getHeight() - 2));
+        });
+        pages.setCellFactory(l -> new ListCell<>() {
+            @Override
+            protected void updateItem(Path page, boolean empty) {
+                super.updateItem(page, empty);
+                setText(empty || page == null ? null : page.getFileName().toString());     // named by case and point
+            }
+        });
         pages.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2 && pages.getSelectionModel().getSelectedItem() != null) {
                 view.services().pages().open(pages.getSelectionModel().getSelectedItem());
             }
         });
         TabPane details = new TabPane(tab("Log", log), tab("Frontier", frontier),
-                tab("Pareto plot", new javafx.scene.control.ScrollPane(plot)),
+                tab("Pareto plot", plotPane),
                 tab("Explanation pages", new VBox(4, Ui.muted("Double-click a page to open it in your browser."), pages)));
         outcome.setWrapText(true);                  // Submit's warnings and the results can be long
         VBox top = new VBox(8, table, buttons, stage, progress, outcome);
