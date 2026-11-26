@@ -9309,3 +9309,127 @@ Committing the decided notes and the log, asked while the C2 subagent (entry 346
 - Later: Keep the entries for the next log commit.
 
 **Answer:** Commit it (Recommended)
+
+## 348 · Note · The C2 subagent's report on entry 346 · 2026-11-26 20:58
+
+The subagent built C2 and committed nothing. It changed only `backend/tests/`:
+- `backend/tests/testkit/`: 29 files, 4,075 lines. `fusion_testkit_base` links only core, pugixml and nlohmann_json, so an include of network, merge, corridor or solve from it does not compile. `fusion_testkit` adds the adapters, `ScriptedOracle` and the recording `StepContext`.
+- `backend/tests/unit/testkit/`: 6 files, 1,224 lines, 28 tests.
+- The solve, corridor and merge suites moved onto the kit, +832 and −777 lines; merge's `generator.hpp` is removed.
+
+It reported 558 tests passing with zero warnings, and no disagreement between an oracle and a module: Z3's frontier equals the exhaustive frontier on 200 tiny cases, `compute()` equals `walk_corridor` on 1000 networks, and `split`, `merge_direct` and `exception_merge` agree on all three S2.22 layers, the 167 KGMLs included. Its times, Debug then Release: S2.22 bounded 83 s and 13 s (9,744 comparisons), random 553 s and 102 s, real (`[kegg][slow]`) 275 s and 39 s; the 200 tiny solve cases 5.4 s and 4.5 s. Before C2, the 426 `[unit]` tests took 62 s of CPU in Debug, 10 s of wall time on 8 jobs. Its findings:
+1. W3's captures and `counts.tsv` are not in the data manifest, so three `[kegg]` self-tests skip until C3.2 records them. With a temporary manifest, since restored, they passed in 31 s: 176 of 176 witnesses accepted, the mutations rejected, `r5`'s out witness at (4, 4) rejected both ways, and W3's counts reproduced for all 39 captures.
+2. Section 12's 177 witnessed points count the sweep's fdr025, which repeats `jun-b10-fdr025`; the 23 cases hold 176.
+3. Section 12 (`12-tests.md:601`) says the `fusion1` semantics count edges out of the target; S5.10 says FuSION 1 never considers them. It followed S5.10, and no witness tells the two apart. A ruling is needed before R3.
+4. `results.json` lists only the nodes its witnesses name, so `read_run` completes the corridor from the `fb_rch` step's `corridor.json` and the run's network file.
+5. Small interface additions beyond the note, and masks for `run.started`'s run id and name, which change in every run.
+6. The run module's stop-file test (09.C7; #444 before C2's tests were added) fails now and then under load.
+
+Claude's check:
+A clean Debug build in a scratch folder, at nice 19 on 8 jobs, had no warnings, and all 558 tests passed there with the data root set, 3 of them skipped for finding 1, in 546 s of wall time: S2.22 bounded 79 s, random 545 s, real 226 s; the stop-file test passed. The base library's sources include only core, pugixml, nlohmann_json and the kit's own headers. The checker follows S5.10 to S5.17 under both semantics. FuSION 1's code bears out finding 3: its worklist never expands the target (`GraphManagerNew.cc:27960-28045`), and the reference run's corridor has one edge out of the target (S4.11). Finding 2 holds: `jun-b10-fdr025` has one witnessed point, (1, 0), so the 24 runs hold 176 + 1. The suites keep every check they had, and solve's step test now also checks each witness's cost against its point. The normaliser masks section 09's volatile `run.json` fields; in `events.jsonl` it leaves `run.started`'s `parent`, a run id that changes in every resumed run. Claude polls the layers' size, finding 3, the departures and that mask, then finding 6.
+
+## 349 · Poll · 2026-11-26 20:59
+
+C2's report (entry 348): the S2.22 layers' size, finding 3, the departures from the note, and the parent mask.
+
+**Q1 (S2.22 sizes).** C2's S2.22 merge layers overrun T0's 1-minute budget, which covers the whole unit tier. Measured in Debug, then Release: the bounded layer 79-83 s and 13 s, the random layer (1000 sets, 20 orders each) 545-553 s and 102 s. Before C2, all 426 [unit] tests took 62 s of CPU in Debug, 10 s of wall time on 8 jobs. CI also runs T0 in a Debug build under the sanitizers on every push. How should the two layers fit?
+
+- Small T0 copy, slow copy (Recommended): Each layer becomes two test cases with one shared body. The T0 copy is cut until both layers together take about 10 s in Release and under a minute in Debug. The other copy keeps section 12's sizes and is tagged [slow] instead of [unit], so it runs where the real layer runs; C3's dev preset leaves slow tests out. Section 12's two layer lines get a Phase 3 note. Claude makes the edit and shows the measured times with the diff.
+- Raise T0's budget: Keep section 12's sizes in T0 and amend its budget, to about 2 min in Release and about 10 min in Debug, longer under the sanitizers.
+- Move both out of T0: Both layers stay at section 12's sizes, tagged [slow]. T0 keeps only the older, smaller split tests.
+
+**Answer:** Small T0 copy, slow copy (Recommended)
+
+**Q2 (Target edges).** The checker's fusion1 semantics disagree with section 12 on edges out of the target. Section 12 (12-tests.md:601) says FuSION 1 counts them. S5.10 says it never considers them, and FuSION 1's code agrees: its worklist never expands the target (GraphManagerNew.cc:27960-28045). The reference run's FuSION 1 corridor has one such edge (S4.11). The checker follows S5.10, and none of the 176 witnesses tells the two apart. It matters for R3, which re-scores 2.0's witnesses on FuSION 1's corridors. Which rule should the checker use?
+
+- S5.10, fix section 12 (Recommended): The checker stays as built. Line 601 gets a Phase 3 note: under fusion1, edges out of the target are never considered, so they are never counted.
+- Section 12 as written: The checker counts them under fusion1, which departs from what FuSION 1's code does.
+
+**Answer:** S5.10, fix section 12 (Recommended)
+
+**Q3 (Departures).** Beyond C2.4's decided list, C2 departs from its note in three ways. (1) read_run completes each solve's corridor from the fb_rch step's corridor.json and the run's network file, because results.json lists only the nodes its witnesses name. (2) Small interface additions: manifest_path() and a require() that takes a manifest; ScratchDir::kept(); exception_merge_texts() for generated sets; a timeout on run_fusion; normalise_file() and matched_files() for C5's golden updates; keep_failing_input() for 12.C9's saved inputs; and an adapt::spec that takes the case graph, for edge lists. (3) The event masks add run.started's run id and name, which change in every run; section 12 lists only pid, dir and fusion. Accept them?
+
+- Accept as a group (Recommended): Claude records them in the C2 note under C2.4, and adds the two run.started fields to section 12's event-mask list with a Phase 3 note.
+- One by one: Claude polls each departure separately.
+
+**Answer:** Accept as a group (Recommended)
+
+**Q4 (Parent mask).** The normaliser doesn't mask the parent field in run.started. That field is a run id, so it changes on every resumed run. Section 09 lists parent among run.json's volatile fields, and the normaliser does mask it there, but not in events.jsonl. Without the mask, C5's resume cases would fail their golden comparison. Add it?
+
+- Add it now (Recommended): One more mask in fusion_normaliser, checked by the normaliser's self-test. It is also added to section 12's event-mask list, with the run id and name.
+- Leave it for C5: C5 adds the mask along with its resume cases.
+
+**Answer:** Add it now (Recommended)
+
+## 350 · Poll · 2026-11-26 21:27
+
+C2's finding 6 (entry 348).
+
+**Q1 (Flaky test).** The run module's stop-file test (09.C7, backend/tests/unit/run/test_stop.cpp:7) failed once in the subagent's baseline run, before any C2 code existed, while your FuSION 1 jobs held the machine. It took 0.70 s, so it didn't hit its 1 s limit. It passed in both later runs, including mine. What should happen with it?
+
+- Look into it after C2 (Recommended): Once C2 is committed, Claude reruns the test many times under load at nice 19 to find the cause, then polls you on any fix. C2's commit doesn't wait for it.
+- Look into it now: Find the cause and poll the fix before C2's commit.
+- Leave it: Record it in the handoff, and look again only if it fails again.
+
+**Answer:** Look into it after C2 (Recommended)
+
+## 351 · Poll · 2026-11-27 04:24
+
+Committing C2 after Claude made the choices of entry 349, and the log.
+
+**Q1 (C2 commit).** Commit C2, the test kit? A clean Debug build had no warnings, and all 560 tests pass with the data root set; 3 skip until C3.2 adds W3's files to the manifest. Without the slow copies the run takes 22.7 s on 8 jobs. Since the subagent's report, Claude has made your four choices from entry 349. (1) Each synthetic S2.22 layer now has a T0 copy and a [slow] copy. The T0 copies cover the 32 listed shapes (2,832 comparisons) and the first 50 random sets: 33 s together in Debug, 5.4 s in Release. The [slow] copies keep section 12's sizes: 68 s and 531 s in Debug, 9.9 s and 67 s in Release. (2) Section 12 has Phase 3 notes on the layers, on edges out of the target, and on the event masks. (3) The C2 note records the departures. (4) The normaliser masks run.started's parent, and its self-test checks it. The commit has 35 new files (5,303 lines) and 15 changed ones (+876, -780). Until C3's dev test preset exists, a plain ctest also runs the slow copies; ctest -LE slow skips them.
+
+- Commit it (Recommended): One commit, staging the 50 paths by name. Nothing is pushed. Its preview:
+  ```text
+  Add the test kit and move three suites onto it
+
+  C2 of Phase 3. fusion_testkit_base links only core, pugixml
+  and nlohmann_json, so its oracles cannot include the modules
+  they check. It holds the data root and scratch folders, seeded
+  generators on core::Rng, canonical forms and diff, FuSION 1's
+  readers, the independent witness checker with fusion1 and
+  fusion2 semantics, exception_merge, walk_corridor,
+  exhaustive_frontier, the end-to-end helpers and read_run.
+  fusion_testkit adds the adapters from module types,
+  ScriptedOracle and a recording StepContext.
+
+  Solve checks every witness through the kit's checker and draws
+  its 200 tiny cases from core::Rng. Corridor's property test
+  compares compute() with walk_corridor. Merge's split test adds
+  exception_merge as a third side in the three S2.22 layers; the
+  two synthetic layers run in T0 cut to fit its budget and at
+  full size tagged slow. test_testkit holds the kit's self-tests.
+  Section 12 and the C2 note record the decisions made as it was
+  built.
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+  Files:
+    backend/tests/CMakeLists.txt
+    backend/tests/testkit/  (29 new: 13 headers, 16 sources)
+    backend/tests/unit/testkit/  (6 new)
+    backend/tests/unit/corridor/test_properties.cpp
+    backend/tests/unit/corridor/test_reference.cpp
+    backend/tests/unit/merge/generator.hpp  (removed)
+    backend/tests/unit/merge/support.hpp
+    backend/tests/unit/merge/test_properties.cpp
+    backend/tests/unit/merge/test_split.cpp
+    backend/tests/unit/solve/kit.cpp, kit.hpp
+    backend/tests/unit/solve/test_driver.cpp
+    backend/tests/unit/solve/test_encoding.cpp
+    backend/tests/unit/solve/test_search.cpp
+    backend/tests/unit/solve/test_step.cpp
+    docs/architecture/12-tests.md
+    docs/phase3/notes/C2-testkit.md
+  ```
+- Two commits: The code first, then the section 12 and C2 note changes as their own commit.
+- Not yet: Keep it uncommitted, for example to read the diff first (git diff, and the two new folders).
+
+**Answer:** Commit it (Recommended)
+
+**Q2 (Log commit).** After the C2 commit, commit the prompt log's entries 348 to 351? They cover the C2 subagent's report and Claude's check, the two polls on its findings, and this poll.
+
+- Commit it (Recommended): docs/process/PROMPTS.md, message 'Log prompt entries 348 to 351'. Not pushed.
+- Later: Keep the entries for the next log commit.
+
+**Answer:** Commit it (Recommended)
