@@ -54,7 +54,7 @@ Shared pieces (decision 0037). `backend/tests/reference/cases.json`, written ahe
 | C6 | The benchmark harness with `bench/cases.json` and `budgets.json` (12.C13); the traceability test and its exempt list, reporting only during Phase 4 (12.C17) | `backend/tests/bench/`, `backend/tests/` | design note, then the diff |
 | C7 | Experiment code: M01's capped pruning, M02's prototype of 06's search, M04's rewriter of the relaxation counters | `backend/tests/experiments/` | the work item, then the diff |
 
-C1 to C6 run in order; builds are short and need no booking. W7 follows C2.
+C1 to C6 run in order; builds are short and need no booking. W7 follows C2. *Resumed after the sprint (prompt log entries 328 and 330):* the sprint (decision 0038) built C1 and the backend and frontend themselves. One subagent drafts C2 to C6's design notes, building each on what the sprint left (the modules' own test helpers, the scratch harness that runs the reference cases through 2.0); Claude checks each against section 12 and polls it, and the code lands in order.
 
 ### Experiments and measurements (12.C15)
 
@@ -151,7 +151,7 @@ In all, about 60 h of booked machine time plus M01's capped runs; 48 h of it is 
   - Throwaway prototypes in Phase 3 that measure them now, as M01 and M02 do for their questions.
   - Section 10's platform confirmations as small probe programs on GitHub's macOS and Windows runners in Phase 3; the rest when the code exists.
 - **Why:** these checks test 2.0's code, or the platform calls that code makes, and neither exists before Phases 4 and 5; a prototype would measure the prototype. Probes on hosted runners would spend macOS minutes, 10.3 times the price of Linux's (12.C1), on answers that Phase 4's and Phase 5's CI gets once the real code runs. M01 and M02 differ: their answers decide a design before Phase 4 writes it.
-- **Decision:** as proposed (prompt log entry 263)
+- **Decision:** as proposed (prompt log entry 263). *Amended after the sprint (prompt log entry 330):* the Linux code exists, so the Linux checks run within C2 to C6 as each harness lands; the Windows checks and section 10's platform confirmations still wait for builds on those platforms.
 
 ### P6 · When Phase 3 ends
 - **Proposed:** when:

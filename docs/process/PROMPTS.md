@@ -8831,3 +8831,177 @@ What should I resume?
 - Hold: Tell me what to change first.
 
 **Answer:** Commit (Recommended)
+
+## 329 · Note · de-claude and the push · 2026-11-26 17:45
+
+As poll 328 approved: de-claude --dry-run listed exactly the 24 unpushed commits, one line each; de-claude -y rewrote them, and git push origin main moved GitHub from 0105469 to 0c29afd as a fast-forward. Earlier entries name the old hashes; they map to the new ones as follows:
+
+- b7a655e → dd60a50 Set up Phase 3: plan and decision 0036
+- d1b278f → 82b0a79 Log prompt entries 258 to 264
+- 0e81e95 → 74c6fa0 Record decisions 0037 to 0039
+- 5289e48 → 7d0759c Add booking 1's scripts and the reference-case inventory
+- d7c321e → 6ef3618 Set up the backend build skeleton
+- c3caf2d → f47df53 Log prompt entries 265 to 297
+- b4066fa → ed5b333 Record booking 1's FuSION 1 references
+- f51336c → 46721f0 Log prompt entries 298 to 302
+- 3e01d9f → 55c5023 Add the core module
+- dc0eec5 → b217da5 Add the network module
+- ad906b6 → ea9f264 Add the expression module
+- ca3d899 → 7f63ec5 Add the merge module
+- 7dc1aa5 → f72363b Add the corridor module
+- 74a13bf → c3c5303 Add the solve module
+- 44c95a6 → 8da6ec7 Add the enrichment module
+- 5a9c1c0 → e440a6d Add the run module
+- 056f4cf → ca3fc4a Add the results module
+- 7efc151 → d562d08 Check the installed home at startup
+- 0270b38 → 85e360a End a case, not the step, when Z3 reports an interrupt
+- debea01 → 663d1c7 Add the batch module and the fusion executable
+- a3724f7 → ad51b95 Ship the installed home and its data maps
+- c3f6bb5 → 676de2c Add the frontend app
+- 9fbedaa → ba83cce Log prompt entries 303 to 325
+- 1c302f1 → 0c29afd Log prompt entries 326 to 328
+
+## 330 · Poll · 2026-11-26 17:47
+
+How Phase 3's code items resume (entry 328, Q1). Asked while the watcher of the user's FuSION 1 jobs waited for booking 1's experiments.
+
+**Q1 (Notes).** Phase 3's code items C2 to C6 (the test kit, the fusion-test driver, the reference runner, the end-to-end cases, the benchmark harness) run in order, each through the loop: design note, your OK, code with tests, diff review, commit. The sprint changed their ground. 2.0's modules now exist with their own test helpers (solve's witness checker and exhaustive frontier, corridor's brute-force walks, merge's split checks), and a scratch harness already runs FuSION 1's reference cases through 2.0. Who drafts the five design notes?
+
+- One subagent drafts all five (Recommended): One author keeps the kit's interface the same across the five notes, each built on what exists. I check each against section 12 and poll it; code then lands in order.
+- Five subagents in parallel: Faster to draft, but I must reconcile five views of the kit's interface before polling.
+- I write them, one at a time: Each note after the previous item is committed. Slowest.
+
+**Answer:** One subagent drafts all five (Recommended)
+
+**Q2 (2.0 checks).** Choice P5 put the checks that need 2.0's own code into Phases 4 and 5, when that code would exist:
+- the benchmarks of sections 01, 02, 03 and 08;
+- S2.22's split equivalence against both oracles and W7's FuSION 1 merges;
+- the witness checker on every witness 2.0's solve produces;
+- section 09's Windows replace check.
+The Linux code exists now, after the sprint. Run these checks within C2 to C6, as each harness lands?
+
+- Yes, as each harness lands (Recommended): Their findings come in Phase 3. Windows and section 10's platform checks still wait for builds on those platforms.
+- Keep P5 as decided: The harnesses come now and the checks run in Phase 4.
+
+**Answer:** Yes, as each harness lands (Recommended)
+
+## 331 · Subagent prompt · Design notes for Phase 3's code items C2 to C6 · 2026-11-26 17:47
+
+The one drafting subagent of poll 330, Q1. Plan notes were added for both answers of poll 330 (docs/phase3/plan.md, after the Code table and under P5). The prompt as sent:
+
+```text
+You are drafting five design notes for FuSION 2.0's Phase 3, for Claude to check and put to the user one by one. Write notes only: change no code, build nothing, and run nothing heavy (the user's own FuSION 1 jobs hold most of this machine's cores; reading files and light commands are fine).
+
+Context
+- FuSION 2.0 (repo /home/ks-149-u24/Desktop/arjun/FuSION2) is a rewrite of FuSION 1, with a C++20 backend and a JavaFX/Spring Boot frontend. FuSION 1 is read-only: /home/ks-149-u24/Desktop/arjun/FuSION (live) and /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10 (frozen). Never run git status in FuSION 1's tree; for any git read there use git --no-optional-locks. Use /usr/bin/grep.
+- Phase 3 (reference tests) follows docs/phase3/plan.md. A sprint (decision 0038) paused it and built the whole backend and the app, committed and pushed; read the plan's notes after its Code table and under P5, added today (prompt log entries 328 and 330).
+- Section 12, docs/architecture/12-tests.md, is the specification for all five items: "Repository layout", "The test kit", "End-to-end tests", "Reference-test runner", "Merge then split", "Benchmarks", the Choices 12.C1 to 12.C17, "Interfaces with other sections" and "Test hooks". Its choices are decided; the notes apply them.
+
+What the sprint left (inventory it before you design)
+- backend/modules/<m>/ and their Catch2 suites in backend/tests/unit/<m>/ (core, network, expression, merge, corridor, solve, results, enrichment, run, batch), each with its own helpers: support.hpp files, solve's kit.hpp (a witness checker and an exhaustive frontier among them), corridor's brute-force walk enumeration, merge's split-against-direct checks, results' fixture.hpp. 529 tests; CTest labels from Catch2 tags.
+- backend/tests/reference/cases.json (51 cases with path maps), data-manifest.json and synthetic/ (12 toy cases); backend/tests/fixtures/ (FuSION 1's frozen batches, toy batches, gseapy fixtures); backend/tests/experiments/capture/ (run_fusion1.py, the shared FuSION 1 runner; make_cases.py; booking 1's W2 to W6 scripts) and x02, x03, x05, x06, x08.
+- The test data root, outside the repo: /home/ks-149-u24/Desktop/arjun/FuSION2-test-data (FUSION_TEST_DATA). KEGG data never enters the repository (S8.31).
+- Claude's scratch harness, which ran all 35 T1 and T2 cases through 2.0 and compared frontiers (32 match; 3 differ only through XD-07 and XD-01): /tmp/claude-1000/-home-ks-149-u24-Desktop-arjun-FuSION2/b9b5d617-7cc2-4860-8cba-af70fbd07c02/scratchpad/sprint/run_fusion2.py, with run_pinned.py (which pins FuSION 1's GSEA shortlist). Read them; C4 should absorb what they do.
+- The binary is build/dev/stage/bin/fusion; it finds its home at build/dev/stage/share/fusion. The frontend's tests are under frontend/.
+- The checks that need 2.0's own code now run within C2 to C6 as each harness lands, Linux only (P5, amended).
+
+The five notes
+C2 the test kit (fusion_testkit), C3 the fusion-test driver, C4 the reference runner with cases.json and expected-differences.json, C5 the end-to-end case definitions and inputs, C6 the benchmark harness and the traceability test. Write one file each: docs/phase3/notes/C2-testkit.md, C3-driver.md, C4-reference-runner.md, C5-e2e-cases.md, C6-benchmarks.md. Keep the kit's interface identical wherever the notes use it.
+
+Each note has these parts, in plain English, as short as its content allows (about one to three pages):
+1. What section 12 asks, citing its headings and choices.
+2. What exists now, with paths: what the item can reuse, move or replace.
+3. The design: files and folders, the main types and functions (signatures where they matter), how it is built and run (CMake targets, CTest labels), and its tests.
+4. The checks it runs now under amended P5, and what each needs.
+5. Open choices: only where section 12 and the earlier decisions leave room, each with Proposed, Alternatives and Why, as the architecture's choices are written. Be explicit about whether the sprint's per-module helpers move into the kit (and the module suites change to use it) or stay where they are.
+6. Cost: a rough size in files and lines, and the run time of what it adds.
+
+Rules
+- Ground every claim in a file you read; give paths and line numbers where useful. If section 12 and the sprint's code disagree, say so in the note rather than choosing silently.
+- No KEGG data in any proposed committed fixture; tests that need it read the data root and skip without it.
+- Do not edit any file outside docs/phase3/notes/.
+- Reply in at most 250 words: one line per note with its open choices, then anything Claude must know.
+```
+
+## 332 · User prompt · 2026-11-26 17:56
+
+> describe the progress in fusion 2 in a detailed report as an artifact. make it a note to keep updating this as and when newer updates are made, make it in the form of release notes/patch notes. include images of interface views whenever needed
+
+Sent while the design-notes subagent (entry 331) worked and the watcher waited on the user's FuSION 1 jobs.
+
+## 333 · Poll · 2026-11-26 17:59
+
+How the release notes of entry 332 are kept and illustrated. Before it, Claude looked at the four views the frontend's screen test renders off-screen (frontend/build/screens/, 2026-11-20).
+
+**Q1 (Source).** The release notes will be a published page (private until you share it) that I update as work lands. Where should its source, the HTML and the screenshots, live?
+
+- FuSION2/.claude/release-notes/, untracked (Recommended): Beside the context handoff, outside git: each update republishes the page with no commit to approve. Memory and the handoff record its link.
+- docs/release-notes/, committed: Versioned with the code and pushed to GitHub; each update goes through a commit approval.
+
+**Answer:** FuSION2/.claude/release-notes/, untracked (Recommended)
+
+**Q2 (Run images).** The app's screen test renders four real views off-screen: sign-up, the inputs view with the threshold preview, a run, and a run's frontier. The two run views show a scripted test run (its log reads "FuSION fake"). How should the run views be shown?
+
+- Use them, labelled as test renders (Recommended): Ready now. Real results appear beside them: the reference run's Pareto plot and its explanation page, from the real fusion.
+- Render a real run first: I add a snapshot of the toy case run through the real fusion to the frontend's screen test, a change to commit, then use its images.
+
+**Answer:** Render a real run first
+
+## 334 · Subagent prompt · Fourth follow-up to the frontend subagent: screen renders of a real run · 2026-11-26 17:59
+
+Sent to the frontend subagent (entry 295) after poll 333. Claude also saved the standing instruction of entry 332 to memory (fusion2-release-notes, indexed in both memory folders). The message as sent:
+
+```text
+Fourth follow-up from Claude (prompt log entry 334). The frontend is committed and pushed. The user asked for release notes with images of the app's views, and chose images of a real run (poll 333): the screen test's two run views show the scripted FakeFusion run. Extend the screen test:
+1. A real run: submit the toy case toy-hsa13-wni-tsv-b10 through the runner with the real fusion, /home/ks-149-u24/Desktop/arjun/FuSION2/build/dev/stage/bin/fusion, on its staged home, as RealFusionContractTest does. Wait until it finishes, then snapshot at 1280 by 820 into build/screens/: the Runs tab with the run selected and its Log (real-run-log.png), Frontier (real-run-frontier.png), Pareto plot (real-run-pareto.png) and Explanation pages (real-run-explanations.png). Skip with a reason when the binary or a display is missing, as the other tests do.
+2. The inputs view scrolled to show the threshold suggestions table and the histogram (main-inputs-suggestions.png).
+3. Keep the four existing snapshots. Assert something real on each new view, such as the frontier rows equal to FuSION 1's .dat files for that case.
+Run all your tests against the real binary, keep warnings at zero and stop the Gradle daemon. The rules are as before. Reply in at most 120 words, listing the image paths.
+```
+
+## 335 · Note · The frontend subagent's report on entry 334 · 2026-11-26 18:10
+
+The screen test gained one test, aRealRunsViewsDraw. It signs up, makes a session from the toy case toy-hsa13-wni-tsv-b10's inputs, asks fusion for threshold suggestions, submits, and waits for the real fusion (build/dev/stage/bin/fusion on its staged home) to finish. Without that binary it skips and says why. It draws five views into build/screens/: the inputs scrolled to the suggestions table and the histogram (main-inputs-suggestions.png), then the run's Log, Frontier, Pareto plot and Explanation pages (real-run-log.png, real-run-frontier.png, real-run-pareto.png, real-run-explanations.png). Its checks: the suggestions' first row is current, 0.9, -0.9, 16 up, 6 down; the log lists both cases' frontiers and ends "Finished: ok, exit 0"; the frontier's rows, all certified, equal FuSION 1's two .dat files; the plot shown is the run's own pareto.png, fitted whole in its tab; there is one explanation page per frontier point, each a file in pex/explain. Beyond the brief, the subagent changed two things in RunsPane: the Pareto plot was drawn 640 pixels wide, taller than its tab in the 1280 by 820 window, and now scales to fit its tab at any size; and the explanation-page list shows file names (in_n1_e7.html) instead of full temp paths. Claude read the diff, looked at the five images, and reran the frontend's tests from clean at nice 19 (cleanTest test): 111 pass, none skipped, in 44 s, the real run's test in 4.9 s; the Gradle daemon is stopped. The user's 44 FuSION 1 jobs still run.
+
+## 336 · Poll · 2026-11-26 18:11
+
+The frontend subagent's real-run screen test (entry 335): its changes to the Runs view, its commit, and the log commit.
+
+**Q1 (Runs view).** For the release-notes screenshots, the frontend agent drew a real run of the toy case, and beyond its brief it changed two things in the app's Runs view (RunsPane.java, +15 -2). (1) The Pareto plot was drawn a fixed 640 px wide, which made it taller than its tab in a 1280 by 820 window; it now scales to fit its tab at any window size. (2) The Explanation pages list now shows file names (in_n1_e7.html) instead of full temp paths. Keep these changes?
+
+- Keep both (Recommended): As in the new screenshots. If the tab is larger than gnuplot's 980 by 690 px, the plot also scales up and looks slightly soft.
+- Keep both, never scale up: I cap the plot at its own 980 by 690 px, so a very large tab shows it sharp with space around it. A two-line change.
+- Revert both: Back to 640 px wide with scrolling, and full paths in the list. The new test's plot check changes to match.
+
+**Answer:** Keep both (Recommended)
+
+**Q2 (Commit).** Commit the frontend change as one commit? ScreensSnapshotTest.java +237 -5 adds one test, aRealRunsViewsDraw. It submits the toy case toy-hsa13-wni-tsv-b10 through the app, the real fusion runs it, and the test checks the suggestions row, the log, the frontier rows against FuSION 1's .dat files, the plot, and the 8 explanation pages. Without the staged fusion it skips and says why. RunsPane.java changes as you chose in the Runs view question. I reran the tests from clean at nice 19: 111 pass, none skipped.
+
+- Commit it (Recommended): Stages the two files by name. Not pushed. Its preview:
+  ```text
+  Draw a real run in the frontend's screen test
+
+  The screen test submits the toy case toy-hsa13-wni-tsv-b10
+  through the app and the staged fusion, then draws the
+  threshold suggestions and the run's log, frontier, Pareto
+  plot and explanation pages. It checks the frontier against
+  FuSION 1's .dat files and skips without the staged binary.
+  The Runs view fits the Pareto plot to its tab and lists
+  explanation pages by file name.
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+  Files:
+    frontend/src/main/java/fusion/frontend/ui/RunsPane.java
+    frontend/src/test/java/fusion/frontend/ui/ScreensSnapshotTest.java
+  ```
+- Not yet: Leave it uncommitted. The release notes can still use its images.
+
+**Answer:** Commit it (Recommended)
+
+**Q3 (Log).** After the frontend commit, commit the prompt log (entries 329 to 336) together with the two notes in docs/phase3/plan.md? Those notes record that Phase 3 resumed after the sprint, with one subagent drafting C2 to C6, and that P5 is amended so the Linux checks run within C2 to C6.
+
+- Commit both (Recommended): docs/process/PROMPTS.md and docs/phase3/plan.md, message 'Log prompt entries 329 to 336'. Not pushed.
+- Later: Keep them for the next log commit.
+
+**Answer:** Commit both (Recommended)
