@@ -9005,3 +9005,307 @@ The frontend subagent's real-run screen test (entry 335): its changes to the Run
 - Later: Keep them for the next log commit.
 
 **Answer:** Commit both (Recommended)
+
+## 337 · User prompt · 2026-11-26 18:22
+
+> de-claude and push the latest changes to github.
+
+Sent after Claude published the release notes. Logged after the push: de-claude refuses to run while tracked files have uncommitted changes, and the log is a tracked file.
+
+## 338 · Note · de-claude and the push · 2026-11-26 18:22
+
+As entry 337 asked, under decisions 0034 and 0035. git fetch showed GitHub's main still at 0c29afd. de-claude --dry-run listed exactly the 2 unpushed commits, one line each; de-claude -y rewrote them with their trees unchanged, and git push origin main moved GitHub from 0c29afd to 10a1e32 as a fast-forward. Earlier entries name the old hashes; they map to the new ones as follows:
+
+- 9f17c58 → 93414af Draw a real run in the frontend's screen test
+- f16c4ed → 10a1e32 Log prompt entries 329 to 336
+
+The release notes and the context handoff, both untracked, now cite the new hashes.
+
+## 339 · Note · The design-notes subagent's report on entry 331 · 2026-11-26 18:31
+
+The subagent wrote five notes, each 1,600 to 2,400 words, which is longer than the one to three pages its brief asked for: docs/phase3/notes/C2-testkit.md, C3-driver.md, C4-reference-runner.md, C5-e2e-cases.md and C6-benchmarks.md. It changed nothing else in the repository. Their open choices:
+- C2: C2.1 moves solve's checker, frontier, ScriptedOracle and readers, corridor's walk oracle and readers, and merge's generator into the kit, changing only those three suites. C2.2 splits the kit into two libraries so that the build enforces independence. C2.3 adds a recording StepContext. C2.4 groups the departures from section 12's sketch.
+- C3: C3.1 registers one CTest test per end-to-end and T1 case; T2 is one test outside the dev preset, and T3 is not registered. C3.2's data record adds 745 unmanifested files under the data root (80.7 MB of W3 and W4 outputs and reports) to the manifest. C3.3 adds section 11's ci-linux preset now. C3.4 lists departures.
+- C4: C4.1 adds per-case edits for the toy cases' GUI placeholders, which S5.02 makes an error. C4.2 verifies T3 points with a worker that calls CaseSolver, since points= is not ported. C4.3 repeats every T1 and T2 case. C4.4 lists departures.
+- C5: C5.1 records the goldens now. C5.2 writes now the 11 cases that wait for unported features, marked pending. C5.3 compares events per case. C5.4 replaces absolute paths with tokens in every compared file. C5.5 keeps the home tests.
+- C6: C6.1 copies the 273 KGMLs into the data root. C6.2 has two kinds of case, batch and call. C6.3 adds cpu_s to core::ProcessResult, which touches module code. C6.4 retags the tests. C6.5 counts only backend and end-to-end tags. C6.6 adds a strict CMake switch.
+Its findings:
+- solve's witness checker takes make_case's output, so it is not independent of make_case.
+- solve's random tests use std::uniform_int_distribution, against 12.C9.
+- 97 batch and corridor tests lack the [unit] tag, and no test reads FUSION_TEST_DATA.
+- results.json and the event log hold absolute paths, and the events of parallel cases interleave.
+- S2.22 at section 12's sizes projects about 2 minutes per layer in Debug, against T0's 1-minute budget.
+Claude checks each note against section 12 before polling it, C2 first.
+
+## 340 · Poll · 2026-11-26 18:42
+
+The C2 note's open choices (docs/phase3/notes/C2-testkit.md), after Claude checked all five notes against section 12 and the code. Every path, line and count spot-checked was right. Before the poll Claude told the user the main findings: solve's current checker takes make_case's output and its random tests use `<random>`'s distributions (C2.1 fixes both); 97 batch and corridor tests lack `[unit]` (C6.4); results.json's solve.name is an absolute path, against section 11's identity rule (C5.4); the S2.22 layers may overrun T0's 1-minute budget in Debug and are measured when the code lands; and the notes run 3.5 to 5 pages, longer than Claude's brief asked, which Claude kept.
+
+**Q1 (C2.1 helpers).** C2 note (the test kit, fusion_testkit), choice C2.1: which of the sprint's per-module test helpers move into the kit? Proposed: the pieces section 12 names, namely solve's witness checker, exhaustive frontier, ScriptedOracle and FuSION 1 readers, corridor's walk oracle and readers, and merge's random pathway generator. Only the solve, corridor and merge suites change. Why: solve's checker today takes make_case's output, so a wrong counted set or FSC case passes it unseen; section 12's checker re-derives these from the corridor and the case spec.
+
+- Move what 12 names (Recommended): Three suites change. Solve's tests then use an independent checker and draw inputs from core::Rng, which also fixes their use of std distributions (12.C9). Scratch folders and recording contexts stay in the suites.
+- Kit beside the helpers: New kit code and no suite changes, so two checkers of the same rules exist side by side and can drift.
+- Move everything shared: All ten suites also switch to the kit's scratch folders and step contexts: churn without a test gain.
+
+**Answer:** Move what 12 names (Recommended)
+
+**Q2 (C2.2 build).** C2 note, choice C2.2: should the build enforce the kit's independence? Section 12 requires the witness checker, the merge oracle and the FuSION 1 readers to share no code with the modules they check. Proposed: two static libraries. fusion_testkit_base links only core, pugixml and nlohmann/json, so an oracle that includes network, merge, corridor or solve fails to compile. fusion_testkit holds the adapters from module types, ScriptedOracle and StepContext.
+
+- Two libraries (Recommended): The build checks independence, as section 11 already makes module layering a compile error. It costs one more add_library.
+- One library: Independence is kept by review only.
+
+**Answer:** Two libraries (Recommended)
+
+**Q3 (C2.3 context).** C2 note, choice C2.3: add a recording StepContext to the kit? It is a core::Context over a folder that records log lines, events and created files. C4's pinned mode calls each library stage directly, and each stage needs a context. Eight module suites already have their own copies, which would stay as they are.
+
+- Add it to the kit (Recommended): One context for the reference runner and for later suites, without touching suites that work.
+- C4 writes its own: The context lives inside the fusion-test driver.
+- Replace the eight copies: The kit's context replaces the suites' own copies now.
+
+**Answer:** Add it to the kit (Recommended)
+
+**Q4 (C2.4 sketch).** C2 note, choice C2.4: accept these departures from section 12's interface sketch as a group? They are: .hpp headers, as the modules use; ManifestEntry gains 'from'; new helpers require() (skip with a reason), source_dir() and test_seed() (FUSION_TEST_SEED); f1::read_limits also returns the box and cache hits, which solve's search replay needs; f1::read_coexpression; CaseSpec::named (06.C16); WalkRules for corridor exclusions and the edges-to-target rule; box_lo on exhaustive_frontier (06.C20); env on run_fusion for fake tools (11.C20); fusion_normaliser() and read_run(); compare_tree compares only files a case's rules match.
+
+- Accept as a group (Recommended): Each one carries something a sprint test already needs, or something section 12's prose asks for and its sketch leaves out.
+- Follow the sketch literally: Solve's search replay and corridor's exclusion tests keep their own code.
+
+**Answer:** Accept as a group (Recommended)
+
+## 341 · Poll · 2026-11-26 18:43
+
+The C3 note's open choices (docs/phase3/notes/C3-driver.md).
+
+**Q1 (C3.1 CTest).** C3 note (the fusion-test driver), choice C3.1: how should the driver's work appear in CTest? Proposed: one CTest test per end-to-end case and per T1 reference case, so they run in parallel under ctest -j and a failure names its case. T2 becomes one test with one report.json, kept out of the dev test preset so a plain ctest never starts its roughly 15 minutes of solves on 8 cores. T3 is not registered, since it is booked with you.
+
+- Per case; T2 as one (Recommended): Per-case tests for end-to-end and T1; T2 as one test outside the dev preset; T3 run by hand when booked.
+- One per subcommand and tier: Three CTest tests: e2e, ref t1 and ref t2.
+- Per case in every tier: T2 and T3 cases are registered one by one too.
+
+**Answer:** Per case; T2 as one (Recommended)
+
+**Q2 (C3.2 manifest).** C3 note, choice C3.2: the data root holds 745 files (80.7 MB) that no manifest lists: W3's captures of FuSION 1's runs, W4's regenerated FuSION 1 outputs and console logs, and the reports. The reference runner reads the captures, so today they would be used without a hash check, against section 12's rule that every file is checked before use. Proposed: a new 'fusion-test data record' command adds them to data-manifest.json, each with its work item and report as 'from', shown to you as a diff.
+
+- Add to the one manifest (Recommended): One manifest keeps one rule, and the captures, the runner's main input, get checked.
+- A second manifest: Generated files get a manifest of their own.
+- Leave them unhashed: Only files copied from FuSION 1 are checked.
+
+**Answer:** Add to the one manifest (Recommended)
+
+**Q3 (C3.3 preset).** C3 note, choice C3.3: the release build preset has tests turned off, so no Release build of fusion-test can be made today. The benchmarks must measure a Release build, and S2.22's merge checks are projected at minutes in Debug. Proposed: add section 11's planned ci-linux preset now (Release, tests on, as CI will build it) and use it locally for T2, S2.22's real-data layer and the benchmarks.
+
+- Add ci-linux now (Recommended): Section 11 already plans this preset, so adding it early invents nothing.
+- A local release-tests preset: A preset of its own, outside section 11's table.
+- Tests on in release: Against section 11's preset table.
+- Debug only: Everything runs in the dev build.
+
+**Answer:** Add ci-linux now (Recommended)
+
+**Q4 (C3.4 changes).** C3 note, choice C3.4: accept these departures from section 12? (1) 'fusion-test data init --from' names the folder holding both FuSION trees, because 14 manifest files come from the 2026-11-10 snapshot rather than the live tree. (2) Two new commands, 'data record' and 'e2e --list'. (3) The end-to-end engine passes '--run-dir run' to every case that does not place its own run.
+
+- Accept (Recommended): One data root can name files from both trees, and the engine always knows where a run is.
+- Follow section 12's wording: Every manifest 'from' path is rewritten relative to the FuSION tree.
+
+**Answer:** Accept (Recommended)
+
+## 342 · Poll · 2026-11-26 18:44
+
+The C4 note's open choices (docs/phase3/notes/C4-reference-runner.md).
+
+**Q1 (C4.1 edits).** C4 note (the reference runner), choice C4.1: the 12 toy batches still hold the FuSION 1 GUI template's unfilled placeholders (%__a21__% to %__a23__%), which 2.0 treats as an error by decision (S5.02). The sprint removed them in two different ways. Proposed: cases.json gains a per-case 'edits' list, applied after the path map, each edit with its reason. The report lists every edit applied, and make_cases.py writes the edits for the toys.
+
+- Per-case edits (Recommended): The frozen batches stay exactly as FuSION 1 ran them, the change shows in every report, and one rule replaces the sprint's two.
+- Let the toys fail: An expected difference allows the toys' chained runs to fail, so chained toys then compare nothing.
+- Fill the placeholders: Edit fixtures/toy-batches/ so the batches differ from those FuSION 1 ran in W4.
+
+**Answer:** Per-case edits (Recommended)
+
+**Q2 (C4.2 verify).** C4 note, choice C4.2: section 12 verifies T3 frontier points with fresh single-point runs of 'fusion ... points=n,e', but points= (06.C9) is not ported yet. Proposed: a hidden worker mode, 'fusion-test ref --check-point', builds the pinned solve's case from FuSION 1's inputs and calls solve::CaseSolver::check once per process. That gives the same fresh context and crash isolation. T3 itself is booked with you and is not run in Phase 3.
+
+- A worker mode (Recommended): Verification works without an unported feature. The worker can switch to points= later if you prefer.
+- Wait for points=: T3 verification waits until 06.C9 is ported.
+
+**Answer:** A worker mode (Recommended)
+
+**Q3 (C4.3 repeats).** C4 note, choice C4.3: which cases get the repeat-run determinism check, a second chained run compared byte for byte with the first? Proposed: every T1 and T2 case. T2 then totals about 5,900 s of case time in Debug, about 12 to 14 minutes on 8 workers if the long runs start first. That is inside T2's 15-minute budget, though not by much.
+
+- Every T1 and T2 case (Recommended): Section 12 names no subset. A Release build should be faster than the Debug estimate.
+- Skip the two longest: Leave out jun-b10-fdr025 and fdr030 (FuSION 1 took 615 s and 738 s), which saves about 1,000 s of case time.
+- T1 only: Repeat only the 12 toy cases.
+
+**Answer:** Every T1 and T2 case (Recommended)
+
+**Q4 (C4.4 changes).** C4 note, choice C4.4: accept these departures from section 12's runner sketch? Stage::observations (section 12's comparison table has that row, but its enum does not); Case::origin and Case::edits; Options::cases and Options::modes, to run a subset; the --check-point worker of C4.2; and cases.json's case ids (jun-b10-old, jun-b10-fdr040keep) in place of section 12's example ids (jun-b10-full, jun-b10-keep040).
+
+- Accept (Recommended): Each addition serves a row or a rule that section 12 already states.
+- Follow the sketch literally: No additions to the runner's types.
+
+**Answer:** Accept (Recommended)
+
+## 343 · Poll · 2026-11-26 18:55
+
+The C5 note's first four open choices (docs/phase3/notes/C5-e2e-cases.md).
+
+**Q1 (C5.1 goldens).** C5 note (the end-to-end cases), choice C5.1: when should the goldens, the expected outputs that each case compares against, be recorded? The plan put them in Phase 4, when fusion would first run, but fusion runs now, and a case without a golden checks only its exit status. Proposed: record them now for the roughly 30 runnable cases. Each 'fusion-test e2e --update' is shown to you as a diff before any commit.
+
+- Now, as each case lands (Recommended): The cases check real outputs from the start, as amended P5 runs 2.0's checks while each harness lands.
+- In Phase 4, as planned: Until then the cases check exit statuses only.
+
+**Answer:** Now, as each case lands (Recommended)
+
+**Q2 (C5.2 pending).** C5 note, choice C5.2: 11 of section 12's end-to-end cases need features 2.0 has not ported yet: sweep, load, --resume, points=, the bundled gnuplot, and Windows paths. Proposed: write them now, marked 'pending'. Each run checks that fusion still refuses them with the recorded error code and reports them as skipped. A pending case fails as stale once its feature works, so it gets its golden at that point.
+
+- Write them now, pending (Recommended): Each case is designed while section 12 is fresh, the skips show in every run, and a newly ported feature cannot go untested by oversight.
+- Write each when its feature lands: Fewer files now, but nothing reminds anyone to add the case later.
+
+**Answer:** Write them now, pending (Recommended)
+
+**Q3 (C5.3 events).** C5 note, choice C5.3: a pathz3 line with named cases runs its in and out cases in parallel, so their events interleave differently on each run. In the app's reference run, its 25 check events switch case twice. A byte-exact events.jsonl golden would therefore be flaky. Proposed: compare events.jsonl as one stream per step, sweep point and case, each stream in its own order, with the global sequence number masked.
+
+- Per-case streams (Recommended): Keeps the byte comparison wherever the order is defined, and tests the default threading.
+- One solver thread in e2e: Run with --set solve.threads=1 so events keep one order. The default threading is then untested end to end.
+- Event types only: Compare only the sequence of event types per step.
+
+**Answer:** Per-case streams (Recommended)
+
+**Q4 (C5.4 paths).** C5 note, choice C5.4: absolute paths appear outside run.json. There are 211 network.read events carrying the KGML path, legacy.written carries 'dest', and for a positional pathz3 line results.json's solve.name is the batch's absolute prefix. That last one breaks section 11's identity test, which assumes only run.json holds paths. Proposed: the normaliser writes <RUN>, <CASE> and <DATA> tokens into every compared file, and solve.name comes to you separately as a finding against the results module.
+
+- Tokens everywhere (Recommended): Goldens stay portable without hiding the fields, and the module fix remains its own decision.
+- Fix results.json first: A results-module change: name the prefix relative to the run, before the cases are written.
+- Mask the three fields: Blank solve.name and the two event fields in comparisons.
+
+**Answer:** Tokens everywhere (Recommended)
+
+## 344 · Poll · 2026-11-26 18:55
+
+The C5 note's last open choice and the C6 note's first three (docs/phase3/notes/C5-e2e-cases.md, C6-benchmarks.md).
+
+**Q1 (C5.5 home).** C5 note (the end-to-end cases), choice C5.5: the six end-to-end tests of the staged home are CMake scripts and they pass. Each edits a copy of the home, which case.json cannot express without a setup step. Keep them as CMake scripts? The new fake-tools end-to-end case adds what they lack: FUSION_GNUPLOT, FUSION_DOT and run.json's environment record.
+
+- Keep as CMake scripts (Recommended): They work, and moving them would need a setup step that case.json lacks.
+- Rewrite as e2e cases: case.json gains a setup step so all end-to-end tests share one format.
+
+**Answer:** Keep as CMake scripts (Recommended)
+
+**Q2 (C6.1 KGMLs).** C6 note (benchmarks), choice C6.1: section 02's network benchmark, with a budget of about 1 s and 64 MB, is set on all 273 of FuSION 1's KGMLs at threshold 15000. The data root holds only the 167 candidate KGMLs. Proposed: copy the 273 KGMLs (15 MB of KEGG data, kept outside the repository) into the data root, with manifest entries, as W1 copied the rest.
+
+- Copy them in (Recommended): The budget was set on this input, the largest plausible network, so it is the case the budget exists for.
+- Use the 167 at 15000: 113,162 edges; record the change against section 02's benchmark.
+- Leave the case out: Until someone asks for it.
+
+**Answer:** Copy them in (Recommended)
+
+**Q3 (C6.2 child).** C6 note, choice C6.2: how does a benchmark sample run in its child process? Budgets of 1 ms for batch lexing and 50 ms for the batch check, and merges of tens of milliseconds, are smaller than one fusion process start plus a run folder. Proposed: two kinds. 'batch' runs 'fusion -b <batch>'. 'call' runs a hidden 'fusion-test bench --child <case>', which makes one library call N times and prints its own timings while the parent measures the process.
+
+- Batch and call kinds (Recommended): Small budgets are measured without process overhead. GSEA's budget includes the check's parse, which only the whole fusion path has.
+- Batch only: Step times come from run.json.
+- Call only: Every case is a library call.
+
+**Answer:** Batch and call kinds (Recommended)
+
+**Q4 (C6.3 CPU).** C6 note, choice C6.3: section 12 wants each sample's CPU time. core::ProcessResult returns wall time and peak memory, the latter from wait4, but not CPU time, although the same rusage record holds it. Proposed: add cpu_s to core::ProcessResult. That is a few lines in core, section 11's module, with Windows following later through GetProcessTimes.
+
+- Add cpu_s to core (Recommended): The benchmark's measure call stays generic, and CPU time comes from the same wait4 as peak memory.
+- No core change: Batch cases read run.json's cpu_s, and call children print their own: two ways to read one number.
+
+**Answer:** Add cpu_s to core (Recommended)
+
+## 345 · Poll · 2026-11-26 18:56
+
+The C6 note's last three open choices (docs/phase3/notes/C6-benchmarks.md), and who writes C2's code.
+
+**Q1 (C6.4 tags).** C6 note (benchmarks and the traceability test), choice C6.4: spec items are cited unevenly in the backend tests. Corridor, enrichment, merge and solve tag them, as in [S2.22]. Network, expression, results, run, core and batch write them only in test names, as in '... (S3.03)'. Batch's and corridor's 97 tests also lack [unit], so 'ctest -L unit' skips them. Proposed: one mechanical retag commit, in which the spec ids in the 104 test names also become tags (names unchanged) and [unit] goes on the 97. Traceability then reads tags only.
+
+- One retag commit (Recommended): Section 12 makes spec items tags, and so CTest labels; 'ctest -L unit' then runs every unit test. About 200 lines in 10 files.
+- Read names as well: No retag; the traceability test also reads spec ids from test names.
+- Tags only, no retag: The report starts at 76 of 209 items covered.
+
+**Answer:** One retag commit (Recommended)
+
+**Q2 (C6.5 count).** C6 note, choice C6.5: which tests count toward traceability, the report of spec items no test covers? Proposed: the backend's Catch2 tags and the end-to-end cases' tags now. The frontend's JUnit tests join through @Tag when Phase 5 resumes them, so stage 8's 26 items show as uncovered until then.
+
+- Backend and e2e tags (Recommended): A tag declares that a test covers an item; a comment does not.
+- Scan frontend sources now: Count the spec ids in the frontend tests' names and comments.
+- Exempt stage 8 for now: Until Phase 5; this hides 26 items.
+
+**Answer:** Backend and e2e tags (Recommended)
+
+**Q3 (C6.6 switch).** C6 note, choice C6.6: the traceability test only reports during Phase 4 and fails for any uncovered item afterwards (12.C17). Proposed: a CMake option, FUSION_TRACEABILITY_STRICT, that stays OFF until the commit that ends Phase 4, after your review, turns it on.
+
+- A CMake option (Recommended): The end of Phase 4 is your review, not a date, and a reviewed commit is how it shows in the repository.
+- A date in the script: Strict from a fixed date.
+- A flag in the exempt list: A line in traceability-exempt.txt switches it on.
+
+**Answer:** A CMake option (Recommended)
+
+**Q4 (C2 author).** With the five notes decided, C2's code (the test kit) comes first, then C3 to C6 in order, each going through diff review and commit approval. Who should write C2's code?
+
+- A subagent (Recommended): As the sprint's modules were written. I brief it with the decided note, check its work against section 12, and bring you the diff.
+- Claude in this session: Slower, but all the context stays here.
+
+**Answer:** A subagent (Recommended)
+
+## 346 · Subagent prompt · Phase 3's C2, the test kit · 2026-11-26 18:58
+
+The subagent of poll 345, Q4. Claude recorded each choice's decision in the five notes (a Decision line per choice, and a decided Status) and pointed the plan's resumed note at docs/phase3/notes/. The prompt as sent:
+
+```text
+You are writing Phase 3's code item C2 of FuSION 2.0: the test kit, fusion_testkit. The user has decided its design; your job is to build it as decided, test it, and report back. Do not commit: Claude reviews your diff and asks the user before any commit.
+
+Where things are
+- Repo: /home/ks-149-u24/Desktop/arjun/FuSION2 (C++20 backend in backend/; CMake presets dev and release in CMakePresets.json). FuSION 1 is read-only: /home/ks-149-u24/Desktop/arjun/FuSION and the frozen snapshot /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10. Never run git status in FuSION 1's tree; for any git read there use git --no-optional-locks. Use /usr/bin/grep. Run any Python with -B.
+- Toolchain: cmake and ninja are user-local, in ~/.local/opt/cmake-4.4.5-linux-x86_64/bin and ~/.local/opt/ninja-1.13.2; put both on PATH. Build with cmake --preset dev, then cmake --build build/dev; test with ctest --test-dir build/dev.
+- The test data root, outside the repo: /home/ks-149-u24/Desktop/arjun/FuSION2-test-data (FUSION_TEST_DATA), listed by backend/tests/reference/data-manifest.json. KEGG data never enters the repository (S8.31): tests that need it read the root, and skip with the reason when it is missing.
+
+What to build
+- The design is docs/phase3/notes/C2-testkit.md, decided in prompt log entry 340 with every open choice as proposed: C2.1 moves what section 12 names into the kit and changes only the solve, corridor and merge suites; C2.2 makes two libraries, fusion_testkit_base and fusion_testkit; C2.3 adds the kit's recording StepContext; C2.4 accepts the listed departures. Read the note in full first.
+- The specification is section 12, docs/architecture/12-tests.md: "The test kit" (lines 193-371), "Merge then split" (741-759), "End-to-end tests" (388-431, for the normaliser), 12.C9, 12.C14 and "Test hooks" (1203-1218). Where the note departs from section 12 by a decided choice, the note wins; anywhere else, section 12 wins.
+- The other four notes in that folder (C3-driver.md to C6-benchmarks.md, decided in entries 341 to 345) use the kit's interface. Build the whole interface they name, so C3 to C6 need no kit changes. In particular, the end-to-end helpers follow C5.3 (events.jsonl is compared as one stream per step, sweep point and case, with seq masked) and C5.4 (the <RUN>, <CASE> and <DATA> path tokens apply in every compared file).
+- Independence (section 12; 12.C14): the checker, exception_merge, walk_corridor, exhaustive_frontier and FuSION 1's readers share no code with the modules they check. fusion_testkit_base links only fusion::core, pugixml and nlohmann_json, so the build enforces this.
+- The suites: solve's checks go through the kit's independent checker via the adapters, and its random tests draw from core::Rng, with no <random> distributions (12.C9), at section 12's size of 200 random tiny cases of 6 nodes and 8 edges per run (line 383). Corridor's property test uses walk_corridor. Merge's split test adds exception_merge as a third side and grows to section 12's layers: about 50 sets over at most 10 ids with every exception subset, and 1000 random sets over up to 200 ids with 20 permutations each. The S2.22 real layer (the 167 KGMLs split by 100 random subsets of the EGF up and down genes) is tagged [kegg][slow] and skips without the root.
+- Self-tests in backend/tests/unit/testkit/ (test_testkit): the test hooks of section 12 that C2 can run, among them the checker accepting FuSION 1's 177 witnessed points under fusion1 semantics with costs equal to their points, rejecting mutated witnesses, and rejecting r5's out witness at (4, 4) under fusion2 (all [kegg]); and the note's own list.
+
+Rules
+- Change only backend/tests/ and its CMake wiring. If a new check fails because module code looks wrong (for example, the independent checker or exception_merge disagrees with a module), do not change the module and do not weaken or hide the check: leave it failing, and report it with a minimal reproducer.
+- The user's own FuSION 1 jobs hold most of this machine (load about 23 on 36 cores). Build and test at nice 19 with at most 8 parallel jobs, and run nothing else heavy. Do not run W7 or any FuSION 1 run; Claude runs W7 after C2 is committed.
+- Zero compiler warnings. All 529 existing tests must still pass.
+- Measure the time of each new or changed test in the dev build. T0's budget is 1 minute per platform for the whole unit tier. If the S2.22 layers or the 200 solve cases overrun it, do not shrink them silently: report the times, so that Claude can put the question to the user.
+- If section 12 and the code disagree, or the note leaves a choice open, stop and report it rather than choose.
+- When done, stop any background build processes. Reply in at most 250 words: what you built (files and lines), test counts and times, findings, and anything that needs a decision.
+```
+
+## 347 · Poll · 2026-11-26 18:59
+
+Committing the decided notes and the log, asked while the C2 subagent (entry 346) worked.
+
+**Q1 (Notes commit).** Commit Phase 3's five design notes for C2 to C6 as decided? The commit holds 5 new files in docs/phase3/notes/ (C2-testkit, C3-driver, C4-reference-runner, C5-e2e-cases, C6-benchmarks), unchanged from the drafts you were polled on except for a Decision line under each of the 23 choices and a 'decided' status line. It also holds a one-sentence pointer added to the plan's Phase 3 resumed note (docs/phase3/plan.md). Nothing is pushed.
+
+- Commit them (Recommended): Stages the six files by name. Its preview:
+  ```text
+  Add the design notes for Phase 3's C2 to C6
+
+  Five notes, one per code item: the test kit, the
+  fusion-test driver, the reference runner, the end-to-end
+  cases, and the benchmarks with the traceability test.
+  Each open choice records its decision. The plan's
+  resumed note points to them.
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+  Files:
+    docs/phase3/notes/C2-testkit.md
+    docs/phase3/notes/C3-driver.md
+    docs/phase3/notes/C4-reference-runner.md
+    docs/phase3/notes/C5-e2e-cases.md
+    docs/phase3/notes/C6-benchmarks.md
+    docs/phase3/plan.md
+  ```
+- Not yet: Keep them uncommitted, for example until C2's code is ready.
+
+**Answer:** Commit them (Recommended)
+
+**Q2 (Log commit).** After the notes commit, commit the prompt log's entries 337 to 347? They cover your push request and the push, the design-notes subagent's report, the six polls on the notes, the C2 subagent's brief, and this poll.
+
+- Commit it (Recommended): docs/process/PROMPTS.md, message 'Log prompt entries 337 to 347'. Not pushed.
+- Later: Keep the entries for the next log commit.
+
+**Answer:** Commit it (Recommended)
