@@ -1,9 +1,9 @@
 // Property tests on random small networks (section 05, "Test hooks"; section 12's corridor row): on
-// 1000 random graphs the corridor equals the walk definition, found by enumerating every walk
-// (section 12's walk_corridor, with trimming during the search, 05.C2); every edge of every simple
-// path within the bound is kept; the corridor is the set S5.10's search considers; it never holds an
-// excluded node; check_invariants() holds; save then load keeps the digest; and a network built in
-// another order gives the same digest.
+// 1000 random graphs the corridor equals the walk definition, found by the test kit's walk_corridor,
+// which enumerates every walk (with trimming during the search, 05.C2), compared as canonical graphs
+// (C2.1); every edge of every simple path within the bound is kept; the corridor is the set S5.10's
+// search considers; it never holds an excluded node; check_invariants() holds; save then load keeps the
+// digest; and a network built in another order gives the same digest.
 #include <functional>
 #include <map>
 #include <random>
@@ -11,8 +11,11 @@
 #include <tuple>
 
 #include "corridor_support.hpp"
+#include "fusion/testkit/adapt.hpp"
+#include "fusion/testkit/oracles.hpp"
 
 using namespace corridor_test;
+namespace testkit = fusion::testkit;
 
 namespace {
 
@@ -112,7 +115,8 @@ std::string identity(const network::Network& net, network::EdgeIdx e) {
     return text;
 }
 
-// The oracle's own reading of section 05: the excluded closure, the edge classes, and the walks.
+// The suite's own reading of section 05 for what the walk oracle does not give: the excluded closure,
+// and the simple paths.
 struct Oracle {
     explicit Oracle(const Trial& tr) : tr_(tr), excluded(tr.keys.size(), false) {
         for (int x : tr.named_excluded) excluded[static_cast<std::size_t>(x)] = true;
@@ -133,30 +137,6 @@ struct Oracle {
             case corridor::EdgesToTarget::expression: return has_any(e, {"expression", "repression"});
         }
         return true;
-    }
-    bool in_t(const GraphEdge& e) const {     // and the trim of 05.C2
-        return usable(e) && e.src != e.tgt && e.tgt != tr_.s && e.src != tr_.t;
-    }
-
-    // Every edge of every walk of at most b edges from s to t in T.
-    std::set<std::string> walk_corridor() const {
-        std::set<std::string> kept;
-        std::vector<const GraphEdge*> path;
-        std::function<void(int)> walk = [&](int u) {
-            if (u == tr_.t) {
-                for (const GraphEdge* e : path) kept.insert(identity(tr_, *e));
-                return;
-            }
-            if (path.size() == tr_.bound) return;
-            for (const GraphEdge& e : tr_.edges)
-                if (e.src == u && in_t(e)) {
-                    path.push_back(&e);
-                    walk(e.tgt);
-                    path.pop_back();
-                }
-        };
-        walk(tr_.s);
-        return kept;
     }
 
     // Every edge of every simple path of at most b edges from s to t, over the untrimmed edges.
@@ -224,12 +204,25 @@ TEST_CASE("corridor: on 1000 random networks the corridor is exactly the walk de
             kept_nodes.insert(nw.node_key(nw.edges()[e].src).value);
             kept_nodes.insert(nw.node_key(nw.edges()[e].tgt).value);
         });
-        const std::set<std::string> expected = oracle.walk_corridor();
-        REQUIRE(kept == expected);
+        // The kit's walk definition on the whole network, as canonical graphs (12.C14's independence).
+        testkit::WalkRules rules;
+        for (int x : tr.named_excluded) rules.exclude.push_back(tr.keys[static_cast<std::size_t>(x)]);
+        rules.to_target = tr.rule == corridor::EdgesToTarget::activation   ? testkit::WalkRules::ToTarget::activation
+                          : tr.rule == corridor::EdgesToTarget::expression ? testkit::WalkRules::ToTarget::expression
+                                                                           : testkit::WalkRules::ToTarget::any;
+        const std::vector<std::string> from{tr.keys[static_cast<std::size_t>(tr.s)]}, to{tr.keys[static_cast<std::size_t>(tr.t)]};
+        const testkit::CanonCorridor walked =
+            testkit::walk_corridor(testkit::adapt::canon(nw), from, to, static_cast<int>(tr.bound), rules);
+        const testkit::CanonCorridor cut = testkit::adapt::canon(c);
+        const testkit::GraphDiff difference = testkit::diff(cut.graph, walked.graph);
+        INFO(difference.text());
+        REQUIRE(difference.empty());
+        CHECK(cut.sources == walked.sources);
+        CHECK(cut.targets == walked.targets);
         const std::vector<std::string> nodes = node_names(c);
         CHECK(std::set<std::string>(nodes.begin(), nodes.end()) == kept_nodes);   // S4.12: no isolated node
-        CHECK(c.empty() == expected.empty());
-        CHECK(out.report.has_value() == expected.empty());
+        CHECK(c.empty() == walked.graph.edges.empty());
+        CHECK(out.report.has_value() == walked.graph.edges.empty());
 
         const std::set<std::string> simple = oracle.simple_paths();
         CHECK(std::includes(kept.begin(), kept.end(), simple.begin(), simple.end()));

@@ -20,9 +20,14 @@ using solve::CaseStatus;
 
 namespace {
 
-std::vector<std::variant<solve::Problem, solve::Skipped>> toy_cases(const ToyCase& toy, const solve::Settings& settings) {
+solve::CaseSpec toy_spec(const ToyCase& toy) {
   solve::CaseSpec spec = toy.observations;
   spec.fsc = ids({toy.fsc});
+  return spec;
+}
+
+std::vector<std::variant<solve::Problem, solve::Skipped>> toy_cases(const ToyCase& toy, const solve::Settings& settings) {
+  const solve::CaseSpec spec = toy_spec(toy);
   std::vector<std::variant<solve::Problem, solve::Skipped>> out;
   for (Case c : solve::requested_cases(settings)) out.push_back(solve::make_case(toy.graph, spec, settings, c));
   return out;
@@ -58,9 +63,10 @@ TEST_CASE("solve: the step solves both FSC cases and writes each case's files an
     CHECK(r.status == CaseStatus::complete);
     REQUIRE(r.problem);
     for (std::size_t k = 0; k < r.log.size(); ++k) CHECK(r.log[k].check == k + 1);
+    const solve::CaseSpec spec = toy_spec(toy);
     for (const solve::FrontierPoint& f : r.frontier.points) {
       REQUIRE(f.witness < r.witnesses.size());
-      CHECK(check(*r.problem, r.witnesses[f.witness]).valid);
+      CHECK(kit_check({toy.graph, spec, settings, r.kase}, r.witnesses[f.witness]).valid);
     }
     CHECK(r.stats.z3 + r.stats.cache + r.stats.model == r.log.size());
     CHECK(r.stats.fingerprint.rfind("sha256:", 0) == 0);
@@ -176,7 +182,7 @@ TEST_CASE("solve: solutions=k keeps up to k witnesses per frontier point", "[uni
   const auto extra = std::count_if(r.log.begin(), r.log.end(), [](const solve::Answer& a) { return a.phase == Phase::extra; });
   CHECK(extra == 3);
   CHECK(r.log.back().outcome == solve::Outcome::unsat);
-  for (std::uint32_t w : r.frontier.points[0].more) CHECK(check(*r.problem, r.witnesses[w]).valid);
+  for (std::uint32_t w : r.frontier.points[0].more) CHECK(kit_check({g.g, spec, settings, Case::free}, r.witnesses[w]).valid);
   CHECK(r.frontier.points[0].certified);                     // the extras' "no more" proves nothing
 }
 
@@ -206,9 +212,11 @@ TEST_CASE("solve: a spent budget ends the unfinished cases as budget_exhausted",
   core::Context ctx = step.context();
   const auto outcome = solve::solve_cases(toy_cases(toy, settings), settings, ctx);
   CHECK(outcome.partial);                                    // resumable, not a failure
+  const solve::CaseSpec spec = toy_spec(toy);
   for (const solve::CaseResult& r : outcome.value.cases) {
     CHECK(r.status == CaseStatus::budget_exhausted);
-    for (const solve::FrontierPoint& f : r.frontier.points) CHECK(check(*r.problem, r.witnesses[f.witness]).valid);
+    for (const solve::FrontierPoint& f : r.frontier.points)
+      CHECK(kit_check({toy.graph, spec, settings, r.kase}, r.witnesses[f.witness]).valid);
   }
   CHECK(step.lines->any("used: "));
 }

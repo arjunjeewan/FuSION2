@@ -1,12 +1,10 @@
-// The solve tests' kit (kit.hpp).
+// The solve tests' helpers (kit.hpp).
 #include "kit.hpp"
 
 #include <algorithm>
-#include <bit>
-#include <cctype>
-#include <charconv>
 #include <fstream>
 #include <iterator>
+#include <map>
 #include <set>
 #include <sstream>
 #include <stdexcept>
@@ -38,32 +36,13 @@ std::vector<std::string> lines_of(const std::string& text) {
   return out;
 }
 
-bool starts_with(const std::string& s, const std::string& prefix) { return s.rfind(prefix, 0) == 0; }
-
-std::string attribute(const std::string& tag, const std::string& name) {
-  const std::string key = name + "=\"";
-  const auto at = tag.find(key);
-  if (at == std::string::npos) return {};
-  const auto start = at + key.size();
-  return tag.substr(start, tag.find('"', start) - start);
-}
-
-// The integers in a line, in order ("Relax bounds (node call): 5 2" gives 5, 2).
-std::vector<int> integers(const std::string& line) {
-  std::vector<int> out;
-  std::size_t i = 0;
-  while (i < line.size()) {
-    if (std::isdigit(static_cast<unsigned char>(line[i]))) {
-      int value = 0;
-      const auto r = std::from_chars(line.data() + i, line.data() + line.size(), value);
-      out.push_back(value);
-      i = static_cast<std::size_t>(r.ptr - line.data());
-    } else {
-      ++i;
-    }
-  }
+std::vector<Point> points(const std::vector<testkit::Point>& from) {
+  std::vector<Point> out;
+  for (const testkit::Point& p : from) out.push_back({p.n, p.e});
   return out;
 }
+
+std::string text(Point p) { return "(" + std::to_string(p.n) + "," + std::to_string(p.e) + ")"; }
 
 }  // namespace
 
@@ -168,192 +147,64 @@ std::uint32_t at(const solve::Problem& p, const std::string& key) {
   throw std::runtime_error("no encoded node " + key);
 }
 
-// ---------------------------------------------------------------- the checker
-
-namespace {
-
-// The rules of S5.11 to S5.17 on one assignment, written from the spec. Stops at the first
-// violation when `why` is null.
-std::optional<Point> evaluate(const solve::Problem& p, const std::vector<int>& state, const std::vector<bool>& selected,
-                              std::vector<std::string>* why) {
-  bool ok = true;
-  const auto fail = [&](const std::string& text) {
-    ok = false;
-    if (why) why->push_back(text);
-    return why != nullptr;                                 // keep going only when explaining
-  };
-  const std::size_t n = p.nodes.size(), m = p.edges.size();
-  std::vector<std::vector<std::uint32_t>> in(n), out(n);
-  for (std::uint32_t j = 0; j < m; ++j)
-    if (selected[j]) {
-      const auto& e = p.edges[j];
-      if ((state[e.src] == 0 || state[e.tgt] == 0) && !fail("selected edge " + std::to_string(j) + " has an absent end"))
-        return std::nullopt;
-      out[e.src].push_back(j);
-      in[e.tgt].push_back(j);
-    }
-  for (std::uint32_t v = 0; v < n; ++v) {                  // S5.11: present nodes lie on paths
-    if (state[v] == 0) continue;
-    if (v != p.source && in[v].empty() && !fail("present " + p.nodes[v].value + " has no selected in-edge"))
-      return std::nullopt;
-    if (v != p.target && out[v].empty() && !fail("present " + p.nodes[v].value + " has no selected out-edge"))
-      return std::nullopt;
-  }
-  // Distances: the least are the longest selected paths ending at each node (Kahn's order).
-  std::vector<int> indegree(n, 0), depth(n, 0);
-  for (std::uint32_t j = 0; j < m; ++j)
-    if (selected[j]) ++indegree[p.edges[j].tgt];
-  std::vector<std::uint32_t> order;
-  for (std::uint32_t v = 0; v < n; ++v)
-    if (indegree[v] == 0) order.push_back(v);
-  for (std::size_t k = 0; k < order.size(); ++k)
-    for (std::uint32_t j : out[order[k]]) {
-      const std::uint32_t w = p.edges[j].tgt;
-      depth[w] = std::max(depth[w], depth[order[k]] + 1);
-      if (--indegree[w] == 0) order.push_back(w);
-    }
-  if (order.size() != n && !fail("the selected edges have a cycle")) return std::nullopt;
-  const int width = std::max(1, static_cast<int>(std::bit_width(p.bound)));
-  if (depth[p.target] > static_cast<int>(p.bound) && !fail("a selected path into the target exceeds the bound"))
-    return std::nullopt;
-  for (std::uint32_t v = 0; v < n; ++v)
-    if (depth[v] > (1 << width) - 1 && !fail("a selected path is longer than the distances hold")) return std::nullopt;
-  // S5.14: a selected edge is "clean" when its path so far has not crossed a DE node.
-  std::vector<bool> clean(m, false);
-  const auto de = [&](std::uint32_t v) { return p.regulation[v] != fusion::expression::Regulation::none; };
-  for (std::uint32_t u : order)
-    for (std::uint32_t j : out[u]) {
-      bool from_clean = u == p.source;
-      for (std::uint32_t i : in[u]) from_clean = from_clean || clean[i];
-      clean[j] = !de(u) && from_clean;
-    }
-  for (std::uint32_t j : in[p.target])
-    if (clean[j] && !fail("a selected path reaches the target without crossing a DE gene")) return std::nullopt;
-  // S5.05, S5.06, S5.15 to S5.17: lists and families.
-  for (std::uint32_t v : p.present)
-    if (state[v] == 0 && !fail(p.nodes[v].value + " must be present")) return std::nullopt;
-  for (std::uint32_t v : p.absent)
-    if (state[v] != 0 && !fail(p.nodes[v].value + " must be absent")) return std::nullopt;
-  for (std::uint32_t v : p.active)
-    if (state[v] == 1 && !fail(p.nodes[v].value + " must be active")) return std::nullopt;
-  for (std::uint32_t v : p.inactive)
-    if (state[v] == 2 && !fail(p.nodes[v].value + " must be inactive")) return std::nullopt;
-  for (std::uint32_t v : p.consistent) {
-    const bool up = p.regulation[v] == fusion::expression::Regulation::up;
-    if ((up ? state[v] != 2 : state[v] == 2) && !fail(p.nodes[v].value + " must stay consistent"))
-      return std::nullopt;
-  }
-  const auto relaxed = [&](std::uint32_t j) {
-    return spec_relaxed(p.edges[j].effect, state[p.edges[j].src], state[p.edges[j].tgt]);
-  };
-  for (std::uint32_t j : p.edge_selected)
-    if (!selected[j] && !fail("essential edge " + std::to_string(j) + " not selected")) return std::nullopt;
-  for (std::uint32_t j : p.edge_avoided)
-    if (selected[j] && !fail("avoided edge " + std::to_string(j) + " selected")) return std::nullopt;
-  for (std::uint32_t j : p.edge_nonrelaxed)
-    if (relaxed(j) && !fail("non-relaxed edge " + std::to_string(j) + " relaxed")) return std::nullopt;
-  for (std::uint32_t j : p.frozen)
-    if (relaxed(j) && !fail("frozen edge " + std::to_string(j) + " relaxed")) return std::nullopt;
-  for (const auto& [u, v] : p.coexpressed)
-    if (state[u] != 0 && state[v] != 0 && state[u] != state[v] &&
-        !fail("coexpressed " + p.nodes[u].value + " and " + p.nodes[v].value + " differ"))
-      return std::nullopt;
-  if (!ok) return std::nullopt;
-  // S5.12, S5.13: the counts.
-  Point cost;
-  for (std::uint32_t v : p.counted) {
-    const bool up = p.regulation[v] == fusion::expression::Regulation::up;
-    cost.n += (up ? state[v] != 2 : state[v] == 2) ? 1 : 0;
-  }
-  for (std::uint32_t j = 0; j < m; ++j) cost.e += relaxed(j) ? 1 : 0;
-  return cost;
-}
-
-}  // namespace
-
-Verdict check(const solve::Problem& p, const std::vector<int>& state, const std::vector<bool>& selected) {
-  Verdict v;
-  const auto cost = evaluate(p, state, selected, &v.violations);
-  v.valid = cost.has_value();
-  if (cost) v.cost = *cost;
-  return v;
-}
-
-Verdict check(const solve::Problem& p, const solve::Witness& w) {
-  std::vector<int> state(p.nodes.size(), 0);
-  std::vector<bool> selected(p.edges.size(), false);
-  Verdict extra;
-  const auto node = [&](const NodeKey& key) -> std::optional<std::uint32_t> {
-    for (std::uint32_t i = 0; i < p.nodes.size(); ++i)
-      if (p.nodes[i] == key) return i;
-    extra.violations.push_back("unknown node " + key.value);
-    return std::nullopt;
-  };
-  for (const NodeKey& key : w.inactive)
-    if (auto i = node(key)) state[*i] = 1;
-  for (const NodeKey& key : w.active)
-    if (auto i = node(key)) state[*i] = 2;
-  for (const EdgeKey& key : w.selected) {
-    bool found = false;
-    for (std::uint32_t j = 0; j < p.edges.size(); ++j)
-      if (p.edges[j].key == key) selected[j] = found = true;
-    if (!found) extra.violations.push_back("unknown edge");
-  }
-  Verdict v = check(p, state, selected);
-  v.violations.insert(v.violations.end(), extra.violations.begin(), extra.violations.end());
-  if (!v.valid) return v;
-  if (v.cost != w.counts) v.violations.push_back("the witness's counts differ from its relaxations");
-  // The relaxation lists (S5.27): exactly the relaxed counted nodes, with presence, and the
-  // relaxed edges, with selection.
-  std::vector<std::pair<NodeKey, bool>> nodes;
-  for (std::uint32_t i : p.counted) {
-    const bool up = p.regulation[i] == fusion::expression::Regulation::up;
-    if (up ? state[i] != 2 : state[i] == 2) nodes.emplace_back(p.nodes[i], state[i] != 0);
-  }
-  std::vector<std::pair<EdgeKey, bool>> edges;
-  for (std::uint32_t j = 0; j < p.edges.size(); ++j)
-    if (spec_relaxed(p.edges[j].effect, state[p.edges[j].src], state[p.edges[j].tgt]))
-      edges.emplace_back(p.edges[j].key, selected[j]);
-  if (nodes != w.relaxed_nodes) v.violations.push_back("relaxed nodes differ");
-  if (edges != w.relaxed_edges) v.violations.push_back("relaxed edges differ");
-  v.valid = v.violations.empty();
-  return v;
-}
-
-std::vector<Point> exhaustive_frontier(const solve::Problem& p) {
-  const std::size_t n = p.nodes.size(), m = p.edges.size();
-  std::set<Point> costs;
-  std::vector<int> state(n, 0);
-  for (;;) {
-    std::vector<std::uint32_t> usable;
-    for (std::uint32_t j = 0; j < m; ++j)
-      if (state[p.edges[j].src] != 0 && state[p.edges[j].tgt] != 0) usable.push_back(j);
-    std::vector<bool> selected(m, false);
-    for (std::uint64_t mask = 0; mask < (std::uint64_t{1} << usable.size()); ++mask) {
-      for (std::size_t k = 0; k < usable.size(); ++k) selected[usable[k]] = (mask >> k) & 1U;
-      if (auto cost = evaluate(p, state, selected, nullptr)) costs.insert(*cost);
-    }
-    std::size_t i = 0;                                     // the next state, in base 3
-    while (i < n && state[i] == 2) state[i++] = 0;
-    if (i == n) break;
-    ++state[i];
-  }
-  std::set<Point> clamped;
-  for (Point c : costs) {
-    Point q{std::max(c.n, p.box.lo.n), std::max(c.e, p.box.lo.e)};
-    if (solve::below_or_equal(q, p.box.hi)) clamped.insert(q);
-  }
-  std::vector<Point> out;
-  for (Point c : clamped)
-    if (std::none_of(clamped.begin(), clamped.end(), [&](Point o) { return o != c && solve::below_or_equal(o, c); }))
-      out.push_back(c);
-  return out;
-}
-
 std::vector<Point> points_of(const solve::Frontier& f) {
   std::vector<Point> out;
   for (const solve::FrontierPoint& fp : f.points) out.push_back(fp.point);
   return out;
+}
+
+// ---------------------------------------------------------------- the kit's judgement
+
+testkit::Verdict kit_check(const CaseRef& c, const solve::Witness& w) {
+  const testkit::CanonCorridor corridor = testkit::adapt::canon(c.graph);
+  const testkit::CaseSpec spec = testkit::adapt::spec(c.graph, c.spec, c.settings, c.kase);
+  const testkit::Assignment a = testkit::adapt::assignment(w);
+  testkit::Verdict v = testkit::check(corridor, spec, a, testkit::Semantics::fusion2);
+  if (v.valid && (v.cost.n != w.counts.n || v.cost.e != w.counts.e)) {
+    v.valid = false;
+    v.violations.push_back("the witness's counts " + text(w.counts) + " differ from the checker's cost (" +
+                           std::to_string(v.cost.n) + "," + std::to_string(v.cost.e) + ")");
+  }
+  // S5.27: the relaxation lists, each entry relaxed by the spec's table and named once, as many as counted.
+  std::map<std::string, int> state;                        // 1 inactive, 2 active
+  for (const auto& [key, active] : a.present) state[key] = active ? 2 : 1;
+  const auto state_of = [&](const std::string& key) {
+    const auto it = state.find(key);
+    return it == state.end() ? 0 : it->second;
+  };
+  std::set<std::string> up, down;
+  for (const auto& o : c.spec.observations)
+    if (o.node) (o.regulation == fusion::expression::Regulation::down ? down : up).insert(o.node->value);
+  for (const auto& id : c.spec.confirmed_up) up.insert(id.node.value), down.erase(id.node.value);
+  for (const auto& id : c.spec.confirmed_down) down.insert(id.node.value), up.erase(id.node.value);
+  std::set<std::string> nodes_named;
+  for (const auto& [key, present] : w.relaxed_nodes) {
+    const int s = state_of(key.value);
+    const bool relaxed = up.contains(key.value) ? s != 2 : down.contains(key.value) && s == 2;
+    if (!relaxed || present != (s != 0) || !nodes_named.insert(key.value).second)
+      v.violations.push_back("the relaxed node " + key.value + " is not relaxed as listed (S5.27)");
+  }
+  std::set<EdgeKey> edges_named;
+  for (const auto& [key, selected] : w.relaxed_edges) {
+    const bool is_selected = std::find(w.selected.begin(), w.selected.end(), key) != w.selected.end();
+    const auto e = std::find_if(c.graph.edges.begin(), c.graph.edges.end(),
+                                [&](const solve::CaseGraph::Edge& x) { return x.key == key; });
+    const bool relaxed =
+        e != c.graph.edges.end() && spec_relaxed(e->effect, state_of(key.source.value), state_of(key.target.value));
+    if (!relaxed || selected != is_selected || !edges_named.insert(key).second)
+      v.violations.push_back("the relaxed edge " + key.text() + " is not relaxed as listed (S5.27)");
+  }
+  if (static_cast<int>(w.relaxed_nodes.size()) != w.counts.n || static_cast<int>(w.relaxed_edges.size()) != w.counts.e)
+    v.violations.push_back("the relaxation lists do not hold " + text(w.counts) + " entries (S5.27)");
+  v.valid = v.valid && v.violations.empty();
+  return v;
+}
+
+std::vector<Point> kit_frontier(const CaseRef& c) {
+  const testkit::Frontier f = testkit::exhaustive_frontier(
+      testkit::adapt::canon(c.graph), testkit::adapt::spec(c.graph, c.spec, c.settings, c.kase), testkit::Semantics::fusion2,
+      {c.settings.box.lo.n, c.settings.box.lo.e}, {c.settings.box.hi.n, c.settings.box.hi.e});
+  return points(f.points);
 }
 
 // ---------------------------------------------------------------- solving in-process
@@ -371,42 +222,11 @@ Solved solve_problem(const solve::Problem& p, const solve::Settings& settings) {
   return s;
 }
 
-// ---------------------------------------------------------------- the scripted oracle
-
-ScriptedOracle::ScriptedOracle(std::vector<Point> staircase, std::map<Point, solve::Outcome> overrides)
-    : staircase_(std::move(staircase)), overrides_(std::move(overrides)) {}
-
-bool ScriptedOracle::truth(Point p) const {
-  return std::any_of(staircase_.begin(), staircase_.end(), [&](Point s) { return solve::below_or_equal(s, p); });
-}
-
-int ScriptedOracle::calls(Point p) const {
-  const auto it = calls_.find(p);
-  return it == calls_.end() ? 0 : it->second;
-}
-
-solve::Answer ScriptedOracle::ask(Point p, Phase phase) {
-  ++calls_[p];
-  asked.emplace_back(p, phase);
-  solve::Answer a{};
-  a.point = p;
-  a.phase = phase;
-  a.source = solve::Source::z3;
-  const auto it = overrides_.find(p);
-  a.outcome = it != overrides_.end() ? it->second : truth(p) ? solve::Outcome::sat : solve::Outcome::unsat;
-  if (a.outcome == solve::Outcome::timeout) a.reason = "timeout";
-  if (a.outcome == solve::Outcome::undefined) a.reason = "unknown";
-  if (a.outcome == solve::Outcome::sat) {
-    a.model = model ? model(p).value_or(p) : p;
-    solve::Witness w;
-    w.counts = *a.model;
-    witnesses.push_back(w);
-    a.witness = static_cast<std::uint32_t>(witnesses.size() - 1);
-  }
-  return a;
-}
-
 // ---------------------------------------------------------------- FuSION 1's toy cases
+
+solve::Box ToyRun::box() const {
+  return {{limits.box_lo.n, limits.box_lo.e}, {limits.box_hi.n, limits.box_hi.e}};
+}
 
 std::filesystem::path tests_dir() { return std::filesystem::path(FUSION_TEST_SOURCE_DIR); }
 
@@ -418,55 +238,8 @@ std::vector<std::string> toy_names() {
   return out;
 }
 
-Limits read_limits(const std::filesystem::path& path) {
-  Limits limits;
-  bool have_box = false;
-  Phase phase = Phase::diagonal;
-  std::optional<Limits::Query> pending;
-  for (const std::string& line : lines_of(slurp(path))) {
-    if (starts_with(line, "new call")) {
-      phase = Phase::diagonal;
-      if (!have_box) {                                     // [nl, nu] and [el, eu]
-        const auto v = integers(line);
-        limits.box = {{v[0], v[2]}, {v[1], v[3]}};
-        have_box = true;
-      }
-    } else if (line == "Finding smallest n") {
-      phase = Phase::smallest_n;
-    } else if (line == "Finding smallest e") {
-      phase = Phase::smallest_e;
-    } else if (starts_with(line, "Relax bounds")) {        // e before n (S5.24)
-      const auto v = integers(line);
-      const Phase p = line.find("node call") != std::string::npos   ? Phase::smallest_n
-                      : line.find("edge call") != std::string::npos ? Phase::smallest_e
-                                                                    : Phase::diagonal;
-      pending = Limits::Query{{v[1], v[0]}, p, true, false};
-    } else if (starts_with(line, "Point ") && line.find("already") != std::string::npos) {
-      const auto v = integers(line);
-      pending = Limits::Query{{v[1], v[0]}, phase, false, false};
-    } else if (starts_with(line, "Point 1:") || starts_with(line, "Point 2:")) {
-      const auto v = integers(line.substr(8));
-      limits.found.push_back({v[1], v[0]});
-    } else if ((line == "sat" || line == "unsat" || line == "unknown") && pending) {
-      pending->sat = line == "sat";
-      limits.queries.push_back(*pending);
-      pending.reset();
-    }
-  }
-  return limits;
-}
-
-std::vector<Point> read_dat(const std::filesystem::path& path) {
-  std::vector<Point> out;
-  for (const std::string& line : lines_of(slurp(path))) {
-    const auto v = integers(line);
-    if (v.size() >= 2) out.push_back({v[0], v[1]});
-  }
-  std::sort(out.begin(), out.end());
-  return out;
-}
-
 ToyCase read_toy(const std::string& name) {
+  namespace f1 = testkit::f1;
   ToyCase toy;
   toy.name = name;
   const auto dir = tests_dir() / "reference" / "synthetic" / name;
@@ -480,39 +253,25 @@ ToyCase read_toy(const std::string& name) {
   toy.box = {{std::stoi(lets.at("$NODE_RELAX_LB")), std::stoi(lets.at("$EDGE_RELAX_LB"))},
              {std::stoi(lets.at("$NODE_RELAX_UB")), std::stoi(lets.at("$EDGE_RELAX_UB"))}};
 
-  // FuSION 1's corridor as captured (KGML-like: entries, then relations with their subtypes).
+  // FuSION 1's corridor as captured, read by the kit's reader of FuSION 1's written graphs.
   Graph graph(static_cast<std::uint32_t>(std::stoul(lets.at("$REACH_PATH_BOUND"))));
-  std::map<std::string, std::string> entry_names;
-  const std::string xml = slurp(dir / "f1" / "capture" / "corridor.xml");
-  std::size_t at = 0;
-  while ((at = xml.find('<', at)) != std::string::npos) {
-    const std::size_t end = xml.find('>', at);
-    const std::string tag = xml.substr(at, end - at + 1);
-    if (starts_with(tag, "<entry ")) {
-      entry_names[attribute(tag, "id")] = attribute(tag, "name");
-      graph.node(attribute(tag, "name"));
-    } else if (starts_with(tag, "<relation ")) {
-      const std::size_t close = xml.find("</relation>", end);
-      const std::string body = xml.substr(end, close - end);
-      std::string subtypes;
-      for (std::size_t s = 0; (s = body.find("<subtype ", s)) != std::string::npos; ++s)
-        subtypes += (subtypes.empty() ? "" : ",") + attribute(body.substr(s, body.find('>', s) - s), "name");
-      const std::string score = attribute(tag, "experiment_score");
-      graph.edge(entry_names.at(attribute(tag, "entry1")), entry_names.at(attribute(tag, "entry2")), subtypes,
-                 score.empty() ? 0.0 : std::stod(score), attribute(tag, "type"));
-    }
-    at = end;
+  const testkit::CanonGraph corridor = f1::read_written_graph(dir / "f1" / "capture" / "corridor.xml");
+  for (const testkit::CanonNode& n : corridor.nodes) graph.node(n.key);
+  for (const testkit::CanonEdge& e : corridor.edges) {
+    std::string subtypes;
+    for (const std::string& s : e.key.subtypes) subtypes += (subtypes.empty() ? "" : ",") + s;
+    graph.edge(e.key.src, e.key.tgt, subtypes, e.score, e.key.type);
   }
   graph.ends(lets.at("$SRC_NODE"), lets.at("$TGT_NODE"));
   toy.graph = graph.g;
 
-  for (const std::string& gene : words(slurp(run / "up_reg"))) observe(toy.observations, toy.graph, gene, 'u');
-  for (const std::string& gene : words(slurp(run / "down_reg"))) observe(toy.observations, toy.graph, gene, 'd');
+  for (const std::string& gene : f1::read_ids(run / "up_reg")) observe(toy.observations, toy.graph, gene, 'u');
+  for (const std::string& gene : f1::read_ids(run / "down_reg")) observe(toy.observations, toy.graph, gene, 'd');
 
   // FuSION 1 resolved list ids in the corridor and dropped the rest (GraphManagerNew.cc:18688-18708).
   const auto list = [&](const std::string& file) {
     std::vector<solve::CaseSpec::Id> out;
-    for (const std::string& id : words(slurp(run / file)))
+    for (const std::string& id : f1::read_ids(run / file))
       if (std::any_of(toy.graph.nodes.begin(), toy.graph.nodes.end(),
                       [&](const solve::CaseGraph::Node& n) { return n.key.value == id; }))
         out.push_back({id, {id}});
@@ -531,7 +290,7 @@ ToyCase read_toy(const std::string& name) {
     for (const auto& entry : std::filesystem::directory_iterator(run)) {
       const std::string file = entry.path().filename().string();
       if (file.find(tag + toy.fsc + "_") != std::string::npos && file.find("_limits_timefile.txt") != std::string::npos)
-        return read_limits(entry.path());
+        return f1::read_limits(entry.path());
     }
     throw std::runtime_error("no limits file in " + run.string());
   };
@@ -539,16 +298,100 @@ ToyCase read_toy(const std::string& name) {
   toy.with.spec.essential = list("essential_nodes_file_w_" + toy.fsc);
   toy.with.spec.active = list("active_nodes_file_w_" + toy.fsc);
   toy.with.spec.non_relaxed = list("nonrelaxed_nodes_file_w_" + toy.fsc);
-  toy.with.dat = read_dat(find("_w_", ".dat"));
+  toy.with.dat = points(f1::read_dat(find("_w_", ".dat")));
   toy.with.limits = limits_of("_w_");
   toy.without.spec = toy.observations;
   toy.without.spec.essential = list("essential_nodes_file_wo_" + toy.fsc);
   toy.without.spec.active = list("active_nodes_file_wo_" + toy.fsc);
   toy.without.spec.non_relaxed = list("nonrelaxed_nodes_file_wo_" + toy.fsc);
   toy.without.spec.avoid = list("avoid_" + toy.fsc + "_file");
-  toy.without.dat = read_dat(find("_wo_", ".dat"));
+  toy.without.dat = points(f1::read_dat(find("_wo_", ".dat")));
   toy.without.limits = limits_of("_wo_");
   return toy;
+}
+
+// ---------------------------------------------------------------- generated tiny cases
+
+TinyInputs inputs_of(const testkit::TinyCase& tc) {
+  TinyInputs in;
+  Graph g(static_cast<std::uint32_t>(tc.corridor.bound));
+  std::map<std::string, std::string> key_of;              // canonical key -> the case graph's key
+  for (const testkit::CanonNode& n : tc.corridor.graph.nodes) {
+    const std::string key = testkit::module_key(n);
+    key_of[n.key] = key;
+    g.node(key, n.type == "group" ? n.members : std::vector<std::string>{});
+  }
+  for (const testkit::CanonEdge& e : tc.corridor.graph.edges) {
+    std::string subtypes;
+    for (const std::string& s : e.key.subtypes) subtypes += (subtypes.empty() ? "" : ",") + s;
+    g.edge(key_of.at(e.key.src), key_of.at(e.key.tgt), subtypes, e.score, e.key.type);
+  }
+  g.ends(key_of.at(tc.corridor.sources.at(0)), key_of.at(tc.corridor.targets.at(0)));
+  in.graph = g.g;
+  const auto id_list = [&](const std::vector<std::string>& keys) {
+    std::vector<solve::CaseSpec::Id> out;
+    for (const std::string& k : keys) out.push_back({key_of.at(k), {key_of.at(k)}});
+    return out;
+  };
+  for (const std::string& k : tc.spec.up) observe(in.spec, in.graph, key_of.at(k), 'u');
+  for (const std::string& k : tc.spec.down) observe(in.spec, in.graph, key_of.at(k), 'd');
+  in.spec.essential = id_list(tc.spec.essential);
+  in.spec.avoid = id_list(tc.spec.avoid);
+  in.spec.active = id_list(tc.spec.active);
+  in.spec.inactive = id_list(tc.spec.inactive);
+  in.spec.non_relaxed = id_list(tc.spec.nonrelaxed);
+  in.spec.fsc = id_list(tc.spec.fsc);
+  const auto edge_list = [&](const std::vector<testkit::EdgeSpec>& lines) {
+    std::vector<std::uint32_t> out;
+    for (const testkit::EdgeSpec& line : lines)
+      for (std::uint32_t j : solve::match_edge_line(in.graph, NodeKey{key_of.at(line.src)}, NodeKey{key_of.at(line.tgt)},
+                                                     line.subtypes))
+        out.push_back(j);
+    return out;
+  };
+  in.spec.essential_edges = edge_list(tc.spec.essential_edges);
+  in.spec.avoid_edges = edge_list(tc.spec.avoid_edges);
+  in.spec.nonrelaxed_edges = edge_list(tc.spec.nonrelaxed_edges);
+  if (!tc.spec.coexpressed.empty()) {                      // a table row scoring above the threshold
+    in.spec.coexpression_table = true;
+    for (const auto& [a, b] : tc.spec.coexpressed)
+      in.spec.coexpression.push_back({NodeKey{key_of.at(a)}, NodeKey{key_of.at(b)}, 900});
+    in.settings.families.coexpression_threshold = 500;
+  }
+  in.settings.families.frozen_threshold = tc.spec.frozen_threshold;
+  in.settings.positional = !tc.spec.named;
+  in.kase = tc.spec.solve_case == testkit::CaseSpec::Case::in    ? solve::Case::in
+            : tc.spec.solve_case == testkit::CaseSpec::Case::out ? solve::Case::out
+                                                                 : solve::Case::free;
+  return in;
+}
+
+std::string describe(const testkit::TinyCase& tc) {
+  std::ostringstream o;
+  o << tc.corridor.graph.text() << "sources " << tc.corridor.sources.at(0) << " targets " << tc.corridor.targets.at(0)
+    << " bound " << tc.corridor.bound << "\n";
+  const auto list = [&](const char* name, const std::vector<std::string>& v) {
+    o << name;
+    for (const auto& s : v) o << " " << s;
+    o << "\n";
+  };
+  const auto& s = tc.spec;
+  list("up", s.up);
+  list("down", s.down);
+  list("essential", s.essential);
+  list("avoid", s.avoid);
+  list("active", s.active);
+  list("inactive", s.inactive);
+  list("nonrelaxed", s.nonrelaxed);
+  list("fsc", s.fsc);
+  for (const auto* edges : {&s.essential_edges, &s.avoid_edges, &s.nonrelaxed_edges})
+    for (const auto& e : *edges) o << (edges == &s.essential_edges ? "essential_edge " : edges == &s.avoid_edges ? "avoid_edge " : "nonrelaxed_edge ")
+                                   << e.src << " " << e.tgt << "\n";
+  for (const auto& [a, b] : s.coexpressed) o << "coexpressed " << a << " " << b << "\n";
+  if (s.frozen_threshold) o << "frozen > " << *s.frozen_threshold << "\n";
+  o << "case " << (s.solve_case == testkit::CaseSpec::Case::in ? "in" : s.solve_case == testkit::CaseSpec::Case::out ? "out" : "free")
+    << (s.named ? " named" : " positional") << "\n";
+  return o.str();
 }
 
 }  // namespace solvekit

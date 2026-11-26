@@ -157,6 +157,8 @@ Section 12's test hooks, plus: `read_run` on a toy run; `require()` skipping on 
 
 The checker on every witness of the reference cases comes with C4.
 
+*As built (prompt log entry 349):* the two synthetic S2.22 layers overran T0's budget at section 12's sizes, so T0 runs a copy of each cut to fit it (the listed shapes alone, and the first 50 random sets), and the copies at section 12's sizes are tagged `[slow]`, like the real layer. The checker's `fusion1` semantics never count edges out of the target, as S5.10 says and FuSION 1's code does; section 12 records both. The three `[kegg]` self-tests that need W3's captures skip until C3.2 adds them to the data manifest.
+
 ## 5. Open choices
 
 ### C2.1 · Which sprint helpers move into the kit
@@ -186,6 +188,10 @@ The checker on every witness of the reference cases comes with C4.
 - **Alternatives:** follow the sketch literally; solve's search replay and corridor's exclusion tests then keep their own code.
 - **Why:** each change carries something a sprint test already needs, or that section 12's prose asks for and its sketch leaves out (the seed variable, the skip rule, the fake-tool environment, the masks).
 - **Decision:** as proposed (prompt log entry 340)
+- **As built (prompt log entry 349):** the user accepted these further departures as a group:
+  - `read_run` completes each solve's corridor from the `fb_rch` step's `corridor.json` and the run's network file, because `results.json` lists only the nodes its witnesses name;
+  - `manifest_path()` and a `require()` that takes a manifest; `ScratchDir::kept()`; `exception_merge_texts()` for generated sets; a timeout on `run_fusion`; `normalise_file()` and `matched_files()` for C5's golden updates; `keep_failing_input()` for 12.C9's saved inputs; an `adapt::spec` that takes the case graph, for edge lists;
+  - masks for `run.started`'s `run` and `name`, which change in every run, and, by the same poll's fourth question, its `parent`.
 
 ## 6. Cost
 

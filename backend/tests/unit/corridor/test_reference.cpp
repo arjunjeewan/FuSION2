@@ -1,7 +1,7 @@
 // FuSION 1's own corridors on booking 1's synthetic toy cases (backend/tests/reference/synthetic/,
-// read only): the re-read graph each fb_rch ran on (f1/capture/graph_reread.xml), its fb_rch line and
-// printed counts (f1/run_console.log), its corridor as wgx wrote it (f1/capture/corridor.xml) and its
-// traces (f1/run/fb_rch, fb_rch_back). None of these networks holds a complex, a self-loop, an edge into
+// read only, through the test kit's FuSION 1 readers): the re-read graph each fb_rch ran on
+// (f1/capture/graph_reread.xml), its fb_rch line and printed counts (f1/run_console.log), its corridor as
+// wgx wrote it (f1/capture/corridor.xml) and its traces (f1/run/fb_rch, fb_rch_back). None of these networks holds a complex, a self-loop, an edge into
 // the source or an edge out of the target, so neither expected difference, XD-17 (05.C2) nor XD-18
 // (S4.12), applies: 2.0 must give FuSION 1's corridor exactly, with its target counts M and N (S4.17),
 // its forward set, and the distances its two searches recorded (S4.07).
@@ -13,8 +13,11 @@
 #include <sstream>
 
 #include "corridor_support.hpp"
+#include "fusion/testkit/adapt.hpp"
+#include "fusion/testkit/fusion1.hpp"
 
 using namespace corridor_test;
+namespace testkit = fusion::testkit;
 
 namespace {
 
@@ -31,14 +34,6 @@ std::vector<std::string> read_lines(const std::filesystem::path& file) {
     return lines;
 }
 
-std::string attribute(const std::string& line, const std::string& name) {
-    const std::string key = " " + name + "=\"";
-    const auto at = line.find(key);
-    if (at == std::string::npos) return {};
-    const auto from = at + key.size();
-    return line.substr(from, line.find('"', from) - from);
-}
-
 std::vector<std::string> words(const std::string& text) {
     std::istringstream in(text);
     std::vector<std::string> out;
@@ -46,64 +41,22 @@ std::vector<std::string> words(const std::string& text) {
     return out;
 }
 
-// FuSION 1's tool-written graph files, read as far as these toy cases need: entries with their ids,
-// relations with their subtypes; pathways and scores do not change a corridor.
-struct F1Graph {
-    std::vector<std::vector<std::string>> entries;   // each entry's ids
-    struct Relation {
-        std::string from, to, type;
-        std::vector<std::string> subtypes;
-    };
-    std::vector<Relation> relations;
-    int components = 0;
-
-    static std::string key_of(const std::vector<std::string>& ids) { return *std::min_element(ids.begin(), ids.end()); }
-
-    explicit F1Graph(const std::filesystem::path& file) {
-        std::map<std::string, std::string> key_by_entry;
-        bool in_relation = false;
-        for (const std::string& line : read_lines(file)) {
-            if (line.find("<entry ") != std::string::npos) {
-                entries.push_back(words(attribute(line, "name")));
-                REQUIRE(attribute(line, "type") == "gene");
-                key_by_entry[attribute(line, "id")] = key_of(entries.back());
-            } else if (line.find("<relation ") != std::string::npos) {
-                relations.push_back({key_by_entry.at(attribute(line, "entry1")), key_by_entry.at(attribute(line, "entry2")),
-                                     attribute(line, "type"), {}});
-                in_relation = true;
-            } else if (in_relation && line.find("<subtype ") != std::string::npos) {
-                relations.back().subtypes.push_back(attribute(line, "name"));
-            } else if (line.find("</relation>") != std::string::npos) {
-                in_relation = false;
-            } else if (line.find("<component ") != std::string::npos) {
-                ++components;
-            }
-        }
+// FuSION 1's written graph as the kit reads it (f1::read_written_graph), as a network built through 02's
+// builder, with every attribute the canonical form compares: members, types, subtypes, pathways, scores.
+NetSpec spec_of(const testkit::CanonGraph& g) {
+    NetSpec s;
+    for (const testkit::CanonNode& n : g.nodes) {
+        REQUIRE(n.type == "gene");                     // no complex: no XD-18 difference
+        s.nodes.push_back(n.members);
     }
+    const auto key_of = [&](const std::string& canonical) { return testkit::module_key_of(canonical); };
+    for (const testkit::CanonEdge& e : g.edges)
+        s.edges.push_back(EdgeSpec{key_of(e.key.src), key_of(e.key.tgt), e.key.subtypes, e.key.type, e.pathways, e.score});
+    return s;
+}
 
-    NetSpec spec() const {
-        NetSpec s;
-        s.nodes = entries;
-        for (const Relation& r : relations) s.edges.push_back(EdgeSpec{r.from, r.to, r.subtypes, r.type, {}, 0});
-        return s;
-    }
-    std::set<std::string> edge_set() const {
-        std::set<std::string> out;
-        for (const Relation& r : relations) {
-            std::string text = r.from + ">" + r.to + "|" + r.type + "|";
-            for (std::size_t k = 0; k < r.subtypes.size(); ++k) text += (k ? "," : "") + r.subtypes[k];
-            out.insert(text);
-        }
-        return out;
-    }
-    std::set<std::string> node_set() const {
-        std::set<std::string> out;
-        for (const auto& ids : entries) out.insert(key_of(ids));
-        return out;
-    }
-};
-
-// The first fb_rch line of the console log and the counts FuSION 1 printed for it.
+// The first fb_rch line of the console log and the target and forward counts FuSION 1 printed for it,
+// which f1::read_console does not collect (its corridor sizes are compared below).
 struct F1Call {
     corridor::Request request;
     std::string flag;
@@ -187,13 +140,13 @@ TEST_CASE("corridor: 2.0 reproduces FuSION 1's corridors on the synthetic toy ca
     for (const std::string& name : names) {
         DYNAMIC_SECTION(name) {
             const std::filesystem::path dir = kCases / name / "f1";
-            const F1Graph graph(dir / "capture" / "graph_reread.xml");
-            const F1Graph f1_corridor(dir / "capture" / "corridor.xml");
+            const testkit::CanonGraph graph = testkit::f1::read_written_graph(dir / "capture" / "graph_reread.xml");
+            const testkit::CanonGraph f1_corridor = testkit::f1::read_written_graph(dir / "capture" / "corridor.xml");
+            const testkit::f1::ConsoleFacts console = testkit::f1::read_console(dir / "run_console.log");
             const F1Call call(dir / "run_console.log");
-            REQUIRE(graph.components == 0);   // no complex: no XD-18 difference
 
             Harness h;
-            TestNetwork net(graph.spec(), h.ctx);
+            TestNetwork net(spec_of(graph), h.ctx);
             corridor::Request r = call.request;
             const auto rule = corridor::parse_edges_to_target(call.flag);
             REQUIRE(rule);
@@ -202,24 +155,23 @@ TEST_CASE("corridor: 2.0 reproduces FuSION 1's corridors on the synthetic toy ca
             REQUIRE_FALSE(c.outcome.report);
 
             // No self-loop, edge into the source or edge out of the target: no XD-17 difference.
-            for (const auto& rel : graph.relations) {
-                REQUIRE(rel.from != rel.to);
-                REQUIRE(rel.to != r.source.front());
-                REQUIRE(rel.from != r.target.front());
+            for (const testkit::CanonEdge& e : graph.edges) {
+                REQUIRE(e.key.src != e.key.tgt);
+                REQUIRE(e.key.tgt != r.source.front());
+                REQUIRE(e.key.src != r.target.front());
             }
 
-            std::set<std::string> edges;
-            c->view().for_each_edge([&](network::EdgeIdx e) {
-                const network::EdgeKey key = net.network->edge_key(e);
-                std::string text = key.source.value + ">" + key.target.value + "|" + key.type + "|";
-                for (std::size_t k = 0; k < key.subtypes.size(); ++k) text += (k ? "," : "") + key.subtypes[k];
-                edges.insert(text);
-            });
+            // 2.0's corridor equals FuSION 1's as canonical graphs: nodes, edges, pathways and scores.
+            const testkit::CanonCorridor cut = testkit::adapt::canon(*c);
+            const testkit::GraphDiff difference = testkit::diff(cut.graph, f1_corridor);
+            INFO(difference.text());
+            CHECK(difference.empty());
+            REQUIRE(console.corridor_sizes.size() >= 1);
+            CHECK(static_cast<int>(cut.graph.nodes.size()) == console.corridor_sizes.front().first);
+            CHECK(static_cast<int>(cut.graph.edges.size()) == console.corridor_sizes.front().second);
+            CHECK(console.corridor_sizes.front().first == call.nodes);
+            CHECK(console.corridor_sizes.front().second == call.edges);
             const std::vector<std::string> nodes = node_names(*c);
-            CHECK(edges == f1_corridor.edge_set());
-            CHECK(std::set<std::string>(nodes.begin(), nodes.end()) == f1_corridor.node_set());
-            CHECK(static_cast<int>(nodes.size()) == call.nodes);
-            CHECK(static_cast<int>(edges.size()) == call.edges);
             CHECK(static_cast<int>(c->counts().into_target) == call.into_target);
             CHECK(static_cast<int>(c->counts().into_target_dropped) == call.dropped);
             CHECK(static_cast<int>(c->counts().forward_set) == call.forward);

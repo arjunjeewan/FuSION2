@@ -5,9 +5,9 @@
 
 #include <algorithm>
 #include <map>
-#include <random>
 #include <set>
 
+#include "fusion/testkit/catch.hpp"
 #include "kit.hpp"
 
 using namespace solvekit;
@@ -59,18 +59,26 @@ std::vector<Point> expected_frontier(Box box, const ScriptedOracle& oracle) {
   return minimal(sat);
 }
 
-std::vector<Point> random_staircase(std::mt19937_64& rng, int max_n, int max_e) {
-  std::uniform_int_distribution<int> count(0, 6), n(0, max_n + 2), e(0, max_e + 2);
+// Uniform in [lo, hi], from core's own distributions (12.C9, 09.C15).
+int uniform(fusion::core::Rng& rng, int lo, int hi) {
+  return lo + static_cast<int>(rng.below(static_cast<std::uint64_t>(hi - lo + 1)));
+}
+
+std::vector<Point> random_staircase(fusion::core::Rng& rng, int max_n, int max_e) {
   std::set<Point> raw;
-  for (int k = count(rng); k > 0; --k) raw.insert({n(rng), e(rng)});
+  for (int k = uniform(rng, 0, 6); k > 0; --k) {
+    const int n = uniform(rng, 0, max_n + 2);
+    raw.insert({n, uniform(rng, 0, max_e + 2)});
+  }
   return minimal(raw);
 }
 
-Box random_box(std::mt19937_64& rng) {
-  std::uniform_int_distribution<int> size(0, 19), low(0, 3);
+Box random_box(fusion::core::Rng& rng) {
   Box b;
-  b.lo = {low(rng), low(rng)};
-  b.hi = {b.lo.n + size(rng), b.lo.e + size(rng)};
+  b.lo.n = uniform(rng, 0, 3);
+  b.lo.e = uniform(rng, 0, 3);
+  b.hi.n = b.lo.n + uniform(rng, 0, 19);
+  b.hi.e = b.lo.e + uniform(rng, 0, 19);
   return b;
 }
 
@@ -86,20 +94,23 @@ TEST_CASE("solve: the search replays FuSION 1's searches on the toy cases query 
     for (const ToyRun* run : {&toy.with, &toy.without}) {
       INFO(name << (run == &toy.with ? " with" : " without") << " the FSC");
       LoggedOracle oracle;
-      for (const Limits::Query& q : run->limits.queries)
-        if (q.z3) oracle.answers.emplace(q.point, q.sat);
-      AnswerCache cache(run->limits.box);
+      const auto point = [](testkit::Point p) { return Point{p.n, p.e}; };
+      for (const testkit::f1::Check& q : run->limits.checks)
+        if (!q.cached) oracle.answers.emplace(point(q.point), q.answer == testkit::CheckOutcome::sat);
+      AnswerCache cache(run->box());
       Quiet quiet;
-      const std::vector<Point> found = solve::pareto_search(run->limits.box, cache, oracle, quiet);
-      REQUIRE(cache.answers().size() == run->limits.queries.size());
-      for (std::size_t k = 0; k < run->limits.queries.size(); ++k) {
+      const std::vector<Point> found = solve::pareto_search(run->box(), cache, oracle, quiet);
+      REQUIRE(cache.answers().size() == run->limits.checks.size());
+      for (std::size_t k = 0; k < run->limits.checks.size(); ++k) {
         INFO("query " << k + 1);
-        CHECK(cache.answers()[k].point == run->limits.queries[k].point);
-        CHECK(cache.answers()[k].phase == run->limits.queries[k].phase);
-        CHECK((cache.answers()[k].outcome == Outcome::sat) == run->limits.queries[k].sat);
+        CHECK(cache.answers()[k].point == point(run->limits.checks[k].point));
+        CHECK(solve::name(cache.answers()[k].phase) == run->limits.checks[k].step);
+        CHECK((cache.answers()[k].outcome == Outcome::sat) == (run->limits.checks[k].answer == testkit::CheckOutcome::sat));
       }
-      CHECK(found == run->limits.found);
-      const solve::Frontier frontier = solve::assemble(run->limits.box, cache.answers(), oracle.witnesses, found);
+      std::vector<Point> f1_found;
+      for (testkit::Point p : run->limits.found) f1_found.push_back(point(p));
+      CHECK(found == f1_found);
+      const solve::Frontier frontier = solve::assemble(run->box(), cache.answers(), oracle.witnesses, found);
       CHECK(points_of(frontier) == run->dat);
       for (const solve::FrontierPoint& f : frontier.points) CHECK(f.certified);
       CHECK(frontier.undecided.empty());
@@ -110,7 +121,8 @@ TEST_CASE("solve: the search replays FuSION 1's searches on the toy cases query 
 }
 
 TEST_CASE("solve: exact staircases give the exact frontier, each point asked at most once", "[unit][solve][S5.18][S5.20]") {
-  std::mt19937_64 rng(20261118);
+  FUSION_SEED(20261118);
+  auto rng = fusion::core::Rng::stream(fusion_seed, 0);
   for (int round = 0; round < 400; ++round) {
     const Box box = random_box(rng);
     ScriptedOracle oracle(random_staircase(rng, box.hi.n, box.hi.e));
@@ -136,13 +148,16 @@ TEST_CASE("solve: exact staircases give the exact frontier, each point asked at 
 }
 
 TEST_CASE("solve: unknown answers are cached, and certification names each blocker", "[unit][solve][S5.19][S5.20][06.C6]") {
-  std::mt19937_64 rng(42);
+  FUSION_SEED(42);
+  auto rng = fusion::core::Rng::stream(fusion_seed, 0);
   int uncertified = 0;
   for (int round = 0; round < 400; ++round) {
     const Box box = random_box(rng);
     std::map<Point, Outcome> overrides;
-    std::uniform_int_distribution<int> pick_n(box.lo.n, box.hi.n), pick_e(box.lo.e, box.hi.e), coin(0, 1);
-    for (int k = 0; k < 4; ++k) overrides[{pick_n(rng), pick_e(rng)}] = coin(rng) ? Outcome::timeout : Outcome::undefined;
+    for (int k = 0; k < 4; ++k) {
+      const int n = uniform(rng, box.lo.n, box.hi.n), e = uniform(rng, box.lo.e, box.hi.e);
+      overrides[{n, e}] = uniform(rng, 0, 1) ? Outcome::timeout : Outcome::undefined;
+    }
     ScriptedOracle oracle(random_staircase(rng, box.hi.n, box.hi.e), overrides);
     AnswerCache cache(box);
     Quiet quiet;
@@ -192,7 +207,8 @@ TEST_CASE("solve: unknown answers are cached, and certification names each block
 }
 
 TEST_CASE("solve: models' own counts answer later queries without changing any answer", "[unit][solve][06.C5]") {
-  std::mt19937_64 rng(7);
+  FUSION_SEED(7);
+  auto rng = fusion::core::Rng::stream(fusion_seed, 0);
   int saved = 0;
   for (int round = 0; round < 300; ++round) {
     const Box box = random_box(rng);

@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -19,6 +20,7 @@
 #include "fusion/core/core.hpp"
 #include "fusion/merge/merge.hpp"
 #include "fusion/network/network.hpp"
+#include "fusion/testkit/generate.hpp"
 
 namespace merge_test {
 
@@ -230,6 +232,65 @@ inline std::vector<std::string> pathways(const fusion::network::Network& n, cons
 
 inline bool has(std::uint16_t flags, fusion::network::EdgeFlag f) { return (flags & fusion::network::bit(f)) != 0; }
 inline bool has(std::uint16_t flags, fusion::network::NodeFlag f) { return (flags & fusion::network::bit(f)) != 0; }
+
+// ---- generated sets (the test kit's pathways(), 12.C9) ----
+
+// Reads KGML texts as files <folder>/<n>.xml with section 02's reader, in the order given.
+inline std::vector<DocPtr> read_texts(Context& c, const std::vector<std::string>& texts, const std::string& folder) {
+    std::vector<DocPtr> docs;
+    for (std::size_t k = 0; k < texts.size(); ++k) {
+        const fs::path p = c.scratch.write("in/" + folder + "/" + std::to_string(k) + ".xml", texts[k]);
+        docs.push_back(fusion::network::read_kgml(p, fusion::network::IdMap::none(), c.ctx));
+    }
+    return docs;
+}
+
+inline std::vector<std::string> texts_of(const std::vector<fusion::testkit::SyntheticPathway>& set) {
+    std::vector<std::string> out;
+    for (const auto& p : set) out.push_back(p.kgml);
+    return out;
+}
+
+// The canonical ids a generated set names ("t:5" is "t5", S2.06), sorted.
+inline std::vector<std::string> ids_of(const std::vector<std::string>& texts) {
+    std::set<std::string> ids;
+    for (const std::string& t : texts) {
+        std::size_t at = 0;
+        while ((at = t.find("<entry ", at)) != std::string::npos) {
+            const std::size_t name = t.find(" name=\"", at) + 7;
+            const std::string list = t.substr(name, t.find('"', name) - name);
+            std::istringstream in(list);
+            for (std::string id; in >> id;)
+                if (id != "undefined") {
+                    id.erase(std::remove(id.begin(), id.end(), ':'), id.end());
+                    ids.insert(id);
+                }
+            at = name;
+        }
+    }
+    return {ids.begin(), ids.end()};
+}
+
+// The same pathway with its entries and relations in another order; ids and entry ids stay (S2.17).
+inline std::string shuffled_kgml(const std::string& text, fusion::core::Rng& rng) {
+    std::vector<std::string> entries, relations;
+    const std::size_t first = std::min(text.find("  <entry "), text.find("  <relation "));
+    const std::size_t end = text.rfind("</pathway>");
+    std::size_t at = first;
+    while (at < end) {
+        const bool entry = text.compare(at, 9, "  <entry ") == 0;
+        const std::string close = entry ? "  </entry>\n" : "  </relation>\n";
+        const std::size_t stop = text.find(close, at) + close.size();
+        (entry ? entries : relations).push_back(text.substr(at, stop - at));
+        at = stop;
+    }
+    rng.shuffle(entries.begin(), entries.end());
+    rng.shuffle(relations.begin(), relations.end());
+    std::string out = text.substr(0, first);
+    for (const auto& e : entries) out += e;
+    for (const auto& r : relations) out += r;
+    return out + text.substr(end);
+}
 
 inline fusion::merge::ExceptionSet exceptions(std::initializer_list<const char*> ids,
                                               fusion::merge::Reason r = fusion::merge::Reason::not_merged) {

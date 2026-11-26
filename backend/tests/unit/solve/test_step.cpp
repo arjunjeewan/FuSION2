@@ -102,9 +102,26 @@ TEST_CASE("solve: solve() on 2.0's corridor of the toy networks: both FSC cases"
     } else {
       CHECK(points_of(in.frontier) == toy.with.dat);
     }
+    // R1 through the kit, independently of bind_inputs and make_case: 2.0's corridor in the kit's terms,
+    // and the case from the toy's own files (its up and down lists, the FSC), as ids.
+    const testkit::CanonCorridor corridor = testkit::adapt::canon(*run.path);
+    testkit::CaseSpec kit_spec;
+    kit_spec.up = testkit::f1::read_ids(tests_dir() / "reference" / "synthetic" / name / "f1" / "run" / "up_reg");
+    kit_spec.down = testkit::f1::read_ids(tests_dir() / "reference" / "synthetic" / name / "f1" / "run" / "down_reg");
+    kit_spec.fsc = {toy.fsc};
     for (const solve::CaseResult* r : {&in, &out}) {
       CHECK(r->stats.nodes == run.path->view().node_count());   // the whole corridor is encoded (S5.10)
-      for (const solve::FrontierPoint& f : r->frontier.points) CHECK(check(*r->problem, r->witnesses[f.witness]).valid);
+      kit_spec.solve_case = r->kase == Case::in ? testkit::CaseSpec::Case::in : testkit::CaseSpec::Case::out;
+      for (const solve::FrontierPoint& f : r->frontier.points) {
+        const solve::Witness& w = r->witnesses[f.witness];
+        const testkit::Verdict v = testkit::check(corridor, kit_spec, testkit::adapt::assignment(*run.path, w),
+                                                  testkit::Semantics::fusion2);
+        INFO(solve::name(r->kase) << " (" << f.point.n << "," << f.point.e << "): "
+                                  << (v.violations.empty() ? std::string() : v.violations.front()));
+        CHECK(v.valid);
+        CHECK(v.cost.n == f.point.n);
+        CHECK(v.cost.e == f.point.e);
+      }
     }
     CHECK(run.path->digest() == digest);                     // the solve leaves the corridor unchanged (S4.20)
     const std::string table = bindings_tsv(run.bindings);

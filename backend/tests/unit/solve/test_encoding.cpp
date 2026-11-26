@@ -4,9 +4,9 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <algorithm>
-#include <random>
 #include <set>
 
+#include "fusion/testkit/catch.hpp"
 #include "kit.hpp"
 
 using namespace solvekit;
@@ -32,10 +32,11 @@ bool selects(const solve::Witness& w, const std::string& source, const std::stri
                      [&](const EdgeKey& k) { return k.source.value == source && k.target.value == target; });
 }
 
-// Every witness of a solve passes the independent checker and costs exactly its counts (R1).
-void check_witnesses(const solve::Problem& p, const Solved& s) {
+// Every witness of a solve passes the kit's independent checker and costs exactly its counts (R1), and
+// each frontier point's witness costs the point (06.C20).
+void check_witnesses(const CaseRef& c, const Solved& s) {
   for (const solve::Witness& w : s.witnesses) {
-    const Verdict v = check(p, w);
+    const testkit::Verdict v = kit_check(c, w);
     INFO((v.violations.empty() ? std::string() : v.violations.front()));
     CHECK(v.valid);
   }
@@ -66,7 +67,7 @@ TEST_CASE("solve: the toy cases' positional solves give FuSION 1's frontiers", "
       const Solved s = solve_problem(p, settings);
       CHECK(points_of(s.frontier) == run->dat);
       for (const solve::FrontierPoint& f : s.frontier.points) CHECK(f.certified);
-      check_witnesses(p, s);
+      check_witnesses({toy.graph, run->spec, settings, Case::free}, s);
     }
   }
 }
@@ -83,12 +84,12 @@ TEST_CASE("solve: the toy cases' named FSC cases: out as FuSION 1, in fixed for 
     const solve::Problem out = problem_of(toy.graph, spec, settings, Case::out);
     const Solved so = solve_problem(out, settings);
     CHECK(points_of(so.frontier) == toy.without.dat);
-    check_witnesses(out, so);
+    check_witnesses({toy.graph, spec, settings, Case::out}, so);
     for (const solve::Witness& w : so.witnesses) CHECK_FALSE(present(w, toy.fsc));
 
     const solve::Problem in = problem_of(toy.graph, spec, settings, Case::in);
     const Solved si = solve_problem(in, settings);
-    check_witnesses(in, si);
+    check_witnesses({toy.graph, spec, settings, Case::in}, si);
     if (in.regulation[at(in, toy.fsc)] == Regulation::down) {
       // FuSION 1 forced it active and not relaxed, so every point was UNSAT (S5.17's trap): the
       // with-FSC .dat is empty. 2.0 holds it present and inactive.
@@ -107,74 +108,40 @@ TEST_CASE("solve: the toy cases' named FSC cases: out as FuSION 1, in fixed for 
   CHECK(down_regulated == 1);                                // hsa15's toy
 }
 
-TEST_CASE("solve: random tiny cases: Z3's frontier is the exhaustive frontier", "[unit][solve][S5.11][S5.12][S5.13][S5.14]") {
-  std::mt19937_64 rng(2026);
-  std::uniform_int_distribution<int> pct(0, 99);
-  int solved = 0, skipped = 0;
-  for (int round = 0; round < 400 && solved < 80; ++round) {
-    const int inner = 2 + static_cast<int>(rng() % 3);      // 4 to 6 nodes
-    Graph g(2 + static_cast<std::uint32_t>(rng() % 3));      // bounds 2 to 4
-    std::vector<std::string> names{"S"};
-    for (int k = 0; k < inner; ++k) names.push_back("N" + std::to_string(k));
-    names.push_back("T");
-    for (const std::string& n : names) g.node(n);
-    std::set<std::pair<int, int>> used;
-    const int edges = 5 + static_cast<int>(rng() % 4);
-    for (int k = 0; k < edges; ++k) {
-      int a = static_cast<int>(rng() % names.size()), b = static_cast<int>(rng() % names.size());
-      if (a == b && pct(rng) > 10) continue;                 // a few self-loops
-      if (!used.insert({a, b}).second) continue;
-      g.edge(names[static_cast<std::size_t>(a)], names[static_cast<std::size_t>(b)], pct(rng) < 35 ? "inhibition" : "activation",
-             static_cast<double>(rng() % 1000));
-    }
-    g.ends("S", "T");
-    solve::CaseSpec spec;
-    for (const std::string& n : names) {
-      const int r = pct(rng);
-      if (r < 35) observe(spec, g.g, n, 'u');
-      else if (r < 55) observe(spec, g.g, n, 'd');
-    }
-    const auto pick = [&] { return names[1 + rng() % static_cast<std::size_t>(inner)]; };
-    if (pct(rng) < 25) spec.essential = ids({pick()});
-    if (pct(rng) < 25) spec.avoid = ids({pick()});
-    if (pct(rng) < 20) spec.active = ids({pick()});
-    if (pct(rng) < 20) spec.inactive = ids({pick()});
-    if (pct(rng) < 25) spec.non_relaxed = ids({pick()});
-    if (pct(rng) < 25) spec.avoid_edges = {static_cast<std::uint32_t>(rng() % g.g.edges.size())};
-    if (pct(rng) < 20) spec.nonrelaxed_edges = {static_cast<std::uint32_t>(rng() % g.g.edges.size())};
-    if (pct(rng) < 30) {
-      spec.coexpression_table = true;
-      spec.coexpression.push_back({NodeKey{pick()}, NodeKey{pick()}, 900});
-    }
-    solve::Settings settings;
-    settings.positional = pct(rng) < 30;
-    if (spec.coexpression_table) settings.families.coexpression_threshold = 500;
-    if (pct(rng) < 30) settings.families.frozen_threshold = 500;
-    Case kase = Case::free;
-    if (pct(rng) < 40) {
-      spec.fsc = ids({pick()});
-      kase = pct(rng) < 50 ? Case::in : Case::out;
-    }
+TEST_CASE("solve: random tiny cases: Z3's frontier is the exhaustive frontier", "[unit][solve][property][S5.11][S5.12][S5.13][S5.14][12.C9]") {
+  // Section 12's solve row: 200 random tiny cases of 6 nodes and 8 edges per run, drawn by the kit's
+  // generator on core::Rng (12.C9), each solved by Z3 and by the kit's exhaustive frontier, which
+  // re-derives the case from the corridor and the ids (C2.1). Every witness passes the kit's checker.
+  FUSION_SEED(2026);
+  auto rng = fusion::core::Rng::stream(fusion_seed, 0);
+  int solved = 0, skipped = 0, failed = 0;
+  for (int round = 0; round < 1000 && solved < 200; ++round) {
+    const testkit::TinyCase tc = testkit::tiny_case(rng, 6, 8, 2 + static_cast<int>(rng.below(3)));
+    const TinyInputs in = inputs_of(tc);
+    const CaseRef c{in.graph, in.spec, in.settings, in.kase};
     std::optional<std::variant<solve::Problem, solve::Skipped>> v;
     try {
-      v = solve::make_case(g.g, spec, settings, kase);
+      v = solve::make_case(in.graph, in.spec, in.settings, in.kase);
     } catch (const fusion::core::Failure&) {
-      continue;                                              // contradictory lists
+      continue;                                              // contradictory lists (S5.05)
     }
-    INFO("round " << round);
+    INFO("round " << round << "\n" << describe(tc));
     if (auto* sk = std::get_if<solve::Skipped>(&*v)) {
       ++skipped;
       if (sk->status == solve::CaseStatus::no_de_gene && sk->problem->named)
-        CHECK(exhaustive_frontier(*sk->problem).empty());   // S5.14 leaves no point (06.C15)
+        CHECK(kit_frontier(c).empty());                      // S5.14 leaves no point (06.C15)
       continue;
     }
     const solve::Problem& p = std::get<solve::Problem>(*v);
-    const Solved s = solve_problem(p, settings);
-    CHECK(points_of(s.frontier) == exhaustive_frontier(p));
-    check_witnesses(p, s);
+    const Solved s = solve_problem(p, in.settings);
+    const std::vector<Point> exhaustive = kit_frontier(c);
+    CHECK(points_of(s.frontier) == exhaustive);
+    check_witnesses(c, s);
+    if (points_of(s.frontier) != exhaustive && failed++ == 0)   // 12.C9: the failing input, kept as a fixture
+      testkit::keep_failing_input("solve-tiny", "case-" + std::to_string(round) + ".txt", describe(tc));
     ++solved;
   }
-  CHECK(solved == 80);
+  CHECK(solved == 200);
   CHECK(skipped > 0);
 }
 
@@ -207,7 +174,7 @@ TEST_CASE("solve: an out-case FSC and an avoided gene forbid the complexes that 
     CHECK_FALSE(present(w, "CX"));
     CHECK_FALSE(present(w, "F"));
   }
-  check_witnesses(out, so);
+  check_witnesses({g.g, fsc, settings, Case::out}, so);
 
   solve::CaseSpec avoid = spec;                              // avoid_nodes, named form
   avoid.avoid = ids({"F"});
@@ -242,7 +209,7 @@ TEST_CASE("solve: a non-relaxed up-regulated observation is present and active i
   const Solved s = solve_problem(held, settings);
   CHECK(points_of(s.frontier) == std::vector<Point>{{0, 1}});
   for (const solve::Witness& w : s.witnesses) CHECK(active(w, "U"));
-  check_witnesses(held, s);
+  check_witnesses({g.g, spec, settings, Case::free}, s);
 }
 
 TEST_CASE("solve: a frozen self-loop constrains nothing", "[unit][solve][S5.13][S5.16][05.C2]") {
@@ -279,7 +246,7 @@ TEST_CASE("solve: an edge bound above the encoded edges is clamped, not wrapped"
   CHECK(p.box.hi.e == 3);
   const Solved s = solve_problem(p, settings);
   CHECK(points_of(s.frontier) == std::vector<Point>{{0, 3}});
-  check_witnesses(p, s);
+  check_witnesses({g.g, spec, settings, Case::free}, s);
 }
 
 TEST_CASE("solve: every selected path crosses a DE gene before the target", "[unit][solve][S5.14]") {
@@ -329,7 +296,7 @@ TEST_CASE("solve: coexpressed genes share their activity when both are present",
   settings.families.coexpression_threshold = 700;
   const solve::Problem p = problem_of(g.g, spec, settings, Case::free);
   const Solved s = solve_problem(p, settings);
-  check_witnesses(p, s);
+  check_witnesses({g.g, spec, settings, Case::free}, s);
   for (const solve::Witness& w : s.witnesses) CHECK(active(w, "U") == active(w, "V"));
   CHECK(points_of(s.frontier) != std::vector<Point>{{0, 0}});
 }
@@ -420,7 +387,7 @@ TEST_CASE("solve: extra solutions are distinct witnesses at their point", "[unit
     const std::optional<solve::Witness> next = solver.next_solution({0, 0}, seen);
     CHECK(solver.last_answer().phase == Phase::extra);
     if (!next) break;
-    CHECK(check(p, *next).valid);
+    CHECK(kit_check({g.g, spec, settings, Case::free}, *next).valid);
     CHECK(next->counts == Point{0, 0});
     for (const solve::Witness& w : seen)                     // differs in presence, activity or selection
       CHECK((w.active != next->active || w.inactive != next->inactive || w.selected != next->selected));
