@@ -54,7 +54,7 @@ Shared pieces (decision 0037). `backend/tests/reference/cases.json`, written ahe
 | C6 | The benchmark harness with `bench/cases.json` and `budgets.json` (12.C13); the traceability test and its exempt list, reporting only during Phase 4 (12.C17) | `backend/tests/bench/`, `backend/tests/` | design note, then the diff |
 | C7 | Experiment code: M01's capped pruning, M02's prototype of 06's search, M04's rewriter of the relaxation counters | `backend/tests/experiments/` | the work item, then the diff |
 
-C1 to C6 run in order; builds are short and need no booking. W7 follows C2. *Resumed after the sprint (prompt log entries 328 and 330):* the sprint (decision 0038) built C1 and the backend and frontend themselves. One subagent drafts C2 to C6's design notes, building each on what the sprint left (the modules' own test helpers, the scratch harness that runs the reference cases through 2.0); Claude checks each against section 12 and polls it, and the code lands in order.
+C1 to C6 run in order; builds are short and need no booking. W7 follows C2. *Resumed after the sprint (prompt log entries 328 and 330):* the sprint (decision 0038) built C1 and the backend and frontend themselves. One subagent drafts C2 to C6's design notes, building each on what the sprint left (the modules' own test helpers, the scratch harness that runs the reference cases through 2.0); Claude checks each against section 12 and polls it, and the code lands in order. The notes are in `docs/phase3/notes/`; the user chose every open choice as proposed (prompt log entries 340 to 345), and a subagent writes C2's code (entry 345).
 
 ### Experiments and measurements (12.C15)
 
