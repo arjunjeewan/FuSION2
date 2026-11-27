@@ -44,3 +44,14 @@ foreach(module core network expression merge corridor solve results enrichment r
   endif()
 endforeach()
 fusion_add_home_tests()   # the staged home and the shipped maps, end to end (cmake/FusionInstall.cmake)
+
+# The driver, fusion-test, with the end-to-end cases' CTest tests (tools/fusion-test/; the C3 note), and its
+# own tests, test_fusion_test: options, exit codes, data on a toy root and the engine on toy cases.
+add_subdirectory(tools/fusion-test)
+file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/unit/fusion-test/*.cpp")
+add_executable(test_fusion_test ${sources})
+target_link_libraries(test_fusion_test PRIVATE fusion_test_driver Catch2::Catch2WithMain)
+target_compile_definitions(test_fusion_test PRIVATE FUSION_TEST_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
+  FUSION_EXE="$<TARGET_FILE:fusion>" FUSION_TEST_EXE="$<TARGET_FILE:fusion-test>")
+add_dependencies(test_fusion_test fusion fusion_stage fusion-test)
+catch_discover_tests(test_fusion_test ADD_TAGS_AS_LABELS DISCOVERY_MODE PRE_TEST)

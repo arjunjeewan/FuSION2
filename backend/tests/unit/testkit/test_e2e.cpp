@@ -46,7 +46,9 @@ void fake_run(const fs::path& run, const fs::path& case_dir, const fs::path& dat
                         {{"step", "gsea"}, {"path", "/opt/fusion/share/data/list.txt"}, {"copy", "inputs/list.txt"}}}},
             {"steps", {{{"id", "pathz3"}, {"status", "ok"}, {"started", "x" + std::to_string(pid)}, {"wall_s", pid * 0.5},
                         {"settings", {{{"key", "solve.fsc"}, {"value", {"hsa5"}}, {"source", "named"}}}},
-                        {"outputs", {{{"path", "pathz3/in.dat"}, {"also", fusion::core::to_utf8(case_dir / "in.dat")}}}}}}}};
+                        {"outputs", {{{"path", "pathz3/in.dat"}, {"size", 10 + pid},
+                                      {"sha256", fusion::core::Sha256::of(std::to_string(pid)).hex()},
+                                      {"also", fusion::core::to_utf8(case_dir / "in.dat")}}}}}}}};
   write(run / "run.json", r.dump(2));
   std::vector<Json> events = {
       {{"v", 1}, {"seq", 1}, {"t", "t1"}, {"type", "run.started"}, {"run", "r-" + std::to_string(pid)},
@@ -58,7 +60,8 @@ void fake_run(const fs::path& run, const fs::path& case_dir, const fs::path& dat
        {"e", 1}, {"outcome", "sat"}, {"source", "cache"}, {"wall_s", 0.2}},
       {{"v", 1}, {"seq", 4}, {"t", "t4"}, {"type", "solve.check"}, {"step", "pathz3"}, {"case", "in"}, {"check", 2}, {"n", 1},
        {"e", 1}, {"outcome", "sat"}, {"source", "z3"}, {"wall_s", 0.3}},
-      {{"v", 1}, {"seq", 5}, {"t", "t5"}, {"type", "network.read"}, {"step", "rgx"}, {"path", fusion::core::to_utf8(case_dir / "inputs" / "g.xml")}}};
+      {{"v", 1}, {"seq", 5}, {"t", "t5"}, {"type", "network.read"}, {"step", "rgx"}, {"path", fusion::core::to_utf8(case_dir / "inputs" / "g.xml")},
+       {"ms", pid}}};
   if (interleave) std::swap(events[2], events[3]);         // another interleaving of the two cases' streams
   std::string lines;
   for (const Json& e : events) lines += e.dump() + "\n";
@@ -66,6 +69,8 @@ void fake_run(const fs::path& run, const fs::path& case_dir, const fs::path& dat
   write(run / "pathz3" / "in" / "search_log.tsv",
         "check\tphase\tn\te\tsource\toutcome\twall_s\tcpu_s\n1\tdiagonal\t0\t1\tz3\tunsat\t0." + std::to_string(pid) +
             "\t0.01\n");
+  write(run / "pathz3" / "in" / "case.json",
+        Json{{"case", "in"}, {"status", "complete"}, {"wall_s", 0.1 * pid}, {"cpu_clock_s", 1e-9 * pid}}.dump(1));
 }
 
 }  // namespace
@@ -78,13 +83,16 @@ TEST_CASE("testkit: the normaliser masks only the volatile fields and writes the
   Normaliser na = fusion_normaliser(a_case / "run", a_case, DataRoot{data});
   Normaliser nb = fusion_normaliser(b_case / "run", b_case, DataRoot{data});
   const FileRule log{"pathz3/*/search_log.tsv", Compare::tsv_masked, {"wall_s", "cpu_s", "source"}};
-  na.rules.push_back(log);
-  nb.rules.push_back(log);
+  const FileRule case_file{"pathz3/*/case.json", Compare::exact, {}};
+  for (Normaliser* n : {&na, &nb}) {
+    n->rules.push_back(log);
+    n->rules.push_back(case_file);
+  }
   // Each normalised file of run a is the golden of run b: equal after the masks and tokens.
   ScratchDir golden_dir("golden");
   for (const auto& [rel, rule] : matched_files(a_case / "run", na))
     write(golden_dir.path() / rel, normalise_file(a_case / "run" / rel, rule, na));
-  CHECK(matched_files(a_case / "run", na).size() == 3);
+  CHECK(matched_files(a_case / "run", na).size() == 4);
   const TreeDiff same = compare_tree(b_case / "run", golden_dir.path(), nb);
   INFO((same.differing.empty() ? std::string() : same.differing.front()));
   CHECK(same.empty());
@@ -109,11 +117,13 @@ TEST_CASE("testkit: the normaliser masks only the volatile fields and writes the
   CHECK(mutated("run.json", "\"4.8.12.0\"", "\"4.16.0.0\"").differing.size() == 1);   // the Z3 version stays
   CHECK(mutated("events.jsonl", "\"outcome\":\"unsat\"", "\"outcome\":\"sat\"").differing.size() == 1);
   CHECK(mutated("pathz3/in/search_log.tsv", "\tunsat\t", "\tsat\t").differing.size() == 1);
+  CHECK(mutated("pathz3/in/case.json", "\"complete\"", "\"stopped\"").differing.size() == 1);
   // A changed masked field is not.
   CHECK(mutated("run.json", "\"pid\": 2", "\"pid\": 99").empty());
   CHECK(mutated("events.jsonl", "\"source\":\"cache\"", "\"source\":\"model\"").empty());
   CHECK(mutated("events.jsonl", "\"parent\":\"p-2\"", "\"parent\":\"p-99\"").empty());   // a resumed run's parent
   CHECK(mutated("pathz3/in/search_log.tsv", "\t0.01\n", "\t9.99\n").empty());
+  CHECK(mutated("run.json", "\"size\": 12", "\"size\": 99").empty());          // an output's size and SHA-256
   // Within one case's stream the order is compared (C5.3); a file a rule matches with no golden is unexpected.
   std::vector<std::string> event_lines;
   {

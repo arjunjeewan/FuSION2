@@ -15,13 +15,34 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/release",
       "cacheVariables": {"CMAKE_BUILD_TYPE": "Release", "FUSION_BUILD_TESTS": "OFF"}
+    },
+    {
+      "name": "ci-linux",
+      "displayName": "Release, with tests and warnings as errors, as CI builds it on Linux",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/ci-linux",
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Release", "FUSION_BUILD_TESTS": "ON", "FUSION_WARNINGS_AS_ERRORS": "ON"}
     }
   ],
   "buildPresets": [
     {"name": "dev", "configurePreset": "dev"},
-    {"name": "release", "configurePreset": "release"}
+    {"name": "release", "configurePreset": "release"},
+    {"name": "ci-linux", "configurePreset": "ci-linux"}
   ],
   "testPresets": [
-    {"name": "dev", "configurePreset": "dev", "output": {"outputOnFailure": true}}
+    {
+      "name": "dev",
+      "displayName": "Every test but the slow and the benchmarks",
+      "configurePreset": "dev",
+      "output": {"outputOnFailure": true},
+      "filter": {"exclude": {"label": "^(slow|bench)$"}}
+    },
+    {
+      "name": "t2",
+      "displayName": "T2, the fast reference tier: the data root's tests, in the Release build",
+      "configurePreset": "ci-linux",
+      "output": {"outputOnFailure": true},
+      "filter": {"include": {"label": "^(kegg|t2)$"}}
+    }
   ]
 }

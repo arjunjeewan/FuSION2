@@ -115,6 +115,18 @@ A failing case keeps its scratch directory and prints its path (`ScratchDir::kee
 - **Alternatives:** follow section 12's wording, and rewrite every manifest `from` to be relative to the FuSION tree.
 - **Why:** 14 manifest files come from the snapshot, not the live tree, so one root has to name both.
 - **Decision:** as proposed (prompt log entry 341)
+- **As built (prompt log entries 361, 362 and 368):** the user accepted, as a group, four further departures:
+  - one of the 745 unmanifested files is W2's report, recorded as `W2 reports/w2/20261117T183307` beside W3's 157, W4's 576 and W5's 11;
+  - `ci-linux` is Release with tests on and warnings as errors, without LTO, because the build has no LTO option yet;
+  - the kit's normaliser also masks the events' `ms`, a time;
+  - the `ref:` CTest tests are registered by C4, with its subcommand.
+
+  The user also decided:
+  - the normaliser masks every `run.json` output's `size` and `sha256`, and `case.json`'s `wall_s` and `cpu_clock_s`;
+  - a case with `processes` above 1 starts that many `fusion`s with no `--run-dir`: each names its own run directory, and each run is compared with the case's one `expected/`;
+  - a case without `expected/` checks only its exit status, `run.json`'s status and its stderr fragment, as C5.1 says;
+  - a case with both `processes` above 1 and `actions` is refused, and comes back as a decision when a case needs it;
+  - run lists each step's outputs by path, so parallel solve cases cannot change `run.json` (commit 370aea8).
 
 ## 6. Cost
 

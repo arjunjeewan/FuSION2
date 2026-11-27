@@ -55,16 +55,21 @@ RunResult run_fusion(const fs::path& exe, std::span<const std::string> args, con
 
 Normaliser fusion_normaliser(const fs::path& run_dir, const fs::path& case_dir, const std::optional<DataRoot>& data) {
   Normaliser n;
-  // run.json's volatile fields (09-runs.md:292), and FuSION's own version and commit (section 12).
+  // run.json's volatile fields (09-runs.md:292), and FuSION's own version and commit (section 12); and each
+  // output's size and SHA-256, since a compared output is checked under its own rule and some hold times or
+  // the absolute input paths of a network file's header (prompt log entry 361).
   for (const char* p : {"/run", "/name", "/pid", "/labels", "/started", "/finished", "/resources", "/launch_dir",
                         "/command_line", "/platform", "/install", "/environment", "/batch/path", "/parent",
                         "/steps/*/started", "/steps/*/wall_s", "/tools/*/path", "/stop", "/build_id",
-                        "/versions/fusion"})
+                        "/versions/fusion", "/steps/*/outputs/*/size", "/steps/*/outputs/*/sha256", "/outputs/*/size",
+                        "/outputs/*/sha256"})
     n.json_pointers.push_back(std::string("run.json:") + p);
-  // events.jsonl: the envelope's t and seq (C5.3), every time field, run.started's pid, dir, fusion, and the
-  // run's id, name and parent, which differ in every run (prompt log entry 349); and the model-dependent
-  // fields of solve.check events.
-  for (const char* p : {"/t", "/seq", "/wall_s", "/cpu_s", "@run.started/pid", "@run.started/dir",
+  // A solve case's case.json: its times (prompt log entry 361).
+  for (const char* p : {"/wall_s", "/cpu_clock_s"}) n.json_pointers.push_back(std::string("case.json:") + p);
+  // events.jsonl: the envelope's t and seq (C5.3), every time field (with the readers' and merge's ms),
+  // run.started's pid, dir, fusion, and the run's id, name and parent, which differ in every run (prompt log
+  // entry 349); and the model-dependent fields of solve.check events.
+  for (const char* p : {"/t", "/seq", "/wall_s", "/cpu_s", "/ms", "@run.started/pid", "@run.started/dir",
                         "@run.started/fusion", "@run.started/run", "@run.started/name", "@run.started/parent",
                         "@solve.check/source", "@solve.check/model_n", "@solve.check/model_e"})
     n.json_pointers.push_back(std::string("events.jsonl:") + p);
