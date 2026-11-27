@@ -9985,3 +9985,211 @@ Committing the solve.name fix of poll 372, and the log.
 - Later: Keep the entries for the next log commit.
 
 **Answer:** Commit it (Recommended)
+
+## 375 · Note · The C4 subagent's report, on entry 373 · 2026-11-27 21:11
+
+It built C4 and committed nothing. Ten of the twelve new `ref:` toy tests fail on a module defect it found and left failing, as the brief says.
+- **Built:** backend/tests/tools/fusion-test/ref/ (14 files, 3,419 lines); unit/fusion-test/ref/test_ref.cpp (6 cases, 355 lines, with section 12's four runner hooks and a read-only [kegg] check); expected-differences.json (28 entries over 22 predicates); the toys' edits, written by make_cases.py (cases.json +72 lines); CTest's `ref: <toy>` ×12 (labels ref, t1) and `ref: t2` (ref, t2, kegg, slow). Kit additions: run_fusion in a given folder, ConsoleFacts::solves, and testkit::spawn (one fork at a time). C3's exit-code test expected the ref stub; it now checks ref's usage error.
+- **Tests:** the dev preset passes 586 of 596 in 41 s, and all 581 existing tests pass; the slow tests pass 3 of 3 in 8.5 min, with ref: t2 left out.
+- **T1** (24 s on 3 workers): all 24 frontiers equal FuSION 1's, chained (the .dat files byte-equal) and pinned, except toy-hsa15 in, pinned, where FuSION 1 has no point and 2.0 has 3, under XD-10. Pinned witnesses: R1 80 of 80, R2 77 of 77, R3 77 of 80 (3 not applicable under XD-10). Verify: 175 checks prove 23 of 24 frontiers; toy-hsa15 in goes to a full search, under XD-10. Repeats: 12 of 12 equal. Report: its scratchpad's c4/T1-final/report.json.
+- **Findings:** (1) A module defect: after a reused corridor, pathz3-2/results.json names fb_rch-2/corridor.json, a file 05.C4's reuse never writes. Its repro: on a toy network run cudf, rgx, fb_rch, pathz3 fsc=hsa11 cases=in, the same fb_rch, then pathz3 fsc=hsa11 cases=out. It breaks R1 and R2 on the chained out solve of 10 toys. (2) Several threads forking at once hung the runner in about one run in three, so forks now go one at a time. (3) The harness's permission check refused a KEGG smoke run, so the runner's KEGG code paths have not run yet.
+- **Asks:** pinned solves name the FSC that only one arm's list holds, in the named form, which is its reading; XD-17's "always" excuses any corridor or observation difference, which hid finding 1 and toy-hsa15's out case (Down 5 against 4); ctest -L slow now also picks up the booked ref: t2; --record-seen has not been run.
+
+## 376 · Poll · 2026-11-27 21:37
+
+Claude's review of C4 (entry 375), the first four findings. Claude confirmed the corridor defect in a failing toy's run directory and in the code, and checked that none of the 12 toys' FuSION 1 corridors or re-read graphs holds a self-loop, an edge into the source or an edge out of the target.
+
+**Q1 (Corridor).** C4's runner found a module defect. After a repeated fb_rch, which 05.C4 reuses without writing a file, the second solve's results.json names fb_rch-2/corridor.json, a file that does not exist. The cause is run_fb_rch (backend/modules/batch/src/handlers/graph_handlers.cpp:85): it records the reusing step as the corridor's step, and the solve builds the path from that. It breaks R1 and R2 on the chained out solve of 10 of the 12 toys, so their ref: tests fail. Fix it?
+
+- Fix in batch (Recommended): Claude changes one line so a reuse records the earlier corridor's step, and the solve names fb_rch/corridor.json. FuSION 1's toy-batch test (test_interpreter.cpp) then checks that each solve's corridor file exists, and section 07 gets a Phase 3 note. It goes in its own commit.
+- Write the files again: The reusing step writes its own corridor.json, corridor_nodes.tsv and observations_match.tsv, so fb_rch-2/ exists. This departs from 05.C4, which says a reuse writes nothing.
+
+**Answer:** Fix in batch (Recommended)
+
+**Q2 (XD-17).** Section 12 gives XD-17 (2.0's corridor never follows self-loops, edges into a source or edges out of a target) the condition 'always'. So on every case it excuses any difference in the corridor, observations, solve inputs, frontier, answers or witnesses. It hid the observation counts the corridor defect broke, and a real Down 4 against FuSION 1's 5 on toy-hsa15's out case, where both corridors are equal. None of the 12 toys' FuSION 1 corridors has such an edge. Narrow XD-17?
+
+- Trimmed edges only (Recommended): XD-17 applies only when FuSION 1's corridor has a self-loop, an edge into a source or an edge out of a target. Otherwise the corridor, observations, solve inputs and solve must match. Section 12 gets a Phase 3 note.
+- Keep always: As section 12 says. XD-17 excuses those differences on every case, and its predictions (the replay's corridor counts and the re-scoring bound) are still checked where they apply.
+
+**Answer:** Trimmed edges only (Recommended)
+
+**Q3 (Down count).** toy-hsa15's FSC, hsa15, is down-regulated. In its out case FuSION 1 counts hsa15 as a Down observation (Down 5), because it removes an avoided gene from the up genes only. To compare, the runner counts 2.0's in-corridor observations with FuSION 1's rule, but it adds S5.17's 'the out case removes the FSC from the observations', which gives Down 4. Section 12's observations row compares the corridor's observed genes (the in-corridor rows of observations_match.tsv). How should the runner count?
+
+- FuSION 1's rule (Recommended): Both sides are counted with FuSION 1's rule, so an out case's FSC leaves only the up genes. The stage then compares the corridor's observed genes, as section 12's table says, and toy-hsa15 matches. S5.17's own rule is still checked by R1, since the checker's fusion2 semantics remove the FSC.
+- Extend XD-10: Keep S5.17 in 2.0's count, and extend XD-10 (a down-regulated FSC) to the out case at the observations stage, allowing a different count there. Section 12 gets a Phase 3 note.
+
+**Answer:** FuSION 1's rule (Recommended)
+
+**Q4 (Labels).** Following the C3 note, ref: t2 is labelled ref, t2, kegg and slow, so 'ctest -L slow' now also starts T2, which loads 8 cores for about 15 minutes and is booked with you. The dev preset leaves it out either way. What should the labels be?
+
+- Drop slow (Recommended): ref: t2 keeps ref, t2 and kegg; the dev preset also leaves out t2; 'ctest -L slow' runs only the three slow tests. The C3 note gets an as-built line.
+- Keep the labels: Run the slow tests as 'ctest -L slow -LE t2', recorded in the C4 note.
+
+**Answer:** Drop slow (Recommended)
+
+## 377 · Subagent prompt · Poll 376's answers, to the C4 subagent · 2026-11-27 21:40
+
+Sent to the C4 subagent of entry 373, resumed with its context (poll 376, Q2 to Q4; Claude made Q1's fix in batch, with its test and section 07's note). The message as sent:
+
+```text
+Claude here, with the user's answers on your report (prompt log entries 375 and 376).
+
+Claude has fixed the corridor defect in batch: a reused corridor keeps the step that saved it, so pathz3-2/results.json names fb_rch/corridor.json (backend/modules/batch/src/handlers/graph_handlers.cpp, with a check in backend/tests/unit/batch/test_interpreter.cpp; both are Claude's, so leave them alone). build/dev is rebuilt with it, and all 12 ref: toy tests pass. Make these three changes:
+
+1. XD-17 (poll 376, Q2): narrow its condition. XD-17 applies only when FuSION 1's corridor holds a self-loop, an edge into a source or an edge out of a target, the edges 2.0's searches never follow. Add that predicate to the closed list, computed from FuSION 1's corridor and the fb_rch line's sources and targets, and give it to expected-differences.json's XD-17 entry in place of "always". Without such an edge, a corridor, observation, solve-input or solve difference is unexpected. Claude writes section 12's Phase 3 note.
+2. The observations count (Q3): count both sides with FuSION 1's rule (S5.07), where an avoided gene, an out case's FSC included, leaves only the up genes. Drop the "an out case's FSC leaves both (S5.17)" clause from observed_counts, so the stage compares the corridor's observed genes as section 12's table says; toy-hsa15's out case should then match (Up 16, Down 5). S5.17's own rule stays where it is, in the checker's fusion2 semantics, for R1.
+3. Labels (Q4): ref: t2 is labelled ref, t2 and kegg, no longer slow, and the dev test preset in CMakePresets.json also leaves out t2 (exclude ^(slow|bench|t2)$, with its displayName saying so); you may change that preset, and nothing else outside backend/tests/. Claude writes the C3 note's as-built line.
+
+Then rebuild at nice 19 with at most 6 jobs; run ctest --preset dev with FUSION_TEST_DATA set; check that ctest -N -L slow lists only the three slow tests; and run T1 once with fusion-test ref --tier t1 --workers 3 --record-seen, its report in your scratchpad, so expected-differences.json's seen_in gains what T1 shows (the C4 note: the first --record-seen after the first T1 run, reviewed as a diff). Don't run the slow tests, T2, T3 or any KEGG case's stages. The rules of your first brief still hold. Reply in at most 150 words: the files changed, the test counts and times, T1's findings that are not matches, and the seen_in diff.
+```
+
+## 378 · Note · The C4 subagent's second report, on entry 377 · 2026-11-27 21:46
+
+It made the three changes and committed nothing; T1 passes.
+- **Files:** ref/facts.hpp and facts.cpp (a predicate, fusion1_corridor_trimmable_edge: FuSION 1's corridor holds a self-loop, an edge into an fb_rch source or an edge out of a target; observations counted by S5.07's rule, so an out case's FSC leaves only the up genes); ref/expect.cpp (the predicate joins the closed list); expected-differences.json (XD-17 takes the predicate in place of always); tools/fusion-test/CMakeLists.txt (ref: t2 labelled ref, t2 and kegg); CMakePresets.json (the dev preset excludes ^(slow|bench|t2)$, its displayName updated); test_ref.cpp (a test case for the observation rule, and the predicate checked on a toy, false, and on the reference and full runs, true, read only); ref/rules.cpp (a comment).
+- **Tests:** the dev preset passes 597 of 597 in 41 s with FUSION_TEST_DATA set, none skipped; ctest -N -L slow lists only the three slow tests.
+- **T1** (exit 0, 25.8 s on 3 workers): 228 findings, 226 matches; the other two are XD-10 on toy-hsa15's in case, pinned and verify. toy-hsa15's out case matches at Up 16, Down 5.
+- **seen_in:** XD-10 gains "toy-hsa15-wni-tsv-b10:in", and nothing else changes. Report: its scratchpad's c4/T1-seen.
+
+## 379 · Poll · 2026-11-27 21:58
+
+Claude's review of the C4 subagent's second report (entry 378). Claude's dev-preset run passed 597 of 597, but each toy ref: test took about 127 s: this shell now sees DISPLAY=:1, the user's desktop session, so the toys' window-plot lines ran. Claude found 107 gnuplot_qt windows, every one started between 21:39 and 21:48 in a test or report folder of Claude's or the subagent's runs, and closed exactly those 107; none was the user's.
+
+**Q1 (Headless).** This shell now sees DISPLAY=:1, your desktop session. With a display set, 2.0 runs FuSION 1's window-plot lines (gnuplot -p) instead of skipping them (01.C20). So the toys' chained runs between 21:39 and 21:48 opened 107 gnuplot windows on your screen. Claude has closed all 107; each was checked to be from a test run, and none was from your jobs. T2's KEGG batches have the same lines. Section 12's chained mode assumes a headless workstation (entry 190). How should the tests run fusion?
+
+- Kit runs headless (Recommended): testkit::run_fusion gives every fusion it starts an empty DISPLAY and WAYLAND_DISPLAY. Then the runner, the e2e engine and the self-tests never open a window, wherever they run. A kit test checks this, and the C4 note records it.
+- Runner only: Only the reference runner's chained runs are headless. The e2e engine keeps the caller's display.
+
+**Answer:** Kit runs headless (Recommended)
+
+**Q2 (FSC).** In pinned mode the runner names each FuSION 1 solve's FSC as the ids that only one arm's list holds. In the in case that is the with-FSC line's essential list less the without-FSC line's; in the out case, the without-FSC line's avoid list less the with-FSC line's. This is how S5.17 describes FuSION 1's FSC batches. The C4 note and section 12 say only 'the FSC named'. It gives hsa11 on the toy it checks and JUN (hsa3725) on the two KEGG cases it reads, as their names say. Accept this reading?
+
+- Accept (Recommended): As built, with a Decision line in the C4 note.
+- A field in cases.json: make_cases.py writes each case's FSC into cases.json, and the runner uses that, checking it against the batch's lists.
+
+**Answer:** Accept (Recommended)
+
+**Q3 (Kit).** C4 adds three things to the test kit, each reported: run_fusion in a folder the caller owns; ConsoleFacts::solves, FuSION 1's console counts per pathz3 call; and testkit::spawn, which starts children one at a time. The subagent added the last because its runner hung about 1 run in 3 when several threads started processes at once, with four threads at 100% CPU and no child started. With it, 16 runs since have not hung, 10 of them Claude's. A stress test of core::Process alone (7,200 concurrent launches, with the runner's semaphore and a busy thread) never hung, so the cause is still unknown. Accept the additions?
+
+- Accept as a group (Recommended): Recorded in the C4 note's as-built record, with the hang's cause noted as unknown.
+- Find the cause first: Claude removes the one-at-a-time spawning in a scratch build and captures the hung threads' stacks under gdb before C4 is committed.
+
+**Answer:** Accept as a group (Recommended)
+
+**Q4 (Plain ctest).** With FUSION_TEST_DATA set, a plain 'ctest' (no preset) still runs ref: t2, which starts T2: about 15 minutes on 8 cores. C3.1's reason says a bare ctest must not start it, but today only the dev preset leaves it out. Guard it?
+
+- Booked only (Recommended): ref: t2 runs only when FUSION_T2_BOOKED=1 is set, which the t2 test preset sets. Otherwise it exits 4, and CTest reports it as skipped.
+- Keep as is: The dev preset is the everyday command. A plain ctest runs every test, T2 included.
+
+**Answer:** Booked only (Recommended)
+
+## 380 · Subagent prompt · Poll 379's answers, to the C4 subagent · 2026-11-27 21:58
+
+Sent to the C4 subagent of entry 373, resumed with its context (poll 379, Q1 and Q4; Q2 and Q3 accepted what it built, and Claude records them). The message as sent:
+
+```text
+Claude here, with the user's answers on your second report (prompt log entries 378 and 379).
+
+One problem first: this shell now sees DISPLAY=:1, the user's desktop session, so 2.0 ran the toys' window-plot lines (gnuplot -p) instead of skipping them (01.C20). Between 21:39 and 21:48 the chained runs, yours and Claude's, opened 107 gnuplot windows on the user's screen, and each window-plot line took 60 s in Claude's later runs. Claude has closed exactly those 107 windows. Your shell may see the display too, so before every run below, check that pgrep -c gnuplot_qt stays at 0 afterwards.
+
+The user accepted your FSC reading and your three kit additions as a group (Claude records both in the C4 note). Make two changes:
+
+1. Headless (poll 379, Q1): testkit::run_fusion, both forms, gives every fusion it starts an empty DISPLAY and an empty WAYLAND_DISPLAY (batch::display_available() takes an empty value as unset), unless the caller's env names either. Then the runner, the e2e engine and the self-tests never open a window, wherever they run. Add a kit test that checks a child sees both empty while the test's own DISPLAY is set.
+2. A plain ctest (Q4): ref: t2 runs only when FUSION_T2_BOOKED=1 is in the environment, and the t2 test preset sets it. Otherwise the test exits 4, which CTest reports as skipped, and prints why: T2 is booked with the user. Choose the means, for example a CMake script around the command, and keep fusion-test ref --tier t2 itself unguarded. Test the guard only with FUSION_TEST_DATA unset, so that even a broken guard starts no KEGG case.
+
+Then rebuild at nice 19 with at most 6 jobs; run ctest --preset dev with FUSION_TEST_DATA set, in your shell as it is, display included, and report the toy ref: tests' times, which should be back to a few seconds; and run T1 once more with fusion-test ref --tier t1 --workers 3 into your scratchpad, without --record-seen. Don't run the slow tests, T2, T3 or any KEGG case's stages. The rules of your first brief still hold. Reply in at most 120 words: the files changed, the test counts and times, gnuplot_qt's count after the runs, and how the guard works.
+```
+
+## 381 · Note · The C4 subagent's third report, on entry 380 · 2026-11-27 22:05
+
+It made both changes and committed nothing; no gnuplot_qt window was open after any run.
+- **Files:** testkit's e2e.hpp and e2e.cpp (run_fusion gives its child an empty DISPLAY and WAYLAND_DISPLAY, each unless the caller's env names that same variable); unit/testkit/test_e2e.cpp (a test that a child sees both empty while the test's DISPLAY is :1); tools/fusion-test/booked.cmake (new) and CMakeLists.txt; CMakePresets.json (the t2 test preset sets FUSION_T2_BOOKED=1).
+- **Tests:** the dev preset passes 598 of 598 in 39 s with DISPLAY=:1; the toy ref: tests take 6.2 to 8.0 s each (two chained runs, pinned and verify). T1 exits 0 in 21 s: 226 matches and the two XD-10 differences on toy-hsa15's in case.
+- **Guard:** ref: t2 runs through booked.cmake, which starts fusion-test ref --tier t2 only with FUSION_T2_BOOKED=1 and passes its exit code on; otherwise it prints that T2 is booked and exits 4, and with FUSION_TEST_DATA unset CTest reported it skipped. A SKIP_REGULAR_EXPRESSION covers CMake 3.28, whose scripts cannot exit 4.
+
+## 382 · Poll · 2026-11-27 22:16
+
+Committing the batch fix and C4, the log, and T2's booking. Before it Claude reran the tests on the final tree, with this shell's DISPLAY=:1 still set: the dev preset passed 598 of 598 in 38.7 s, the toy ref: tests in 5.6 to 7.7 s, with no gnuplot window opened and no warnings; ctest -L slow lists the three slow tests, which passed in 468.5 s; ref: t2 run without FUSION_T2_BOOKED was skipped in 0.01 s.
+
+**Q1 (Fix commit).** Commit the batch fix (poll 376, Q1) first, on its own? A repeated fb_rch, which reuses the corridor and writes no file, now keeps the step that saved it, so the next solve's results.json names fb_rch/corridor.json, which exists. Three files change: graph_handlers.cpp (+4 -2), test_interpreter.cpp (FuSION 1's toy batch checks that both solves name that file; the check failed before the fix) and section 07's note. All tests pass: 598 in the dev preset and 3 slow, with no warnings.
+
+- Commit it (Recommended): Stages the three files by name. Nothing is pushed. Its preview:
+  ```text
+  Keep a reused corridor's saved step for its solves
+
+  A repeated fb_rch reuses the earlier corridor and writes no file
+  (05.C4), but it recorded itself as the corridor's step, so the
+  next solve's results.json named fb_rch-2/corridor.json, a file
+  that does not exist. The reference runner found it on 10 of the
+  12 toys. A reuse now keeps the step that saved the corridor, and
+  FuSION 1's toy batch checks that both solves name its file.
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+  Files:
+    backend/modules/batch/src/handlers/graph_handlers.cpp
+    backend/tests/unit/batch/test_interpreter.cpp
+    docs/architecture/07-results.md
+  ```
+- Not yet: Keep it uncommitted for now.
+
+**Answer:** Commit it (Recommended)
+
+**Q2 (C4 commit).** Then commit C4, the reference runner? It adds 17 new files: backend/tests/tools/fusion-test/ref/ (14 files, 3,425 lines), booked.cmake, unit/fusion-test/ref/test_ref.cpp (7 cases) and expected-differences.json (28 entries). It also changes 15 files (+238 -33): cases.json's edits and make_cases.py, the kit's four additions with a test, the driver's CMake and dispatch, CMakePresets.json, section 12's three notes, the C3 note's line and the C4 note's as-built record. On T1 all 24 frontiers equal FuSION 1's but toy-hsa15's in case, under XD-10.
+
+- Commit it (Recommended): Stages these paths by name. Nothing is pushed. Its preview:
+  ```text
+  Add fusion-test ref, the reference runner (C4)
+
+  C4 of Phase 3. The runner prepares each case of cases.json in a
+  fresh folder (the path map, the refusal of leftover FuSION 1
+  paths, then the case's edits), runs it chained through fusion,
+  pinned stage by stage on FuSION 1's recorded inputs, and by
+  verification, one point per worker process, and judges every
+  difference by rules R1 to R4 and the 28 entries of
+  expected-differences.json. It writes report.json and
+  summary.tsv outside any run directory.
+
+  Each toy is a ref: test; ref: t2 runs only when
+  FUSION_T2_BOOKED=1, which the t2 preset sets. The kit starts one
+  child at a time and every fusion without a display. XD-17 needs
+  a trimmable edge in FuSION 1's corridor, and the observations
+  stage counts both sides by FuSION 1's rule. On T1 all 24
+  frontiers equal FuSION 1's but toy-hsa15's in case, under XD-10.
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+  Files (new):
+    backend/tests/tools/fusion-test/ref/ (14 files)
+    backend/tests/tools/fusion-test/booked.cmake
+    backend/tests/unit/fusion-test/ref/test_ref.cpp
+    backend/tests/reference/expected-differences.json
+  Files (changed):
+    CMakePresets.json
+    backend/tests/experiments/capture/make_cases.py
+    backend/tests/reference/cases.json
+    backend/tests/testkit/ (e2e.hpp, fusion1.hpp, e2e.cpp, fusion1.cpp)
+    backend/tests/tools/fusion-test/ (CMakeLists.txt, main.cpp, options.cpp)
+    backend/tests/unit/fusion-test/test_options.cpp
+    backend/tests/unit/testkit/test_e2e.cpp
+    docs/architecture/12-tests.md
+    docs/phase3/notes/C3-driver.md
+    docs/phase3/notes/C4-reference-runner.md
+  ```
+- Not yet: Keep it uncommitted for now.
+
+**Answer:** Commit it (Recommended)
+
+**Q3 (Log commit).** After those two, commit the prompt log's entries 375 to 382? They cover the C4 subagent's three reports, polls 376 and 379, the two messages sent to the subagent, and this poll.
+
+- Commit it (Recommended): docs/process/PROMPTS.md, message 'Log prompt entries 375 to 382'. Not pushed.
+- Later: Keep the entries for the next log commit.
+
+**Answer:** Commit it (Recommended)
+
+**Q4 (T2 booking).** When should T2's first full run go? It covers the 23 fast KEGG cases chained and pinned, the 16 T3 cases' non-solve stages, and every T1 and T2 case run twice. That is about 15 minutes on 8 workers in the ci-linux Release build. 42 of your 44 FuSION 1 jobs are still running, and the load is about 25 of 36 cores.
+
+- After your jobs (Recommended): When the watcher sees your jobs end, Claude builds ci-linux, runs one KEGG case's non-solve stages as a smoke test (one core, a minute or two), then T2, then booking 1's experiments. Nothing runs beside your jobs.
+- Now, at nice 19: You allow T2 beside your jobs this once, since 8 more workers fit in the free cores. Claude first builds ci-linux and runs the one-case smoke test.
+
+**Answer:** After your jobs (Recommended)
