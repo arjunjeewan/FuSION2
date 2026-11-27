@@ -9433,3 +9433,152 @@ Committing C2 after Claude made the choices of entry 349, and the log.
 - Later: Keep the entries for the next log commit.
 
 **Answer:** Commit it (Recommended)
+
+## 352 · Poll · 2026-11-27 04:29
+
+Who writes C3 and W7, and when W7's FuSION 1 runs go.
+
+**Q1 (C3 author).** C3, the fusion-test driver, is next in the code order, built to its decided note (docs/phase3/notes/C3-driver.md). Poll 345 chose a subagent for C2 only. Who should write C3?
+
+- A subagent (Recommended): As with C2. Claude briefs it with the decided note and logs the brief. Claude then reviews its diff against section 12, reruns the tests, and brings you the commit.
+- Claude in this session: Slower, but all the context stays here.
+
+**Answer:** A subagent (Recommended)
+
+**Q2 (W7 author).** W7 runs FuSION 1's merge on the kit's synthetic merge sets, three exception sets each, as section 12 asks: none, a DE-like set and a bridging set. That is about 150 runs, each a few seconds on one core. It records FuSION 1's merged graphs, about 300 KB, into backend/tests/reference/synthetic/, adds a test that compares both oracles with them wherever no expected difference applies, and gives you a summary. Who should do it?
+
+- A second subagent (Recommended): It runs beside C3's subagent and touches only W7's own new files: a fixture writer, the batches and a runner script, the outputs, and one new test file. Its diff and the summary come to you. Claude logs its brief.
+- Claude, after the flaky test: Claude does W7 here once the stop-file test's cause is found.
+- A subagent, after C3: W7 waits for C3's commit, so only one subagent works at a time.
+
+**Answer:** A second subagent (Recommended)
+
+**Q3 (W7 timing).** Your 44 FuSION 1 jobs are still running, with a load of about 23 on 36 cores. The plan runs W7 without a booking, after a load check. Its runs would go one at a time at nice 19. When should they run?
+
+- Now, at nice 19 (Recommended): One FuSION 1 merge at a time, each a few seconds on one core, beside your jobs.
+- After your jobs finish: W7's fixtures and test are written now, and its FuSION 1 runs wait for the same watcher as booking 1.
+
+**Answer:** Now, at nice 19 (Recommended)
+
+## 353 · Subagent prompt · Phase 3's C3, the fusion-test driver · 2026-11-27 04:34
+
+The subagent of poll 352, Q1. The prompt as sent:
+
+```text
+You are writing C3 of FuSION 2.0's Phase 3: the test driver, `fusion-test`. FuSION 2.0 is a C++20 rewrite of FuSION 1, in /home/ks-149-u24/Desktop/arjun/FuSION2. Work only in that repository and commit nothing: Claude reviews your diff, and the user approves each commit.
+
+Read first
+- FuSION2/CLAUDE.md, and docs/phase3/plan.md's Code section and its P5.
+- The design: docs/phase3/notes/C3-driver.md, decided in prompt log entry 341 with every open choice as proposed. C3.1: one CTest test per end-to-end case and per T1 reference case; T2 as one test with one report, outside the dev test preset; T3 not in CTest. C3.2: `fusion-test data record` adds W3's, W4's and W5's outputs to the one data-manifest.json. C3.3: section 11's ci-linux preset now. C3.4: the listed departures. Read the note in full.
+- The specification: section 12, docs/architecture/12-tests.md: "Repository layout" (lines 89-121), the "Test data" rules (179-183), "End-to-end tests" (388-431), "Files, settings, events and errors" (922-940, with the exit codes), 12.C2 and 12.C8; and section 11's presets (docs/architecture/11-build.md:200 and 659). Where the note departs from section 12 by a decided choice, the note wins; anywhere else, section 12 wins.
+- The test kit that C3 builds on, committed as 718d577: backend/tests/testkit/ (headers in include/fusion/testkit/) and docs/phase3/notes/C2-testkit.md. Use the kit's DataRoot, load_manifest, verify, require, ScratchDir, run_fusion, fusion_normaliser, normalise_file, matched_files and compare_tree rather than copies of them. The kit may gain small additions if C3 needs them; report each one.
+- The notes that use the driver: C4-reference-runner.md (ref), C5-e2e-cases.md (the case.json format, C5.3 and C5.4) and C6-benchmarks.md (bench; its C6.4 retag is not C3's).
+
+What to build
+- backend/tests/tools/fusion-test/, as the note's Files section lays it out: main (dispatch, and the exit codes 0, 1, 2 and 4 as section 12 defines them), options (the command line, FUSION_TEST_DATA, and --fusion defaulting to the staged fusion), data (verify, init --from, record) and e2e (case.json as the C5 note defines it, and the engine: run, check, compare, --update, --list, --keep). ref and bench are C4's and C6's: dispatch each to a stub that says so and exits 2.
+- backend/tests/unit/fusion-test/: test_fusion_test, as the note says: options, exit codes, data on a toy root (never the real one), and the engine on toy cases the test writes.
+- CTest registration (C3.1): the `e2e:` tests, one per e2e/cases/*/case.json. None exist until C5, so check the registration the simplest way you judge sound, and say how. The `ref:` tests need C4's subcommand: leave their registration to C4 and say so in your report, unless section 12 or the note requires otherwise.
+- CMakePresets.json: the ci-linux configure preset (C3.3), as section 11 defines it; and the test presets the note names: dev leaves out the labels slow and bench, and t2 selects kegg|t2. The existing dev and release presets keep their meaning.
+- C3.2: run `fusion-test data record` on W3's, W4's and W5's outputs in the data root, each with its work item and report as `from` (the note gives the form), so that the manifest lists the 745 files the note counts. Recount them first, and report any difference. The manifest change is part of your diff. Afterwards, the three [kegg] self-tests of test_testkit that skipped for want of W3's captures must run and pass: the checker on the 176 witnessed points of the 23 recorded cases, r5's out witness at (4, 4), and read_written_graph on W3's 39 captures. Report their result.
+- Run `fusion-test data verify` on the real root once, at nice 19, and report its time and result. Test `data init` on a toy tree only; never run it against the real data root or FuSION 1's tree.
+
+Rules
+- Change only backend/tests/, CMakePresets.json and the manifest. Do not change module code. If a check of yours finds module code wrong, report it with a minimal reproducer and leave the check failing.
+- Another subagent is doing W7 in the same working tree at the same time. It writes only backend/tests/experiments/w7/, backend/tests/reference/synthetic/merge-*/ and one new test file under backend/tests/unit/merge/. Don't touch those. If a build error comes from them, wait a few minutes and retry rather than editing them. Build in build/dev; W7 builds in its own folder.
+- FuSION 1 (/home/ks-149-u24/Desktop/arjun/FuSION, and the snapshot /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10) is read-only. Never run git status inside it; use git --no-optional-locks if you need git there. Use /usr/bin/grep. Run Python with -B. Run no FuSION 1 batch.
+- The data root is /home/ks-149-u24/Desktop/arjun/FuSION2-test-data (FUSION_TEST_DATA). KEGG data never enters the repository (S8.31).
+- The user's own FuSION 1 jobs hold most of the machine (load about 23 on 36 cores). Build and test at nice 19 with at most 6 parallel jobs, and run nothing else heavy. The toolchain is user-local: cmake in ~/.local/opt/cmake-4.4.5-linux-x86_64/bin and ninja in ~/.local/opt/ninja-1.13.2; put both on PATH.
+- Zero compiler warnings. All 560 existing tests must still pass. Until your dev test preset exists, `ctest -LE slow` leaves out the three slow tests (the S2.22 full copies and the real layer, about 9 minutes in Debug); run them once at the end. The run module's stop-file test (backend/tests/unit/run/test_stop.cpp:7) has a known race that Claude is handling: leave it alone, and mention it only if it fails.
+- If section 12 and the note disagree, or the note leaves a choice open, stop and report rather than choose.
+- When done, stop any background processes. Reply in at most 250 words: what you built (files and lines), the test counts and times, data verify's time, the three [kegg] tests' result, your findings, and anything that needs a decision.
+```
+
+## 354 · Subagent prompt · Phase 3's W7, FuSION 1's merge on the synthetic sets · 2026-11-27 04:34
+
+The subagent of poll 352, Q2 and Q3; it runs beside the C3 subagent of entry 353. The prompt as sent:
+
+```text
+You are doing W7 of FuSION 2.0's Phase 3: running FuSION 1's merge on the test kit's synthetic merge sets and recording the results, so that 2.0's two merge oracles can be checked against FuSION 1. FuSION 2.0 is a C++20 rewrite of FuSION 1, in /home/ks-149-u24/Desktop/arjun/FuSION2. Work only in that repository and in the data root's scratch area, and commit nothing: Claude reviews your diff, and the user approves each commit.
+
+Read first
+- FuSION2/CLAUDE.md; docs/phase3/plan.md's W7 row (line 39), its "Shared pieces" paragraph (run_fusion1.py and cases.json) and its "Order and bookings" section.
+- Section 12, docs/architecture/12-tests.md:
+  - "Merge then split" (from line 741), above all: "Phase 3 also runs FuSION 1's own merge on the synthetic sets with three exception sets each: none, a DE-like set, and a bridging set. That is about 150 runs, whose canonical outputs (about 300 KB) go into the repository. This checks both oracles against FuSION 1 wherever no fix applies.";
+  - "Expected differences" (from line 624), for the merge's decided fixes, XD-03 to XD-06 and XD-16 among them;
+  - "FuSION 1 as the reference" (185) and "Reference cases" (498).
+- The C2 note, docs/phase3/notes/C2-testkit.md, section 4's W7 row; the test kit, committed as 718d577, in backend/tests/testkit/ (pathways(), exception_merge, the canonical forms, f1::read_written_graph); and the merge suite's S2.22 layers in backend/tests/unit/merge/test_split.cpp (bounded_sets() and the generated sets, 50 in all).
+- The spec's stage 2 on FuSION 1's merge: docs/spec/02-graph-input-and-merge.md, S2.05 to S2.25 and S2.31. mff's batch form is S2.16. The exception file comes from start's second argument: S1.15 and S1.17 in docs/spec/01-batch-language.md.
+- backend/tests/experiments/capture/run_fusion1.py, and the earlier W scripts beside it (w2 to w6), for how a FuSION 1 run is made and recorded.
+
+What to do
+1. The sets: the S2.22 bounded layer's 50 sets, the 32 listed shapes and the 18 generated ones (section 12's "the synthetic sets"). Write each as KGML files under backend/tests/reference/synthetic/merge-<n>/inputs/, from the same code the merge suite uses, so that the files and the suite's sets cannot drift apart: for example, a hidden Catch2 test in test_merge that writes them, or a small tool under backend/tests/experiments/w7/. Leave out any set whose settings FuSION 1 cannot express (for instance a filter setting FuSION 1 has no switch for), and list each one in your report with the reason.
+2. Three exception sets per set: none; a DE-like set, which takes each id of the set with probability one in four, drawn from core::Rng with a fixed seed; and a bridging set, every id that lies in two or more boxes of the set, so that every bridge breaks. Write the rule and each set down in the set's folder: the user reviews W7's summary.
+3. One batch per run: start (with the exception file), mff over the set's list at the set's threshold, and wgx, and nothing else. Run each through run_fusion1.py; extend it only if it cannot run a synthetic batch, and report the change. Go one run at a time, at nice 19, after checking the load (uptime, and the running fusion and z3 processes). The user approved running beside their own FuSION 1 jobs (prompt log entry 352).
+4. Record each run's FuSION 1 output (the wgx file, and FuSION 1's merged-edges report if the comparison needs it) under backend/tests/reference/synthetic/merge-<n>/f1/<exception set>/, with a small summary file. Keep the total near section 12's 300 KB, and report the size.
+5. One new Catch2 test file under backend/tests/unit/merge/, tagged [merge][ref][S2.22][12.C14] (not [unit]). It reads the recorded outputs with the kit's f1::read_written_graph and compares FuSION 1's graph with exception_merge and with merge_direct, wherever no expected difference applies. Where one does apply, the test names it and skips that comparison, and your report counts each.
+
+Rules
+- Do not change module code or the kit's oracles to hide a difference. If FuSION 1 and an oracle disagree where no expected difference applies, keep that comparison failing and report it with a minimal reproducer: it is a finding for the user.
+- FuSION 1 (/home/ks-149-u24/Desktop/arjun/FuSION, and the snapshot /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10) is read-only, and every run goes through run_fusion1.py into the data root's scratch area. Never run git status inside FuSION 1's tree; use git --no-optional-locks. Use /usr/bin/grep. Run Python with -B, or -I as the scripts do.
+- The data root is /home/ks-149-u24/Desktop/arjun/FuSION2-test-data (FUSION_TEST_DATA). KEGG data never enters the repository (S8.31): the synthetic sets use made-up ids only. Leave nothing under the root except run_fusion1.py's scratch folders, and say where they are.
+- Another subagent is building C3 in the same working tree at the same time, in backend/tests/tools/fusion-test/, backend/tests/unit/fusion-test/, backend/tests/CMakeLists.txt, CMakePresets.json and backend/tests/reference/data-manifest.json. Don't touch those, and make no change to backend/tests/CMakeLists.txt (test_merge globs its sources). Build in your own folder (cmake --preset dev -B build/w7) and build only the targets you need. If a configure or build error comes from C3's files, wait a few minutes and retry rather than editing them.
+- The user's own FuSION 1 jobs hold most of the machine (load about 23 on 36 cores). Build and test at nice 19 with at most 4 parallel jobs. The toolchain is user-local: cmake in ~/.local/opt/cmake-4.4.5-linux-x86_64/bin and ninja in ~/.local/opt/ninja-1.13.2.
+- Zero compiler warnings. The merge suite's existing tests must still pass (ctest -L merge -LE slow in your build).
+- If section 12, the plan and FuSION 1's behaviour leave a choice open that these rules do not settle, stop and report rather than choose.
+- When done, stop any background processes. Reply in at most 250 words: the sets and exception sets used (and any left out, with why), the runs made and their time, the recorded size, the comparison's result (identical, expected differences by XD, unexplained), files and lines, and anything that needs a decision.
+```
+
+## 355 · Note · The stop-file test's cause (poll 350) · 2026-11-27 04:35
+
+Claude ran run's stop-file test (backend/tests/unit/run/test_stop.cpp:7, 09.C7) 400 times, four at a time at nice 19, with no failure, then 150 times pinned to one CPU beside two busy loops, all at nice 19: one failure, in which the final run.json's stop record was null (lines 34-36). The cause is in the run module: RunState::request() (backend/modules/run/src/run.cpp:777) calls stop_source.request_stop() first, which lets the step see the stop and runs its callbacks, and only then reads the note, emits stop.requested, logs, and writes run.json's stop record under the mutex. A step that ends within those few milliseconds lets Run::finish() write the final run.json first; the later write is dropped because the run has finished, and the stop.requested event can land after run.finished. A real run that stops quickly under load can lose its stop record the same way. The test has a second, smaller race: it checks the callback count right after the flag turns true, but the callbacks run after the flag, as with std::stop_token.
+
+## 356 · Poll · 2026-11-27 04:35
+
+The stop race of entry 355.
+
+**Q1 (Stop race).** The flaky stop-file test exposed a real race in the run module. RunState::request() (run.cpp:777) signals the step before it writes run.json's stop record and the stop.requested event. A step that stops within those few milliseconds can finish the run first, leaving the final run.json with no stop record, and the event can land after run.finished. I reproduced it once in 150 runs, with the test pinned to a busy CPU. The test has a second, smaller race: it counts the callback the moment the stop flag turns true, though the callback runs just after. How should it be fixed?
+
+- Fix both (Recommended): run records the stop first, then signals the step: the note, the event, the log line and run.json's stop record. The test checks that order from inside the step's callback, so the old order fails it every time, and it waits for the callback instead of counting it straight away. Claude makes the change in a scratch build, shows you the diff, and asks before committing.
+- Fix the test only: The test waits until run.json holds the record. Real runs keep the race.
+- Leave it: Record it as a known issue, and fix it in Phase 4.
+
+**Answer:** Fix both (Recommended)
+
+## 357 · Poll · 2026-11-27 18:18
+
+Committing the stop-race fix of entry 356, and the log.
+
+**Q1 (Fix commit).** Commit the stop-race fix? It changes three files. In backend/modules/run/src/run.cpp, RunState::request() now writes the stop.requested event, the log line and run.json's stop record before calling request_stop(). In backend/tests/unit/run/test_stop.cpp, the step's callback checks that run.json and the event log already hold the stop, and the test waits for the callback instead of counting it as soon as the flag is set. In docs/architecture/09-runs.md, step 2 of the Stop design gets a Phase 3 note on the new order. The new check failed 5 of 5 runs before the fix and passed 20 of 20 after it. The stop test failed in 1 of 150 runs pinned to a busy CPU before the fix and in 0 of 150 after it. All 557 tests outside the slow tier pass. The C3 and W7 subagents' files are not included.
+
+- Commit it (Recommended): Stages the three files by name. Nothing is pushed. Its preview:
+  ```text
+  Record a stop before signalling the steps
+
+  The run's stop watcher called request_stop() before it wrote
+  the stop.requested event and run.json's stop record. A step
+  that ended at once could let Run::finish write the final
+  run.json first, and the record was then lost, which made
+  run's stop-file test fail now and then under load. The
+  watcher now records the stop first. The test checks that
+  order from inside the step's callback, which fails every time
+  on the old order, and waits for the callback rather than
+  counting it as soon as the flag is set. Section 09 notes the
+  order.
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+  Files:
+    backend/modules/run/src/run.cpp
+    backend/tests/unit/run/test_stop.cpp
+    docs/architecture/09-runs.md
+  ```
+- Not yet: Keep it uncommitted for now.
+
+**Answer:** Commit it (Recommended)
+
+**Q2 (Log commit).** After the fix commit, commit the prompt log's entries 352 to 357? They cover the poll on C3 and W7, the two subagents' briefs, the stop race's cause and its poll, and this poll.
+
+- Commit it (Recommended): docs/process/PROMPTS.md, message 'Log prompt entries 352 to 357'. Not pushed.
+- Later: Keep the entries for the next log commit.
+
+**Answer:** Commit it (Recommended)
