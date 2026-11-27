@@ -9896,3 +9896,92 @@ Committing C3 and W7, and the log.
 - Later: Keep the entries for the next log commit.
 
 **Answer:** Commit it (Recommended)
+
+## 372 · Poll · 2026-11-27 19:40
+
+Who writes C4, and results.json's absolute solve.name (C5.4's finding, entry 339).
+
+**Q1 (C4 author).** C4, the reference runner (fusion-test ref), is next, built to its decided note (docs/phase3/notes/C4-reference-runner.md). C4.1 adds per-case edits for the toy cases' GUI placeholders. C4.2 adds a worker mode for T3's point checks. C4.3 repeats every T1 and T2 case. C4.4 lists the departures. T1 runs in CTest within minutes. T2 is one test outside the dev preset, about 15 minutes of solves on 8 workers, and needs a booking. Who should write C4?
+
+- A subagent (Recommended): As with C2 and C3. Claude logs its brief, reviews its diff against section 12, reruns the tests and brings you the commit. It runs only T1, at nice 19. T2's first full run is booked with you separately.
+- Claude in this session: Slower, but all the context stays here.
+
+**Answer:** A subagent (Recommended)
+
+**Q2 (solve.name).** A positional pathz3 line names its solve by its legacy prefix as written. FuSION 1's batches give that prefix as an absolute path (batch/src/checkers.cpp:200), so results.json's solve.name holds an absolute path. Section 11's identity test relies on result files holding no absolute path, and only run.json holds paths (11-build.md:575). The C5 note left this to you as a results-module finding (C5.4). How should it be fixed?
+
+- The prefix's base name (Recommended): The solve is named by the prefix's last component, as the legacy writer already names FuSION 1's files (results/src/legacy.cpp:256). run.json still records the full prefix as the setting. Claude makes the change in batch with a test and asks you before committing.
+- Leave it, mask it: The normaliser turns it into a path token and the identity test masks it. results.json keeps the absolute path.
+
+**Answer:** The prefix's base name (Recommended)
+
+## 373 · Subagent prompt · Phase 3's C4, the reference runner · 2026-11-27 19:40
+
+The subagent of poll 372, Q1. The prompt as sent:
+
+```text
+You are writing C4 of FuSION 2.0's Phase 3: the reference runner, `fusion-test ref`, with `cases.json`'s edits and `expected-differences.json`. FuSION 2.0 is a C++20 rewrite of FuSION 1, in /home/ks-149-u24/Desktop/arjun/FuSION2. Work only in that repository and commit nothing: Claude reviews your diff, and the user approves each commit.
+
+Read first
+- FuSION2/CLAUDE.md, and docs/phase3/plan.md's Code section and its P5.
+- The design: docs/phase3/notes/C4-reference-runner.md, decided in prompt log entry 342 with every open choice as proposed. C4.1: cases.json gains an `edits` list per case, applied after the path map and listed in the report, written by make_cases.py for the 12 toys. C4.2: a `fusion-test ref --check-point` worker that calls solve::CaseSolver::check on the pinned case, one point per process. C4.3: every T1 and T2 case is repeated. C4.4: the listed departures. Read the note in full.
+- The specification: section 12, docs/architecture/12-tests.md: "Reference-test runner" (from line 433, through "Reports" and "How long the reference suite takes"), "Determinism", 12.C4 to 12.C7, 12.C16, and the runner's test hooks under "Test hooks". It now has XD-29 (S2.17) and Phase 3 notes in the expected-differences section; where the note departs from section 12 by a decided choice, the note wins, and anywhere else section 12 wins.
+- What C4 builds on: the test kit (backend/tests/testkit/, the C2 note) and the driver (backend/tests/tools/fusion-test/, the C3 note), committed as 718d577 and 6ffa69b. C3 left the `ref` subcommand as a stub that exits 2 and left the `ref:` CTest registration to C4: one test per T1 case of cases.json, labelled ref and t1, and one `ref: t2` test labelled ref, t2, kegg and slow, which the dev test preset leaves out. Use the kit's checker, readers, adapters, StepContext and normaliser rather than copies of them; the kit may gain small additions if C4 needs them, and you report each one.
+- W7's merge test, backend/tests/unit/merge/test_reference.cpp, decides the merge's expected differences for synthetic sets by replaying FuSION 1's read; it is W7's, not the runner's, and stays as it is.
+
+What to build
+- backend/tests/tools/fusion-test/ref/ as the note's Files section lays it out: preparing a case (the path map with run_fusion1.py's rules, the refusal of leftover FuSION 1 paths, then the case's edits), the chained, pinned and verify modes, the facts per stage as kit types, R1 to R4 through testkit::check, the expected differences with their predicates and predictions, stale entries, `--record-seen`, the repeat check, and report.json and summary.tsv outside any run directory.
+- backend/tests/reference/expected-differences.json: section 12's entries, XD-29 among them, in section 12's format.
+- cases.json's edits, through make_cases.py, so every field stays reproducible.
+- backend/tests/unit/fusion-test/ref/: the runner's self-tests, the note's list and section 12's test hooks for the runner (an unexpected difference, an allowed one, a failed prediction and a stale entry on a toy case with injected differences).
+- The ref: CTest registration, as above.
+
+What to run
+- T1 only: the 12 toys, chained and pinned, with R1 to R4, the repeat runs and verify mode, at nice 19. Report the frontiers, the witness checks and the times.
+- Do not run T2 or T3, and no KEGG case's solve: T2 loads 8 cores for about 15 minutes and is booked with the user separately. Reading the data root's captures for a self-test is fine.
+
+Rules
+- Change only backend/tests/ (cases.json, make_cases.py and expected-differences.json included). Do not change module code. If a check of yours finds module code wrong, report it with a minimal reproducer and leave the check failing. Claude is changing backend/modules/batch/src/checkers.cpp at the same time (a positional pathz3 line's solve name becomes its legacy prefix's last component, prompt log entry 372); the runner maps solves by run.json's solve.legacy_prefix setting, which is unchanged. Don't touch that file or its test.
+- FuSION 1 (/home/ks-149-u24/Desktop/arjun/FuSION, and the snapshot /home/ks-149-u24/Desktop/arjun/FuSION1-reference-2026-11-10) is read-only. Never run git status inside it; use git --no-optional-locks if you need git there. Use /usr/bin/grep. Run Python with -B, or -I as the scripts do. Run no FuSION 1 batch.
+- The data root is /home/ks-149-u24/Desktop/arjun/FuSION2-test-data (FUSION_TEST_DATA). KEGG data never enters the repository (S8.31).
+- The user's own FuSION 1 jobs hold most of the machine (load about 25 on 36 cores). Build and test at nice 19 with at most 6 parallel jobs, and run nothing else heavy. The toolchain is user-local: cmake in ~/.local/opt/cmake-4.4.5-linux-x86_64/bin and ninja in ~/.local/opt/ninja-1.13.2; put both on PATH. Build in build/dev.
+- Zero compiler warnings. All 581 existing tests must still pass: `ctest --preset dev` runs every test but the slow ones in about 26 s, and `ctest --test-dir build/dev -L slow` runs the 3 slow ones in about 8 minutes; run those once at the end.
+- If section 12 and the note disagree, or the note leaves a choice open, stop and report rather than choose.
+- When done, stop any background processes. Reply in at most 250 words: what you built (files and lines), the test counts and times, T1's results (frontiers, witness checks, repeats, verify), your findings, and anything that needs a decision.
+```
+
+## 374 · Poll · 2026-11-27 19:47
+
+Committing the solve.name fix of poll 372, and the log.
+
+**Q1 (Name commit).** Commit the solve.name fix (poll 372)? It changes three files. In backend/modules/batch/src/handlers/solve_handlers.cpp, a positional pathz3 line now gives results its prefix's last component as the solve's name. The batch still binds FuSION 1's '<prefix>_solutions.txt' files and later lines' solve arguments to the whole prefix, and run.json still records the whole prefix as the solve.legacy_prefix setting. In backend/tests/unit/batch/test_interpreter.cpp, FuSION 1's toy batch now checks that its two solves are named temp_w and temp_wo, and that run.json's prefix is absolute and ends with each name; before the fix these checks failed with the absolute paths. In docs/architecture/07-results.md, the header's name comment says so. Batch (55) and results (47) tests pass with no warnings. Nothing reads the name as a path: the frontend reads only the frontier, and the case labels and page names already take the base name.
+
+- Commit it (Recommended): Stages the three files by name. Nothing is pushed. Its preview:
+  ```text
+  Name a positional solve by its prefix's last component
+
+  A positional pathz3 line names its solve by its legacy
+  prefix, which FuSION 1's batches give as an absolute path, so
+  results.json held one, against section 11's rule that result
+  files hold no absolute path. The results now get the prefix's
+  last component; the batch still binds FuSION 1's files and
+  later lines to the whole prefix, and run.json records it as
+  the setting. FuSION 1's toy batch checks the two names.
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+  Files:
+    backend/modules/batch/src/handlers/solve_handlers.cpp
+    backend/tests/unit/batch/test_interpreter.cpp
+    docs/architecture/07-results.md
+  ```
+- Not yet: Keep it uncommitted for now.
+
+**Answer:** Commit it (Recommended)
+
+**Q2 (Log commit).** After that commit, commit the prompt log's entries 372 to 374? They cover the poll on C4 and solve.name, the C4 subagent's brief, and this poll.
+
+- Commit it (Recommended): docs/process/PROMPTS.md, message 'Log prompt entries 372 to 374'. Not pushed.
+- Later: Keep the entries for the next log commit.
+
+**Answer:** Commit it (Recommended)
