@@ -127,7 +127,8 @@ std::map<std::string, std::uint32_t> trace_distances(const std::filesystem::path
 std::vector<std::string> case_names() {
     std::vector<std::string> names;
     for (const auto& entry : std::filesystem::directory_iterator(kCases))
-        if (entry.is_directory()) names.push_back(entry.path().filename().string());
+        if (entry.is_directory() && entry.path().filename().string().starts_with("toy-"))
+            names.push_back(entry.path().filename().string());
     std::sort(names.begin(), names.end());
     return names;
 }

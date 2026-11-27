@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE pathway SYSTEM "http://www.kegg.jp/kegg/xml/KGML_v0.7.1_.dtd">
+<pathway name="KEGG">
+	<entry id="1" name="hsa1" type="gene">
+		<graphics name="hsa1"/>
+	</entry>
+	<entry id="2" name="hsa2" type="gene">
+		<graphics name=""/>
+	</entry>
+	<entry id="3" name="hsa10" type="gene">
+		<graphics name=""/>
+	</entry>
+	<entry id="4" name="hsa3" type="gene">
+		<graphics name=""/>
+	</entry>
+	<entry id="5" name="hsa4 hsa5" type="gene">
+		<graphics name="hsa4"/>
+	</entry>
+	<entry id="6" name="hsa6" type="gene">
+		<graphics name="hsa6"/>
+	</entry>
+	<relation entry1="1" entry2="3" type="PPrel" pathways="path:hsa00601" experiment_score="0">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="2" entry2="3" type="PPrel" pathways="path:hsa00601" experiment_score="0">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="3" entry2="2" type="GErel" pathways="path:hsa00602" experiment_score="0">
+		<subtype name="expression"/>
+	</relation>
+	<relation entry1="3" entry2="4" type="GErel" pathways="path:hsa00602" experiment_score="0">
+		<subtype name="expression"/>
+	</relation>
+	<relation entry1="4" entry2="6" type="PPrel" pathways="path:hsa00603" experiment_score="0">
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="5" entry2="6" type="PPrel" pathways="path:hsa00603" experiment_score="0">
+		<subtype name="phosphorylation"/>
+	</relation>
+</pathway>

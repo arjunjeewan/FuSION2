@@ -1,0 +1,74 @@
+{
+  "set": 43,
+  "name": "generated 43",
+  "source": "add_generated_sets(seed 2022), backend/tests/unit/merge/bounded_sets.hpp",
+  "threshold": 15000,
+  "filters": {
+    "indirect": "discard",
+    "ecrel": "keep",
+    "maplink": "skip"
+  },
+  "files": [
+    "t00001.xml",
+    "t00002.xml"
+  ],
+  "ids": [
+    "t1",
+    "t2",
+    "t3",
+    "t4",
+    "t5",
+    "t6",
+    "t7",
+    "t8",
+    "t9"
+  ],
+  "runs": [
+    {
+      "exception_set": "none",
+      "rule": "no ids",
+      "exceptions": "inputs/exceptions-none.txt",
+      "ids": [],
+      "batch": [
+        "start inputs/empty_file inputs/exceptions-none.txt inputs/empty_file inputs/empty_file",
+        "mff inputs/list.txt xml 15000 n inputs/empty_file -1",
+        "wgx 0 merged.xml KEGG",
+        "exit"
+      ],
+      "output": "f1/none/merged.xml"
+    },
+    {
+      "exception_set": "de",
+      "rule": "each id of the set, in byte order, with probability one in four: core::Rng::stream(2025, 43).below(4) == 0",
+      "exceptions": "inputs/exceptions-de.txt",
+      "ids": [
+        "t2"
+      ],
+      "batch": [
+        "start inputs/empty_file inputs/exceptions-de.txt inputs/empty_file inputs/empty_file",
+        "mff inputs/list.txt xml 15000 n inputs/empty_file -1",
+        "wgx 0 merged.xml KEGG",
+        "exit"
+      ],
+      "output": "f1/de/merged.xml"
+    },
+    {
+      "exception_set": "bridging",
+      "rule": "every id that lies in two or more boxes (non-group entries) of the set's files",
+      "exceptions": "inputs/exceptions-bridging.txt",
+      "ids": [
+        "t4",
+        "t5",
+        "t7",
+        "t8"
+      ],
+      "batch": [
+        "start inputs/empty_file inputs/exceptions-bridging.txt inputs/empty_file inputs/empty_file",
+        "mff inputs/list.txt xml 15000 n inputs/empty_file -1",
+        "wgx 0 merged.xml KEGG",
+        "exit"
+      ],
+      "output": "f1/bridging/merged.xml"
+    }
+  ]
+}

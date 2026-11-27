@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<pathway name="path:hsa01101" org="hsa" number="00000" title="">
+  <entry id="1" name="hsa:1 hsa:2" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <entry id="2" name="hsa:3" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <entry id="3" name="hsa:4 hsa:5" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <entry id="4" name="cpd:C00001" type="compound">
+    <graphics name="x"/>
+  </entry>
+  <relation entry1="1" entry2="2" type="PPrel">
+    <subtype name="indirect effect" value="--&gt;"/>
+  </relation>
+  <relation entry1="2" entry2="3" type="PPrel">
+    <subtype name="activation" value="--&gt;"/>
+    <subtype name="indirect effect" value="--&gt;"/>
+  </relation>
+  <relation entry1="3" entry2="1" type="PPrel">
+    <subtype name="activation" value="--&gt;"/>
+  </relation>
+  <relation entry1="1" entry2="4" type="ECrel">
+    <subtype name="compound" value="--&gt;"/>
+  </relation>
+  <relation entry1="4" entry2="3" type="ECrel" experiment_score="0">
+    <subtype name="compound" value="--&gt;"/>
+  </relation>
+</pathway>

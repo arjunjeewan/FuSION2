@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE pathway SYSTEM "http://www.kegg.jp/kegg/xml/KGML_v0.7.1_.dtd">
+<pathway name="KEGG">
+	<entry id="1" name="hsa1 hsa2" type="gene">
+		<graphics name="hsa1, x"/>
+	</entry>
+	<entry id="2" name="hsa3" type="gene">
+		<graphics name="hsa3, x"/>
+	</entry>
+	<entry id="3" name="hsa4 hsa5" type="gene">
+		<graphics name="hsa4, x"/>
+	</entry>
+	<entry id="4" name="cpdC00001" type="compound">
+		<graphics name="cpdC00001, x"/>
+	</entry>
+	<relation entry1="3" entry2="1" type="PPrel" pathways="path:hsa01101" experiment_score="0">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="1" entry2="4" type="ECrel" pathways="path:hsa01101" experiment_score="0">
+		<subtype name="compound"/>
+	</relation>
+	<relation entry1="4" entry2="3" type="ECrel" pathways="path:hsa01101" experiment_score="0">
+		<subtype name="compound"/>
+	</relation>
+</pathway>

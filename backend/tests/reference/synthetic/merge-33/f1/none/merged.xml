@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE pathway SYSTEM "http://www.kegg.jp/kegg/xml/KGML_v0.7.1_.dtd">
+<pathway name="KEGG">
+	<entry id="1" name="t1 t3 t4 t2 t8 t7" type="gene">
+		<graphics name="t1, x, t2"/>
+	</entry>
+	<entry id="2" name="t9" type="gene">
+		<graphics name="t9, x"/>
+	</entry>
+	<relation entry1="1" entry2="1" type="PPrel" pathways="path:t00001 path:t00002" experiment_score="0">
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="1" entry2="1" type="ECrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="compound"/>
+	</relation>
+	<relation entry1="1" entry2="1" type="PPrel" pathways="path:t00001" experiment_score="5">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="1" entry2="1" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="inhibition"/>
+		<subtype name="dephosphorylation"/>
+	</relation>
+	<relation entry1="1" entry2="1" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="expression"/>
+	</relation>
+	<relation entry1="2" entry2="1" type="ECrel" pathways="path:t00002" experiment_score="12.5">
+		<subtype name="compound"/>
+	</relation>
+	<relation entry1="1" entry2="2" type="PPrel" pathways="path:t00002" experiment_score="5">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="2" entry2="1" type="PPrel" pathways="path:t00002" experiment_score="5">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+</pathway>

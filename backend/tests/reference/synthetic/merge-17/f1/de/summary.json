@@ -1,0 +1,36 @@
+{
+ "set": 17,
+ "name": "chain of three t1",
+ "exception_set": "de",
+ "exceptions": 2,
+ "batch": [
+  "start inputs/empty_file inputs/exceptions-de.txt inputs/empty_file inputs/empty_file",
+  "mff inputs/list.txt xml 1 n inputs/empty_file -1",
+  "wgx 0 merged.xml KEGG",
+  "exit"
+ ],
+ "exit": 0,
+ "wall_s": 0.178,
+ "started": "2026-11-27T05:13:08+0530",
+ "binary_sha256": "22b312fc006ce57ee07d9514f95fcf1996ad5c250c5282bd90a746f1041e0c50",
+ "scratch": "scratch/w7-20261127-051248-merge-17-de",
+ "load_before": [
+  31.69,
+  26.91,
+  25.09
+ ],
+ "console": [
+  "Read graph: 1 from file inputs/hsa00601.xml",
+  "Read graph: 2 from file inputs/hsa00602.xml",
+  "Read graph: 3 from file inputs/hsa00603.xml",
+  "merging graphs: 1 and 2",
+  "merging graphs: 4 and 3",
+  "New graph: 5",
+  "4 nodes written to xml file",
+  "4 edges written to xml file"
+ ],
+ "merged_xml": {
+  "bytes": 1011,
+  "sha256": "81d52fb88e4b806e341136cdf903c659a86a4b86343bd8d89406c07dda8bafe2"
+ }
+}

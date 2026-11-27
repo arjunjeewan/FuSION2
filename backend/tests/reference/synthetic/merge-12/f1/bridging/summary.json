@@ -1,0 +1,33 @@
+{
+ "set": 12,
+ "name": "one file, overlapping boxes t2",
+ "exception_set": "bridging",
+ "exceptions": 4,
+ "batch": [
+  "start inputs/empty_file inputs/exceptions-bridging.txt inputs/empty_file inputs/empty_file",
+  "mff inputs/list.txt xml 2 n inputs/empty_file -1",
+  "wgx 0 merged.xml KEGG",
+  "exit"
+ ],
+ "exit": 0,
+ "wall_s": 0.176,
+ "started": "2026-11-27T05:13:02+0530",
+ "binary_sha256": "22b312fc006ce57ee07d9514f95fcf1996ad5c250c5282bd90a746f1041e0c50",
+ "scratch": "scratch/w7-20261127-051248-merge-12-bridging",
+ "load_before": [
+  31.14,
+  26.73,
+  25.02
+ ],
+ "console": [
+  "Read graph: 1 from file inputs/hsa00401.xml",
+  "Only one graph. Returning same.",
+  "New graph: 1",
+  "6 nodes written to xml file",
+  "29 edges written to xml file"
+ ],
+ "merged_xml": {
+  "bytes": 4740,
+  "sha256": "78de83f104d605075881d69a00179ef7946d1657ea6db9230bd4b8bb6995f7f3"
+ }
+}

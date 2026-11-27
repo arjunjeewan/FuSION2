@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE pathway SYSTEM "http://www.kegg.jp/kegg/xml/KGML_v0.7.1_.dtd">
+<pathway name="KEGG">
+	<entry id="1" name="t1" type="gene">
+		<graphics name=", x"/>
+	</entry>
+	<entry id="2" name="t2" type="gene">
+		<graphics name=", x"/>
+	</entry>
+	<entry id="3" name="t6" type="gene">
+		<graphics name="t6, x"/>
+	</entry>
+	<entry id="4" name="t8" type="gene">
+		<graphics name=", x"/>
+	</entry>
+	<entry id="5" name="t5 t7" type="gene">
+		<graphics name="t5, x"/>
+	</entry>
+	<entry id="6" name="cpdx2" type="compound">
+		<graphics name="cpdx2"/>
+	</entry>
+	<relation entry1="1" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="850">
+	</relation>
+	<relation entry1="1" entry2="3" type="PPrel" pathways="path:t00001" experiment_score="850">
+	</relation>
+	<relation entry1="1" entry2="4" type="PPrel" pathways="path:t00001" experiment_score="850">
+	</relation>
+	<relation entry1="2" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="850">
+	</relation>
+	<relation entry1="2" entry2="3" type="PPrel" pathways="path:t00001" experiment_score="850">
+	</relation>
+	<relation entry1="2" entry2="4" type="PPrel" pathways="path:t00001" experiment_score="850">
+	</relation>
+	<relation entry1="6" entry2="1" type="PPrel" pathways="path:t00001" experiment_score="700">
+	</relation>
+	<relation entry1="6" entry2="4" type="PPrel" pathways="path:t00001" experiment_score="700">
+	</relation>
+	<relation entry1="6" entry2="5" type="PPrel" pathways="path:t00001" experiment_score="700">
+	</relation>
+</pathway>

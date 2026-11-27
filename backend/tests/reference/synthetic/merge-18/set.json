@@ -1,0 +1,66 @@
+{
+  "set": 18,
+  "name": "complex of families t1",
+  "source": "bounded_sets(), backend/tests/unit/merge/bounded_sets.hpp",
+  "threshold": 1,
+  "filters": {
+    "indirect": "discard",
+    "ecrel": "keep",
+    "maplink": "skip"
+  },
+  "files": [
+    "hsa00701.xml"
+  ],
+  "ids": [
+    "hsa1",
+    "hsa2",
+    "hsa3",
+    "hsa4",
+    "hsa5",
+    "hsa6"
+  ],
+  "runs": [
+    {
+      "exception_set": "none",
+      "rule": "no ids",
+      "exceptions": "inputs/exceptions-none.txt",
+      "ids": [],
+      "batch": [
+        "start inputs/empty_file inputs/exceptions-none.txt inputs/empty_file inputs/empty_file",
+        "mff inputs/list.txt xml 1 n inputs/empty_file -1",
+        "wgx 0 merged.xml KEGG",
+        "exit"
+      ],
+      "output": "f1/none/merged.xml"
+    },
+    {
+      "exception_set": "de",
+      "rule": "each id of the set, in byte order, with probability one in four: core::Rng::stream(2025, 18).below(4) == 0",
+      "exceptions": "inputs/exceptions-de.txt",
+      "ids": [
+        "hsa1",
+        "hsa3"
+      ],
+      "batch": [
+        "start inputs/empty_file inputs/exceptions-de.txt inputs/empty_file inputs/empty_file",
+        "mff inputs/list.txt xml 1 n inputs/empty_file -1",
+        "wgx 0 merged.xml KEGG",
+        "exit"
+      ],
+      "output": "f1/de/merged.xml"
+    },
+    {
+      "exception_set": "bridging",
+      "rule": "every id that lies in two or more boxes (non-group entries) of the set's files",
+      "exceptions": "inputs/exceptions-bridging.txt",
+      "ids": [],
+      "batch": [
+        "start inputs/empty_file inputs/exceptions-bridging.txt inputs/empty_file inputs/empty_file",
+        "mff inputs/list.txt xml 1 n inputs/empty_file -1",
+        "wgx 0 merged.xml KEGG",
+        "exit"
+      ],
+      "output": "f1/bridging/merged.xml"
+    }
+  ]
+}

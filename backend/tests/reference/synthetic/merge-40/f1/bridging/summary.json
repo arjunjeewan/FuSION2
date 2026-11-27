@@ -1,0 +1,33 @@
+{
+ "set": 40,
+ "name": "generated 40",
+ "exception_set": "bridging",
+ "exceptions": 3,
+ "batch": [
+  "start inputs/empty_file inputs/exceptions-bridging.txt inputs/empty_file inputs/empty_file",
+  "mff inputs/list.txt xml 0 n inputs/empty_file -1",
+  "wgx 0 merged.xml KEGG",
+  "exit"
+ ],
+ "exit": 0,
+ "wall_s": 0.138,
+ "started": "2026-11-27T05:13:26+0530",
+ "binary_sha256": "22b312fc006ce57ee07d9514f95fcf1996ad5c250c5282bd90a746f1041e0c50",
+ "scratch": "scratch/w7-20261127-051248-merge-40-bridging",
+ "load_before": [
+  31.49,
+  27.18,
+  25.21
+ ],
+ "console": [
+  "Read graph: 1 from file inputs/t00001.xml",
+  "Only one graph. Returning same.",
+  "New graph: 1",
+  "5 nodes written to xml file",
+  "14 edges written to xml file"
+ ],
+ "merged_xml": {
+  "bytes": 2734,
+  "sha256": "56380036aebce987fd524c32a1a7f58d1a5eba0600feeca9f6de8a30f479bb49"
+ }
+}

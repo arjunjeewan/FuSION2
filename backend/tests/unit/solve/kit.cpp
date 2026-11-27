@@ -233,7 +233,8 @@ std::filesystem::path tests_dir() { return std::filesystem::path(FUSION_TEST_SOU
 std::vector<std::string> toy_names() {
   std::vector<std::string> out;
   for (const auto& entry : std::filesystem::directory_iterator(tests_dir() / "reference" / "synthetic"))
-    if (entry.is_directory()) out.push_back(entry.path().filename().string());
+    if (entry.is_directory() && entry.path().filename().string().starts_with("toy-"))
+      out.push_back(entry.path().filename().string());
   std::sort(out.begin(), out.end());
   return out;
 }

@@ -1,0 +1,3 @@
+hsa3
+hsa6
+hsa7

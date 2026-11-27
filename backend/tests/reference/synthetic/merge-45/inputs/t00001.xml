@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<pathway name="path:t00001" org="t" number="00001" title="Synthetic pathway 1">
+  <entry id="1" name="t:2 t:4" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <entry id="2" name="cpd:x1" type="compound">
+    <graphics name="x"/>
+  </entry>
+  <entry id="3" name="t:4 t:5 t:6" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <relation entry1="3" entry2="3" type="PPrel" experiment_score="700">
+    <subtype name="activation" value="--&gt;"/>
+    <subtype name="phosphorylation" value="--&gt;"/>
+  </relation>
+  <relation entry1="2" entry2="2" type="PPrel" experiment_score="850">
+    <subtype name="binding/association" value="--&gt;"/>
+  </relation>
+  <relation entry1="2" entry2="1" type="PPrel" experiment_score="0">
+    <subtype name="activation" value="--&gt;"/>
+  </relation>
+  <relation entry1="1" entry2="1" type="PPrel" experiment_score="0">
+    <subtype name="activation" value="--&gt;"/>
+    <subtype name="dissociation" value="--&gt;"/>
+  </relation>
+  <relation entry1="1" entry2="1" type="PPrel" experiment_score="700">
+    <subtype name="inhibition" value="--&gt;"/>
+    <subtype name="dephosphorylation" value="--&gt;"/>
+  </relation>
+  <relation entry1="2" entry2="2" type="PPrel" experiment_score="850">
+    <subtype name="state change" value="--&gt;"/>
+  </relation>
+</pathway>

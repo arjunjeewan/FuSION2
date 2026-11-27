@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<pathway name="path:t00001" org="t" number="00001" title="Synthetic pathway 1">
+  <entry id="1" name="t:7" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <entry id="2" name="t:3 t:10" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <entry id="3" name="t:3 t:6" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <entry id="4" name="t:1 t:2 t:5 t:8" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <entry id="5" name="t:6" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <entry id="6" name="undefined" type="group">
+    <component id="1"/>
+    <component id="2"/>
+    <component id="3"/>
+  </entry>
+  <relation entry1="2" entry2="2" type="PPrel" experiment_score="12.5">
+  </relation>
+  <relation entry1="2" entry2="4" type="PPrel" experiment_score="5">
+    <subtype name="expression" value="--&gt;"/>
+  </relation>
+  <relation entry1="2" entry2="2" type="PPrel" experiment_score="700">
+    <subtype name="binding/association" value="--&gt;"/>
+  </relation>
+  <relation entry1="1" entry2="2" type="PPrel">
+    <subtype name="inhibition" value="--&gt;"/>
+  </relation>
+  <relation entry1="5" entry2="1" type="PCrel">
+    <subtype name="phosphorylation" value="--&gt;"/>
+  </relation>
+</pathway>

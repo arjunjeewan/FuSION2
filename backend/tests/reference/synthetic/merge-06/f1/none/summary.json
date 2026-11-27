@@ -1,0 +1,34 @@
+{
+ "set": 6,
+ "name": "complexes t1",
+ "exception_set": "none",
+ "exceptions": 0,
+ "batch": [
+  "start inputs/empty_file inputs/exceptions-none.txt inputs/empty_file inputs/empty_file",
+  "mff inputs/list.txt xml 1 n inputs/empty_file -1",
+  "wgx 0 merged.xml KEGG",
+  "exit"
+ ],
+ "exit": 0,
+ "wall_s": 0.184,
+ "started": "2026-11-27T05:12:55+0530",
+ "binary_sha256": "22b312fc006ce57ee07d9514f95fcf1996ad5c250c5282bd90a746f1041e0c50",
+ "scratch": "scratch/w7-20261127-051248-merge-06-none",
+ "load_before": [
+  30.44,
+  26.44,
+  24.91
+ ],
+ "console": [
+  "Read graph: 1 from file inputs/hsa00301.xml",
+  "Read graph: 2 from file inputs/hsa00302.xml",
+  "merging graphs: 1 and 2",
+  "New graph: 3",
+  "5 nodes written to xml file",
+  "13 edges written to xml file"
+ ],
+ "merged_xml": {
+  "bytes": 2832,
+  "sha256": "29ac985da627d151abe8fedc588d1b638d0027d84e02b069ef199f86685613e8"
+ }
+}

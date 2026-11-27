@@ -1,0 +1,34 @@
+{
+ "set": 15,
+ "name": "bridge t1",
+ "exception_set": "de",
+ "exceptions": 2,
+ "batch": [
+  "start inputs/empty_file inputs/exceptions-de.txt inputs/empty_file inputs/empty_file",
+  "mff inputs/list.txt xml 1 n inputs/empty_file -1",
+  "wgx 0 merged.xml KEGG",
+  "exit"
+ ],
+ "exit": 0,
+ "wall_s": 0.179,
+ "started": "2026-11-27T05:13:05+0530",
+ "binary_sha256": "22b312fc006ce57ee07d9514f95fcf1996ad5c250c5282bd90a746f1041e0c50",
+ "scratch": "scratch/w7-20261127-051248-merge-15-de",
+ "load_before": [
+  31.14,
+  26.73,
+  25.02
+ ],
+ "console": [
+  "Read graph: 1 from file inputs/hsa00501.xml",
+  "Read graph: 2 from file inputs/hsa00502.xml",
+  "merging graphs: 1 and 2",
+  "New graph: 3",
+  "4 nodes written to xml file",
+  "3 edges written to xml file"
+ ],
+ "merged_xml": {
+  "bytes": 840,
+  "sha256": "fc66df11bca3dba5c9f58de7b58ef7be318e811f08dfa21d476e1b4c15beac5d"
+ }
+}

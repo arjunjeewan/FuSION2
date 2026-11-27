@@ -1,0 +1,34 @@
+{
+ "set": 35,
+ "name": "generated 35",
+ "exception_set": "none",
+ "exceptions": 0,
+ "batch": [
+  "start inputs/empty_file inputs/exceptions-none.txt inputs/empty_file inputs/empty_file",
+  "mff inputs/list.txt xml 0 n inputs/empty_file -1",
+  "wgx 0 merged.xml KEGG",
+  "exit"
+ ],
+ "exit": 0,
+ "wall_s": 0.212,
+ "started": "2026-11-27T05:13:22+0530",
+ "binary_sha256": "22b312fc006ce57ee07d9514f95fcf1996ad5c250c5282bd90a746f1041e0c50",
+ "scratch": "scratch/w7-20261127-051248-merge-35-none",
+ "load_before": [
+  31.71,
+  27.15,
+  25.19
+ ],
+ "console": [
+  "Read graph: 1 from file inputs/t00001.xml",
+  "Read graph: 2 from file inputs/t00002.xml",
+  "merging graphs: 1 and 2",
+  "New graph: 3",
+  "2 nodes written to xml file",
+  "6 edges written to xml file"
+ ],
+ "merged_xml": {
+  "bytes": 1199,
+  "sha256": "97c988f2d77edec834fca214689c856b24f4e4ed1feef4b35d982b4199b4b0cb"
+ }
+}

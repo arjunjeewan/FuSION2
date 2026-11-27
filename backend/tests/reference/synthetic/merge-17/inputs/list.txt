@@ -1,0 +1,3 @@
+inputs/hsa00601.xml
+inputs/hsa00602.xml
+inputs/hsa00603.xml

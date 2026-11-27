@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE pathway SYSTEM "http://www.kegg.jp/kegg/xml/KGML_v0.7.1_.dtd">
+<pathway name="KEGG">
+	<entry id="1" name="t9" type="gene">
+		<graphics name="t9, x"/>
+	</entry>
+	<entry id="2" name="t3 t6 t7 t9" type="gene">
+		<graphics name="t3, x"/>
+	</entry>
+	<entry id="3" name="t8" type="gene">
+		<graphics name="t8, x"/>
+	</entry>
+	<entry id="4" name="t10 t4 t6" type="gene">
+		<graphics name="t10, x"/>
+	</entry>
+	<relation entry1="1" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="inhibition"/>
+		<subtype name="dephosphorylation"/>
+	</relation>
+	<relation entry1="3" entry2="4" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="inhibition"/>
+		<subtype name="dephosphorylation"/>
+	</relation>
+	<relation entry1="1" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="5">
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="2" entry2="1" type="PPrel" pathways="path:t00001" experiment_score="5">
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="3" entry2="4" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="dissociation"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="4" entry2="3" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="dissociation"/>
+	</relation>
+</pathway>

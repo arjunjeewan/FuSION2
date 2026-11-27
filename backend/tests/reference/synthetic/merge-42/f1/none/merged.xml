@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<!DOCTYPE pathway SYSTEM "http://www.kegg.jp/kegg/xml/KGML_v0.7.1_.dtd">
+<pathway name="KEGG">
+	<entry id="1" name="t1 t4 t5 t6" type="gene">
+		<graphics name="t1, x, t4"/>
+	</entry>
+	<entry id="2" name="c_s_t1_c_e" type="group">
+		<graphics name="[t1]"/>
+		<component id="1"/>
+	</entry>
+	<entry id="3" name="c_s_c_s_t1_c_e_t1_c_e" type="group">
+		<graphics name="[t1+[t1]]"/>
+		<component id="1"/>
+		<component id="2"/>
+	</entry>
+	<entry id="4" name="t2 t7 t9" type="gene">
+		<graphics name="t2, x"/>
+	</entry>
+	<entry id="5" name="t3 t8" type="gene">
+		<graphics name="t3, x"/>
+	</entry>
+	<entry id="6" name="c_s_t2_t3_c_e" type="group">
+		<graphics name="[t2+t3]"/>
+		<component id="4"/>
+		<component id="5"/>
+	</entry>
+	<relation entry1="3" entry2="1" type="ECrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="compound"/>
+	</relation>
+	<relation entry1="1" entry2="1" type="PPrel" pathways="path:t00001" experiment_score="700">
+	</relation>
+	<relation entry1="1" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="12.5">
+		<subtype name="inhibition"/>
+	</relation>
+	<relation entry1="1" entry2="1" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="inhibition"/>
+		<subtype name="dephosphorylation"/>
+	</relation>
+	<relation entry1="1" entry2="1" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="1" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="2" entry2="1" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="1" entry2="3" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="3" entry2="1" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="2" entry2="3" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="3" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="4" entry2="6" type="PCrel" pathways="path:t00002" experiment_score="5">
+		<subtype name="activation"/>
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="5" entry2="5" type="PPrel" pathways="path:t00002" experiment_score="12.5">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="4" entry2="5" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="expression"/>
+	</relation>
+	<relation entry1="6" entry2="5" type="PPrel" pathways="path:t00002" experiment_score="700">
+		<subtype name="activation"/>
+		<subtype name="dissociation"/>
+	</relation>
+	<relation entry1="5" entry2="6" type="PPrel" pathways="path:t00002" experiment_score="700">
+		<subtype name="activation"/>
+		<subtype name="dissociation"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="4" entry2="6" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="6" entry2="4" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="5" entry2="6" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="6" entry2="5" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+</pathway>

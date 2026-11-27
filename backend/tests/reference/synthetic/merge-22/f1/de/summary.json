@@ -1,0 +1,34 @@
+{
+ "set": 22,
+ "name": "undirected tags t1",
+ "exception_set": "de",
+ "exceptions": 0,
+ "batch": [
+  "start inputs/empty_file inputs/exceptions-de.txt inputs/empty_file inputs/empty_file",
+  "mff inputs/list.txt xml 1 n inputs/empty_file -1",
+  "wgx 0 merged.xml KEGG",
+  "exit"
+ ],
+ "exit": 0,
+ "wall_s": 0.142,
+ "started": "2026-11-27T05:13:13+0530",
+ "binary_sha256": "22b312fc006ce57ee07d9514f95fcf1996ad5c250c5282bd90a746f1041e0c50",
+ "scratch": "scratch/w7-20261127-051248-merge-22-de",
+ "load_before": [
+  31.63,
+  26.98,
+  25.12
+ ],
+ "console": [
+  "Read graph: 1 from file inputs/hsa00901.xml",
+  "Read graph: 2 from file inputs/hsa00902.xml",
+  "merging graphs: 1 and 2",
+  "New graph: 3",
+  "2 nodes written to xml file",
+  "3 edges written to xml file"
+ ],
+ "merged_xml": {
+  "bytes": 790,
+  "sha256": "7fc96f600f5145bd2d8ce0f245472c6fb8ea04dc9424533632a9bf052d176be3"
+ }
+}

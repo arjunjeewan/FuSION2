@@ -1,0 +1,527 @@
+<?xml version="1.0"?>
+<!DOCTYPE pathway SYSTEM "http://www.kegg.jp/kegg/xml/KGML_v0.7.1_.dtd">
+<pathway name="KEGG">
+	<entry id="1" name="t1 t3 t8" type="gene">
+		<graphics name="t1, x, t2, t8"/>
+	</entry>
+	<entry id="2" name="t6" type="gene">
+		<graphics name="t6, x"/>
+	</entry>
+	<entry id="3" name="t5" type="gene">
+		<graphics name="t5, x"/>
+	</entry>
+	<entry id="4" name="t2 t3 t4" type="gene">
+		<graphics name="t2, x"/>
+	</entry>
+	<entry id="5" name="c_s_t1_t2_t6_c_e" type="group">
+		<graphics name="[t1+t6+t2]"/>
+		<component id="1"/>
+		<component id="2"/>
+		<component id="4"/>
+	</entry>
+	<entry id="6" name="c_s_t1_t2_t5_c_e" type="group">
+		<graphics name="[t1+t5+t2]"/>
+		<component id="1"/>
+		<component id="3"/>
+		<component id="4"/>
+	</entry>
+	<entry id="7" name="c_s_t2_t6_c_e" type="group">
+		<graphics name="[t6+t2]"/>
+		<component id="2"/>
+		<component id="4"/>
+	</entry>
+	<entry id="8" name="c_s_t2_t5_t6_c_e" type="group">
+		<graphics name="[t6+t5+t2]"/>
+		<component id="2"/>
+		<component id="3"/>
+		<component id="4"/>
+	</entry>
+	<entry id="9" name="t7" type="gene">
+		<graphics name=", x"/>
+	</entry>
+	<entry id="10" name="t9" type="gene">
+		<graphics name=", x"/>
+	</entry>
+	<entry id="11" name="c_s_t7_t9_c_e" type="group">
+		<graphics name="[+]"/>
+		<component id="9"/>
+		<component id="10"/>
+	</entry>
+	<entry id="12" name="c_s_t1_t9_c_e c_s_t8_t9_c_e" type="group">
+		<graphics name="[t8+]"/>
+		<component id="1"/>
+		<component id="10"/>
+	</entry>
+	<entry id="13" name="c_s_t9_c_e" type="group">
+		<graphics name="[]"/>
+		<component id="10"/>
+	</entry>
+	<relation entry1="1" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="5">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="1" entry2="3" type="PPrel" pathways="path:t00001" experiment_score="5">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="2" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="5">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="2" entry2="3" type="PPrel" pathways="path:t00001" experiment_score="5">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="1" entry2="5" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="expression"/>
+	</relation>
+	<relation entry1="1" entry2="6" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="expression"/>
+	</relation>
+	<relation entry1="1" entry2="7" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="expression"/>
+	</relation>
+	<relation entry1="1" entry2="8" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="expression"/>
+	</relation>
+	<relation entry1="2" entry2="5" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="expression"/>
+	</relation>
+	<relation entry1="2" entry2="6" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="expression"/>
+	</relation>
+	<relation entry1="2" entry2="7" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="expression"/>
+	</relation>
+	<relation entry1="2" entry2="8" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="expression"/>
+	</relation>
+	<relation entry1="4" entry2="5" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="4" entry2="6" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="4" entry2="7" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="4" entry2="8" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="5" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="0">
+	</relation>
+	<relation entry1="5" entry2="3" type="PPrel" pathways="path:t00001" experiment_score="0">
+	</relation>
+	<relation entry1="6" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="0">
+	</relation>
+	<relation entry1="6" entry2="3" type="PPrel" pathways="path:t00001" experiment_score="0">
+	</relation>
+	<relation entry1="7" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="0">
+	</relation>
+	<relation entry1="7" entry2="3" type="PPrel" pathways="path:t00001" experiment_score="0">
+	</relation>
+	<relation entry1="8" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="0">
+	</relation>
+	<relation entry1="8" entry2="3" type="PPrel" pathways="path:t00001" experiment_score="0">
+	</relation>
+	<relation entry1="1" entry2="5" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="5" entry2="1" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="1" entry2="6" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="6" entry2="1" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="1" entry2="7" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="7" entry2="1" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="1" entry2="8" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="8" entry2="1" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="2" entry2="5" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="5" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="2" entry2="6" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="6" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="2" entry2="7" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="7" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="2" entry2="8" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="8" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="2" entry2="5" type="ECrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="compound"/>
+	</relation>
+	<relation entry1="2" entry2="6" type="ECrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="compound"/>
+	</relation>
+	<relation entry1="2" entry2="7" type="ECrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="compound"/>
+	</relation>
+	<relation entry1="2" entry2="8" type="ECrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="compound"/>
+	</relation>
+	<relation entry1="3" entry2="5" type="ECrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="compound"/>
+	</relation>
+	<relation entry1="3" entry2="6" type="ECrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="compound"/>
+	</relation>
+	<relation entry1="3" entry2="7" type="ECrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="compound"/>
+	</relation>
+	<relation entry1="3" entry2="8" type="ECrel" pathways="path:t00001" experiment_score="850">
+		<subtype name="compound"/>
+	</relation>
+	<relation entry1="1" entry2="5" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="5" entry2="1" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="2" entry2="5" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="5" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="4" entry2="5" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="5" entry2="4" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="1" entry2="6" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="6" entry2="1" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="3" entry2="6" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="6" entry2="3" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="4" entry2="6" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="6" entry2="4" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="2" entry2="7" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="7" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="4" entry2="7" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="7" entry2="4" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="2" entry2="8" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="8" entry2="2" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="3" entry2="8" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="8" entry2="3" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="4" entry2="8" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="8" entry2="4" type="PPrel" pathways="path:t00001" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="9" entry2="11" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="11" entry2="9" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="9" entry2="12" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="12" entry2="9" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="9" entry2="13" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="13" entry2="9" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="1" entry2="11" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="11" entry2="1" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="1" entry2="12" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="12" entry2="1" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="1" entry2="13" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="13" entry2="1" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="10" entry2="11" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="11" entry2="10" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="10" entry2="12" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="12" entry2="10" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="10" entry2="13" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="13" entry2="10" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="association"/>
+	</relation>
+	<relation entry1="11" entry2="9" type="GErel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="11" entry2="1" type="GErel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="11" entry2="10" type="GErel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="12" entry2="9" type="GErel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="12" entry2="1" type="GErel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="12" entry2="10" type="GErel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="13" entry2="9" type="GErel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="13" entry2="1" type="GErel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="13" entry2="10" type="GErel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="10" entry2="11" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="inhibition"/>
+		<subtype name="dephosphorylation"/>
+	</relation>
+	<relation entry1="10" entry2="12" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="inhibition"/>
+		<subtype name="dephosphorylation"/>
+	</relation>
+	<relation entry1="10" entry2="13" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="inhibition"/>
+		<subtype name="dephosphorylation"/>
+	</relation>
+	<relation entry1="1" entry2="11" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="inhibition"/>
+		<subtype name="dephosphorylation"/>
+	</relation>
+	<relation entry1="1" entry2="12" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="inhibition"/>
+		<subtype name="dephosphorylation"/>
+	</relation>
+	<relation entry1="1" entry2="13" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="inhibition"/>
+		<subtype name="dephosphorylation"/>
+	</relation>
+	<relation entry1="10" entry2="10" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="10" entry2="1" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="1" entry2="10" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="1" entry2="1" type="PPrel" pathways="path:t00002" experiment_score="850">
+		<subtype name="activation"/>
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="10" entry2="10" type="PPrel" pathways="path:t00002" experiment_score="700">
+		<subtype name="phosphorylation"/>
+	</relation>
+	<relation entry1="9" entry2="11" type="PPrel" pathways="path:t00002" experiment_score="700">
+		<subtype name="state"/>
+	</relation>
+	<relation entry1="9" entry2="12" type="PPrel" pathways="path:t00002" experiment_score="700">
+		<subtype name="state"/>
+	</relation>
+	<relation entry1="9" entry2="13" type="PPrel" pathways="path:t00002" experiment_score="700">
+		<subtype name="state"/>
+	</relation>
+	<relation entry1="1" entry2="11" type="PPrel" pathways="path:t00002" experiment_score="700">
+		<subtype name="state"/>
+	</relation>
+	<relation entry1="1" entry2="12" type="PPrel" pathways="path:t00002" experiment_score="700">
+		<subtype name="state"/>
+	</relation>
+	<relation entry1="1" entry2="13" type="PPrel" pathways="path:t00002" experiment_score="700">
+		<subtype name="state"/>
+	</relation>
+	<relation entry1="10" entry2="11" type="PPrel" pathways="path:t00002" experiment_score="700">
+		<subtype name="state"/>
+	</relation>
+	<relation entry1="10" entry2="12" type="PPrel" pathways="path:t00002" experiment_score="700">
+		<subtype name="state"/>
+	</relation>
+	<relation entry1="10" entry2="13" type="PPrel" pathways="path:t00002" experiment_score="700">
+		<subtype name="state"/>
+	</relation>
+	<relation entry1="10" entry2="11" type="PCrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="10" entry2="12" type="PCrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="10" entry2="13" type="PCrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="9" entry2="11" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="11" entry2="9" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="10" entry2="11" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="11" entry2="10" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="1" entry2="12" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="12" entry2="1" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="10" entry2="12" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="12" entry2="10" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="10" entry2="13" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+	<relation entry1="13" entry2="10" type="PPrel" pathways="path:t00002" experiment_score="0">
+		<subtype name="component"/>
+		<subtype name="dummy_u_to_d"/>
+	</relation>
+</pathway>

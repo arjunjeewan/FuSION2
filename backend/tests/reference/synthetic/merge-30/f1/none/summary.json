@@ -1,0 +1,33 @@
+{
+ "set": 30,
+ "name": "one file, id in two boxes t1",
+ "exception_set": "none",
+ "exceptions": 0,
+ "batch": [
+  "start inputs/empty_file inputs/exceptions-none.txt inputs/empty_file inputs/empty_file",
+  "mff inputs/list.txt xml 1 n inputs/empty_file -1",
+  "wgx 0 merged.xml KEGG",
+  "exit"
+ ],
+ "exit": 0,
+ "wall_s": 0.207,
+ "started": "2026-11-27T05:13:17+0530",
+ "binary_sha256": "22b312fc006ce57ee07d9514f95fcf1996ad5c250c5282bd90a746f1041e0c50",
+ "scratch": "scratch/w7-20261127-051248-merge-30-none",
+ "load_before": [
+  31.42,
+  27.02,
+  25.14
+ ],
+ "console": [
+  "Read graph: 1 from file inputs/hsa01201.xml",
+  "Only one graph. Returning same.",
+  "New graph: 1",
+  "3 nodes written to xml file",
+  "4 edges written to xml file"
+ ],
+ "merged_xml": {
+  "bytes": 962,
+  "sha256": "e64af9e055504faf4adbd84cf262d4b1cc861daeda12cfb6c2cf006e756fe1fe"
+ }
+}

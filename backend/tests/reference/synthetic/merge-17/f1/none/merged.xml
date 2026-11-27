@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE pathway SYSTEM "http://www.kegg.jp/kegg/xml/KGML_v0.7.1_.dtd">
+<pathway name="KEGG">
+	<entry id="1" name="hsa1 hsa2 hsa3 hsa4 hsa5" type="gene">
+		<graphics name="hsa1, hsa2, hsa3"/>
+	</entry>
+	<entry id="2" name="hsa10" type="gene">
+		<graphics name="hsa10"/>
+	</entry>
+	<entry id="3" name="hsa6" type="gene">
+		<graphics name="hsa6"/>
+	</entry>
+	<relation entry1="1" entry2="2" type="PPrel" pathways="path:hsa00601" experiment_score="0">
+		<subtype name="activation"/>
+	</relation>
+	<relation entry1="2" entry2="1" type="GErel" pathways="path:hsa00602" experiment_score="0">
+		<subtype name="expression"/>
+	</relation>
+	<relation entry1="1" entry2="3" type="PPrel" pathways="path:hsa00603" experiment_score="0">
+		<subtype name="phosphorylation"/>
+	</relation>
+</pathway>

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<pathway name="path:t00002" org="t" number="00002" title="Synthetic pathway 2">
+  <entry id="1" name="t:2 t:7" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <entry id="2" name="t:9" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <entry id="3" name="t:1 t:2 t:3 t:8" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <relation entry1="3" entry2="3" type="PPrel" experiment_score="0">
+    <subtype name="expression" value="--&gt;"/>
+  </relation>
+  <relation entry1="2" entry2="1" type="ECrel" experiment_score="12.5">
+    <subtype name="compound" value="--&gt;"/>
+  </relation>
+  <relation entry1="3" entry2="1" type="PPrel">
+    <subtype name="phosphorylation" value="--&gt;"/>
+  </relation>
+  <relation entry1="1" entry2="2" type="PPrel" experiment_score="5">
+    <subtype name="activation" value="--&gt;"/>
+    <subtype name="binding/association" value="--&gt;"/>
+  </relation>
+  <relation entry1="3" entry2="1" type="PPrel" experiment_score="12.5">
+    <subtype name="activation" value="--&gt;"/>
+    <subtype name="indirect effect" value="--&gt;"/>
+  </relation>
+  <relation entry1="3" entry2="3" type="PPrel" experiment_score="850">
+    <subtype name="expression" value="--&gt;"/>
+  </relation>
+</pathway>

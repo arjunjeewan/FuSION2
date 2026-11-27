@@ -227,6 +227,7 @@ TEST_CASE("testkit: the checker accepts every witness of FuSION 1's toy cases un
   Tally tally;
   for (const auto& entry : fs::directory_iterator(kToys)) {
     const std::string name = entry.path().filename().string();
+    if (!name.starts_with("toy-")) continue;
     for (const Solve& s : solves(entry.path(), entry.path() / "f1" / "run_console.log")) judge(s, name, tally);
   }
   CHECK(tally.witnessed > 40);

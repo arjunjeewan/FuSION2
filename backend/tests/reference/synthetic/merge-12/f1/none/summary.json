@@ -1,0 +1,33 @@
+{
+ "set": 12,
+ "name": "one file, overlapping boxes t2",
+ "exception_set": "none",
+ "exceptions": 0,
+ "batch": [
+  "start inputs/empty_file inputs/exceptions-none.txt inputs/empty_file inputs/empty_file",
+  "mff inputs/list.txt xml 2 n inputs/empty_file -1",
+  "wgx 0 merged.xml KEGG",
+  "exit"
+ ],
+ "exit": 0,
+ "wall_s": 0.175,
+ "started": "2026-11-27T05:13:02+0530",
+ "binary_sha256": "22b312fc006ce57ee07d9514f95fcf1996ad5c250c5282bd90a746f1041e0c50",
+ "scratch": "scratch/w7-20261127-051248-merge-12-none",
+ "load_before": [
+  31.14,
+  26.73,
+  25.02
+ ],
+ "console": [
+  "Read graph: 1 from file inputs/hsa00401.xml",
+  "Only one graph. Returning same.",
+  "New graph: 1",
+  "5 nodes written to xml file",
+  "9 edges written to xml file"
+ ],
+ "merged_xml": {
+  "bytes": 1802,
+  "sha256": "693ce42ff4314ce7d7a6d499c7e670477e007441a223ed2af7a457d580e9fbaa"
+ }
+}

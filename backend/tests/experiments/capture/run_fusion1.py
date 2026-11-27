@@ -8,8 +8,12 @@ FuSION 1's own tree.
 
 Usage:
   python3 -I run_fusion1.py --case ID --name NAME [--batch FILE] [--dry-run]
+  python3 -I run_fusion1.py --inputs DIR --batch FILE --name NAME [--dry-run]
 
   --case ID     a case of backend/tests/reference/cases.json
+  --inputs DIR  instead of a case: run --batch FILE with DIR's files as the scratch
+                folder's inputs/, and no path map (W7's synthetic merge sets, whose
+                batches name their inputs relative to the scratch folder)
   --name NAME   the scratch folder, $FUSION_TEST_DATA/scratch/NAME; it must not exist
   --batch FILE  run this batch text instead of the case's own (for example a
                 capture batch); the case's path map and inputs still apply
@@ -22,7 +26,8 @@ Usage:
 What a run does (section 12, FuSION 1 as the reference; Reference cases):
   1. creates the scratch folder, which is the case's $CASE;
   2. copies the case's inputs/ into it: reference/<id>/inputs/ from the data
-     root, or backend/tests/reference/synthetic/<id>/inputs/ for a toy case;
+     root, or backend/tests/reference/synthetic/<id>/inputs/ for a toy case, or
+     the --inputs folder;
   3. applies the path map, longest "from" first, to the batch and to every
      list file under inputs/; $CASE and $DATA become absolute paths;
   4. refuses to go on if any path into FuSION 1's tree or its snapshot is left;
@@ -88,6 +93,8 @@ def batch_source(case, override):
 
 
 def inputs_source(case, data_root):
+    if "inputs" in case:
+        return case["inputs"]
     if case["tier"] == "T1":
         return SYNTHETIC / case["id"] / "inputs"
     return data_root / "reference" / case["id"] / "inputs"
@@ -116,7 +123,8 @@ def check_clean(text, where):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--case", required=True)
+    parser.add_argument("--case")
+    parser.add_argument("--inputs")
     parser.add_argument("--name", required=True)
     parser.add_argument("--batch")
     parser.add_argument("--extra-inputs")
@@ -129,7 +137,14 @@ def main():
     data_root = Path(data_root).resolve()
     if "/" in args.name or args.name in ("", ".", ".."):
         fail("--name must be a plain folder name")
-    case = load_case(args.case)
+    if (args.case is None) == (args.inputs is None):
+        fail("give either --case or --inputs")
+    if args.inputs:
+        if not args.batch:
+            fail("--inputs needs --batch")
+        case = {"id": None, "tier": "synthetic", "path_map": [], "inputs": Path(args.inputs).resolve()}
+    else:
+        case = load_case(args.case)
     case_dir = data_root / "scratch" / args.name
     source = batch_source(case, args.batch)
     batch = apply_map(source.read_text(errors="strict"), case["path_map"], case_dir, data_root)
@@ -139,7 +154,7 @@ def main():
     command = [str(binary), "-b", "case.batch"]
 
     if args.dry_run:
-        print(f"case {case['id']} ({case['tier']}), batch {source}")
+        print(f"case {case['id'] or '-'} ({case['tier']}), batch {source}")
         print(f"scratch folder {case_dir} (would be created; exists now: {case_dir.exists()})")
         print(f"inputs from {inputs_source(case, data_root)}")
         print("command:", " ".join(command), "  (cwd: scratch folder)")
@@ -184,6 +199,7 @@ def main():
     wall = time.time() - started
     record = {
         "case": case["id"],
+        **({"inputs": str(case["inputs"])} if "inputs" in case else {}),
         "batch": str(source),
         "command": command,
         "exit": result.returncode,
@@ -192,7 +208,7 @@ def main():
         "binary_sha256": got,
     }
     (case_dir / "runner.json").write_text(json.dumps(record, indent=2) + "\n")
-    print(f"{case['id']}: exit {result.returncode}, {wall:.1f} s, in {case_dir}")
+    print(f"{case['id'] or args.name}: exit {result.returncode}, {wall:.1f} s, in {case_dir}")
     sys.exit(result.returncode)
 
 

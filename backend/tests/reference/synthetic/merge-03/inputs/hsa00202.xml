@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<pathway name="path:hsa00202" org="hsa" number="00000" title="">
+  <entry id="1" name="hsa:4 hsa:5 hsa:6" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <entry id="2" name="hsa:7" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <entry id="3" name="hsa:1 hsa:7" type="gene">
+    <graphics name="x"/>
+  </entry>
+  <relation entry1="1" entry2="2" type="PPrel" experiment_score="3">
+    <subtype name="activation" value="--&gt;"/>
+  </relation>
+  <relation entry1="3" entry2="1" type="PPrel" experiment_score="9">
+    <subtype name="binding/association" value="--&gt;"/>
+  </relation>
+</pathway>

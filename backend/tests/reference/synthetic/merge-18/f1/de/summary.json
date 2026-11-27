@@ -1,0 +1,33 @@
+{
+ "set": 18,
+ "name": "complex of families t1",
+ "exception_set": "de",
+ "exceptions": 2,
+ "batch": [
+  "start inputs/empty_file inputs/exceptions-de.txt inputs/empty_file inputs/empty_file",
+  "mff inputs/list.txt xml 1 n inputs/empty_file -1",
+  "wgx 0 merged.xml KEGG",
+  "exit"
+ ],
+ "exit": 0,
+ "wall_s": 0.174,
+ "started": "2026-11-27T05:13:09+0530",
+ "binary_sha256": "22b312fc006ce57ee07d9514f95fcf1996ad5c250c5282bd90a746f1041e0c50",
+ "scratch": "scratch/w7-20261127-051248-merge-18-de",
+ "load_before": [
+  31.69,
+  26.91,
+  25.09
+ ],
+ "console": [
+  "Read graph: 1 from file inputs/hsa00701.xml",
+  "Only one graph. Returning same.",
+  "New graph: 1",
+  "10 nodes written to xml file",
+  "24 edges written to xml file"
+ ],
+ "merged_xml": {
+  "bytes": 5085,
+  "sha256": "e1a1311f93671dfd39a002a1ac4a435e7d838580c2a4e3cff6b2ca3f4e93300d"
+ }
+}
