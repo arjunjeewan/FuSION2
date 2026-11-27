@@ -192,12 +192,12 @@ TEST_CASE("run: each step that saves something gets one directory, named by its 
         CHECK(s["wall_s"].is_number());
     }
     const core::Json& cudf = manifest["steps"][1];
-    REQUIRE(cudf["outputs"].size() == 2);
-    CHECK(cudf["outputs"][0]["path"] == "cudf/up_reg");
-    CHECK(cudf["outputs"][0]["size"] == 10);
-    CHECK(cudf["outputs"][0]["sha256"] == core::Sha256::of("hsa1\nhsa2\n").hex());
-    CHECK(cudf["outputs"][1]["path"] == "cudf/down_reg");
-    CHECK(cudf["outputs"][1]["sha256"] == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+    REQUIRE(cudf["outputs"].size() == 2);        // listed by path, not in commit order (09.C16)
+    CHECK(cudf["outputs"][0]["path"] == "cudf/down_reg");
+    CHECK(cudf["outputs"][0]["sha256"] == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+    CHECK(cudf["outputs"][1]["path"] == "cudf/up_reg");
+    CHECK(cudf["outputs"][1]["size"] == 10);
+    CHECK(cudf["outputs"][1]["sha256"] == core::Sha256::of("hsa1\nhsa2\n").hex());
     CHECK(manifest["steps"][0]["outputs"].empty());
 
     const auto events = read_lines(dir / "events.jsonl");
@@ -207,7 +207,7 @@ TEST_CASE("run: each step that saves something gets one directory, named by its 
     CHECK(finished[1]["step"] == "cudf");
     CHECK(finished[1]["line"] == 3);
     CHECK(finished[1]["point"] == "");
-    CHECK(finished[1]["outputs"] == core::Json::array({"cudf/up_reg", "cudf/down_reg"}));
+    CHECK(finished[1]["outputs"] == core::Json::array({"cudf/down_reg", "cudf/up_reg"}));   // by path (09.C16)
     CHECK(of_type(events, "step.started")[3]["step"] == "fb_rch-2");
     CHECK(of_type(events, "step.started")[3]["cmd"] == "fb_rch");
 }
@@ -219,6 +219,9 @@ TEST_CASE("run: an explicit absolute output is written in the step directory and
     TempDir elsewhere;
     Run run = Run::start(options_in(tmp.path()));
     Run::Step s = run.begin(step("cudf", "cudf", 3));
+    core::OutputFile same = s.context().files.create("z.txt");   // up.txt's bytes, committed before it
+    same.out() << "hsa1\n";
+    same.commit();
     core::OutputFile up = s.context().files.create("up.txt");
     up.also_at(elsewhere / "up.txt");            // a FuSION 1 batch reads it there through exec
     up.out() << "hsa1\n";
@@ -233,10 +236,44 @@ TEST_CASE("run: an explicit absolute output is written in the step directory and
     const core::Json manifest = read_json(run.dir() / "run.json");
     check_manifest(manifest);
     const core::Json& outputs = manifest["steps"][0]["outputs"];
-    REQUIRE(outputs.size() == 2);
-    CHECK(outputs[0]["path"] == "cudf/up.txt");
-    CHECK(outputs[0]["also"] == core::to_utf8(elsewhere / "up.txt"));
-    CHECK_FALSE(outputs[1].contains("also"));
+    REQUIRE(outputs.size() == 3);                // listed by path (09.C16): down.txt, up.txt, z.txt
+    CHECK(outputs[0]["path"] == "cudf/down.txt");
+    CHECK_FALSE(outputs[0].contains("also"));
+    CHECK(outputs[1]["path"] == "cudf/up.txt");  // the copy follows its own file's commit, not the same bytes
+    CHECK(outputs[1]["also"] == core::to_utf8(elsewhere / "up.txt"));
+    CHECK(outputs[2]["path"] == "cudf/z.txt");
+    CHECK_FALSE(outputs[2].contains("also"));
+}
+
+TEST_CASE("run: a step's outputs are listed by path, whatever order its parallel parts commit them in (09.C16)",
+          "[unit][run]") {
+    // A solve commits each case's files as that case ends, so two runs of one batch can commit them in other
+    // orders; run.json and step.finished list them by path either way (prompt log entry 361).
+    std::vector<core::Json> listed;
+    for (const bool out_first : {true, false}) {
+        TempDir tmp;
+        Run run = Run::start(options_in(tmp.path()));
+        Run::Step s = run.begin(step("pathz3", "pathz3", 11));
+        const std::vector<std::string> in{"in/case.json", "in/search_log.tsv"}, out{"out/case.json", "out/search_log.tsv"};
+        for (const auto* part : out_first ? std::vector{&out, &in} : std::vector{&in, &out})
+            for (const std::string& name : *part) {
+                core::OutputFile f = s.context().files.create(name);
+                f.out() << name << '\n';
+                f.commit();
+            }
+        run.end(s, StepStatus::ok);
+        CHECK(run.finish(RunStatus::ok) == 0);
+        const core::Json manifest = read_json(run.dir() / "run.json");
+        std::vector<std::string> paths;
+        for (const core::Json& o : manifest["steps"][0]["outputs"]) paths.push_back(o["path"].get<std::string>());
+        CHECK(paths == std::vector<std::string>{"pathz3/in/case.json", "pathz3/in/search_log.tsv", "pathz3/out/case.json",
+                                                "pathz3/out/search_log.tsv"});
+        const auto finished = of_type(read_lines(run.dir() / "events.jsonl"), "step.finished");
+        REQUIRE(finished.size() == 1);
+        CHECK(finished[0]["outputs"] == core::Json(paths));
+        listed.push_back(manifest["steps"][0]["outputs"]);
+    }
+    CHECK(listed[0] == listed[1]);
 }
 
 TEST_CASE("run: a committed output is never overwritten, names stay inside their step, and an uncommitted one leaves "
@@ -571,10 +608,10 @@ TEST_CASE("run: the run page and bindings.tsv are written once, at the top level
     CHECK(read_file(run.dir() / "index.html") == "<html></html>\n");
     const core::Json manifest = read_json(run.dir() / "run.json");
     check_manifest(manifest);
-    REQUIRE(manifest["outputs"].size() == 2);
-    CHECK(manifest["outputs"][0]["path"] == "index.html");
-    CHECK(manifest["outputs"][1]["path"] == "bindings.tsv");
-    CHECK(manifest["outputs"][1]["sha256"] == core::Sha256::of("role\tgiven\tstatus\n").hex());
+    REQUIRE(manifest["outputs"].size() == 2);   // listed by path (09.C16)
+    CHECK(manifest["outputs"][0]["path"] == "bindings.tsv");
+    CHECK(manifest["outputs"][0]["sha256"] == core::Sha256::of("role\tgiven\tstatus\n").hex());
+    CHECK(manifest["outputs"][1]["path"] == "index.html");
 }
 
 TEST_CASE("run: debug outputs exist only under the debug option, in debug/<step>/ (S1.29, S4.19, S5.23)", "[unit][run]") {

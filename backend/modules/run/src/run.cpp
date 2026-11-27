@@ -228,6 +228,9 @@ public:
     bool finished = false;
     int exit = 1;
     std::map<std::string, std::size_t> step_index;
+    // Each outputs list's paths in commit order, by step id ("" for the run's own files): run.json lists
+    // them by path (09.C16), and an absolute copy's "also" follows its own file's commit (2B.3).
+    std::map<std::string, std::vector<std::string>> committed;
     std::set<std::string> copied_steps;          // copy_inputs has handled them
     std::set<std::string> run_files;
     std::vector<core::Diagnostic> pending;       // the copy's problems, for check()
@@ -567,20 +570,32 @@ void RunState::record_output(const std::string& step_id, const fs::path& path, c
     std::lock_guard guard(mutex);
     if (finished) return;
     core::Json& outputs = step_id.empty() ? doc["outputs"] : step_record(step_id)["outputs"];
+    std::vector<std::string>& order = committed[step_id];
+    const auto listed = [&](const std::string& p) {
+        return std::find_if(outputs.begin(), outputs.end(), [&](const core::Json& o) { return o["path"] == p; });
+    };
     if (!is_inside(file, dir)) {
         // The copy at an explicit absolute path follows its file's own commit (2B.3): "also".
-        for (auto it = outputs.rbegin(); it != outputs.rend(); ++it)
-            if ((*it)["sha256"] == hex && !it->contains("also")) {
+        for (auto p = order.rbegin(); p != order.rend(); ++p) {
+            const auto it = listed(*p);
+            if (it != outputs.end() && (*it)["sha256"] == hex && !it->contains("also")) {
                 (*it)["also"] = core::to_utf8(file);
                 touch(false);
                 return;
             }
+        }
     }
     core::Json entry = core::Json::object();
-    entry["path"] = is_inside(file, dir) ? relative_utf8(file, dir) : core::to_utf8(file);
+    const std::string where = is_inside(file, dir) ? relative_utf8(file, dir) : core::to_utf8(file);
+    entry["path"] = where;
     entry["size"] = ec ? 0 : size;
     entry["sha256"] = hex;
-    outputs.push_back(std::move(entry));
+    // Listed by path, whatever order the step commits in: a solve's cases commit their files as each ends,
+    // in parallel, and run.json must not depend on which ends first (09.C16; prompt log entry 361).
+    const auto at = std::find_if(outputs.begin(), outputs.end(),
+                                 [&](const core::Json& o) { return o["path"].get<std::string>() > where; });
+    outputs.insert(at, std::move(entry));
+    order.push_back(where);
     touch(false);
 }
 
