@@ -1,0 +1,262 @@
+{
+  "schema": 1,
+  "about": "Section 12's expected differences (decision 0023, 12.C6), read by fusion-test ref. Each entry's applies_when names one predicate of the runner's closed list (ref/expect.cpp), evaluated per case; allows names the facts that may differ; predicts, when present, is checked; seen_in lists where the difference is seen, as <case> or <case>:<solve case>, and a listed case that a run covers and that no longer shows it is stale. fusion-test ref --record-seen rewrites seen_in, for review as a diff. XD-02 was withdrawn with 08.C1 and its id is not reused.",
+  "entries": [
+    {
+      "id": "XD-01",
+      "spec": ["S7.05", "08.C2"],
+      "why": "Ties in the ranking are ordered by gene id in byte order (entry 181), so with 08.C1's exact port every GSEA number that differs from FuSION 1's tables traces to this order, and fdr:0.25, 0.4, 0.44 and 0.5 select 44, 79, 86 and 91 pathways where FuSION 1 selected 42, 71, 87 and 90; the keep-list case jun-b7-fdr040keep selects 90 where FuSION 1 selected 87 (prompt log entry 306). Chained runs merge other lists, so their later stages may differ.",
+      "stages": ["gsea"],
+      "applies_when": {"stage_runs": "gsea"},
+      "allows": ["gsea.table", "gsea.shortlist"],
+      "predicts": {"rule": "selection_size", "cases": {"fdr044-r0-cxcl8-jun": 86, "fdr044-r1-cxcl8-rhoa": 86, "fdr044-r2-cxcl8-cdc42": 86, "fdr044-r3-cxcl8-rac1": 86, "fdr044-r4-cxcl8-rho-ko": 86, "fdr044-r5-mcl1-stat3": 86, "fdr044-r6-mcl1-creb1": 86, "jun-b10-fdr025": 44, "jun-b10-fdr040": 79, "jun-b10-fdr050": 91, "jun-b6-fdr025": 44, "jun-b7-fdr025": 44, "jun-b7-fdr040keep": 90}},
+      "seen_in": ["fdr044-r0-cxcl8-jun", "fdr044-r1-cxcl8-rhoa", "fdr044-r2-cxcl8-cdc42", "fdr044-r3-cxcl8-rac1", "fdr044-r4-cxcl8-rho-ko", "fdr044-r5-mcl1-stat3", "fdr044-r6-mcl1-creb1", "fdr044-r7-epha2-curated", "fdr044-r8-phlda1-curated", "jun-b10-fdr025", "jun-b10-fdr030", "jun-b10-fdr040", "jun-b10-fdr040keep", "jun-b10-fdr050", "jun-b6-fdr025", "jun-b6-fdr040keep", "jun-b7-fdr025", "jun-b7-fdr040keep"]
+    },
+    {
+      "id": "XD-03",
+      "spec": ["S2.08"],
+      "why": "Box genes are no longer lost in raw merges; legacy reads keep the loss (02 open question 1, entry 163). 11 ids that FuSION 1 lost join nodes in the 42-pathway merge and 13 in fdr040_keep's, and the unions they bridge widen.",
+      "stages": ["merge"],
+      "applies_when": {"raw_merge": true},
+      "allows": ["merge.graph"],
+      "seen_in": ["jun-b10-fdr025", "jun-b10-fdr040keep", "jun-b6-fdr025", "jun-b6-fdr040keep", "jun-b7-fdr025", "jun-b7-fdr040keep"]
+    },
+    {
+      "id": "XD-04",
+      "spec": ["S2.21"],
+      "why": "The dummy tag is compared once, so 6, 7, 12 and 12 tagged and untagged duplicates become single edges in the 42-, 87- (fdr040_keep, r0) and 90-pathway merges.",
+      "stages": ["merge"],
+      "applies_when": {"raw_merge": true},
+      "allows": ["merge.graph"],
+      "seen_in": ["fdr044-r0-cxcl8-jun", "fdr044-r1-cxcl8-rhoa", "fdr044-r2-cxcl8-cdc42", "fdr044-r3-cxcl8-rac1", "fdr044-r4-cxcl8-rho-ko", "fdr044-r5-mcl1-stat3", "fdr044-r6-mcl1-creb1", "jun-b10-fdr025", "jun-b10-fdr040keep", "jun-b10-fdr050", "jun-b6-fdr025", "jun-b6-fdr040keep", "jun-b7-fdr025", "jun-b7-fdr040keep"]
+    },
+    {
+      "id": "XD-05",
+      "spec": ["S2.10"],
+      "why": "A skipped duplicate's score still counts, so some scores rise in raw merges, and frozen-clause counts may rise.",
+      "stages": ["merge"],
+      "applies_when": {"raw_merge": true},
+      "allows": ["merge.graph"],
+      "seen_in": []
+    },
+    {
+      "id": "XD-06",
+      "spec": ["S2.09"],
+      "why": "Component edges carry their own file's pathway, so 6 component edges per raw merge carry a different pathway list.",
+      "stages": ["merge"],
+      "applies_when": {"raw_merge": true},
+      "allows": ["merge.graph"],
+      "seen_in": []
+    },
+    {
+      "id": "XD-07",
+      "spec": ["S5.13"],
+      "why": "Self-loops leave the edge-relaxation count, so a witness that relaxed one costs less in 2.0.",
+      "stages": ["solve"],
+      "applies_when": {"fusion1_witness_relaxes_any": ["self_loop"]},
+      "allows": ["solve.frontier", "solve.answers", "solve.witness"],
+      "predicts": {"rule": "rescore_bound", "semantics": "fusion2"},
+      "seen_in": ["jun-b10-fdr040keep:out", "jun-b10-fdr050:out", "jun-b10-old:out"]
+    },
+    {
+      "id": "XD-08",
+      "spec": ["S4.15"],
+      "why": "Ids are resolved once per run, so in the old-master cases 57 or 58 ids of the full run's corridor change node (X05 settles which).",
+      "stages": ["corridor", "observations", "solve"],
+      "applies_when": {"id_in_several_nodes": true},
+      "allows": ["corridor.graph", "corridor.counts", "observations.counts", "solve.frontier", "solve.answers", "solve.witness"],
+      "seen_in": ["jun-b10-old"]
+    },
+    {
+      "id": "XD-09",
+      "spec": ["S2.13"],
+      "why": "The FSC joins the exception set by itself, where FuSION 1's batches had to list it; none of the 24 recorded runs leaves it out.",
+      "stages": ["exceptions", "merge"],
+      "applies_when": {"fsc_not_in_exceptions": true},
+      "allows": ["exceptions.set", "merge.graph"],
+      "seen_in": []
+    },
+    {
+      "id": "XD-10",
+      "spec": ["S5.17"],
+      "why": "A down-regulated FSC in the in case is inactive, where FuSION 1's lists forced it active and made the with-FSC solve UNSAT at every point.",
+      "stages": ["solve"],
+      "applies_when": {"fsc_down": true},
+      "allows": ["solve.frontier", "solve.answers", "solve.witness"],
+      "seen_in": ["toy-hsa15-wni-tsv-b10:in"]
+    },
+    {
+      "id": "XD-11",
+      "spec": ["S5.26"],
+      "why": "A witness at every SAT frontier point, so witnesses differ in general, and r5's (7, 0) and r6's (2, 8), whose FuSION 1 witness re-solves timed out, gain witnesses.",
+      "stages": ["solve"],
+      "applies_when": {"always": true},
+      "allows": ["solve.witness"],
+      "seen_in": ["fdr044-r5-mcl1-stat3:out", "fdr044-r6-mcl1-creb1:out"]
+    },
+    {
+      "id": "XD-12",
+      "spec": ["S5.09", "06.C14"],
+      "why": "Both edge bounds are clamped to R_e, the number of counted edges, with a warning (entry 176), where FuSION 1 wrapped an upper edge bound of 2^width or more; none of the 24, whose edge bound is 8 on corridors of 134 to 2138 edges.",
+      "stages": ["solve"],
+      "applies_when": {"edge_bound_wraps": true},
+      "allows": ["solve.frontier", "solve.answers"],
+      "seen_in": []
+    },
+    {
+      "id": "XD-13",
+      "spec": ["S5.03"],
+      "why": "Given inputs switch constraints on, where a FuSION 1 pathz3 line without the flag left them off: the six lines of experiment_1, experiment_2 and the comparison batches, none of the 39 KEGG cases.",
+      "stages": ["solve_inputs", "solve"],
+      "applies_when": {"pathz3_without_constraints_flag": true},
+      "allows": ["solve_inputs.counts", "solve.frontier", "solve.answers"],
+      "seen_in": []
+    },
+    {
+      "id": "XD-14",
+      "spec": ["S3.06"],
+      "why": "Values and thresholds are doubles instead of floats, so a value within float rounding of a threshold may change class; none in the EGF file.",
+      "stages": ["classify"],
+      "applies_when": {"value_near_threshold": true},
+      "allows": ["classify.lists"],
+      "seen_in": []
+    },
+    {
+      "id": "XD-15",
+      "spec": ["G1", "11.C2"],
+      "why": "Z3 5.3.3 instead of 4.8.12 (entry 173), unless X11 sends the pin back to the user: witnesses, check times and unknown answers may differ, and certified points must still match.",
+      "stages": ["solve"],
+      "applies_when": {"always": true},
+      "allows": ["solve.witness"],
+      "seen_in": []
+    },
+    {
+      "id": "XD-16",
+      "spec": ["S2.11"],
+      "why": "Indirect relations are dropped before nodes are made, so a box reached only through indirect relations no longer joins unions: in the reference run NFKB2 and RELB stay apart from NFKB1 and RELA, BAK1 and BAX become two nodes, and GNAL, GNAO1, HK1 to HK3, HKDC1 and VDAC1 leave; in the 87- and 90-pathway runs the receptor-tyrosine-kinase node loses TFG, TPM3, TPR, CCDC6 and NCOA4. Nodes are matched by member sets, never by key.",
+      "stages": ["merge"],
+      "applies_when": {"raw_merge": true},
+      "allows": ["merge.graph"],
+      "seen_in": ["fdr044-r0-cxcl8-jun", "fdr044-r1-cxcl8-rhoa", "fdr044-r2-cxcl8-cdc42", "fdr044-r3-cxcl8-rac1", "fdr044-r4-cxcl8-rho-ko", "fdr044-r5-mcl1-stat3", "fdr044-r6-mcl1-creb1", "jun-b10-fdr025", "jun-b10-fdr040keep", "jun-b10-fdr050", "jun-b6-fdr025", "jun-b6-fdr040keep", "jun-b7-fdr025", "jun-b7-fdr040keep"]
+    },
+    {
+      "id": "XD-17",
+      "spec": ["S4.11", "05.C2"],
+      "why": "The corridor's searches never follow self-loops, edges into a source or edges out of a target, so the nodes kept only through them leave too (entry 170): with XD-18, 108 nodes and 358 edges for the reference run against FuSION 1's 115 and 370, 547 and 2117 for the full run against 592 and 2138, and 253 and 1037 for the JUN b7 old master against 269 and 1049; observed genes kept only through trimmed edges leave the corridor, so every point of four old-master cases moves down by 1 in n (AREG, HBEGF).",
+      "stages": ["corridor", "observations", "solve_inputs", "solve"],
+      "applies_when": {"fusion1_corridor_trimmable_edge": true},
+      "allows": ["corridor.graph", "corridor.counts", "observations.counts", "solve_inputs.counts", "solve.frontier", "solve.answers", "solve.witness"],
+      "predicts": [{"rule": "counts", "corridor": {"jun-b10-fdr025": [108, 358], "jun-b10-old": [547, 2117], "jun-b7-old": [253, 1037]}}, {"rule": "rescore_bound", "semantics": "fusion2"}],
+      "seen_in": []
+    },
+    {
+      "id": "XD-18",
+      "spec": ["S4.12"],
+      "why": "A complex member is a corridor node only when kept in its own right: 3 of the reference run's 115 corridor nodes, 41 of the full run's 592 and 14 of the JUN b7 old master's 269 leave.",
+      "stages": ["corridor"],
+      "applies_when": {"fusion1_corridor_isolated_members": true},
+      "allows": ["corridor.graph", "corridor.counts"],
+      "seen_in": ["jun-b10-fdr025", "jun-b10-old", "jun-b7-old"]
+    },
+    {
+      "id": "XD-19",
+      "spec": ["S4.06", "S5.17"],
+      "why": "Excluding a gene also removes every complex that contains it, and avoiding a gene, on an avoid list or as an out case's FSC, forbids them (entries 170 and 229): r5's out witness at (4, 4) routes STAT1 to MYC through [STAT1+STAT3] with STAT3 avoided, so R2 does not apply there and 2.0's point may be costlier.",
+      "stages": ["corridor", "solve"],
+      "applies_when": {"excluded_or_avoided_in_complex": true},
+      "allows": ["corridor.graph", "corridor.counts", "solve.frontier", "solve.answers", "solve.witness"],
+      "seen_in": ["fdr044-r5-mcl1-stat3:out"]
+    },
+    {
+      "id": "XD-20",
+      "spec": ["S5.25", "06.C20"],
+      "why": "The frontier is the Pareto-minimal witness counts (entry 174), so a FuSION 1 point whose witness costs less moves to the witness's counts; none of the 24.",
+      "stages": ["solve"],
+      "applies_when": {"fusion1_witness_below_point": true},
+      "allows": ["solve.frontier", "solve.answers"],
+      "seen_in": []
+    },
+    {
+      "id": "XD-21",
+      "spec": ["S2.27", "S4.13", "02.C5"],
+      "why": "The legacy reader merges exact duplicate edges as it reads, where FuSION 1 merged them at the corridor copy: in the full run graph 2's 7,400 edges become 6,632; corridors and solves are unchanged.",
+      "stages": ["merge"],
+      "applies_when": {"fusion1_graph_duplicates": true},
+      "allows": ["merge.graph"],
+      "predicts": {"rule": "unchanged", "stages": ["corridor", "solve"]},
+      "seen_in": ["jun-b10-old"]
+    },
+    {
+      "id": "XD-22",
+      "spec": ["S2.07", "03.C5"],
+      "why": "A single KGML read is a one-file merge, so ids in two boxes of one pathway share a node (entry 166); no KEGG case reads a single KGML.",
+      "stages": ["merge"],
+      "applies_when": {"single_kgml_read": true},
+      "allows": ["merge.graph"],
+      "seen_in": []
+    },
+    {
+      "id": "XD-23",
+      "spec": ["S3.02", "S3.03", "04.C2"],
+      "why": "One decimal grammar: a value that is a number only by its prefix, such as 1,5, is skipped and reported, where FuSION 1 read it as 1 (entry 167); none of the 6,372 value tokens of the five two-column files.",
+      "stages": ["classify", "gsea"],
+      "applies_when": {"value_prefix_token": true},
+      "allows": ["classify.lists", "gsea.table", "gsea.shortlist"],
+      "seen_in": []
+    },
+    {
+      "id": "XD-24",
+      "spec": ["S3.08", "04.C3"],
+      "why": "Where one value per gene is needed, the largest magnitude, not FuSION 1's last line, and repeats=max_abs collapses rows before classification (entry 167); the reference cases' value files have unique ids.",
+      "stages": ["classify", "gsea"],
+      "applies_when": {"value_repeats_id": true},
+      "allows": ["classify.lists", "gsea.table", "gsea.shortlist"],
+      "seen_in": []
+    },
+    {
+      "id": "XD-25",
+      "spec": ["S3.03", "04.C10"],
+      "why": "A lone CR ends a line and a UTF-8 byte-order mark is dropped (entry 169); the real files have LF or CRLF line ends and no byte-order mark.",
+      "stages": ["classify", "gsea"],
+      "applies_when": {"value_lone_cr_or_bom": true},
+      "allows": ["classify.lists", "gsea.table", "gsea.shortlist"],
+      "seen_in": []
+    },
+    {
+      "id": "XD-26",
+      "spec": ["02.C7"],
+      "why": "Maplink relations are skipped by default (entry 161); no KGML of any reference case has one.",
+      "stages": ["merge"],
+      "applies_when": {"kgml_maplink": true},
+      "allows": ["merge.graph"],
+      "seen_in": []
+    },
+    {
+      "id": "XD-27",
+      "spec": ["08.C7"],
+      "why": "A draw whose hits all have value 0 gets the step 1/m with a warning, and an undefined FWER is 1.0, where gseapy's arithmetic gives NaN (entry 182); none on the real inputs.",
+      "stages": ["gsea"],
+      "applies_when": {"gsea_zero_draw": true},
+      "allows": ["gsea.table", "gsea.shortlist"],
+      "seen_in": []
+    },
+    {
+      "id": "XD-28",
+      "spec": ["08.C9"],
+      "why": "Equal |NES| are ordered by pathway id, where FuSION 1's unstable sort left them in no defined order (entry 182); no two of the 167 candidates tie.",
+      "stages": ["gsea"],
+      "applies_when": {"gsea_equal_nes": true},
+      "allows": ["gsea.table", "gsea.shortlist"],
+      "seen_in": []
+    },
+    {
+      "id": "XD-29",
+      "spec": ["S2.17"],
+      "why": "Boxes of one pathway that share an id share a node in any merge, as the order-independent union gives (entry 038), where FuSION 1's left fold can keep them apart with an id in two nodes (prompt log entry 360); every recorded raw merge has each id in one node, so only W7's synthetic merges show it.",
+      "stages": ["merge"],
+      "applies_when": {"pathway_id_in_two_boxes": true},
+      "allows": ["merge.graph"],
+      "seen_in": []
+    }
+  ]
+}

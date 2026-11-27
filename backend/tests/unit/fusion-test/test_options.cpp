@@ -141,11 +141,12 @@ TEST_CASE("fusion-test: the executable's exit codes are section 12's 0, 1, 2 and
   const auto none = fusion_test({});
   CHECK(none.exit_code == exit_harness);   // a usage error: the harness could not run
   CHECK_THAT(none.stderr_text, ContainsSubstring("no subcommand"));
-  for (const char* later : {"ref", "bench"}) {
-    const auto stub = fusion_test({later, "--tier", "t1"});
-    CHECK(stub.exit_code == exit_harness);
-    CHECK_THAT(stub.stderr_text, ContainsSubstring(std::string(later) == "ref" ? "comes with C4" : "come with C6"));
-  }
+  const auto stub = fusion_test({"bench", "--tier", "t1"});
+  CHECK(stub.exit_code == exit_harness);
+  CHECK_THAT(stub.stderr_text, ContainsSubstring("come with C6"));
+  const auto bad_tier = fusion_test({"ref", "--tier", "t9"});   // C4: a usage error, before any case runs
+  CHECK(bad_tier.exit_code == exit_harness);
+  CHECK_THAT(bad_tier.stderr_text, ContainsSubstring("--tier takes t1, t2 or t3"));
   const auto no_root = fusion_test({"data", "verify"}, {{"FUSION_TEST_DATA", ""}});
   CHECK(no_root.exit_code == exit_harness);
   CHECK_THAT(no_root.stderr_text, ContainsSubstring("no data root"));

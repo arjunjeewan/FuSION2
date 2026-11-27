@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "fusion/core/process.hpp"
 #include "fusion/testkit/data.hpp"
 #include "fusion/testkit/scratch.hpp"
 
@@ -34,10 +35,23 @@ struct Normaliser {
 };
 
 struct RunResult { int exit_code = -1; std::string out, err; std::filesystem::path run_dir; };
+// Starts a child through core::Process, one fork at a time in this process; the caller waits for it. Several
+// threads forking at once hung the reference runner (four threads spinning in user space and no child
+// started, about one run in three of two cases at once), so the kit's callers start children here and
+// wait for them in parallel.
+core::Process spawn(const core::ProcessSpec&);
 // Starts fusion through core::Process in the scratch directory, with stdin from the null device and env
 // added to its environment (11.C20's FUSION_HOME, FUSION_GNUPLOT, FUSION_DOT). run_dir is the run
-// directory it made: the --run-dir argument's, else the one run under <scratch>/runs/.
+// directory it made: the --run-dir argument's, else the one run under <scratch>/runs/. The child is
+// headless: DISPLAY and WAYLAND_DISPLAY are set empty, which batch::display_available() takes as unset,
+// except one that env names itself, so no window-plot line opens a window wherever a test runs (01.C20).
 RunResult run_fusion(const std::filesystem::path& exe, std::span<const std::string> args, const ScratchDir&,
+                     std::span<const std::pair<std::string, std::string>> env = {},
+                     std::chrono::milliseconds timeout = std::chrono::minutes(2));
+// The same in a folder the caller owns, such as the reference runner's case folder under its report
+// directory (the C4 note's "Preparing a case"). A timeout of 0 means none.
+RunResult run_fusion(const std::filesystem::path& exe, std::span<const std::string> args,
+                     const std::filesystem::path& working_dir,
                      std::span<const std::pair<std::string, std::string>> env = {},
                      std::chrono::milliseconds timeout = std::chrono::minutes(2));
 

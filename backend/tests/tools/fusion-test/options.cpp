@@ -92,7 +92,7 @@ void print_usage(std::ostream& out) {
          "  fusion-test e2e [--case ID]... [--update ID]... [--list] [--keep] [--fusion EXE] [--data DIR]\n"
          "      run the end-to-end cases; --update rewrites a case's expected/, --list prints the cases,\n"
          "      --keep keeps every case's scratch folder\n"
-         "  fusion-test ref ...      the reference runner (C4)\n"
+         "  fusion-test ref ...      the reference runner (C4); fusion-test ref --help for its options\n"
          "  fusion-test bench ...    the benchmarks (C6)\n\n"
          "  --fusion EXE   the fusion to run; default: the build's staged fusion\n"
          "  --data DIR     the data root; default: FUSION_TEST_DATA\n\n"

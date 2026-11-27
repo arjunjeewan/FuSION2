@@ -1,6 +1,6 @@
 // fusion-test, the driver of section 12's tests (12.C2, 12.C8; the C3 note): subcommand dispatch and the exit
 // codes 0 (no failure), 1 (a difference or a failure), 2 (the harness could not run) and 4 (everything skipped).
-// ref comes with C4 and bench with C6.
+// ref is the reference runner (C4); bench comes with C6.
 #include <iostream>
 #include <string>
 #include <vector>
@@ -11,6 +11,7 @@
 #include "fusion/testkit/data.hpp"
 #include "fusion/testkit/scratch.hpp"
 #include "options.hpp"
+#include "ref/ref.hpp"
 
 namespace {
 
@@ -18,10 +19,9 @@ using namespace fusion::fusiontest;
 namespace fs = std::filesystem;
 
 int dispatch(const Command& c) {
-  if (c.name == "ref" || c.name == "bench") {
-    std::cerr << "error: fusion-test " << c.name << " is not built yet: "
-              << (c.name == "ref" ? "the reference runner comes with C4" : "the benchmarks come with C6")
-              << " (docs/phase3/plan.md)\n";
+  if (c.name == "ref") return fusion::reftest::command(c.rest, std::cout, std::cerr);
+  if (c.name == "bench") {
+    std::cerr << "error: fusion-test bench is not built yet: the benchmarks come with C6 (docs/phase3/plan.md)\n";
     return exit_harness;
   }
   const std::optional<fs::path> data = data_dir(c);

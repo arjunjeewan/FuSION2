@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <map>
+#include <mutex>
 #include <sstream>
 #include <tuple>
 
@@ -19,17 +20,31 @@ using core::Json;
 
 // ---------------------------------------------------------------- running fusion
 
+core::Process spawn(const core::ProcessSpec& spec) {
+  static std::mutex lock;
+  std::lock_guard guard(lock);
+  return core::Process::spawn(spec);
+}
+
 RunResult run_fusion(const fs::path& exe, std::span<const std::string> args, const ScratchDir& scratch,
+                     std::span<const std::pair<std::string, std::string>> env, std::chrono::milliseconds timeout) {
+  return run_fusion(exe, args, scratch.path(), env, timeout);
+}
+
+RunResult run_fusion(const fs::path& exe, std::span<const std::string> args, const fs::path& working_dir,
                      std::span<const std::pair<std::string, std::string>> env, std::chrono::milliseconds timeout) {
   core::ProcessSpec spec;
   spec.program = exe;
   spec.args.assign(args.begin(), args.end());
-  spec.working_dir = scratch.path();
+  spec.working_dir = working_dir;
   spec.env_set.assign(env.begin(), env.end());
+  for (const char* display : {"DISPLAY", "WAYLAND_DISPLAY"})   // headless unless the caller names one (01.C20)
+    if (std::none_of(env.begin(), env.end(), [&](const auto& kv) { return kv.first == display; }))
+      spec.env_set.emplace_back(display, "");
   spec.input = core::ProcessSpec::Input::null;
   spec.output = core::ProcessSpec::Output::capture;
   spec.timeout = timeout;
-  const core::ProcessResult r = core::run_process(spec);
+  const core::ProcessResult r = spawn(spec).wait();
   RunResult out;
   out.exit_code = r.exit_code;
   out.out = r.stdout_text;
@@ -38,13 +53,13 @@ RunResult run_fusion(const fs::path& exe, std::span<const std::string> args, con
   for (std::size_t k = 0; k + 1 < args.size(); ++k)
     if (args[k] == "--run-dir") {
       const fs::path p = core::path_from_utf8(args[k + 1]);
-      out.run_dir = p.is_absolute() ? p : scratch.path() / p;
+      out.run_dir = p.is_absolute() ? p : working_dir / p;
       return out;
     }
   std::error_code ec;
   std::vector<fs::path> runs;
-  if (fs::is_directory(scratch.path() / "runs", ec))
-    for (const auto& entry : fs::directory_iterator(scratch.path() / "runs", ec))
+  if (fs::is_directory(working_dir / "runs", ec))
+    for (const auto& entry : fs::directory_iterator(working_dir / "runs", ec))
       if (fs::exists(entry.path() / "run.json", ec)) runs.push_back(entry.path());
   std::sort(runs.begin(), runs.end());
   if (!runs.empty()) out.run_dir = runs.back();

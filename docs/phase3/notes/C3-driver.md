@@ -92,6 +92,7 @@ A failing case keeps its scratch directory and prints its path (`ScratchDir::kee
   - One CTest test per case in every tier, T2 and T3 included.
 - **Why:** per-case tests run in parallel under `ctest -j`, and CI's log names the case that failed. T2 needs its findings in one `report.json` (12, Reports), and starts about 15 minutes of solves on 8 workers, so a bare `ctest` on a machine with `FUSION_TEST_DATA` set must not start it. T3 is booked with the user (12.C1; prompt log entry 209).
 - **Decision:** as proposed (prompt log entry 341)
+- **As built (prompt log entry 376):** `ref: t2` is labelled `ref;t2;kegg`, without `slow`, and the `dev` test preset leaves out `t2` as well as `slow` and `bench`, so `ctest -L slow` lists only the three slow tests and never starts the booked T2. *Prompt log entry 379:* `ref: t2` runs only when `FUSION_T2_BOOKED=1` is set, as the `t2` test preset sets it; otherwise it is skipped, so a plain `ctest` cannot start T2 either.
 
 ### C3.2 · The files the data root generates
 - **Proposed:** `fusion-test data record` adds W3's, W4's and W5's outputs to `data-manifest.json`, each with its work item and report as `from` (for example `"W3 reports/w3/20261117T183723"`).

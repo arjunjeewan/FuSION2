@@ -32,15 +32,16 @@
   "testPresets": [
     {
       "name": "dev",
-      "displayName": "Every test but the slow and the benchmarks",
+      "displayName": "Every test but the slow ones, the benchmarks and T2",
       "configurePreset": "dev",
       "output": {"outputOnFailure": true},
-      "filter": {"exclude": {"label": "^(slow|bench)$"}}
+      "filter": {"exclude": {"label": "^(slow|bench|t2)$"}}
     },
     {
       "name": "t2",
       "displayName": "T2, the fast reference tier: the data root's tests, in the Release build",
       "configurePreset": "ci-linux",
+      "environment": {"FUSION_T2_BOOKED": "1"},
       "output": {"outputOnFailure": true},
       "filter": {"include": {"label": "^(kegg|t2)$"}}
     }

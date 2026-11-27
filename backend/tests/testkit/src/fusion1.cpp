@@ -408,19 +408,30 @@ std::vector<GseaRow> read_gsea_table(const std::filesystem::path& path) {
 ConsoleFacts read_console(const std::filesystem::path& path) {
   ConsoleFacts facts;
   for (const std::string& line : lines_of(slurp(path))) {
-    if (line.starts_with("Up: ") && line.find(" Down: ") != std::string::npos) {
+    if (line.starts_with("pathz3 ")) {   // FuSION 1 echoes each batch line before it runs it
+      facts.solves.emplace_back();
+    } else if (line.starts_with("Up: ") && line.find(" Down: ") != std::string::npos) {
       const auto v = integers(line);
-      if (v.size() >= 2) facts.up_down.emplace_back(v[0], v[1]);
+      if (v.size() >= 2) {
+        facts.up_down.emplace_back(v[0], v[1]);
+        if (!facts.solves.empty()) facts.solves.back().up_down = std::pair{v[0], v[1]};
+      }
     } else if (line.starts_with("New graph ") && line.find(" has ") != std::string::npos &&
                line.find(" nodes ") != std::string::npos) {
       const auto v = integers(line);
       if (v.size() >= 3) facts.corridor_sizes.emplace_back(v[1], v[2]);
     } else if (line.starts_with("[coexpression] emitted ")) {
       const auto v = integers(line);
-      if (!v.empty()) facts.coexpression_clauses.push_back(v[0]);
+      if (!v.empty()) {
+        facts.coexpression_clauses.push_back(v[0]);
+        if (!facts.solves.empty()) facts.solves.back().coexpression_clauses = v[0];
+      }
     } else if (line.starts_with("[frozen-edge] emitted ")) {
       const auto v = integers(line);
-      if (!v.empty()) facts.frozen_clauses.push_back(v[0]);
+      if (!v.empty()) {
+        facts.frozen_clauses.push_back(v[0]);
+        if (!facts.solves.empty()) facts.solves.back().frozen_clauses = v[0];
+      }
     }
   }
   return facts;

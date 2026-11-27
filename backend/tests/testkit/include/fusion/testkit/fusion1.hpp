@@ -40,6 +40,13 @@ struct ConsoleFacts {
   std::vector<std::pair<int, int>> up_down;          // "Up: 3 Down: 0", one per pathz3
   std::vector<std::pair<int, int>> corridor_sizes;   // "New graph 86 has 115 nodes 370 edges", one per fb_rch
   std::vector<int> coexpression_clauses, frozen_clauses;   // "[coexpression] emitted 1 clauses", ...
+  // The same facts by pathz3 call, in batch order: each block runs from FuSION 1's echo of a pathz3 line
+  // ("pathz3 0 0 ...") to the next, so a solve's counts stay with it when a family is off in another.
+  struct Solve {
+    std::optional<std::pair<int, int>> up_down;
+    std::optional<int> coexpression_clauses, frozen_clauses;
+  };
+  std::vector<Solve> solves;
 };
 
 struct GseaRow {                            // one row of a .gsea.tsv table, by column name

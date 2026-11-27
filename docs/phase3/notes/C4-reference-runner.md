@@ -149,6 +149,27 @@ The test hooks (1210-1214): on a toy case with injected differences, the runner 
 - **Alternatives:** follow the sketch literally.
 - **Why:** each addition serves a row or a rule that section 12 already states.
 - **Decision:** as proposed (prompt log entry 342)
+- **As built (prompt log entries 375 to 381):** C4 is `backend/tests/tools/fusion-test/ref/` (14 files, 3,425 lines), `booked.cmake`, the self-tests in `unit/fusion-test/ref/test_ref.cpp` (7 cases), the 28 entries of `expected-differences.json` over a closed list of 23 predicates, and the toys' `drop_pathz3_tail` edits, which `make_cases.py` writes. The user accepted, as a group, the kit's three additions:
+  - `run_fusion` in a folder the caller owns, such as a case folder under the report directory;
+  - `ConsoleFacts::solves`, FuSION 1's console counts per `pathz3` call, so each solve keeps its own;
+  - `testkit::spawn`, which starts one child at a time. With several threads starting children at once, the runner hung in about one run in three, with four threads busy and no child started. The cause is not known: a stress test of `core::Process` alone, 7,200 concurrent starts, never hung.
+
+  The user also decided:
+  - pinned solves name the FSC as the ids that only one arm's list holds: for `in`, the with-FSC line's essential list less the without-FSC line's; for `out`, the without-FSC line's avoid list less the with-FSC line's. This is how S5.17 describes FuSION 1's FSC batches;
+  - the defect the runner found, a reused corridor that `results.json` named by a step that wrote no file, is fixed in batch, in a commit of its own;
+  - XD-17 applies only when FuSION 1's corridor holds a self-loop, an edge into a source or an edge out of a target (`fusion1_corridor_trimmable_edge`), instead of always;
+  - the observations stage counts both sides with FuSION 1's rule (S5.07), so an out case's FSC leaves only the up genes;
+  - `run_fusion` gives every `fusion` an empty `DISPLAY` and `WAYLAND_DISPLAY`, so no test opens a window on a desktop session;
+  - `ref: t2` is labelled `ref;t2;kegg`, the `dev` preset leaves out `t2`, and `booked.cmake` runs it only with `FUSION_T2_BOOKED=1`, which the `t2` preset sets.
+
+  T1 on 2026-11-27 took 21 s on 3 workers:
+  - all 24 frontiers equal FuSION 1's, chained (with the `.dat` files byte-equal) and pinned, except `toy-hsa15-wni-tsv-b10`'s in case under XD-10, where FuSION 1 has no point and 2.0 has three;
+  - every 2.0 witness passes R1;
+  - verification proves 23 of the 24 frontiers with 175 checks;
+  - all 12 repeat runs equal the first;
+  - the first `--record-seen` adds `toy-hsa15-wni-tsv-b10:in` to XD-10.
+
+  The runner's KEGG paths have run only as far as FuSION 1's facts and signals on two cases, read only. T2's first run is booked with the user.
 
 ## 6. Cost
 

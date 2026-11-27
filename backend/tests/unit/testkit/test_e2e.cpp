@@ -4,6 +4,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
 
+#include <cstdlib>
 #include <fstream>
 #include <sstream>
 
@@ -205,6 +206,27 @@ TEST_CASE("testkit: run_fusion and read_run on a toy run: every witness passes t
   const TreeDiff d = compare_tree(ran.run_dir, golden.path(), only_results);
   REQUIRE(d.differing.size() == 1);
   CHECK_THAT(d.differing[0], ContainsSubstring("frontier"));
+}
+
+TEST_CASE("testkit: run_fusion's child is headless unless the caller names a display (01.C20)", "[unit][testkit][01.C20]") {
+#ifdef _WIN32
+  SKIP("a POSIX shell prints the child's environment here");
+#else
+  // The test's own display, as a shell in a desktop session has it; the child must not see it.
+  const char* had = std::getenv("DISPLAY");
+  const std::string saved = had ? had : "";
+  ::setenv("DISPLAY", ":1", 1);
+  ScratchDir scratch("headless");
+  const std::vector<std::string> args{"-c", "printf '%s|%s|%s' \"${DISPLAY-unset}\" \"${WAYLAND_DISPLAY-unset}\" \"$FUSION_X\""};
+  const RunResult plain = run_fusion("/bin/sh", args, scratch);
+  const std::vector<std::pair<std::string, std::string>> named{{"DISPLAY", ":7"}, {"FUSION_X", "y"}};
+  const RunResult own = run_fusion("/bin/sh", args, scratch.path(), named);
+  if (had) ::setenv("DISPLAY", saved.c_str(), 1);
+  else ::unsetenv("DISPLAY");
+  CHECK(plain.exit_code == 0);
+  CHECK(plain.out == "||");                // both set, and empty: display_available() is false
+  CHECK(own.out == ":7||y");               // a display the caller names stays; the other is still empty
+#endif
 }
 
 TEST_CASE("testkit: the recording StepContext keeps log lines, events, files and journals", "[unit][testkit]") {

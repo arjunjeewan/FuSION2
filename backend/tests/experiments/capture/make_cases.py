@@ -24,7 +24,9 @@ Paths under "fusion1" are relative to reference/<id>/ in the data root, or
 to backend/tests/reference/synthetic/<id>/ for a toy case. "batch" is
 relative to backend/tests/fixtures/. "origin" names the FuSION 1 files a
 case comes from; it is not in section 12's Case struct, and the runner may
-ignore it.
+ignore it. "edits" (C4.1, the C4 note) lists the batch changes the reference
+runner applies after the path map, each with its reason; only the toy cases
+have them.
 """
 import json
 import re
@@ -48,6 +50,9 @@ EGF_HELA = [
 ]
 MODEL_PLACEHOLDER = "/ABSOLUTE/PATH/TO/FuSION/macOS/model_example"
 TOY_ROOT = "/fusion-test/case"  # the case root that W4's rebuilt toy batches name
+# C4.1: the GUI template's pathz3 tail holds the unfilled placeholders %__a21__% to %__a23__%.
+TOY_EDITS = [{"drop_pathz3_tail": "%__a21__%",
+              "why": "S5.02: the GUI template's unfilled placeholders are an error in 2.0"}]
 
 RECORDED = [  # (id, folder under runs/, tier)
     ("jun-b6-old", "egfr_cxcl8_jun_b6_nr8_er8", "T2"),
@@ -236,7 +241,7 @@ def regenerated_dir(data_root, case_id, synthetic):
 
 
 def regenerated_entry(case_id, tier, batch_rel, origin, path_map, old_run_dir, batch_text, data_root,
-                      synthetic=False):
+                      synthetic=False, edits=None):
     new_dir = regenerated_dir(data_root, case_id, synthetic)
     run_dir = new_dir or old_run_dir
     block = fusion1_block(run_dir, "f1/run/", "f1/run_console.log", required=False)
@@ -247,8 +252,10 @@ def regenerated_entry(case_id, tier, batch_rel, origin, path_map, old_run_dir, b
         "source": "regenerated" if new_dir else "regenerated (pending: artefacts from the recorded outputs)",
         "origin": origin,
         "path_map": path_map,
-        "fusion1": block,
     }
+    if edits:
+        entry["edits"] = edits
+    entry["fusion1"] = block
     return finish(entry, seconds(run_dir, block["solve"], batch_text))
 
 
@@ -296,8 +303,11 @@ def toy_cases(root):
         origin = {"outputs": f"{TOY_DIR}/{d.name}", "network": f"example/{network}",
                   "values": f"example/{values}.{ext}", "fsc": fsc, "bound": int(bound)}
         path_map = [{"from": TOY_ROOT, "to": "$CASE"}]
+        batch = Path(__file__).resolve().parents[2] / "fixtures" / "toy-batches" / f"{case_id}.batch"
+        if batch.exists() and TOY_EDITS[0]["drop_pathz3_tail"] not in batch.read_text():
+            fail(f"{batch}: the placeholder its edit names has gone")
         cases.append(regenerated_entry(case_id, "T1", f"toy-batches/{case_id}.batch", origin, path_map,
-                                       d, "", None, synthetic=True))
+                                       d, "", None, synthetic=True, edits=TOY_EDITS))
     if len(cases) != 12:
         fail(f"expected 12 toy cases, found {len(cases)}")
     return cases

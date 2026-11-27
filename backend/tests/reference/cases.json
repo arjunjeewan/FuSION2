@@ -20,6 +20,12 @@
           "to": "$CASE"
         }
       ],
+      "edits": [
+        {
+          "drop_pathz3_tail": "%__a21__%",
+          "why": "S5.02: the GUI template's unfilled placeholders are an error in 2.0"
+        }
+      ],
       "fusion1": {
         "up": "f1/run/up_reg",
         "down": "f1/run/down_reg",
@@ -60,6 +66,12 @@
         {
           "from": "/fusion-test/case",
           "to": "$CASE"
+        }
+      ],
+      "edits": [
+        {
+          "drop_pathz3_tail": "%__a21__%",
+          "why": "S5.02: the GUI template's unfilled placeholders are an error in 2.0"
         }
       ],
       "fusion1": {
@@ -104,6 +116,12 @@
           "to": "$CASE"
         }
       ],
+      "edits": [
+        {
+          "drop_pathz3_tail": "%__a21__%",
+          "why": "S5.02: the GUI template's unfilled placeholders are an error in 2.0"
+        }
+      ],
       "fusion1": {
         "up": "f1/run/up_reg",
         "down": "f1/run/down_reg",
@@ -144,6 +162,12 @@
         {
           "from": "/fusion-test/case",
           "to": "$CASE"
+        }
+      ],
+      "edits": [
+        {
+          "drop_pathz3_tail": "%__a21__%",
+          "why": "S5.02: the GUI template's unfilled placeholders are an error in 2.0"
         }
       ],
       "fusion1": {
@@ -188,6 +212,12 @@
           "to": "$CASE"
         }
       ],
+      "edits": [
+        {
+          "drop_pathz3_tail": "%__a21__%",
+          "why": "S5.02: the GUI template's unfilled placeholders are an error in 2.0"
+        }
+      ],
       "fusion1": {
         "up": "f1/run/up_reg",
         "down": "f1/run/down_reg",
@@ -228,6 +258,12 @@
         {
           "from": "/fusion-test/case",
           "to": "$CASE"
+        }
+      ],
+      "edits": [
+        {
+          "drop_pathz3_tail": "%__a21__%",
+          "why": "S5.02: the GUI template's unfilled placeholders are an error in 2.0"
         }
       ],
       "fusion1": {
@@ -272,6 +308,12 @@
           "to": "$CASE"
         }
       ],
+      "edits": [
+        {
+          "drop_pathz3_tail": "%__a21__%",
+          "why": "S5.02: the GUI template's unfilled placeholders are an error in 2.0"
+        }
+      ],
       "fusion1": {
         "up": "f1/run/up_reg",
         "down": "f1/run/down_reg",
@@ -310,6 +352,12 @@
         {
           "from": "/fusion-test/case",
           "to": "$CASE"
+        }
+      ],
+      "edits": [
+        {
+          "drop_pathz3_tail": "%__a21__%",
+          "why": "S5.02: the GUI template's unfilled placeholders are an error in 2.0"
         }
       ],
       "fusion1": {
@@ -354,6 +402,12 @@
           "to": "$CASE"
         }
       ],
+      "edits": [
+        {
+          "drop_pathz3_tail": "%__a21__%",
+          "why": "S5.02: the GUI template's unfilled placeholders are an error in 2.0"
+        }
+      ],
       "fusion1": {
         "up": "f1/run/up_reg",
         "down": "f1/run/down_reg",
@@ -394,6 +448,12 @@
         {
           "from": "/fusion-test/case",
           "to": "$CASE"
+        }
+      ],
+      "edits": [
+        {
+          "drop_pathz3_tail": "%__a21__%",
+          "why": "S5.02: the GUI template's unfilled placeholders are an error in 2.0"
         }
       ],
       "fusion1": {
@@ -438,6 +498,12 @@
           "to": "$CASE"
         }
       ],
+      "edits": [
+        {
+          "drop_pathz3_tail": "%__a21__%",
+          "why": "S5.02: the GUI template's unfilled placeholders are an error in 2.0"
+        }
+      ],
       "fusion1": {
         "up": "f1/run/up_reg",
         "down": "f1/run/down_reg",
@@ -478,6 +544,12 @@
         {
           "from": "/fusion-test/case",
           "to": "$CASE"
+        }
+      ],
+      "edits": [
+        {
+          "drop_pathz3_tail": "%__a21__%",
+          "why": "S5.02: the GUI template's unfilled placeholders are an error in 2.0"
         }
       ],
       "fusion1": {
