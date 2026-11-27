@@ -345,7 +345,7 @@ The reference experiment, shortened:
 ### Stop (09.C7, 09.C8)
 
 1. A request arrives: the file `stop` appears in the run directory, or the executable's handler for Ctrl-C or SIGTERM sets a flag (09.C8). Only the file's existence matters. Its content is kept in `run.json` as text, as the stop's note; section 10 writes it under a temporary name and renames it.
-2. The watcher thread, which looks every 0.5 s, calls `StopSource::request_stop()` once and emits `stop.requested`.
+2. The watcher thread, which looks every 0.5 s, calls `StopSource::request_stop()` once and emits `stop.requested`. *Phase 3 (prompt log entry 356):* it first emits the event and writes `run.json`'s stop record, and only then calls `request_stop()`. A step that ends at once can otherwise let the interpreter write the final `run.json` before the record, which is then lost.
 3. Registered callbacks run. The solve's calls `z3::context::interrupt()`, Z3's soft interrupt (`/usr/include/z3++.h:228-230` in the 4.8.12 headers on this machine). Every Z3 solver runs with `ctrl_c=false`, so a Ctrl-C during a check reaches only `fusion`'s handler (11.C18).
 4. Each step tests its `StopToken` at safe points (between checks, pathways, permutation batches, pages) and throws `Stopped`. The interrupted check is not an answer: it is neither cached nor journaled, and a resume asks it again (section 06).
 5. The interpreter marks the step `stopped` and the later steps `skipped`, writes `run.json` with status `stopped`, emits `run.finished` and exits with status 3. Every finished check is already on disk (09.C6), so the stop has nothing extra to save.

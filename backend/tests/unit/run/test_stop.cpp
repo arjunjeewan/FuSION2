@@ -12,14 +12,23 @@ TEST_CASE("run: a stop file gives stop.requested within 1 s; the step sees its t
     Run run = Run::start(options);
     Run::Step s = run.begin(step("pathz3", "pathz3", 11));
     std::atomic<int> interrupts{0};
-    const core::StopCallback interrupt(s.context().stop, [&] { ++interrupts; });   // the solve's z3 interrupt
+    std::atomic<bool> recorded_first{false};
+    // The solve's z3 interrupt. When a step first sees the stop, run.json and the event log already hold it,
+    // so a step that ends at once cannot finish the run without them (prompt log entry 356).
+    const core::StopCallback interrupt(s.context().stop, [&] {
+        const core::Json now = read_json(run.dir() / "run.json");
+        recorded_first = now["stop"].is_object() && now["stop"]["source"] == "file" &&
+                         of_type(read_lines(run.dir() / "events.jsonl"), "stop.requested").size() == 1;
+        ++interrupts;
+    });
     // As section 10 writes it: under a temporary name, then renamed. Only the file's existence matters.
     write_file(run.dir() / "stop.note", "asked by the frontend\n");
     fs::rename(run.dir() / "stop.note", run.dir() / "stop");
     const auto asked = std::chrono::steady_clock::now();
     REQUIRE(wait_for([&] { return s.context().stop.stop_requested(); }));
     CHECK(std::chrono::steady_clock::now() - asked < 1000ms);
-    CHECK(interrupts == 1);
+    REQUIRE(wait_for([&] { return interrupts == 1; }));   // callbacks run just after the flag, as std::stop_token's do
+    CHECK(recorded_first);
     CHECK_THROWS_AS(s.context().stop.throw_if_stopped(), core::Stopped);
     CHECK(run.stop().stop_requested());
     run.end(s, StepStatus::stopped);

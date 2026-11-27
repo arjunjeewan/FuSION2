@@ -777,15 +777,19 @@ void RunState::poll_stop() {
 void RunState::request(const std::string& source) {
     stop_at = SteadyClock::now();
     stop_seen = true;
-    stop_source.request_stop();                  // the callbacks run here, once: the solve's interrupt
+    // Recorded before any step sees the stop: a step that ends at once lets Run::finish write the final
+    // run.json, and a record made after the signal would then be lost (prompt log entry 356).
     const std::string note = source == "file" ? read_note(dir / "stop") : std::string();
     events->emit("stop.requested", {{"source", source}}, nullptr);
     log.info(source == "file" ? "Stop requested by the stop file; stopping at the next safe point"
                               : "Stop requested by a signal; stopping at the next safe point");
-    std::lock_guard guard(mutex);
-    doc["stop"] = {{"source", source}, {"time", core::utc_timestamp(std::chrono::system_clock::now())},
-                   {"note", note}, {"forced", false}};
-    touch(true);
+    {
+        std::lock_guard guard(mutex);
+        doc["stop"] = {{"source", source}, {"time", core::utc_timestamp(std::chrono::system_clock::now())},
+                       {"note", note}, {"forced", false}};
+        touch(true);
+    }
+    stop_source.request_stop();                  // the callbacks run here, once: the solve's interrupt
 }
 
 void RunState::force() {
