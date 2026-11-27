@@ -9761,3 +9761,138 @@ Committing the output-order fix of poll 361, and the log.
 - Later: Keep the entries for the next log commit.
 
 **Answer:** Commit it (Recommended)
+
+## 366 · Note · The W7 subagent's second report, on entry 363 · 2026-11-27 19:18
+
+It made the five changes and committed nothing.
+- **Runs added:** 18, for the generated sets 32, 38, 41, 42, 44 and 49, one at a time at nice 19 at a load of about 29: 6.3 s, every run exit 0 with a graph. merge-sets.tsv gains filter and note columns, and those sets' set.json gives their own filters with a note that they hold none of the relations the setting acts on.
+- **Result, 132 runs:** 79 compared, all 79 equal to both oracles, so the W7 test passes. 53 skipped, 48 of which really differ: XD-03 13 of 13, XD-04 21 of 21, XD-05 6 of 6, XD-16 3 of which 0 differ, XD-22 18 of 18, XD-29 22 of which 20 differ (a run can count under several). The 5 equal skipped runs: merge-25's three, under XD-16, whose only indirectly reached entry is a one-id box; and merge-00 de and merge-01 de, under XD-29, where FuSION 1's fold did join the boxes.
+- **Size:** 1,053 KB in 602 files, the wgx files 784 KB of it.
+- **Files:** test_reference.cpp (XD-29, the skipped runs compared and reported, the new left-out rule, the oracle at each set's own settings), merge-sets.tsv and six new folders; the toy-case selection in solve's kit.cpp (+2 −1), corridor's test_reference.cpp (+2 −1) and testkit's test_fusion1.cpp (+1). The merge, corridor, solve and testkit suites pass outside the slow tier, with zero warnings. Its scratch runs are in the data root's scratch/w7-20261127-191202-*.
+- **Asks:** should XD-16's trigger cover only groups and boxes with multi-id units? merge-25's three equal runs would then be compared.
+
+## 367 · Note · The C3 subagent's second report, on entry 364 · 2026-11-27 19:18
+
+It made the changes and committed nothing.
+- The normaliser masks the size and sha256 of every output in run.json (each step's and the run's own) and case.json's wall_s and cpu_clock_s (testkit/src/e2e.cpp +11 −6, with tests in unit/testkit/test_e2e.cpp +15 −5).
+- The engine (engine.cpp, 467 to 536 lines): with processes above 1 it starts that many fusions at once with no --run-dir, finds their run directories in the batch's folder (or --root) and requires one per process, checks each process and each run, and compares each run with the case's one expected/; --update records the golden from the first run and compares the others with it; a case whose expected/ is empty or absent compares no file.
+- Two new driver tests (two processes, where a shared run directory is refused; a case with no golden): the driver is 1,385 lines, its tests 827 lines and 19 cases.
+- **Tests:** the dev preset passes 578 of 578 in 26.0 s with the data root set, none skipped; the real-fusion test passed 10 of 10 runs, five at a time, with Claude's output-order fix (370aea8).
+- **Asks:** a case with both processes above 1 and actions is refused with exit 2.
+
+## 368 · Poll · 2026-11-27 19:21
+
+W7's ask (entry 366) and C3's (entry 367).
+
+**Q1 (XD-16).** W7's XD-16 trigger skips any run in which an entry is reached only through indirect relations. XD-16 says such a box 'no longer joins unions'. But a one-id box can't join a union: it adds no id that a node doesn't already hold, and a group's complex or a collapsing box's multi-id unit is what can. merge-25's three runs are skipped under XD-16 although FuSION 1's graph equals both oracles there, because their only indirectly reached entry is a one-id box. Should the trigger be narrowed?
+
+- Groups, multi-id units (Recommended): XD-16 applies only when the indirectly reached entry is a group, or a box that gives a multi-id unit. merge-25's three runs are then compared. The W7 subagent makes the change.
+- Keep the trigger: Any indirectly reached entry still skips the run, so merge-25's three runs stay skipped.
+
+**Answer:** Groups, multi-id units (Recommended)
+
+**Q2 (Actions).** C3's engine refuses a case that has both processes above 1 and actions (for example, a stop request sent when an event appears), with exit 2. With several processes it is unclear which run an action should go to. None of C5's listed cases needs both: the two-process case has no actions, and the stop case runs one process. What should happen?
+
+- Keep the refusal (Recommended): The engine refuses the combination with a message saying why, and a case that needs it comes back to you as a decision.
+- Every process: Each action goes to every process's run when its event appears there.
+
+**Answer:** Keep the refusal (Recommended)
+
+## 369 · Subagent prompt · XD-16's trigger, to the W7 subagent · 2026-11-27 19:21
+
+Sent to the W7 subagent of entry 354, resumed with its context (poll 368, Q1). The message as sent:
+
+```text
+Claude here, with the user's answer on XD-16 (prompt log entry 368): narrow its trigger. XD-16 applies only when the entry reached only through indirect relations is a group, or a box that gives a multi-id unit (a collapsing box with two or more ids outside the exception set); a one-id box, or a box that splits into one-id units, no longer triggers it. merge-25's three runs are then compared. Make only that change, rerun the merge suite outside the slow tier and the slow bounded layer, and reply in at most 100 words: the new counts (compared, equal, skipped by XD, and of the skipped how many differ) and the files changed. The rules of your first brief still hold, and nothing else in the tree is yours to change.
+```
+
+## 370 · Note · The W7 subagent's third report, on entry 369 · 2026-11-27 19:24
+
+XD-16 now applies only to a group, or a box that gives a multi-id unit, reached only through indirect relations, so merge-25's three runs are compared. Of the 132 runs, 82 are compared and all 82 equal both oracles; 50 are skipped, and 48 of them really differ: XD-03 13 of 13, XD-04 21 of 21, XD-05 6 of 6, XD-16 none, XD-22 18 of 18, XD-29 22 of which 20 differ (merge-00 de and merge-01 de, where FuSION 1's fold did join the boxes). The only file changed is backend/tests/unit/merge/test_reference.cpp (the trigger and its header comment). It builds with no warnings; ctest -L merge -LE slow passes 53 of 53, and the slow bounded layer passes.
+
+## 371 · Poll · 2026-11-27 19:35
+
+Committing C3 and W7, and the log.
+
+**Q1 (C3 commit).** Commit C3, the fusion-test driver? On the final tree, 578 of 578 tests pass in the dev preset (26 s, data root set, none skipped) and the 3 slow tests pass, with no warnings. The commit has 14 new files: backend/tests/tools/fusion-test/ (11, 1,385 lines) and backend/tests/unit/fusion-test/ (3, 827 lines). It also changes CMakePresets.json (ci-linux, and the dev and t2 test presets), backend/tests/CMakeLists.txt (+11), data-manifest.json (745 files recorded: W2 1, W3 157, W4 576, W5 11), the kit's normaliser and its test (the masks of entries 361 and 362), the C3 note (the as-built record), and only the masks note in section 12. W7's files go in a separate commit.
+
+- Commit it (Recommended): Stages these paths by name, and section 12's masks note alone. Nothing is pushed. Its preview:
+  ```text
+  Add fusion-test, the driver of section 12's tests
+
+  C3 of Phase 3. fusion-test dispatches the data, e2e, ref and
+  bench subcommands with section 12's exit codes; ref and bench
+  are stubs until C4 and C6. data verifies the data root against
+  the manifest, copies a second machine's root with init, and
+  records generated files with record, which added W2's to W5's
+  745 files to data-manifest.json. The e2e engine runs each case
+  in a fresh scratch folder, checks its exit status and stderr,
+  and compares the run with its goldens through the kit's
+  normaliser, which now also masks run.json's output sizes and
+  hashes, case.json's times and the events' ms. A case may start
+  several processes, and one without goldens checks only its
+  exit status. Each case becomes a CTest test, and the presets
+  gain ci-linux and the dev and t2 test presets. The C3 note and
+  section 12 record the decisions made as it was built.
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+  Files:
+    CMakePresets.json
+    backend/tests/CMakeLists.txt
+    backend/tests/reference/data-manifest.json
+    backend/tests/testkit/src/e2e.cpp
+    backend/tests/unit/testkit/test_e2e.cpp
+    backend/tests/tools/fusion-test/  (11 new)
+    backend/tests/unit/fusion-test/  (3 new)
+    docs/phase3/notes/C3-driver.md
+    docs/architecture/12-tests.md  (the masks note only)
+  ```
+- Not yet: Keep it uncommitted for now.
+
+**Answer:** Commit it (Recommended)
+
+**Q2 (W7 commit).** Then commit W7? In the W7 test, 82 of 132 runs are compared and all match both oracles. 50 are skipped under an expected difference, and 48 of those really differ. The commit has 44 folders under backend/tests/reference/synthetic/merge-NN/ with merge-sets.tsv (600 files, 1.1 MB, all made-up ids), plus backend/tests/unit/merge/bounded_sets.hpp, test_reference.cpp (the comparison and the hidden writer) and backend/tests/experiments/w7/run_merges.py. It also changes test_split.cpp (its sets move to the header), run_fusion1.py (--inputs), the toy-case selection in three suites, and section 12's other notes (XD-29, the triggers, and W7's size).
+
+- Commit it (Recommended): Stages these paths by name, and the rest of section 12. Nothing is pushed. Its preview:
+  ```text
+  Record FuSION 1's merges of the synthetic sets (W7)
+
+  Phase 3's W7. FuSION 1 merged 44 of the S2.22 bounded sets,
+  each with no exceptions, a DE-like set and a bridging set: 132
+  runs, recorded as its wgx output under
+  backend/tests/reference/synthetic/merge-NN/. The other six sets
+  use filter settings FuSION 1 cannot express. A new merge test
+  compares FuSION 1's graph with exception_merge and with
+  merge_direct wherever no expected difference applies, deciding
+  each from the inputs by replaying FuSION 1's read; all 82
+  compared runs agree, and it reports whether each skipped run
+  really differs. Section 12 gains XD-29 for S2.17's fold. The
+  bounded sets move to bounded_sets.hpp, run_fusion1.py takes
+  --inputs, and the toy-case tests read only toy-* folders.
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+  Files:
+    backend/tests/reference/synthetic/merge-NN/  (44 folders)
+    backend/tests/reference/synthetic/merge-sets.tsv
+    backend/tests/unit/merge/bounded_sets.hpp
+    backend/tests/unit/merge/test_reference.cpp
+    backend/tests/unit/merge/test_split.cpp
+    backend/tests/experiments/w7/run_merges.py
+    backend/tests/experiments/capture/run_fusion1.py
+    backend/tests/unit/solve/kit.cpp
+    backend/tests/unit/corridor/test_reference.cpp
+    backend/tests/unit/testkit/test_fusion1.cpp
+    docs/architecture/12-tests.md  (XD-29, triggers, size)
+  ```
+- Not yet: Keep it uncommitted for now.
+
+**Answer:** Commit it (Recommended)
+
+**Q3 (Log commit).** After those, commit the prompt log's entries 366 to 371? They cover the subagents' second and third reports, the poll on XD-16 and actions, the message to W7, and this poll.
+
+- Commit it (Recommended): docs/process/PROMPTS.md, message 'Log prompt entries 366 to 371'. Not pushed.
+- Later: Keep the entries for the next log commit.
+
+**Answer:** Commit it (Recommended)
