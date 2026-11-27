@@ -9582,3 +9582,182 @@ Committing the stop-race fix of entry 356, and the log.
 - Later: Keep the entries for the next log commit.
 
 **Answer:** Commit it (Recommended)
+
+## 358 · Note · The W7 subagent's report on entry 354 · 2026-11-27 18:24
+
+The subagent ran W7 and committed nothing.
+- **Sets:** 38 of the 50, the 28 listed shapes FuSION 1 can express and 10 generated ones, so 114 runs. 12 are left out because FuSION 1 always discards indirect relations and keeps ECrel ones: indirect kept in listed 26, 28, 29 and generated 32, 37, 38, 42, 44, 47; ECrel excluded in listed 27, 28, 29 and generated 41, 49. Of those, 32, 38, 41, 42, 44 and 49 have no relation their filter touches.
+- **Exception sets:** none; de, each id with probability 1/4 from core::Rng::stream(2025, n); bridging, every id in two or more boxes. Each folder's set.json holds the rules and the ids.
+- **Runs:** one at a time at nice 19, at a load of 23 to 31: 38 s, and 43 s for a rerun that was byte-identical.
+- **Size:** 844 KB: the wgx files 615 KB, summaries 100 KB, set.json 71 KB, inputs 52 KB. As canonical text the graphs would be 285 KB.
+- **Result:** 75 runs compared, 70 equal to both oracles; 39 skipped, under XD-03 (12), XD-04 (19), XD-05 (3), XD-16 (3) and XD-22 (17), and XD-06 (0).
+- **Unexplained:** merge-05 de, merge-35 none and de, and merge-46 none and de: FuSION 1's fold (S2.17) leaves boxes of one file that share an id apart, or an id in two nodes; XD-22 covers one-file sets only. merge-05 none and merge-06 none and de, skipped under XD-04, show it too. Its reproducer is in the data root's scratch/w7-repro-a.
+- **Files:** new backend/tests/unit/merge/bounded_sets.hpp (143 lines, the sets moved out of test_split.cpp, +5 −117), backend/tests/unit/merge/test_reference.cpp (606, with the hidden writer [.w7-write]), backend/tests/experiments/w7/run_merges.py (175), 38 folders reference/synthetic/merge-NN and merge-sets.tsv; run_fusion1.py +21 −5 (--inputs DIR). 52 merge tests and the slow bounded layer pass, with zero warnings.
+- **Asks:** an XD for S2.17; wgx files or canonical text; whether to run sets 32, 38, 41, 42, 44 and 49; a review of its XD triggers, since section 12's "raw merges" would skip every run.
+
+Claude's check: with both subagents' changes in the tree, the dev preset passes 568 of 575 tests. Five toy-case tests (three in solve, one in testkit, one in corridor) list every folder under backend/tests/reference/synthetic/ as a toy case and now meet W7's merge-* folders; W7's own test fails on its five unexplained runs; and C3's real-fusion test fails (entry 359). The reproducer holds: FuSION 1's merged.xml has t5 in two nodes, {t3, t4, t5} and {t2, t5}, where both oracles give one node {t2, t3, t4, t5}. S2.17 describes FuSION 1's order-dependent fold ("they let an id sit in two nodes until a later step re-joins them"), its decided fix is the order-independent union (entry 038), and section 12's list has no entry for it. The triggers replay FuSION 1's read of each file (XMLParser.cc, GraphManagerNew.cc) to see each fix's condition from the inputs.
+
+## 359 · Note · The C3 subagent's report on entry 353 · 2026-11-27 18:24
+
+The subagent built C3 and committed nothing.
+- **Built:** backend/tests/tools/fusion-test/, 11 files and 1,312 lines, with ref and bench as stubs that exit 2 (C4 registers the ref: tests); backend/tests/unit/fusion-test/, 797 lines and 17 cases; backend/tests/CMakeLists.txt +11 lines; two kit files (an events mask for ms, a time field). Presets: ci-linux (Release, tests on, warnings as errors, no LTO because no FUSION_LTO option exists yet; it builds warning-free in 6 min 19 s) and the test presets dev (leaves out the labels slow and bench) and t2 (kegg or t2).
+- **Registration:** a temporary case made the next build register "e2e: toy-check" with its labels and skip code 4, and removing it unregistered it.
+- **C3.2:** the recount matches the note, 745 files and 80,746,125 bytes, but one is W2's report: recorded as "W2 reports/w2/20261117T183307", with W3 157, W4 576 and W5 11. The manifest has 2,808 entries, all additions.
+- **Results:** the three [kegg] self-tests pass (12.3 s, 0.4 s and 14.0 s); data verify matches 2,808 of 2,808 in 22.1 s (Release); the dev preset passes 568 of 575 in 28.6 s, and the three slow tests pass in 9 min 13 s.
+- **Asks:** run.json's output size and sha256 change from run to run, because network.xml holds the absolute input path (section 02's design) and case.json and search_log.tsv hold times, so no solve or network case can match its golden; the order of pathz3's outputs follows which parallel case finishes first (solve.cpp:295, run.cpp:583), against section 12's repeat rule, seen in 0 of 24 reruns; a case with processes > 1 is refused with exit 2, since where each run goes is undecided; a case with no expected/ fails, though C5.1 implies an exit-only check. Its real-fusion e2e test is left failing.
+
+Claude's check: confirmed in a kept run of that test. rgx/network.xml records its input by absolute path inside the scratch folder, so run.json's sha256 for it changes with each run; case.json holds wall_s and cpu_clock_s, and search_log.tsv holds wall_s and cpu_s. solve's finish() writes each case's files as that case ends (solve.cpp:295), and run appends each commit to the step's outputs (run.cpp:583), so the in and out cases' files are listed in finishing order: the kept run lists out first. C5.1's rationale says a case without a golden checks only its exit status. The C5 note's processes field does not say where each process's run goes.
+
+## 360 · Poll · 2026-11-27 18:26
+
+W7's asks (entry 358).
+
+**Q1 (S2.17 entry).** W7 found 5 runs where FuSION 1 differs from both oracles and no expected difference covers it: merge-05 de, merge-35 none and de, merge-46 none and de. In each, one pathway has boxes that share an id, and FuSION 1's left fold keeps them apart, so an id ends up in two nodes. For example, one file's boxes {2,5}, {4,5} and {3,4} come out of FuSION 1 as {3,4,5} and {2,5}; both oracles give {2,3,4,5}. S2.17 describes this fold, and its decided fix is the order-independent union (entry 038). Section 12's list has no entry for it, since XD-22 covers single reads only. In the recorded real merges every id still ends in one node (S2.03). How should W7 treat these runs?
+
+- Add XD-29 (Recommended): Section 12 gains XD-29 (S2.17, entry 038): boxes of one pathway that share an id share a node in any merge, where FuSION 1's fold can keep them apart. It applies when a pathway holds an id in two boxes; effect on the reference cases: none. W7's test then skips these runs under XD-29.
+- Widen XD-22: XD-22's row grows to cover merges as well as single reads, instead of a new entry.
+- Leave them failing: The 5 runs stay failing until you look at them yourself.
+
+**Answer:** Add XD-29 (Recommended)
+
+**Q2 (XD triggers).** W7 decides from each run's inputs whether an expected difference applies. It replays FuSION 1's read of each file (XMLParser.cc, GraphManagerNew.cc) far enough to see each fix's condition. XD-03: a collapsing box finds its key's node without all its ids. XD-04: an undirected edge's tag, set from its file's keys, differs from the merged keys'. XD-05: a skipped duplicate had a larger score. XD-06: a file holds a complex but no edge. XD-16: an entry is reached only through indirect relations. XD-22: a one-file set holds an id in two nodes. For five of these XDs, section 12's 'Applies when' column says only 'raw merges', which would skip every W7 run. With the triggers, 75 runs are compared and 39 skipped. Accept them?
+
+- Accept, with a check (Recommended): The triggers stay. The test also reports, for each skipped run, whether FuSION 1's graph really differs, so a trigger that skips an equal run shows up. Section 12's XD rows get a Phase 3 note pointing to the triggers.
+- Accept as they are: The triggers stay, with the note, and no extra check.
+- Section 12's wording: Every raw merge is skipped, so W7 compares nothing.
+
+**Answer:** Accept, with a check (Recommended)
+
+**Q3 (W7 storage).** W7 stored FuSION 1's raw wgx files, 844 KB in all: wgx 615 KB, summaries 100 KB, set.json 71 KB, inputs 52 KB. Section 12 expected 'canonical outputs (about 300 KB)'; the graphs as canonical text would be 285 KB. Which should the repository hold?
+
+- The wgx files (Recommended): FuSION 1's own output stays the record, and the kit's reader reads it at test time, so a fix to the reader applies without re-recording. Section 12's size gets a Phase 3 note.
+- Canonical text: 285 KB for the graphs, as section 12 says. The wgx files move to the data root's reports/w7/.
+
+**Answer:** The wgx files (Recommended)
+
+**Q4 (Six sets).** W7 left out 12 sets because FuSION 1 always discards indirect relations and keeps ECrel ones. Six of them, the generated sets 32, 38, 41, 42, 44 and 49, have no relation their filter setting touches, so FuSION 1's fixed filters give the same graph. Run them too, 18 more runs?
+
+- Run them (Recommended): 44 of the 50 sets, 132 runs, one at a time at nice 19 beside your jobs, as before.
+- Leave them out: Keep W7 at 38 sets and 114 runs.
+
+**Answer:** Run them (Recommended)
+
+## 361 · Poll · 2026-11-27 19:05
+
+W7's folders beside the toy cases (entry 358), and three of C3's asks (entry 359).
+
+**Q1 (Folders).** W7's 38 folders sit beside the toy cases in backend/tests/reference/synthetic/, where the plan puts them. Five toy-case tests (three in solve, one in testkit, one in corridor) treat every folder there as a toy case, so W7's merge-* folders now make them fail. How should the two kinds of folder be told apart?
+
+- Toy tests take toy-* (Recommended): The three places that list the folder (solve's kit.cpp:233, corridor's test_reference.cpp:129, testkit's test_fusion1.cpp:228) keep only folders named toy-*. The W7 subagent makes the change.
+- Move W7's folders: Move them to backend/tests/reference/synthetic-merge/, away from the plan's location.
+
+**Answer:** Toy tests take toy-* (Recommended)
+
+**Q2 (Masks).** Section 12's masks miss some volatile data in a real run, so no solve or network case can match its golden; C3's real-fusion test fails on it. run.json records each output's size and sha256, and some outputs hold volatile content. rgx/network.xml records its input by absolute path, by section 02's design. pathz3's case.json and search_log.tsv hold times. Each of those files is also compared under its own rule, where the path tokens and time masks apply. How should the goldens handle it?
+
+- Mask outputs' size, sha256 (Recommended): The normaliser masks size and sha256 for every output in run.json, since each compared output is checked under its own rule. It also masks case.json's wall_s and cpu_clock_s. Section 12's mask list gets a Phase 3 note. The C3 subagent makes it.
+- Only volatile outputs: Mask size and sha256 only for outputs whose content holds paths or times (network.xml, case.json, search_log.tsv). The rest stay compared.
+- Make the outputs stable: Change network.xml to record its input relative to the run, and move the times out of case.json: module changes in network and solve.
+
+**Answer:** Mask outputs' size, sha256 (Recommended)
+
+**Q3 (Output order).** A step's outputs are listed in run.json in the order its parallel solve cases finish. solve writes each case's files as that case ends (solve.cpp:295), and run appends each commit in turn (run.cpp:583). So two runs of the same batch can differ, against section 12's repeat rule and 09.C16's byte-identical results. C3 saw it in 0 of 24 reruns, but one kept run listed the out case before the in case. How should it be fixed?
+
+- run sorts by path (Recommended): run keeps each step's outputs sorted by path, so commit order no longer shows. It is a module change in run, with a test. Claude makes it, shows you the diff, and asks before committing.
+- solve writes in case order: solve writes every case's files after the last case ends, in case order. This is a larger change in solve.
+- Normaliser sorts them: The goldens ignore the order, and run.json itself stays nondeterministic.
+
+**Answer:** run sorts by path (Recommended)
+
+**Q4 (Processes).** A C5 case can start two fusion processes in one launch directory (S1.26, and C5's processes field), but the C5 note doesn't say where each run goes. The engine passes --run-dir run to every case that doesn't place its own run (C3.4), so two processes would collide. For now C3 refuses processes > 1 with exit 2. Where should each process's run go?
+
+- Own dirs, one golden (Recommended): With processes > 1 the engine passes no --run-dir, so each fusion names its own run directory under the launch directory, as S1.26's case needs. The engine checks that the runs are distinct and compares each with the case's one expected/. The C3 subagent makes it.
+- run-1, run-2: Process k gets --run-dir run-<k>, with goldens in expected/run-<k>/.
+- Decide in C5: Keep the refusal until C5 writes the case.
+
+**Answer:** Own dirs, one golden (Recommended)
+
+## 362 · Poll · 2026-11-27 19:05
+
+C3's last asks (entry 359).
+
+**Q1 (No golden).** C3's engine fails a case that has no expected/ folder. C5.1's rationale (entry 343) says 'a case without a golden checks only its exit status', and C5's failure cases need only that. Should the engine follow C5.1?
+
+- Exit-only check (Recommended): A case with no expected/ checks its exit status, run.json's status and the stderr fragment, and compares no files. The C3 subagent makes the change.
+- Require goldens: Every case must have expected/, so failure cases record one too.
+
+**Answer:** Exit-only check (Recommended)
+
+**Q2 (C3 changes).** Accept C3's four departures from its note as a group? (1) One of the 745 unmanifested files is W2's report. It is recorded as 'W2 reports/w2/20261117T183307', alongside W3's 157 files, W4's 576 and W5's 11. (2) ci-linux is Release with tests on and warnings as errors, but has no LTO, because the build has no LTO option yet; section 11's release preset names one. (3) The kit's normaliser also masks the ms field in events, which is a time. (4) The ref: CTest tests are registered by C4, together with that subcommand.
+
+- Accept as a group (Recommended): Claude records them in the C3 note under C3.4.
+- One by one: Claude polls each departure separately.
+
+**Answer:** Accept as a group (Recommended)
+
+## 363 · Subagent prompt · The user's decisions to the W7 subagent · 2026-11-27 19:06
+
+Sent to the W7 subagent of entry 354, resumed with its context (polls 360 and 361). The message as sent:
+
+```text
+Claude here, with the user's decisions on your report (prompt log entries 360 and 361; your report is entry 358).
+1. XD-29 joins section 12, and Claude writes its row: S2.17 (entry 038), boxes of one pathway that share an id share a node in any merge, where FuSION 1's fold can keep them apart; it applies when a pathway holds an id in two boxes; no effect on the reference cases. Add its trigger to your test, decided from the inputs like your others: a set of more than one file in which one file's read holds an id in two nodes (XD-22 stays for one-file sets). Skip those runs under XD-29.
+2. Your triggers are accepted, with a check: for each skipped run the test also compares FuSION 1's graph with both oracles, and reports as a message, not a failure, whether it really differs, so that a trigger which skips an equal run shows. Give the counts per XD in your reply.
+3. Keep the wgx files. Claude puts the size in section 12.
+4. Run the generated sets 32, 38, 41, 42, 44 and 49 too, three exception sets each, one run at a time at nice 19 after a load check, as before. Record them like the others, and update merge-sets.tsv and the reasons in set.json.
+5. The toy-case tests take only folders named toy-*: solve's kit.cpp:233 (toy_names), corridor's test_reference.cpp:129 and testkit's test_fusion1.cpp:228. Change only that selection.
+The rules of your first brief still hold. The C3 subagent is working in the tree again (the kit's e2e.cpp and its fusion-test files), and Claude is changing backend/modules/run/src/run.cpp with a run test, section 12 and the C3 note; don't touch those. When done, reply in at most 200 words: the runs added, the comparison's result with XD-29 (compared, equal, skipped by XD, and of the skipped how many really differ), the files changed, and anything that needs a decision.
+```
+
+## 364 · Subagent prompt · The user's decisions to the C3 subagent · 2026-11-27 19:06
+
+Sent to the C3 subagent of entry 353, resumed with its context (polls 361 and 362). The message as sent:
+
+```text
+Claude here, with the user's decisions on your report (prompt log entries 361 and 362; your report is entry 359).
+1. Masks: the normaliser masks the size and sha256 of every output in run.json, since each compared output is checked under its own rule, and case.json's wall_s and cpu_clock_s. Claude adds them to section 12's mask list.
+2. Output order: Claude fixes it in the run module, which will keep each step's outputs sorted by path. Leave that to Claude; your real-fusion test should pass once the fix is in the tree, shortly.
+3. processes > 1: the engine passes no --run-dir, so each fusion names its own run directory under the launch directory; the engine checks that the runs are distinct and compares each with the case's one expected/. Add a toy test for it.
+4. A case with no expected/ checks its exit status, run.json's status and the stderr fragment, and compares no files (C5.1's rationale).
+5. Your four departures are accepted; Claude records them in the C3 note.
+The rules of your first brief still hold. The W7 subagent is working in the tree again (its own files, and the toy-case selection in solve's kit.cpp, corridor's test_reference.cpp and testkit's test_fusion1.cpp), and Claude is changing backend/modules/run/src/run.cpp with a run test, section 12 and the C3 note; don't touch those. When done, reply in at most 200 words: what changed (files and lines), the test counts and times, the real-fusion test's result over 10 repeated runs, and anything that needs a decision.
+```
+
+## 365 · Poll · 2026-11-27 19:17
+
+Committing the output-order fix of poll 361, and the log.
+
+**Q1 (Order commit).** Commit the output-order fix (poll 361)? It changes three files. In backend/modules/run/src/run.cpp, run keeps each step's outputs, and the run's own files, sorted by path, so run.json and the step.finished event no longer depend on which parallel case finishes first. An absolute copy's 'also' still attaches to its own file, using each list's commit order, even when another file has the same bytes. In backend/tests/unit/run/test_run.cpp, a new test commits the in and out cases' files in both orders and expects the same list; the 2B.3 test gains a same-bytes file; and three older checks now expect the sorted order. In docs/architecture/09-runs.md, run.json's outputs bullet gets a Phase 3 note. Before the fix, the new and changed checks failed. After it, all 48 run tests, 55 batch, 47 results and 6 home tests pass, with no warnings. Only these three files are staged.
+
+- Commit it (Recommended): Stages the three files by name. Nothing is pushed. Its preview:
+  ```text
+  List each step's outputs by path in run.json
+
+  A solve's in and out cases commit their files as each one
+  ends, in parallel, and run appended each commit in turn, so
+  two runs of one batch could list a step's outputs in other
+  orders, against 09.C16. run now keeps every outputs list
+  sorted by path, and the step.finished event follows it. An
+  absolute copy's "also" still finds its own file, through each
+  list's commit order, even when another file has the same
+  bytes. A new test commits the in and out cases in both
+  orders; three older checks now expect the sorted order.
+  Section 09 notes it.
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+  Files:
+    backend/modules/run/src/run.cpp
+    backend/tests/unit/run/test_run.cpp
+    docs/architecture/09-runs.md
+  ```
+- Not yet: Keep it uncommitted for now.
+
+**Answer:** Commit it (Recommended)
+
+**Q2 (Log commit).** After that commit, commit the prompt log's entries 358 to 365? They cover the W7 and C3 reports with Claude's checks, the three polls on them, the two messages that resumed the subagents, and this poll.
+
+- Commit it (Recommended): docs/process/PROMPTS.md, message 'Log prompt entries 358 to 365'. Not pushed.
+- Later: Keep the entries for the next log commit.
+
+**Answer:** Commit it (Recommended)
