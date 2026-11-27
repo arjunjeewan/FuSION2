@@ -75,14 +75,16 @@ core::Outcome<void> run_fb_rch(const BoundArgs& args, Workspace& ws, core::Conte
   request.skip_subtypes = list_arg(args, "skip_subtypes");
   network::BindingTable& bindings = bindings_for(ws, network_id, net, ctx);
   const int id = static_cast<int>(ws.graphs.size()) + 1;
-  // 05.C4: the same network and the same normalised request register the earlier corridor again.
+  // 05.C4: the same network and the same normalised request register the earlier corridor again. This step
+  // writes no file, so the corridor keeps the step that saved it, whose corridor.json a solve names
+  // (Phase 3, prompt log entry 376).
   for (const auto& [earlier_id, info] : st.corridors) {
     if (info.network != network_id) continue;
     const auto earlier = corridor_of(ws, earlier_id, "fb_rch");
     if (!corridor::reusable(*earlier, *net, request)) continue;
     ws.graphs.add(earlier);
     corridor::report_reuse(*earlier, id, earlier_id, ctx);
-    st.corridors[id] = StepState::Corridor{network_id, std::string(ctx.step), info.match};
+    st.corridors[id] = StepState::Corridor{network_id, info.step, info.match};
     core::Outcome<void> result;
     if (earlier->empty()) result.report = core::Report{"corridor.empty", "graph " + std::to_string(id) + " is the empty corridor of graph " + std::to_string(earlier_id)};
     return result;

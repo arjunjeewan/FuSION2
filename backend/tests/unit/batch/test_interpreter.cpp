@@ -426,7 +426,12 @@ TEST_CASE("batch: running batches through 09's Run", "[batch][interpreter]") {
     for (const auto& step : manifest["steps"]) {
       if (step["cmd"] != "pathz3") continue;
       std::ifstream in(run / step["id"].get<std::string>() / "results.json");
-      names.push_back(nlohmann::json::parse(in)["solve"]["name"].get<std::string>());
+      const auto results = nlohmann::json::parse(in);
+      names.push_back(results["solve"]["name"].get<std::string>());
+      // The second fb_rch reuses the first's corridor and writes no file (05.C4), so both solves name the
+      // file the first saved (Phase 3, prompt log entry 376).
+      CHECK(results["corridor"]["artefact"] == "fb_rch/corridor.json");
+      CHECK(std::filesystem::exists(run / results["corridor"]["artefact"].get<std::string>()));
       std::string prefix;
       for (const auto& s : step["settings"])
         if (s["key"] == "solve.legacy_prefix") prefix = s["value"].get<std::string>();

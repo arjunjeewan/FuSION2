@@ -239,6 +239,8 @@ struct CaseResult {
 };
 
 struct CorridorSummary { std::uint32_t nodes = 0, edges = 0; std::int32_t bound = 0; std::string artefact; };
+// artefact: the corridor.json of the fb_rch step that saved the corridor; for a reused corridor, which
+// writes no file (05.C4), the earlier step's (Phase 3, prompt log entry 376)
 
 struct Header {
   std::string name;                             // "solve" by default, or a positional prefix's last component
