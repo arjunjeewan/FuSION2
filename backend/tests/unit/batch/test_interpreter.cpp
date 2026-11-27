@@ -418,6 +418,22 @@ TEST_CASE("batch: running batches through 09's Run", "[batch][interpreter]") {
     CHECK(out.find("Corridor, graph 4: same as graph 3") != std::string::npos);   // 05.C4
     CHECK(out.find("exec: mv edges_merged_filename: the latest mff read FuSION 1's merged master") != std::string::npos);
     CHECK(err.find("[batch.ignored_tokens]") != std::string::npos);   // mff's xml token and map list
+    // Results hold no absolute path (11-build.md:575): each positional solve is named by its prefix's last
+    // component, and run.json keeps the whole prefix as the solve.legacy_prefix setting (prompt log entry 372).
+    const auto manifest = c.manifest();
+    const auto run = c.dir / "runs" / manifest["name"].get<std::string>();
+    std::vector<std::string> names;
+    for (const auto& step : manifest["steps"]) {
+      if (step["cmd"] != "pathz3") continue;
+      std::ifstream in(run / step["id"].get<std::string>() / "results.json");
+      names.push_back(nlohmann::json::parse(in)["solve"]["name"].get<std::string>());
+      std::string prefix;
+      for (const auto& s : step["settings"])
+        if (s["key"] == "solve.legacy_prefix") prefix = s["value"].get<std::string>();
+      CHECK(std::filesystem::path(prefix).is_absolute());
+      CHECK(prefix.ends_with("/" + names.back()));
+    }
+    CHECK(names == std::vector<std::string>{"temp_w", "temp_wo"});
   }
   SECTION("the shipped maps a run uses are recorded by path and SHA-256 (02, row 2B.4)") {
     if (!std::filesystem::exists(kCase)) return;

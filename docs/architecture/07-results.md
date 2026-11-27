@@ -241,7 +241,8 @@ struct CaseResult {
 struct CorridorSummary { std::uint32_t nodes = 0, edges = 0; std::int32_t bound = 0; std::string artefact; };
 
 struct Header {
-  std::string name;                             // "solve" by default, or a positional prefix (07.C9)
+  std::string name;                             // "solve" by default, or a positional prefix's last component
+                                                // (07.C9; Phase 3, prompt log entry 372: no absolute path)
   std::string step;                             // "pathz3", "pathz3-2" (09.C2)
   NodeIx source, target;                        // always in Tables
   std::vector<NodeIx> fsc;                      // the FSC set (06.C10); empty without one

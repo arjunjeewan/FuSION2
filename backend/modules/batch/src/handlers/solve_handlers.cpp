@@ -150,9 +150,12 @@ core::Outcome<void> run_pathz3(const BoundArgs& args, Workspace& ws, core::Conte
   auto results = std::make_shared<const solve::Results>(std::move(outcome.value));
 
   // Row 1.5: the batch layer publishes the results, a stopped solve's partial ones included (07.C9: the
-  // solve is named by its positional prefix).
+  // solve is named by its positional prefix). The run binds FuSION 1's files to the whole prefix; the
+  // results name the solve by its last component, since result files hold no absolute path (11-build.md:575;
+  // prompt log entry 372).
   const std::string name = given(args, "legacy_prefix") ? *text_arg(args, "legacy_prefix") : "solve";
-  const results::PublishInputs publish{*results, inputs, *corridor, match, maps, name, settings,
+  const std::string published_name = core::to_utf8(core::path_from_utf8(name).filename());
+  const results::PublishInputs publish{*results, inputs, *corridor, match, maps, published_name, settings,
                                        ws.observations == observations ? st.observation_values : nullptr,
                                        info.step + "/corridor.json", &st.interner};
   auto published = std::make_shared<results::SolveResult>();
