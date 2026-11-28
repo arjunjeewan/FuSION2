@@ -77,7 +77,7 @@ TEST_CASE("solve: the step solves both FSC cases and writes each case's files an
     CHECK(json["status"] == "complete");
     CHECK(json["fsc"] == core::Json::array({"hsa5"}));
     CHECK(json["seed"] == 42);
-    CHECK(json["z3"] == "4.8.12.0");
+    CHECK(json["z3"].get<std::string>().starts_with(std::string(FUSION_TEST_Z3_VERSION) + "."));
     CHECK(json["box"]["requested"]["n"] == core::Json::array({0, 7}));
     CHECK(json["encoded"]["nodes"] == r.stats.nodes);
     CHECK(json["families"]["coexpression"].is_null());

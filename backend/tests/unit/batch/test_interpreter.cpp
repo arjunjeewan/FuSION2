@@ -592,7 +592,7 @@ TEST_CASE("batch: running batches through 09's Run", "[batch][interpreter]") {
     CHECK(v["versions"]["fusion"]["version"] == v["fusion"]);
     for (const char* field : {"git_commit", "git_dirty", "build_type", "compiler", "target"})
       CHECK(v["versions"]["fusion"].contains(field));
-    CHECK(v["versions"]["libraries"]["z3"].get<std::string>().starts_with("4.8.12"));
+    CHECK(v["versions"]["libraries"]["z3"].get<std::string>().starts_with(std::string(FUSION_TEST_Z3_VERSION) + "."));
     CHECK(v["versions"]["libraries"].contains("pugixml"));
     CHECK(v["install"].contains("home"));
     CHECK(v["install"].contains("prefix"));

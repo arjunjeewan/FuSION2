@@ -8,8 +8,11 @@
 // Linux uses open file description locks (F_OFD_SETLK): they belong to the one descriptor, so
 // opening and closing run.lock elsewhere in the process (Lock::held) cannot drop them, unlike
 // classic fcntl locks, and they conflict with the classic locks Java's FileChannel.tryLock() takes.
-// The macOS and Windows ports (09's platform notes: fcntl, LockFileEx, SetConsoleCtrlHandler)
-// come with those builds (decision 0038).
+// macOS has no such locks, so it takes the classic ones, the kind tryLock() takes there (decision
+// 0041). Those belong to the process: its own lock never conflicts with itself, and closing any
+// descriptor of the file drops it. So Lock remembers the files this process locks, and held()
+// answers for them without opening the file (09's platform notes). The Windows port (LockFileEx,
+// SetConsoleCtrlHandler) comes with the Windows build (decision 0038).
 #if defined(_WIN32)
 #error "run: the Windows lock and console handler (09.C8, 09.C9) come with the Windows build (decision 0038)"
 #endif
@@ -19,6 +22,8 @@
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
+#include <map>
+#include <mutex>
 #include <string>
 #include <thread>
 
@@ -27,15 +32,56 @@
 
 #include "internal.hpp"
 
-#if !defined(F_OFD_SETLK)
-#error "run: 09.C9's lock needs F_OFD_SETLK; the macOS port comes with the macOS build (decision 0038)"
-#endif
-
 namespace fusion::run {
 
 namespace {
 
 namespace fs = std::filesystem;
+
+#if defined(F_OFD_SETLK)
+constexpr int set_lock = F_OFD_SETLK, get_lock = F_OFD_GETLK;
+constexpr bool process_locks = false;            // Linux: each lock belongs to its descriptor
+#elif defined(__APPLE__)
+constexpr int set_lock = F_SETLK, get_lock = F_GETLK;
+constexpr bool process_locks = true;             // macOS: classic locks belong to the process (0041)
+#else
+#error "run: 09.C9's lock has no implementation for this platform"
+#endif
+
+// The files this process holds classic locks on, by descriptor: macOS only (decision 0041).
+std::mutex own_mutex;
+std::map<int, fs::path> own_locks;
+
+fs::path lock_key(const fs::path& file) {
+    std::error_code ec;
+    const fs::path canonical = fs::weakly_canonical(file, ec);
+    return ec ? file.lexically_normal() : canonical;
+}
+
+void remember(int fd, const fs::path& file) {
+    if constexpr (process_locks) {
+        const fs::path key = lock_key(file);
+        const std::lock_guard guard(own_mutex);
+        own_locks[fd] = key;
+    }
+}
+
+void forget(int fd) {
+    if constexpr (process_locks) {
+        const std::lock_guard guard(own_mutex);
+        own_locks.erase(fd);
+    }
+}
+
+bool locked_here(const fs::path& file) {
+    if constexpr (process_locks) {
+        const fs::path key = lock_key(file);
+        const std::lock_guard guard(own_mutex);
+        for (const auto& [fd, held] : own_locks)
+            if (held == key) return true;
+    }
+    return false;
+}
 
 // One byte at offset 2^31, past run.lock's readable line, so Windows' mandatory locks will not stop
 // a reader; a whole-file tryLock() still meets it (09's platform notes).
@@ -95,7 +141,10 @@ Lock::Lock(Lock&& other) noexcept : handle_(other.handle_), locked_(other.locked
 
 Lock& Lock::operator=(Lock&& other) noexcept {
     if (this != &other) {
-        if (handle_ >= 0) ::close(handle_);
+        if (handle_ >= 0) {
+            forget(handle_);
+            ::close(handle_);
+        }
         handle_ = other.handle_;
         locked_ = other.locked_;
         other.handle_ = -1;
@@ -105,7 +154,10 @@ Lock& Lock::operator=(Lock&& other) noexcept {
 }
 
 Lock::~Lock() {
-    if (handle_ >= 0) ::close(handle_);          // closing the one descriptor releases the lock
+    if (handle_ >= 0) {
+        forget(handle_);
+        ::close(handle_);                        // closing the one descriptor releases the lock
+    }
 }
 
 bool Lock::locked() const noexcept { return locked_; }
@@ -128,8 +180,9 @@ Lock Lock::claim(const fs::path& run_dir, std::string_view line) {
     // dropped when the process closes any descriptor of the file (09's platform notes).
     if (!write_all(fd, std::string(line) + "\n"))
         throw core::Failure("io.write", "cannot write " + core::to_utf8(file) + ": " + os_error(errno));
-    if (lock_byte(fd, F_OFD_SETLK) == 0) {
+    if (lock_byte(fd, set_lock) == 0) {
         lock.locked_ = true;
+        remember(fd, file);
     } else if (const int error = errno; !cannot_lock(error)) {
         throw core::Failure("run.dir_used", core::to_utf8(file) + " is locked by another process");
     }
@@ -138,6 +191,7 @@ Lock Lock::claim(const fs::path& run_dir, std::string_view line) {
 
 bool Lock::held(const fs::path& run_dir) {
     const fs::path file = run_dir / "run.lock";
+    if (locked_here(file)) return true;          // macOS: opening the file here would drop the lock
     const int fd = ::open(file.c_str(), O_RDONLY | O_CLOEXEC);
     if (fd < 0) return false;
     struct flock fl {};
@@ -146,7 +200,7 @@ bool Lock::held(const fs::path& run_dir) {
     fl.l_start = lock_offset;
     fl.l_len = 1;
     fl.l_pid = 0;
-    const int result = ::fcntl(fd, F_OFD_GETLK, &fl);
+    const int result = ::fcntl(fd, get_lock, &fl);
     ::close(fd);
     return result == 0 && fl.l_type != F_UNLCK;
 }
@@ -157,8 +211,9 @@ Lock Lock::acquire(const fs::path& file, std::chrono::milliseconds wait) {
     Lock lock(fd);
     const auto deadline = std::chrono::steady_clock::now() + wait;
     for (;;) {
-        if (lock_byte(fd, F_OFD_SETLK) == 0) {
+        if (lock_byte(fd, set_lock) == 0) {
             lock.locked_ = true;
+            remember(fd, file);
             return lock;
         }
         const int error = errno;
@@ -176,7 +231,7 @@ bool Lock::supported(const fs::path& dir) {
     const fs::path probe = dir / (".run-lock-probe-" + std::to_string(::getpid()) + ".tmp");
     const int fd = ::open(probe.c_str(), O_RDWR | O_CREAT | O_EXCL | O_CLOEXEC, 0644);
     if (fd < 0) return false;
-    const bool ok = lock_byte(fd, F_OFD_SETLK) == 0 || !cannot_lock(errno);
+    const bool ok = lock_byte(fd, set_lock) == 0 || !cannot_lock(errno);
     ::close(fd);
     ::unlink(probe.c_str());
     return ok;

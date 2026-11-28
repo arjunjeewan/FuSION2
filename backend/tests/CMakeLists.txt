@@ -39,7 +39,8 @@ foreach(module core network expression merge corridor solve results enrichment r
       target_link_libraries(test_${module} PRIVATE fusion::testkit)
     endif()
     target_compile_definitions(test_${module} PRIVATE
-      FUSION_TEST_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+      FUSION_TEST_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
+      FUSION_TEST_Z3_VERSION="${FUSION_Z3_FOUND_VERSION}")   # the linked Z3: 4.8.12, Homebrew's on macOS (0041)
     catch_discover_tests(test_${module} ADD_TAGS_AS_LABELS DISCOVERY_MODE PRE_TEST)
   endif()
 endforeach()

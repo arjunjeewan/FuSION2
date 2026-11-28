@@ -424,5 +424,5 @@ TEST_CASE("solve: the same problem solved twice gives the same answers and witne
 
 TEST_CASE("solve: the linked Z3 is the one solve was built against", "[unit][solve][11.C17]") {
   CHECK_NOTHROW(solve::verify_z3());
-  CHECK(solve::z3_version() == "4.8.12.0");
+  CHECK(solve::z3_version().starts_with(std::string(FUSION_TEST_Z3_VERSION) + "."));   // 4.8.12, or macOS's (0041)
 }

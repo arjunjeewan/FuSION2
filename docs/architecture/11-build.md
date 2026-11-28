@@ -775,6 +775,7 @@ GitHub Actions on `arjunjeewan/FuSION2`, once the user pushes (C15, accepted in 
   - The official macOS and Windows builds are the ones Z3's own cross-platform determinism checks run on.
   - A wheel is an odd place to take a C++ library from, and it ties the Linux build to Z3's Python packaging.
 - **Decision:** as proposed (prompt log entry 200)
+- **Amended:** until X11 sets the pin, a macOS build links the system's Z3, Homebrew's, whatever its version ([decision 0041](../decisions/0041-native-macos-build.md), prompt log entry 392). Linux keeps 4.8.12 (decision 0039).
 
 ### 11.C4 · Pinning and verifying fetched dependencies
 
