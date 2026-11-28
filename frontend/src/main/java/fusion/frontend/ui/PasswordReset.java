@@ -31,8 +31,9 @@ final class PasswordReset {
             }
             SingleInstance held = lock.get();
             try {
-                char[] first = read("New password for " + username + ": ");
-                char[] second = read("The same again: ");
+                Input input = Input.open();
+                char[] first = input.read("New password for " + username + ": ");
+                char[] second = input.read("The same again: ");
                 try {
                     if (!Arrays.equals(first, second)) {
                         System.err.println("The two passwords differ; nothing was changed.");
@@ -59,14 +60,28 @@ final class PasswordReset {
         }
     }
 
-    private static char[] read(String prompt) throws IOException {
-        Console console = System.console();
-        if (console != null) {
-            char[] p = console.readPassword("%s", prompt);
-            return p == null ? new char[0] : p;
+    /**
+     * Where the passwords come from: the console when there is one, otherwise one reader over
+     * standard input for both, so piped passwords are read one per line. A reader per password
+     * buffered both lines into the first (Phase 3, prompt log entry 387).
+     */
+    private interface Input {
+        char[] read(String prompt) throws IOException;
+
+        static Input open() {
+            Console console = System.console();
+            if (console != null) {
+                return prompt -> {
+                    char[] p = console.readPassword("%s", prompt);
+                    return p == null ? new char[0] : p;
+                };
+            }
+            BufferedReader in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
+            return prompt -> {
+                System.out.print(prompt);
+                String line = in.readLine();
+                return line == null ? new char[0] : line.toCharArray();
+            };
         }
-        System.out.print(prompt);
-        String line = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8)).readLine();
-        return line == null ? new char[0] : line.toCharArray();
     }
 }
