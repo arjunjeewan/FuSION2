@@ -10424,3 +10424,165 @@ The page's existing code printed "1 nodes" and "1 edges". Claude fixed that with
 - Not yet: Leave them uncommitted.
 
 **Answer:** Commit all three (Recommended)
+
+## 389 · User prompt · 2026-11-28 14:23
+
+> make the readme and running more human readable and simple. use professional terms rather than describing naively
+
+Sent after the four fixes were committed (entries 386 to 388), with RUNNING.md open in the editor.
+
+## 390 · Poll · 2026-11-28 14:24
+
+On entry 389. Claude had found RUNNING.md's test counts stale: 598 backend and 111 app tests, before the fixes of entry 387 made them 599 and 119.
+
+**Q1 (RUNNING.md).** How should RUNNING.md be rewritten? Today it is 547 lines of step-by-step prose ('So that you can type fusion from any folder...', 'What a run writes'), with exact timings and test counts that go stale, and internal references such as (09.C9) or decision numbers.
+
+- Concise reference guide (Recommended): Standard sections and terms: prerequisites, installation, verification, quick start, configuration, exit codes, known limitations, troubleshooting. Imperative steps, expected output only at checkpoints, internal references dropped. About half the length; every verified command kept. Amends 0040's 'what each step should print'. Its preview:
+  ```text
+  # Running FuSION 2.0
+    intro + 'Verified on Ubuntu 24.04.5'
+  1  Platform support      table
+  2  Prerequisites         tools, disk, network, KEGG
+  3  Installation (Linux)  packages, clone, build,
+                           verify, add to PATH
+  4  Windows (WSL 2)       untested
+  5  macOS (VM)            untested
+  6  Quick start           toy dataset: batch, check,
+                           run, expected frontier
+  7  Desktop application   launch, accounts, session,
+                           data dirs, password reset
+  8  Analysing your data   inputs, KGML, app, CLI,
+                           FuSION 1 batches, long runs
+  9  Output directory      layout table
+  10 Run control           stopping, exit codes
+  11 Known limitations
+  12 Testing
+  13 Configuration         environment variables
+  14 Troubleshooting       symptom / fix table
+
+  ~270 lines (now 547)
+  ```
+- Quick reference only: Commands and tables with minimal prose, about 150 lines. Troubleshooting becomes one table, and the step-by-step explanations go. Its preview:
+  ```text
+  # Running FuSION 2.0
+  Platform support     table
+  Prerequisites        table
+  Build                code block
+  Verify               code block
+  Toy example          code block
+  Desktop app          code block
+  Own data             2 batch examples
+  Outputs              table
+  Exit codes           table
+  Limitations          list
+  Tests                code block
+  Environment          table
+  Troubleshooting      table
+
+  ~150 lines
+  ```
+- Same depth, reworded: Keep every section and detail, including expected output for each step, and only replace naive wording with standard terms.
+
+**Answer:** Concise reference guide (Recommended)
+
+**Q2 (README).** How should the README be rewritten? Today it has a long overview paragraph, a status section, a quick start, a repository-layout tree, documentation links and the licence.
+
+- Short landing page (Recommended): A three-sentence overview in standard terms, key features, status and platform support, the quick start, documentation links and the licence. The repository-layout tree goes, since building and running don't need it. Its preview:
+  ```text
+  # FuSION 2.0
+  Overview        3 sentences
+  ## Features     5 bullets
+  ## Status       version, platforms,
+                  limitations (3 bullets)
+  ## Quick start  Ubuntu 24.04 commands
+  ## Documentation  links
+  ## License
+
+  ~55 lines (now 73)
+  ```
+- Keep its sections, reworded: The same sections, the layout tree included, with shorter sentences and standard terms.
+
+**Answer:** Short landing page (Recommended) → amends [decision 0040](../decisions/0040-readme-and-running.md)
+
+## 391 · User prompt · 2026-11-28 14:28
+
+> why is macos on a vm? that's too much setup. like before linux executable should be pretty much usable for mac
+
+Sent while Claude was rewriting the README and RUNNING.md under poll 390. FuSION 1 built natively on Macs, from source, with Xcode's command-line tools and Homebrew (z3 4.15.4, gnuplot, graphviz, openjdk; its macOS/README.md, verified on macOS 26.5.1 on Apple silicon).
+
+## 392 · Poll · 2026-11-28 14:29
+
+On entry 391. Claude explained above the poll:
+- A Linux executable cannot run on a Mac. FuSION 1 worked there because it was compiled on the Mac.
+- FuSION 2.0's platform code already has macOS branches, but two things stop a native build. The run lock uses Linux's F_OFD_SETLK, so run/src/posix.cpp has an #error for macOS. And the build accepts only Z3 4.8.12.
+- This Linux machine cannot compile or test macOS code.
+
+**Q1 (macOS).** How should FuSION 2.0 reach macOS? A Linux executable can't run on a Mac: FuSION 1 worked there because it was compiled on the Mac with Homebrew. FuSION 2.0 can do the same once two things are ported: the run lock uses a Linux-only call (F_OFD_SETLK), and the build demands Z3 4.8.12. This Linux machine can't compile or test macOS code.
+
+- Port it, you test on a Mac (Recommended): Claude ports the run lock to macOS (classic fcntl locks, which Java's tryLock also uses) and the Z3 check. RUNNING.md gets native Mac steps like FuSION 1's: Xcode tools, Homebrew, the same cmake commands. Marked untested until you build it on your Mac and send the output; Claude then fixes what it shows.
+- Port it, test on GitHub's Mac runner: The same, plus a GitHub Actions workflow that builds and tests on macOS. That needs a push, and uses macOS runner minutes, which are billed at a higher rate on a private repository.
+- Keep the VM route for now: Native macOS waits for its port in a later phase; RUNNING.md keeps the Ubuntu virtual machine.
+
+**Answer:** Port it, you test on a Mac (Recommended)
+
+**Q2 (Z3 on macOS).** Which Z3 should a macOS build use? Today the build accepts only Z3 4.8.12, the version FuSION 1 used on Linux; Homebrew ships 4.15. Section 11's comparison found every finished check gave the same SAT or UNSAT answer under both versions, but different witnesses and solve times.
+
+- Homebrew's Z3 on macOS (Recommended): As FuSION 1 did on Macs (4.15.4). run.json records the version. Frontiers agree wherever every check finishes, but witnesses and times can differ from Linux's. Linux keeps its 4.8.12 pin until experiment X11.
+- 4.8.12 everywhere: Mac users build Z3 4.8.12 from source first, which takes about half an hour, so results match Linux exactly.
+
+**Answer:** Homebrew's Z3 on macOS (Recommended) → [decision 0041](../decisions/0041-native-macos-build.md)
+
+## 393 · Poll · 2026-11-28 14:37
+
+Committing the macOS port, the docs rewrite and the log. Before it Claude rebuilt and tested on Linux after the port, at nice 19. Configuration still found Z3 4.8.12, the dev build had no warnings, and 599 of 599 tests passed. Nothing has been compiled on a Mac. RUNNING.md came to 430 lines, against the "~270 lines" of poll 390's preview: prose fell from 277 lines to 173, and words from 4,651 to 3,084. Claude said so above the poll and in Q2.
+
+**Q1 (macOS build).** Commit the native macOS build? On macOS the run lock now uses classic fcntl locks, with the process tracking its own locks, and the build finds and accepts Homebrew's Z3; Linux keeps its lock and its 4.8.12 pin. It changes posix.cpp, FusionDependencies.cmake, the tests' CMake file and three tests, and adds decision 0041 and section 11's note. On Linux 599 of 599 tests pass with no warnings. It hasn't been built on a Mac yet.
+
+- Commit it (Recommended): Stages those files by name, plus 0041's row in the decisions index. Not pushed. Its preview:
+  ```text
+  Build natively on macOS, with Homebrew's Z3
+
+  The backend stopped a macOS compile with an #error, because
+  run.lock's lock used Linux's open file description locks,
+  and the build accepted only Z3 4.8.12. On macOS the lock now
+  takes classic fcntl locks, the kind Java's tryLock takes
+  there, and remembers the files this process locks, since a
+  classic lock belongs to the process and closing any
+  descriptor drops it. A macOS build searches Homebrew's
+  prefix and uses its Z3, as FuSION 1 did on Macs; Linux
+  keeps its 4.8.12 pin, and the tests compare with the version
+  the build found. Not yet built on a Mac (decision 0041).
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+  ```
+- Not yet: Leave it uncommitted.
+
+**Answer:** Commit it (Recommended)
+
+**Q2 (Docs rewrite).** Then commit the docs rewrite? README is now 52 lines: overview, features, status, quick start, documentation, licence. RUNNING.md is 430 lines, down from 547, with about 40% less prose. That's longer than the ~270 lines I estimated, because the native macOS section is new and reference data moved into tables. It drops internal references, timings and test counts. Decision 0040 gets its amendment.
+
+- Commit it (Recommended): README.md, RUNNING.md, 0040's amendment and its index status. Not pushed. Its preview:
+  ```text
+  Rewrite the README and RUNNING.md as a concise guide
+
+  Both now use standard sections and terms: prerequisites,
+  installation, verification, configuration, exit codes, known
+  limitations and troubleshooting, with tables for reference
+  data and expected output only at checkpoints. Internal
+  references, exact timings and test counts are gone, and
+  macOS has native Homebrew steps in place of the virtual
+  machine (decisions 0040 and 0041).
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+  ```
+- Trim it further first: Cut RUNNING.md toward 270 lines before committing, for example the troubleshooting and output tables.
+- Not yet: Leave it uncommitted for you to read.
+
+**Answer:** Commit it (Recommended)
+
+**Q3 (Log commit).** Then commit the prompt log's entries 389 to 393: your two requests, polls 390 and 392, and this poll?
+
+- Commit it (Recommended): docs/process/PROMPTS.md, with the message 'Log prompt entries 389 to 393'. Not pushed.
+- Later: Keep these entries for the next log commit.
+
+**Answer:** Commit it (Recommended)
