@@ -100,8 +100,10 @@ final class RunsPane {
         folder.setOnAction(e -> selected().flatMap(RunRecord::runDir).ifPresent(p -> view.services().pages().open(p)));
         runPage.setOnAction(e -> selected().ifPresent(r -> Background.run(
                 () -> view.services().results().file(who(), r.id(), "index.html"),
-                page -> page.ifPresentOrElse(p -> view.services().pages().open(p),
-                        () -> Ui.message(view.owner(), "No run page yet", "The run page is written when the run ends.")),
+                page -> page.ifPresentOrElse(p -> view.services().pages().open(p), () -> {
+                    NoRunPage none = NoRunPage.of(r.state());   // why there is none (prompt log entry 387)
+                    Ui.message(view.owner(), none.title(), none.text());
+                }),
                 err -> Ui.message(view.owner(), "Cannot open the run page", Ui.describe(err)))));
         HBox buttons = new HBox(8, stop, kill, resume, folder, runPage);
 

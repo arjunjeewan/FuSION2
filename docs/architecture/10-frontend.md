@@ -847,6 +847,11 @@ On a filesystem without lock support, the run still starts and its run log carri
 - **Session lists** read the results summary that section 07 puts in `run.json`: points per case, least relaxations and the FSC verdict (2B.7). They do not parse witnesses.
 - **Stopped solves:** section 07 publishes a stopped solve with `"status": "partial"` on the unfinished case, so a stopped run still shows what it found.
 - **Showing them:** native views for the state, reports, case statuses, frontier table and plot, and the system browser for section 07's pages (10.C6).
+- **A run without a run page** (Phase 3, prompt log entry 387): Open the run page says why there is none.
+  - While the run is active: that the page is written when the run ends.
+  - After a kill, a crash or a lost run: that it ended before it could write the page.
+  - For a run that never started: that it has none.
+  - For an ended run without one: that the backend that ran it did not write one.
 - **Comparing runs:** two runs' settings can be compared from their `run.json`, which answers S8.29's "which directory came from which settings".
 
 ```java
