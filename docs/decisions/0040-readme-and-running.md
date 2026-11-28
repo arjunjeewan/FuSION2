@@ -43,3 +43,10 @@ The recommended option of each:
 
 - When the macOS and Windows ports arrive (decision 0038) and have been tested, their native steps replace `RUNNING.md`'s virtual-machine routes.
 - Any change to the build, the dependencies, the command line or how the app starts updates `RUNNING.md` along with it.
+
+## Amendment (2026-11-28, prompt log entry 390)
+
+The user asked for both files to be simpler and written in professional terms (prompt log entry 389). Poll 390 chose the recommended option of each:
+
+- **RUNNING.md** becomes a concise reference guide. It uses standard sections (prerequisites, installation, verification, quick start, configuration, exit codes, known limitations, troubleshooting) and imperative steps. Expected output appears only at checkpoints, which replaces "what it should print" for every command. Internal references such as decision numbers and section codes are left out, and so are exact timings and test counts, which go stale. Every verified command stays.
+- **The README** becomes a short landing page: an overview, key features, status and platform support, the quick start, documentation links and the licence. The repository-layout tree is dropped.

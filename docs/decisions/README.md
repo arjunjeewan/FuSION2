@@ -43,5 +43,5 @@ One file per decision, numbered in the order the decisions were made. Each recor
 | [0037](0037-booking-1-scripts.md) | Booking 1's scripts: Claude writes the case inventory and the fill script, subagents the rest | Accepted | 2026-11-17 |
 | [0038](0038-end-to-end-version-this-week.md) | A first end-to-end version this week, built ahead of the rest of Phase 3 (amends 0003 and 0036) | Accepted | 2026-11-17 |
 | [0039](0039-sprint-toolchain.md) | The sprint's toolchain: the system Z3 4.8.12 until X11, and user-local CMake, Ninja and Gradle | Accepted | 2026-11-17 |
-| [0040](0040-readme-and-running.md) | A README and a RUNNING.md at the root, for lab members who build from source (amends 11.C14) | Accepted | 2026-11-28 |
+| [0040](0040-readme-and-running.md) | A README and a RUNNING.md at the root, for lab members who build from source (amends 11.C14) | Accepted; style amended by poll 390 | 2026-11-28 |
 | [0041](0041-native-macos-build.md) | A native macOS build from source, with Homebrew's Z3 (amends 0038, 0039 and 0040) | Accepted | 2026-11-28 |
