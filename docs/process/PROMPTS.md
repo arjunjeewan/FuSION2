@@ -10193,3 +10193,98 @@ Committing the batch fix and C4, the log, and T2's booking. Before it Claude rer
 - Now, at nice 19: You allow T2 beside your jobs this once, since 8 more workers fit in the free cores. Claude first builds ci-linux and runs the one-case smoke test.
 
 **Answer:** After your jobs (Recommended)
+
+## 383 · User prompt · 2026-11-28 12:52
+
+> make detailed run instructions in a running md file for all OSs. make a readme as well
+
+Sent the day after C4's commits (entry 382), while 36 of the user's 44 FuSION 1 jobs were still running.
+
+## 384 · Poll · 2026-11-28 12:54
+
+On entry 383. Before it Claude read section 11 and the backend's platform code: `run/src/posix.cpp` stops a Windows build with `#error "run: the Windows lock and console handler (09.C8, 09.C9) come with the Windows build (decision 0038)"` and a macOS one with `#error "run: 09.C9's lock needs F_OFD_SETLK; the macOS port comes with the macOS build (decision 0038)"`; the build accepts only the system Z3 4.8.12 (decision 0039); this machine has no virtual display (no Xvfb).
+
+**Q1 (Run file).** Where should the run instructions go? I read 'a running md file' as a RUNNING.md that I keep current whenever building or running changes, as with the release notes. The README links to it either way.
+
+- RUNNING.md at the root (Recommended): Next to README.md, where GitHub and a fresh clone show it first. It adds one file to the repository layout's root list (11.C14).
+- docs/running.md: Under docs/ beside the spec and the architecture, so the root stays as 11.C14 lists it.
+
+**Answer:** RUNNING.md at the root (Recommended)
+
+**Q2 (Other OSs).** The backend builds only on Linux today. run/src/posix.cpp stops a Windows or macOS build with an #error, because decision 0038 left those ports for later, and there's no Windows machine or Mac here to test on. How should RUNNING.md cover macOS and Windows?
+
+- Via Linux, marked untested (Recommended): Linux in full, with every step checked here. Windows: WSL 2 with Ubuntu 24.04, where the Linux steps work unchanged. macOS: an Ubuntu 24.04 virtual machine. Both are marked untested, and native builds are marked not yet available.
+- Linux only: Linux in full. macOS and Windows get one line each saying native builds aren't available yet.
+- Port them first: Write the missing Windows and macOS backend code before writing their instructions. That's new backend work outside Phase 3's order, needs its own plan, and can't be tested on this machine.
+
+**Answer:** Via Linux, marked untested (Recommended)
+
+**Q3 (Readers).** Who are RUNNING.md and the README written for? Nothing is packaged yet, so everyone has to build FuSION 2.0 from source.
+
+- Lab members, from source (Recommended): People comfortable in a terminal who build and run it themselves. Every command is spelled out, with what it should print and what to do if it fails, plus a short section on the tests.
+- Biologists using the app: As few build steps as possible, with terms explained. Most of the space goes to the desktop app and its results.
+- FuSION 2.0's developers: Covers the presets, tests, reference tiers and data root in depth, with less on using the app.
+
+**Answer:** Lab members, from source (Recommended)
+
+**Q4 (README).** What should the README contain?
+
+- Overview, status, quick start (Recommended): What FuSION 2.0 is and what it keeps from FuSION 1, where the work stands (Phase 3, Linux only), a short quick start, the repository layout, links to RUNNING.md and docs/, and the MIT licence.
+- Short, with links: One paragraph on what FuSION 2.0 is and where it stands, then links to RUNNING.md and docs/.
+
+**Answer:** Overview, status, quick start (Recommended) → [decision 0040](../decisions/0040-readme-and-running.md)
+
+## 385 · Poll · 2026-11-28 13:23
+
+Committing the README and the run instructions, the log, and what to do with four small findings. Before it Claude checked every Linux step of RUNNING.md in a fresh clone, at nice 19 with the display unset:
+- **Builds:** CMake 3.28.3 (Kitware's release, checked against its SHA-256) and Ubuntu's own ninja-build 1.11.1 (`apt-get download`, unpacked in the scratchpad), the versions apt installs. The dev build took 357 of 357 steps in 247 s; the release build 111 of 111 in 103 s on 8 cores, with no warnings.
+- **Tests:** 598 of 598 in the dev preset in 23 s, 5 of them skipped without FUSION_TEST_DATA. The app passed 111 of 111 in 51 s, the screen test included. That ran on a private Xvfb display :99, unpacked from Ubuntu's xvfb package, never the user's screen.
+- **The toy batch** of RUNNING.md ran in 0.85 s, and its frontiers equal FuSION 1's: in (1,7) (2,5) (5,3) (7,2); out (0,7) (1,5) (4,3) (7,1). FuSION 1's own toy batch ran once its GUI placeholders were removed.
+- **The app** started on :99, showing Create a new account; a second launch printed the single-instance message. The password reset works in a pseudo-terminal through installDist, but not through ./gradlew run.
+- **Own data:** two KEGG-style batches, with and without gsea, passed fusion --check against a scratch folder of symlinks to the data root's 167 KGMLs.
+- **Error messages:** every one quoted in troubleshooting was produced.
+- **WSL facts:** WSLg's prerequisites and the Ubuntu-24.04 distribution name were checked on Microsoft Learn and Ubuntu's WSL documentation.
+
+Claude also reported a slip. A `pkill -f` pattern meant for the test app matched Claude's own shell, which ended the command. Afterwards the user's 36 FuSION 1 jobs and VS Code's processes all kept their start times.
+
+**Q1 (Docs commit).** Commit the README and run instructions? The commit adds README.md (74 lines), RUNNING.md (543 lines) and decision 0040, and adds 0040's row to the decisions index and RUNNING.md to section 11's root layout. Every Linux step was checked in a fresh clone: 598 backend and 111 app tests pass, and the toy run matches FuSION 1. Nothing is pushed.
+
+- Commit it (Recommended): Stages the five files by name, with this message. Its preview:
+  ```text
+  Add a README and RUNNING.md, the run instructions
+
+  The repository had no README. README.md says what FuSION 2.0
+  is, where it stands, a quick start and the layout. RUNNING.md
+  gives lab members who build from source every step on Linux,
+  checked in a fresh clone on Ubuntu 24.04 with apt's CMake
+  3.28.3 and Ninja 1.11.1. Windows runs through WSL 2 and macOS
+  through an Ubuntu virtual machine, both marked untested.
+  Decision 0040 records the choices and adds RUNNING.md to
+  section 11's root list.
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+  Files:
+    README.md (new)
+    RUNNING.md (new)
+    docs/decisions/0040-readme-and-running.md (new)
+    docs/decisions/README.md
+    docs/architecture/11-build.md
+  ```
+- Not yet: Leave the files uncommitted so you can read or change them first.
+
+**Answer:** Commit it (Recommended)
+
+**Q2 (Log commit).** After that, commit the prompt log's entries 383 to 385? They hold your request, poll 384 with its answers, and this poll.
+
+- Commit it (Recommended): docs/process/PROMPTS.md, with the message 'Log prompt entries 383 to 385'. Nothing is pushed.
+- Later: Keep these entries for the next log commit.
+
+**Answer:** Commit it (Recommended)
+
+**Q3 (Findings).** What should happen to the four small things found while checking? (1) The backend never writes the run page, but the app says it appears when the run ends. (2) fusion --stop on a finished run silently writes a stop file. (3) The solve prints 'querys'. (4) The password reset misreads piped input.
+
+- Record them for later (Recommended): Add them to the release notes' findings and the handoff. Each gets fixed when Phase 4 or 5 next works on its module, through the usual poll.
+- Fix them now: Small changes with tests, each in its own commit after a diff review, done before T2 starts.
+
+**Answer:** Record them for later (Recommended)
