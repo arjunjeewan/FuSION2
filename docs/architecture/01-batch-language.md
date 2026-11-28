@@ -486,6 +486,10 @@ With an FSC, `pathz3` solves the cases `in` and `out` by default (06.C10), as S8
 
 `--check`, `--commands`, `--version`, `--stop` and `--query` make no run directory and fall outside A1, which governs how runs are executed (row 4A.2, entry 168).
 
+*Phase 3 (prompt log entry 387):* `--stop` writes the `stop` file only into a directory holding a `run.lock` that a live run holds (09.C9).
+- **Refused:** a directory without a `run.lock` is not a run directory, and a run whose lock is free has ended. Both exit with status 1, and nothing is written.
+- **A file system that cannot lock:** the file is written, with a note that liveness could not be checked.
+
 Exit statuses (Choice 01.C14):
 
 | Status | Meaning |

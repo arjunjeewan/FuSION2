@@ -9,6 +9,7 @@
 
 #include "fusion/batch/batch.hpp"
 #include "fusion/batch/cli.hpp"
+#include "fusion/run/run.hpp"
 #include "fusion/solve/solve.hpp"
 
 using namespace fusion;
@@ -170,10 +171,32 @@ TEST_CASE("batch: a missing or empty batch file is a usage error, status 2 (S1.0
 // --version needs core::build_id(), which hashes the executable of a dirty build: it is tested with the
 // runs, in test_interpreter.cpp, so that one process pays for the hash.
 TEST_CASE("batch: --stop and --query (01.C14)", "[batch][cli]") {
+  // --stop writes the stop file only into a running run's directory (01.C14's table, 09.C9's lock):
+  // never into a folder that is not a run, or a run that has ended (Phase 3, prompt log entry 387).
   const auto dir = std::filesystem::temp_directory_path() / "fusion_batch_cli_stop";
+  std::filesystem::remove_all(dir);
   std::filesystem::create_directories(dir);
-  CHECK(invoke({"--stop", dir.string()}).exit == 0);
-  CHECK(std::filesystem::exists(dir / "stop"));
+  const auto plain = invoke({"--stop", dir.string()});
+  CHECK(plain.exit == cli::exit_failed);
+  CHECK(plain.err.find("is not a run directory") != std::string::npos);
+  CHECK_FALSE(std::filesystem::exists(dir / "stop"));
+
+  std::ofstream(dir / "run.lock") << "41872 r-20261128T000000Z-00000000\n";   // an ended run: no lock held
+  std::ofstream(dir / "run.json") << R"({"format": "fusion.run", "status": "ok"})";
+  const auto ended = invoke({"--stop", dir.string()});
+  CHECK(ended.exit == cli::exit_failed);
+  CHECK(ended.err.find("is not running") != std::string::npos);
+  CHECK(ended.err.find("status ok") != std::string::npos);
+  CHECK_FALSE(std::filesystem::exists(dir / "stop"));
+  std::filesystem::remove_all(dir);
+
+  std::filesystem::create_directories(dir);
+  {
+    const run::Lock live = run::Lock::claim(dir);   // a live run holds run.lock's lock
+    REQUIRE(live.locked());
+    CHECK(invoke({"--stop", dir.string()}).exit == 0);
+    CHECK(std::filesystem::exists(dir / "stop"));
+  }
   std::filesystem::remove_all(dir);
   CHECK(invoke({"--stop", "/nowhere/run"}).exit == cli::exit_failed);
   // --query refuses a command that needs a run directory (entry 168).

@@ -438,7 +438,7 @@ toy_20261128-130638/
 ## Stopping a run
 
 - **Ctrl-C** in the run's terminal, or `kill` with the process id, asks the run to stop: `fusion` records the run as stopped and exits with status 3. A second Ctrl-C ends it at once, with status 130.
-- **From another terminal**, `fusion --stop <run folder>` asks the same, by writing a `stop` file into the run folder.
+- **From another terminal**, `fusion --stop <run folder>` asks the same, by writing a `stop` file into the run folder. It refuses a folder that isn't a run, or a run that has already ended, with exit status 1.
 - **In the app**, **Stop** asks the same. **Kill** ends the run's process, and every process it started, at once.
 
 `fusion`'s exit statuses:
@@ -539,6 +539,9 @@ These are the GUI template's unfilled placeholders; see [On the command line](#o
 
 **A FuSION 1 batch opens gnuplot windows.**
 Run it with `env -u DISPLAY -u WAYLAND_DISPLAY`. Its log then says `exec: no display is available, so this gnuplot window is skipped; plot_pareto draws the plot (01.C20)`.
+
+**`fusion --stop` says `is not a run directory` or `is not running`.**
+The folder isn't a run folder, or its run has already ended, so there is nothing to stop. The message says how an ended run ended.
 
 **`fusion -b` prints `error: batch file my.batch does not exist` and exits with status 2.**
 Check the path. A relative batch path is read from the current folder.

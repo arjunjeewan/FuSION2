@@ -77,12 +77,41 @@ int version(const Options& o, Streams s) {
   return data.damaged || home_problem ? exit_failed : exit_ok;
 }
 
+// How an ended run ended, from its run.json, for --stop's refusal.
+std::string ended_how(const std::filesystem::path& dir) {
+  std::string status;
+  try {
+    std::ifstream in(dir / "run.json");
+    const core::Json manifest = core::Json::parse(in);
+    if (manifest.contains("status") && manifest["status"].is_string()) status = manifest["status"].get<std::string>();
+  } catch (const std::exception&) {
+  }
+  if (status == "running") return "it died without finishing, and nothing holds its lock";
+  if (!status.empty()) return "run.json says it ended with status " + status;
+  return "nothing holds its lock";
+}
+
 // 09.C7: the stop file; only its existence matters, written under a temporary name and renamed.
+// 01.C14's table writes it only into a running run's directory, which 09.C9's lock tells: a folder
+// that is not a run, or a run that has ended, gets no file (Phase 3, prompt log entry 387).
 int stop(const Options& o, Streams s) {
   const auto dir = *o.stop;
   if (!std::filesystem::is_directory(dir)) {
     s.err << "error: " << core::to_utf8(dir) << " is not a run directory\n";
     return exit_failed;
+  }
+  if (!std::filesystem::exists(dir / "run.lock")) {
+    s.err << "error: " << core::to_utf8(dir) << " is not a run directory: it holds no run.lock\n";
+    return exit_failed;
+  }
+  if (!run::Lock::held(dir)) {
+    if (run::Lock::supported(dir)) {
+      s.err << "error: the run in " << core::to_utf8(dir) << " is not running: " << ended_how(dir)
+            << " [run.not_running]\n";
+      return exit_failed;
+    }
+    s.err << "note: the file system of " << core::to_utf8(dir)
+          << " cannot lock, so whether its run is live cannot be checked; the stop file is written anyway (09.C9)\n";
   }
   const auto tmp = dir / "stop.tmp";
   {
