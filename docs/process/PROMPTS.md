@@ -10288,3 +10288,139 @@ Claude also reported a slip. A `pkill -f` pattern meant for the test app matched
 - Fix them now: Small changes with tests, each in its own commit after a diff review, done before T2 starts.
 
 **Answer:** Record them for later (Recommended)
+
+## 386 · User prompt · 2026-11-28 13:25
+
+> the run page issue is big, fix it and the other 3 things too
+
+Sent after poll 385, which recorded the four findings for later. This prompt replaces that answer: all four are fixed now.
+
+## 387 · Poll · 2026-11-28 14:01
+
+On entry 386. Before it Claude read the code:
+- `results::run_page_html` already builds section 07's run page and has a unit test, but nothing calls it. The batch's end-of-run hook (`finish_run`) writes only bindings.tsv, and the hook is not told how the run ended.
+- `fusion --stop` writes `stop` into any existing folder and exits 0, against section 01's table ("in a running run's directory"); `run::Lock::held` can tell a live run.
+- "querys" comes from `solve.cpp`'s `plural()`, which appends "s", at two call sites.
+- `PasswordReset.read()` opens a new BufferedReader for each password, so with piped input the first one buffers both lines. It has no tests.
+
+**Q1 (Run page).** The backend never writes the run page, index.html. results::run_page_html already builds it as section 07 designs: the Pareto plot, each solve's settings and comparison, one panel per case with its points linked to their explanation pages, the observation summary and a link to results.json. Nothing calls it. How should the fix work?
+
+- Every run, with its status (Recommended): Written at every run's end, whatever its status (section 09). pex and plot_pareto record their pages and plots. The page also opens with how the run ended (finished, failed with its message, or stopped), so a failed run or one without a solve isn't blank. That line amends 07's list.
+- Exactly section 07's page: The same, without the status line. A run with no solve gets a page with only a title.
+- Only runs with a solve: No page when no solve ran. The app then says that run has no run page.
+
+**Answer:** Every run, with its status (Recommended)
+
+**Q2 (App message).** Once the backend writes the run page, the app's 'No run page yet: The run page is written when the run ends.' is right while a run is going. But a killed or crashed run never gets a page, and one that never started has none either. What should the app's Open the run page say in those cases?
+
+- Say why there is none (Recommended): While a run is active: today's message. After a kill, a crash or a lost run: 'This run ended before it could write its run page. Its files are in its folder.' For a run that never started: 'This run never started, so it has no run page.'
+- Keep one message: Keep today's message for every case.
+
+**Answer:** Say why there is none (Recommended)
+
+**Q3 (--stop).** Section 01 says fusion --stop creates the stop file in a running run's folder. Today it writes stop into any existing folder, whether a finished run or not a run at all, and exits 0. What should it do?
+
+- Refuse unless the run is live (Recommended): Write stop only into a folder with a run.lock that a live run holds (09.C9's lock). Otherwise print 'is not a run directory' or 'the run is not running; run.json says it ended <status>', write nothing, and exit 1. On a file system that can't lock, write it and say liveness can't be checked.
+- Warn but write: Keep writing the stop file, and print a warning when the run isn't live.
+
+**Answer:** Refuse unless the run is live (Recommended)
+
+**Q4 (Author).** Who writes the fixes, and how? The plan: test first, each fix its own commit after your diff review, with RUNNING.md, the README and the release notes updated to match. The two small fixes are mechanical: 'querys' becomes 'queries' in the solve's two summary lines, and the password reset reads both passwords through one reader, with its first unit test.
+
+- Claude, all four (Recommended): Claude writes all four fixes now. Tests at nice 19 while your jobs run; nothing else heavy runs.
+- Subagent for the run page: A fresh subagent writes the run page fix from a logged brief. Claude writes the other three and reviews its work.
+
+**Answer:** Claude, all four (Recommended)
+
+## 388 · Poll · 2026-11-28 14:18
+
+Committing the four fixes of entry 387. Before it Claude checked the working tree at nice 19, with the display unset:
+- **Backend:** the dev build has no warnings, and 599 of 599 tests pass in 27 s, 5 of them skipped without the data root.
+- **App:** 119 of 119 tests pass, the screen test included, on the private Xvfb display :99.
+- **Test first:** the "querys", reset and --stop tests each failed before their fix and passed after. The run page had no index.html at all before.
+- **Run page:** the RUNNING.md toy run now writes index.html (3.5 KB, no script). It opens "toy_... · finished", then the Pareto plot and each case's points in FuSION 1's order, each linked to its page.
+- **--stop:** on that finished run it prints "the run ... is not running: run.json says it ended with status ok [run.not_running]", exits 1 and writes nothing.
+- **Firefox:** not used for a screenshot. It is a snap that cannot read the scratchpad, and it could open a tab in the user's running browser.
+
+The page's existing code printed "1 nodes" and "1 edges". Claude fixed that within the run page commit and said so above the poll.
+
+**Q1 (Run page).** Commit the run page fix? It writes index.html at every run's end, whatever its status, through the batch's end-of-run hook. pex and plot_pareto record the pages and plots it links. The page opens with how the run ended. It changes 12 files: results (2), batch (5), their tests (2), section 07's note, and RUNNING.md's and the README's run page lines. All 599 backend tests pass, with no warnings.
+
+- Commit it (Recommended): Stages the files by name, RUNNING.md's run page lines only. Not pushed. Its preview:
+  ```text
+  Write the run page at the end of every run
+
+  results::run_page_html built section 07's run page, but
+  nothing called it, so no run had an index.html while the app
+  offered to open one. The batch's end-of-run hook now writes it
+  through run's create_run_file whatever the status, also when
+  the check of the inputs fails before the first step. pex and
+  plot_pareto record the pages and plots it links. The page
+  opens with the run's name and how the run ended, with the
+  failing line's message, and a run without a solve says so.
+  It also says "1 node", not "1 nodes". RUNNING.md and the
+  README now describe the page.
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+  Files: results/explain.hpp, explain.cpp; batch.hpp,
+  interpreter.cpp, common.cpp, state.hpp, solve_handlers.cpp;
+  test_explain.cpp, test_interpreter.cpp; 07-results.md;
+  README.md; RUNNING.md (5 of its 7 changed blocks)
+  ```
+- Not yet: Leave it uncommitted for you to read first.
+
+**Answer:** Commit it (Recommended)
+
+**Q2 (App message).** Then commit the app's message? Open the run page now says why a run has no page: still running, killed or crashed before it could write one, never started, or made by an older backend. It adds NoRunPage.java and its 5 tests, changes RunsPane.java (6 lines), and adds section 10's note. All 119 app tests pass.
+
+- Commit it (Recommended): Four files by name. Not pushed. Its preview:
+  ```text
+  Say why a run has no run page
+
+  Open the run page said the page is written when the run
+  ends for every run without one. That stays while a run is
+  active. A killed, crashed or lost run now says it ended
+  before it could write the page, a run that never started
+  says it has none, and an ended run without one says the
+  backend that ran it did not write one.
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+  Files: NoRunPage.java (new), RunsPane.java,
+  NoRunPageTest.java (new), 10-frontend.md
+  ```
+- Not yet: Leave it uncommitted.
+
+**Answer:** Commit it (Recommended)
+
+**Q3 (--stop).** Then commit the --stop fix? fusion --stop now writes the stop file only when a live run holds the folder's run.lock. Otherwise it explains, writes nothing and exits 1. It changes cli_run.cpp (+29), the CLI test (now a plain folder, an ended run, a live run and a missing folder), section 01's note, and RUNNING.md's two --stop lines.
+
+- Commit it (Recommended): Four files by name, including the rest of RUNNING.md. Not pushed. Its preview:
+  ```text
+  Refuse fusion --stop unless its run is live
+
+  fusion --stop wrote a stop file into any existing folder,
+  a finished run or no run at all, and exited 0. Section 01
+  says it acts on a running run's directory, so it now writes
+  the file only when a live run holds the folder's run.lock
+  (09.C9). Otherwise it says the folder is not a run
+  directory, or that its run is not running and how run.json
+  says it ended, writes nothing and exits 1.
+
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+  Files: cli_run.cpp, test_cli.cpp, 01-batch-language.md,
+  RUNNING.md (its 2 remaining blocks)
+  ```
+- Not yet: Leave it uncommitted.
+
+**Answer:** Commit it (Recommended)
+
+**Q4 (Small + log).** Then the two small fixes, each its own commit, and then the log? 'Print queries, not querys, in the solve's summary' covers solve.cpp and test_driver.cpp. 'Read both reset passwords from one input' covers PasswordReset.java and the new PasswordResetTest.java (3 tests). The log commit is 'Log prompt entries 386 to 388'.
+
+- Commit all three (Recommended): Two fix commits, then the prompt log commit. Nothing is pushed.
+- Fixes only, log later: Commit the two fixes; keep the log entries for the next log commit.
+- Not yet: Leave them uncommitted.
+
+**Answer:** Commit all three (Recommended)
