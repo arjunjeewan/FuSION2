@@ -6,6 +6,7 @@ How to build FuSION 2.0 from source and run it, on Linux, Windows and macOS. For
 - Every command-line step below was run in order.
 - That machine already had the apt packages except CMake and Ninja, which were run at the versions apt installs (3.28.3 and 1.11.1).
 - The app was started on a virtual display, where its screen test also ran the toy session through it. Nobody clicked through the app's steps by hand.
+- The steps for the run page and `fusion --stop` were checked again after those were fixed, later the same day.
 - The Windows and macOS routes have not been tried.
 
 ## Contents
@@ -268,7 +269,7 @@ The tests include FuSION 1's toy network: 22 genes, 25 edges and a fold-change f
    - A point is *certified* when the solver proved that no explanation needs fewer of either. A point whose checks timed out stays uncertified.
    - FSC means the gene being tested. The toy reuses real gene ids, so the shipped symbol map shows `hsa13` as AADAC.
 
-4. **Look at the results.** The run made a new folder named after the batch and the time, such as `toy_20261128-130638`. Open its `plot_pareto/pareto.png` and the pages in `pex/explain/` from your file manager, or with `xdg-open`. [What a run writes](#what-a-run-writes) lists everything in it.
+4. **Look at the results.** The run made a new folder named after the batch and the time, such as `toy_20261128-130638`. Open its `index.html`, the run page, in your browser, from your file manager or with `xdg-open`. It says how the run ended, shows the Pareto plot, and links each frontier point to its explanation page. [What a run writes](#what-a-run-writes) lists everything in the folder.
 
 ## The desktop app
 
@@ -317,7 +318,7 @@ The **Runs** tab follows the run. When it has finished, its tabs show:
 - **Pareto plot**;
 - **Explanation pages**: double-click one to open it in your browser.
 
-**Open folder** opens the run's folder. **Open the run page** answers "No run page yet", because the run page isn't built yet ([Not available yet](#not-available-yet)).
+**Open the run page** opens the run's `index.html` in your browser, and **Open folder** opens the run's folder. A run that was killed, or never started, has no run page, and the app says why.
 
 ### Where the app keeps things
 
@@ -412,6 +413,8 @@ FuSION never deletes or reuses a run folder. The toy run's folder holds:
 
 ```text
 toy_20261128-130638/
+  index.html                  the run page: how the run ended, the Pareto plot, and each case's
+                              points linked to their explanation pages
   run.json                    the run's record: versions, every input with its size and SHA-256,
                               the settings, each step's files and the run's status
   events.jsonl                progress, one JSON event per line (the app follows this)
@@ -455,9 +458,7 @@ These stop with a message saying they come in a later version:
 - **Resuming or restarting a stopped run.** `--resume`, which the app's **Resume** button uses, stops with `restarting or resuming from a parent run (09.C5) comes in a later version of FuSION 2.0 [run.resume_unavailable]`. `load run=...` stops with a similar message.
 - **`pathz3`'s `points=` and `answers_from=`,** and loading a saved solve.
 
-These aren't built yet at all:
-- **The run page,** `index.html`. The app's **Open the run page** answers "No run page yet" for every run.
-- **Native Windows and macOS builds,** and installers.
+These aren't built yet at all: **native Windows and macOS builds,** and installers.
 
 ## Tests
 

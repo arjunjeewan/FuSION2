@@ -39,6 +39,9 @@ struct StepState {
   };
   std::vector<Solve> solves;                     // batch order
   std::map<std::string, solve::CoexpressionTable> coexpression;   // parsed once per run (S5.15)
+  std::vector<std::string> pages, plots;         // the run page's links: the explanation pages and Pareto
+                                                 // images pex and plot_pareto wrote, relative to the run
+                                                 // directory (07.C2; prompt log entry 387)
 
   const Solve* find_solve(std::string_view name_or_step) const;
   const Solve* latest_solve() const { return solves.empty() ? nullptr : &solves.back(); }
@@ -96,7 +99,7 @@ core::Outcome<void> run_psp(const BoundArgs&, Workspace&, core::Context&);
 core::Outcome<void> run_pex(const BoundArgs&, Workspace&, core::Context&);
 core::Outcome<void> run_plot_pareto(const BoundArgs&, Workspace&, core::Context&);
 void run_legacy_move(const LegacyMove&, const Workspace&, core::Context&);
-void finish_run(Workspace&, run::Run&);
+void finish_run(Workspace&, run::Run&, const RunEnding&);
 
 // Section 11's blocks (versions.cpp): fusion --version --json, and run.json beside it.
 core::Json versions_block();

@@ -79,6 +79,11 @@ constexpr std::string_view kDashes = "-------------------------------";   // S1.
 
 std::string reason_of(const std::exception& e) { return e.what(); }
 
+// The run page's account of a failure (Phase 3, prompt log entry 387): its batch line and message.
+std::string failure_note(const run::StepSpec& spec, std::string_view message) {
+  return "line " + std::to_string(spec.line) + ", " + spec.command + ": " + std::string(message);
+}
+
 }  // namespace
 
 run::RunStatus Interpreter::run() {
@@ -87,6 +92,7 @@ run::RunStatus Interpreter::run() {
   core::Log& log = run_.log();
   std::optional<std::string> skipping;   // after a reported result or a stop (01.C15)
   bool stopped = false, failed = false;
+  std::string note;                      // a failure's line and message, for the run page (entry 387)
   for (const PlannedLine& planned : lines) {
     if (planned.kind == PlannedLine::Kind::skip) continue;
     if (planned.kind == PlannedLine::Kind::exit) {   // S1.13: exit ends the run
@@ -111,11 +117,13 @@ run::RunStatus Interpreter::run() {
     std::optional<run::Run::Step> step;
     try {
       step.emplace(run_.begin(spec));                 // inputs the batch made are checked now (01.C12)
-    } catch (const core::Failure&) {
+    } catch (const core::Failure& f) {
+      note = failure_note(spec, f.what());
       failed = true;                                  // begin() has failed the step and printed it
       break;
     } catch (const std::exception& e) {
       log.error("internal", e.what());
+      note = failure_note(spec, e.what());
       failed = true;
       break;
     }
@@ -144,25 +152,30 @@ run::RunStatus Interpreter::run() {
       skipping = "stopped";
     } catch (const core::Failure& f) {                // S1.28: the batch stops at the first failure
       run_.fail(*step, f);
+      note = failure_note(spec, f.what());
       failed = true;
       break;
     } catch (const std::bad_alloc&) {
       run_.fail(*step, core::Failure("internal.out_of_memory", "out of memory"));
+      note = failure_note(spec, "out of memory");
       failed = true;
       break;
     } catch (const std::filesystem::filesystem_error& e) {
       run_.fail(*step, core::Failure("io.write", reason_of(e)));
+      note = failure_note(spec, reason_of(e));
       failed = true;
       break;
     } catch (const std::exception& e) {
       run_.fail(*step, core::Failure("internal", reason_of(e)));
+      note = failure_note(spec, reason_of(e));
       failed = true;
       break;
     }
   }
   if (handlers_.finish) {   // the run-level files, whatever the status (entry 230)
     try {
-      handlers_.finish(workspace_, run_);
+      const auto status = failed ? run::RunStatus::failed : stopped ? run::RunStatus::stopped : run::RunStatus::ok;
+      handlers_.finish(workspace_, run_, RunEnding{status, note});
     } catch (const std::exception& e) {
       log.warning("io.write", std::string("the run's last files could not be written: ") + e.what());
     }
@@ -275,12 +288,32 @@ int run_batch(const Plan& checked, const RunOptions& options, core::Log& log, co
   for (const auto& f : plan->report.features)
     run->log().info(name + ":" + std::to_string(f.line) + ": " + f.command + ": " + f.feature + " is " +
                     (f.on ? "on" : "off") + ": " + f.because);
+  // A failed check of the inputs' copies ends the run before its first step. Its run page still says
+  // so: the run-level files are written whatever the status (09; Phase 3, prompt log entry 387).
+  const auto fail_before_steps = [&](std::string note) {
+    if (handlers.finish) {
+      Workspace none;
+      try {
+        handlers.finish(none, *run, RunEnding{run::RunStatus::failed, std::move(note)});
+      } catch (const std::exception& e) {
+        run->log().warning("io.write", std::string("the run's last files could not be written: ") + e.what());
+      }
+    }
+    return run->finish(run::RunStatus::failed);
+  };
   try {
     const auto report = run->check(plan->steps.front());   // 09.C3 and decision 0021, on the copies
-    if (!report.ok()) return run->finish(run::RunStatus::failed);
+    if (!report.ok()) {
+      const auto first = std::find_if(report.diagnostics.begin(), report.diagnostics.end(),
+                                      [](const core::Diagnostic& d) { return d.severity == core::Severity::error; });
+      return fail_before_steps(first == report.diagnostics.end()
+                                   ? std::string("the check of the inputs failed")
+                                   : "the check of the inputs failed: line " + std::to_string(first->line) + ", " +
+                                         first->message);
+    }
   } catch (const core::Failure& f) {
     run->log().error(f.code(), f.what());
-    return run->finish(run::RunStatus::failed);
+    return fail_before_steps(std::string("the check of the inputs failed: ") + f.what());
   }
   Interpreter interpreter(*plan, 0, *run, handlers);
   interpreter.set_home(options.home);

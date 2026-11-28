@@ -52,6 +52,8 @@ constexpr std::pair<std::string_view, batch::Handler> kFakes[] = {
     {"wgx", fail},         {"gsea", stop},   {"help", record},
 };
 const batch::Handlers kHandlers{kFakes, move, nullptr};
+// The stand-ins with the real end of a run, which writes the run page (prompt log entry 387).
+const batch::Handlers kWithPage{kFakes, move, batch::step_handlers().finish};
 
 class Recorder final : public core::LogSink {
  public:
@@ -329,6 +331,42 @@ TEST_CASE("batch: running batches through 09's Run", "[batch][interpreter]") {
     CHECK(late.console->has("[input.missing]"));
     CHECK(late.console->has("line 1"));
   }
+  SECTION("every run ends with its run page, which says how the run ended (07.C2, 09; prompt log entry 387)") {
+    const auto page_of = [](const Ran& ran) {
+      std::ifstream in(ran.dir / "index.html", std::ios::binary);
+      return std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+    };
+    Scratch failing("page_failed");
+    const auto failed = run_text(failing, "rgx g.xml y 1\nwgx 0 out.xml KEGG\n", kWithPage);
+    CHECK(failed.exit == 1);
+    const std::string page = page_of(failed);
+    CHECK(page.find("<span class=\"bad\">failed</span>") != std::string::npos);
+    CHECK(page.find("<p class=\"end\">line 2, wgx: the graph is broken</p>") != std::string::npos);
+    CHECK(page.find("No solve finished before the run ended.") != std::string::npos);
+    CHECK(page.find(failed.manifest["name"].get<std::string>() + " · ") != std::string::npos);
+    CHECK(failed.manifest["outputs"].back()["path"] == "index.html");
+
+    Scratch stopping("page_stopped");
+    const auto stopped = run_text(stopping, "gsea values=v candidates=c selector=fdr:0.25 shortlist=s.txt\n", kWithPage);
+    CHECK(stopped.exit == 3);
+    CHECK(page_of(stopped).find("<span class=\"bad\">stopped on request</span>") != std::string::npos);
+
+    Scratch reporting("page_reported");
+    const auto reported = run_text(reporting, "rgx g.xml y 1\nfb_rch 0 a -1 b -1 -1 3 0\n", kWithPage);
+    CHECK(reported.exit == 0);
+    const std::string finished = page_of(reported);
+    CHECK(finished.find(" · finished</p>") != std::string::npos);
+    CHECK(finished.find("This run has no solve, so there is no frontier to show.") != std::string::npos);
+
+    // The check of the inputs' copies fails before the first step: the page still says why.
+    Scratch unchecked("page_unchecked");
+    const auto refused = run_text(unchecked, "cudf values=never.tsv up=1 down=-1\n", kWithPage);
+    CHECK(refused.exit == 1);
+    REQUIRE_FALSE(refused.dir.empty());
+    const std::string before = page_of(refused);
+    CHECK(before.find("<span class=\"bad\">failed</span>") != std::string::npos);
+    CHECK(before.find("<p class=\"end\">the check of the inputs failed: line 1, ") != std::string::npos);
+  }
   SECTION("a check error ends fusion before any run directory exists (09.C14)") {
     Scratch s("check_error");
     const auto ran = run_text(s, "bogus line\n");
@@ -365,6 +403,42 @@ TEST_CASE("batch: running batches through 09's Run", "[batch][interpreter]") {
     for (const auto& s : manifest["steps"]) ids.push_back(s["id"]);
     CHECK(ids == std::vector<std::string>{"start", "cudf", "rgx", "fb_rch", "pathz3", "exec"});
     CHECK(out.find("pathz3 fsc=hsa11 node_max=7 edge_max=7 timeout=150s incremental_timeout=30s \n") != std::string::npos);
+  }
+  SECTION("the run page links every frontier point's page and the Pareto plot (07.C2; prompt log entry 387)") {
+    if (!std::filesystem::exists(kCase)) return;
+    Case c;
+    std::string out, err;
+    const int exit = c.run(
+        "start symbols=inputs/empty_file pathway_names=inputs/empty_file\n"
+        "cudf values=inputs/with_node_included.tsv up=0.9 down=-0.9\n"
+        "rgx file=inputs/with_node_included.xml tool_written=y\n"
+        "fb_rch source=hsa1 target=hsa22 bound=10\n"
+        "pathz3 fsc=hsa11 node_max=7 edge_max=7 timeout=150s incremental_timeout=30s\n"
+        "plot_pareto\n"
+        "pex\n",
+        out, err);
+    INFO(out << err);
+    REQUIRE(exit == 0);
+    const auto run = c.dir / "runs" / c.manifest()["name"].get<std::string>();
+    const std::string page = bytes(run / "index.html");
+    CHECK(page.find(" · finished</p>") != std::string::npos);
+    CHECK(page.find("<script") == std::string::npos);   // static, no script (07)
+    CHECK(page.find("<img src=\"plot_pareto/pareto.png\"") != std::string::npos);
+    CHECK(std::filesystem::exists(run / "plot_pareto" / "pareto.png"));
+    std::ifstream in(run / "pathz3" / "results.json");
+    const auto results = nlohmann::json::parse(in);
+    std::size_t points = 0;
+    for (const auto& kase : results["cases"]) points += kase["points"].size();
+    REQUIRE(points > 0);
+    std::size_t links = 0;
+    const std::string link = "href=\"pex/explain/";
+    for (auto at = page.find(link); at != std::string::npos; at = page.find(link, at + 1)) {
+      const auto start = at + 6, end = page.find('"', start);
+      CHECK(std::filesystem::exists(run / page.substr(start, end - start)));
+      ++links;
+    }
+    CHECK(links == points);   // each point links its own page, and each page exists
+    CHECK(page.find("href=\"pathz3/results.json\"") != std::string::npos);
   }
   SECTION("an empty corridor is a reported result; the solve is skipped and the run exits 0 (S4.18)") {
     if (!std::filesystem::exists(kCase)) return;

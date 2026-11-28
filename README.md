@@ -13,7 +13,7 @@ FuSION 1's batch files keep working: a batch that ran correctly in FuSION 1 give
 Version 0.1.0, the first end-to-end version ([decision 0038](docs/decisions/0038-end-to-end-version-this-week.md)), runs on Linux. The work is in Phase 3, the reference tests, which check 2.0 against FuSION 1's recorded results ([plan](docs/phase3/plan.md)).
 
 What works:
-- `fusion` runs a batch end to end: reading KGML and FuSION network files, the `mff` merge, `cudf`, GSEA (a bit-exact port of gseapy's), `fb_rch`, `pathz3` on Z3 with the `in`, `out` and free cases, the Pareto plot and the explanation pages.
+- `fusion` runs a batch end to end: reading KGML and FuSION network files, the `mff` merge, `cudf`, GSEA (a bit-exact port of gseapy's), `fb_rch`, `pathz3` on Z3 with the `in`, `out` and free cases, the Pareto plot, the explanation pages, and a run page that sums up each run.
 - In the app you create an account and sessions, enter a run's inputs and check them, then run the default pipeline. You can follow the run's progress and see its frontier, Pareto plot and explanation pages.
 - On the 12 synthetic reference cases, every frontier matches FuSION 1's except one, which a recorded fix explains.
 
@@ -21,7 +21,6 @@ Not available yet:
 - **Native Windows and macOS builds.** On those systems, run the Linux build in WSL 2 or a virtual machine. [RUNNING.md](RUNNING.md) gives both routes; neither has been tested yet.
 - **Installers.** Everyone builds from source for now.
 - **Some batch features:** `sweep` lines, resuming a stopped run (`--resume`, and the app's Resume button), and `pathz3`'s `points=` and `answers_from=`. Each of these stops with a message saying it comes in a later version.
-- **The run page,** `index.html`, which would sum up a run in one page.
 
 ## Quick start (Ubuntu 24.04)
 

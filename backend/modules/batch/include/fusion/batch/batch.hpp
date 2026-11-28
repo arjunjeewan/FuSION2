@@ -324,10 +324,15 @@ struct Workspace {
 // the language never names a step module. step_handlers() lives with the handlers and calls the modules.
 using Handler = core::Outcome<void> (*)(const BoundArgs&, Workspace&, core::Context&);
 struct LegacyMove;
+struct RunEnding {                       // Added: how the run ended, for its run page (prompt log entry 387)
+  run::RunStatus status = run::RunStatus::ok;
+  std::string note;                      // a failure's batch line and message
+};
 struct Handlers {
   std::span<const std::pair<std::string_view, Handler>> commands;   // by canonical name
   void (*legacy_move)(const LegacyMove&, const Workspace&, core::Context&) = nullptr;
-  void (*finish)(Workspace&, run::Run&) = nullptr;   // the run's end: bindings.tsv (02)
+  void (*finish)(Workspace&, run::Run&, const RunEnding&) = nullptr;   // the run's end, whatever its
+                                                 // status: bindings.tsv (02) and the run page (07)
   void (*start)(run::Run&, const Plan&) = nullptr;   // the run's start: run.json's versions and tools (11)
   Handler find(std::string_view command) const;
 };

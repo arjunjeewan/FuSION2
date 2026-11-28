@@ -364,6 +364,7 @@ constexpr std::string_view run_page_css =
     "padding:8px 12px;font-size:13.5px;color:#222}"
     ".po b{color:#1c5cab}.po .nc{color:#8a5a00}"
     ".note{color:#54524e;font-size:13px}"
+    ".bad{color:#a4161a;font-weight:600}.end{color:#a4161a;font-size:14px;margin:.2em 0}"
     "ul.rules{color:#54524e;font-size:13px}";
 
 std::string esc(std::string_view s) { return detail::html_escape(s); }
@@ -395,6 +396,21 @@ std::string run_page_html(const RunPageInputs& in) {
     title = node(r, r.header.source).label + " → " + node(r, r.header.target).label;
   }
   std::string body = "<h1>" + esc(title) + "</h1>\n";
+  // The run's name and how it ended come first, so a failed run, or one with no solve, still says
+  // something (Phase 3, prompt log entry 387).
+  const std::string ended = in.end == RunEnd::finished ? "finished"
+                            : in.end == RunEnd::failed ? "failed"
+                                                       : "stopped on request";
+  std::string sub = in.run_name.empty() ? std::string() : esc(in.run_name) + " · ";
+  sub += in.end == RunEnd::finished ? ended : "<span class=\"bad\">" + ended + "</span>";
+  body += "<p class=\"sub\">" + sub + "</p>\n";
+  if (!in.end_note.empty()) body += "<p class=\"end\">" + esc(in.end_note) + "</p>\n";
+  if (std::none_of(in.solves.begin(), in.solves.end(), [](const SolveResult* r) { return r != nullptr; })) {
+    body += std::string("<p class=\"note\">") +
+            (in.end == RunEnd::finished ? "This run has no solve, so there is no frontier to show."
+                                        : "No solve finished before the run ended.") +
+            " Its files are in this folder.</p>\n";
+  }
   for (const std::string& plot : in.plots) {
     body += "<figure><img src=\"" + esc(plot) + "\" alt=\"Pareto frontier\"></figure>\n";
   }
@@ -434,7 +450,10 @@ std::string run_page_html(const RunPageInputs& in) {
       });
       if (!points.empty()) body += "<div class=\"pos\">\n";
       for (const FrontierPoint* p : points) {
-        const std::string text = std::to_string(p->at.n) + " nodes · " + std::to_string(p->at.e) + " edges relaxed";
+        const auto count = [](int n, std::string_view one, std::string_view many) {
+          return std::to_string(n) + " " + std::string(n == 1 ? one : many);   // "1 node", not "1 nodes"
+        };
+        const std::string text = count(p->at.n, "node", "nodes") + " · " + count(p->at.e, "edge", "edges") + " relaxed";
         const std::string mark = p->certified ? "" : " <span class=\"nc\">not certified</span>";
         const std::string page = page_for(in, r, c.kind, p->at, several);
         if (page.empty()) {

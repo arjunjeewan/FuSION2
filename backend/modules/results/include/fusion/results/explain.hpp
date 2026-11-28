@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <optional>
 #include <span>
@@ -38,9 +39,15 @@ std::string page_html(std::string_view view_json, std::string_view lib_href, std
 std::string edge_table_tsv(const WitnessView&, const SolveResult&, const PathFilter&);
 std::string dot_source(const WitnessView&, const SolveResult&, const PathFilter&);    // escaped (S6.07)
 
+enum class RunEnd : std::uint8_t { finished, failed, stopped };   // Added: how the run ended
 struct RunPageInputs {                          // what run gathers from run.json at the end of a run
   std::vector<const SolveResult*> solves;       // every results.json the run wrote or read
   std::vector<std::string> pages, plots;        // relative paths of the pages and Pareto images
+  // Added: the page opens with the run's name and how it ended, so a failed run, or one with no
+  // solve, still says something (Phase 3, prompt log entry 387).
+  std::string run_name;
+  RunEnd end = RunEnd::finished;
+  std::string end_note;                         // a failure's batch line and message
 };
 std::string run_page_html(const RunPageInputs&);   // the run page; run writes it once (1.4)
 

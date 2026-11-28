@@ -653,6 +653,11 @@ Sizes for the full JUN run: FuSION 1's 13 pex pages take 9,645,947 bytes. 2.0 ta
 - per case, the observation summary and the modelling statements (S5.12, S5.14, S5.16);
 - links to each `results.json`.
 
+*Phase 3 (prompt log entry 387):*
+- **Who writes it:** `batch`'s end-of-run hook, through `run`'s `create_run_file`, at every run's end whatever its status. That includes a run whose check of the inputs fails before its first step. Until this fix nothing called `run_page_html`.
+- **Its links:** `pex` and `plot_pareto` record the pages and plots they wrote.
+- **What it opens with:** the run's name and how the run ended: finished, failed (with the failing line and message), or stopped on request. A run without a solve says so. `RunPageInputs` gains `run_name`, `end` and `end_note`.
+
 **Edge table** (S6.08, TSV per E1; prompt log entry 180). One row per drawn edge of the filtered witness view, sorted by source label, target label and effect, listing all its edges by key. Lists inside a field are joined by `;`, in member order. Fields never contain a tab, CR or LF: any control character becomes a space. The prototype's tables for the full JUN run's 13 points measure 10,129 to 17,201 bytes; longer key lists can bring a point to about 21 KB. Two rows from the reference run:
 
 ```

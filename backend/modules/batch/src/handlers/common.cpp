@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "fusion/core/install.hpp"
+#include "fusion/results/explain.hpp"
 #include "state.hpp"
 
 namespace fusion::batch {
@@ -204,14 +205,31 @@ core::Outcome<void> run_help(const BoundArgs& args, Workspace&, core::Context& c
   return {};
 }
 
-// The run's end (entry 230): bindings.tsv, written once whatever the status.
-void finish_run(Workspace& ws, run::Run& run) {
+// The run's end (entry 230): bindings.tsv and the run page, each written once whatever the status.
+void finish_run(Workspace& ws, run::Run& run, const RunEnding& ending) {
   StepState* st = ws.state.get();
-  if (!st || st->bindings.empty()) return;
-  const auto it = st->bindings.find(st->latest_bindings);
-  if (it == st->bindings.end()) return;
-  core::OutputFile file = run.create_run_file("bindings.tsv");
-  it->second->write(file.out());
+  if (st) {
+    if (const auto it = st->bindings.find(st->latest_bindings); it != st->bindings.end()) {
+      core::OutputFile file = run.create_run_file("bindings.tsv");
+      it->second->write(file.out());
+      file.commit();
+    }
+  }
+  // 07's run page, index.html, opening with how the run ended (Phase 3, prompt log entry 387).
+  results::RunPageInputs page;
+  if (st) {
+    for (const StepState::Solve& s : st->solves)
+      if (s.published) page.solves.push_back(s.published.get());
+    page.pages = st->pages;
+    page.plots = st->plots;
+  }
+  page.run_name = core::to_utf8(run.dir().filename());
+  page.end = ending.status == run::RunStatus::failed    ? results::RunEnd::failed
+             : ending.status == run::RunStatus::stopped ? results::RunEnd::stopped
+                                                        : results::RunEnd::finished;
+  page.end_note = ending.note;
+  core::OutputFile file = run.create_run_file("index.html");
+  file.out() << results::run_page_html(page);
   file.commit();
 }
 

@@ -48,6 +48,23 @@ std::vector<solve::EdgeLine> edge_list(const BoundArgs& args, std::string_view n
 }
 
 // S5.04: a positional line's connect pair, "<source> <target>" on its first line.
+// The run page's links (07.C2; prompt log entry 387): the files with this extension that the step
+// wrote in one of its folders, as paths from the run directory, in name order (11: sort before use).
+void record_files(const core::Context& ctx, std::string_view folder, std::string_view extension,
+                  std::vector<std::string>& into) {
+  const std::filesystem::path dir = folder.empty() ? ctx.files.step_dir() : ctx.files.step_dir() / folder;
+  std::vector<std::string> found;
+  std::error_code ec;
+  for (const auto& entry : std::filesystem::directory_iterator(dir, ec)) {
+    if (!entry.is_regular_file() || core::to_utf8(entry.path().extension()) != extension) continue;
+    std::string path = std::string(ctx.step) + "/";
+    if (!folder.empty()) path += std::string(folder) + "/";
+    found.push_back(path + core::to_utf8(entry.path().filename()));
+  }
+  std::sort(found.begin(), found.end());
+  into.insert(into.end(), found.begin(), found.end());
+}
+
 std::optional<std::pair<std::string, std::string>> connect_pair(const BoundArgs& args, core::Context& ctx) {
   const auto p = path_arg(args, "pairs");
   if (!p) return std::nullopt;
@@ -242,6 +259,7 @@ core::Outcome<void> run_pex(const BoundArgs& args, Workspace& ws, core::Context&
     ctx.log.warning("results.site_later", "pex: the site export (S6.19) comes in a later build; site_dir is ignored");
   const auto drawn = published(solves);
   results::explain(drawn, options, ctx);
+  record_files(ctx, "explain", ".html", state_of(ws).pages);
   return {};
 }
 
@@ -270,6 +288,7 @@ core::Outcome<void> run_plot_pareto(const BoundArgs& args, Workspace& ws, core::
   options.font = text_or(args, "font", "Liberation Sans");
   const auto drawn = published(solves_named(args, st));
   results::plot_pareto(drawn, options, ctx);
+  record_files(ctx, "", ".png", state_of(ws).plots);
   return {};
 }
 

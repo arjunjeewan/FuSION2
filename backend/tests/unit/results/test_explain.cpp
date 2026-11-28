@@ -174,3 +174,33 @@ TEST_CASE("the run page lists each case's points in FuSION 1's order and links t
   CHECK(page_stem("pex", "temp_w", Case::out, pt(2, 7)) == "pex_temp_w_out_n2_e7");
   CHECK(page_stem("", "", Case::in, pt(1, 0)) == "in_n1_e0");
 }
+
+TEST_CASE("the run page opens with the run's name and how it ended", "[unit][results]") {
+  // Phase 3, prompt log entry 387: a failed run, or one with no solve, still says something.
+  const SolveResult r = explained();
+  RunPageInputs done;
+  done.solves = {&r};
+  done.run_name = "toy_20261128-130638";
+  const std::string finished = run_page_html(done);
+  CHECK_THAT(finished, ContainsSubstring("<p class=\"sub\">toy_20261128-130638 · finished</p>"));
+  CHECK_THAT(finished, ContainsSubstring("1 node · 0 edges relaxed"));   // not "1 nodes"
+  CHECK(finished.find("class=\"end\"") == std::string::npos);
+  CHECK(finished.find("no solve") == std::string::npos);
+  CHECK(finished.find("No solve") == std::string::npos);
+
+  RunPageInputs failed;
+  failed.run_name = "toy_20261128-130639";
+  failed.end = RunEnd::failed;
+  failed.end_note = "line 3, fb_rch: hsa999 is not <in> the network";
+  const std::string html = run_page_html(failed);
+  CHECK_THAT(html, ContainsSubstring("toy_20261128-130639 · <span class=\"bad\">failed</span>"));
+  CHECK_THAT(html, ContainsSubstring("<p class=\"end\">line 3, fb_rch: hsa999 is not &lt;in&gt; the network</p>"));
+  CHECK_THAT(html, ContainsSubstring("No solve finished before the run ended. Its files are in this folder."));
+  CHECK(html.find("<script") == std::string::npos);
+
+  RunPageInputs stopped;
+  stopped.end = RunEnd::stopped;
+  CHECK_THAT(run_page_html(stopped), ContainsSubstring("<p class=\"sub\"><span class=\"bad\">stopped on request</span></p>"));
+  CHECK_THAT(run_page_html(RunPageInputs{}),
+             ContainsSubstring("This run has no solve, so there is no frontier to show. Its files are in this folder."));
+}
