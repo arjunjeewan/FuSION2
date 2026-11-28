@@ -135,7 +135,7 @@ The layout (C14, accepted with 10.C12's place in entry 202):
 
 ```text
 FuSION2/
-  CLAUDE.md  LICENSE  README.md  VERSION
+  CLAUDE.md  LICENSE  README.md  RUNNING.md  VERSION
   .gitignore  .gitattributes  .editorconfig  .clang-format
   CMakeLists.txt  CMakePresets.json
   cmake/
@@ -932,6 +932,7 @@ GitHub Actions on `arjunjeewan/FuSION2`, once the user pushes (C15, accepted in 
   - Per-module directories mirror the CMake targets (C6) and the modules of C1.
   - Nothing generated is tracked, which fixes S8.01 and S8.31. `CLAUDE.md` stays at the root (decision 0005).
 - **Decision:** as proposed (prompt log entry 202)
+- **Amended:** [decision 0040](../decisions/0040-readme-and-running.md) adds `RUNNING.md`, the run instructions, to the root beside `README.md` (prompt log entry 384).
 
 ### 11.C15 · Continuous integration
 
