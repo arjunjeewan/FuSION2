@@ -108,6 +108,8 @@ TEST_CASE("solve: the step solves both FSC cases and writes each case's files an
   for (const core::Json& f : finished) CHECK(f["status"] == "complete");
   CHECK(step.events.of("solve.point").size() >= toy.with.dat.size() + toy.without.dat.size());
   CHECK(step.lines->any("[solve in] complete: "));
+  CHECK(step.lines->any(" queries, "));                        // not "querys" (prompt log entry 387)
+  CHECK_FALSE(step.lines->any("querys"));
   CHECK(step.lines->any("[solve out] point n="));
   CHECK(step.lines->any("[solve] done in "));                 // always printed (S5.31)
 }

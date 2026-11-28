@@ -39,6 +39,10 @@ std::string duration_text(std::chrono::milliseconds ms) {
 
 std::string point_text(Point p) { return "n=" + std::to_string(p.n) + " e=" + std::to_string(p.e); }
 
+std::string plural(std::size_t count, const char* one, const char* many) {
+  return std::to_string(count) + " " + (count == 1 ? one : many);
+}
+
 std::string plural(std::size_t count, const char* word) {
   return std::to_string(count) + " " + word + (count == 1 ? "" : "s");
 }
@@ -314,7 +318,7 @@ void finish(core::Context& ctx, Control& control, CaseResult& r, const Settings&
       return;
     case CaseStatus::no_point:
       ctx.log.info(tag + " no point within n<=" + std::to_string(box.hi.n) + ", e<=" + std::to_string(box.hi.e) + "; " +
-                   plural(r.log.size(), "query") + ", " + std::to_string(r.stats.z3) + " to Z3; " +
+                   plural(r.log.size(), "query", "queries") + ", " + std::to_string(r.stats.z3) + " to Z3; " +
                    seconds_text(r.stats.wall_s));
       return;
     default:
@@ -333,7 +337,7 @@ void finish(core::Context& ctx, Control& control, CaseResult& r, const Settings&
     ctx.log.info(line);
   }
   const std::string summary = plural(r.frontier.points.size(), "point") + ", " + std::to_string(certified) +
-                              " certified; " + plural(r.log.size(), "query") + ", " + std::to_string(r.stats.z3) +
+                              " certified; " + plural(r.log.size(), "query", "queries") + ", " + std::to_string(r.stats.z3) +
                               " to Z3, " + std::to_string(r.stats.model) + " from a model; " +
                               seconds_text(r.stats.wall_s);
   if (r.status == CaseStatus::complete) {
